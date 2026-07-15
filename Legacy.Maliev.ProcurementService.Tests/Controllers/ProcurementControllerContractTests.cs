@@ -63,6 +63,32 @@ public sealed class ProcurementControllerContractTests
         Assert.True(permission.IsCritical);
     }
 
+    [Fact]
+    public void SignedPermissionClaims_AreAuthoritativeOutsideDestructiveAndPurchaseOrderWrites()
+    {
+        var purchaseOrderControllers = new[]
+        {
+            typeof(PurchaseOrdersController),
+            typeof(PurchaseOrderAddressesController),
+            typeof(OrderItemsController),
+            typeof(FilesController),
+        };
+
+        foreach (var controller in Controllers.Select(row => (Type)row[0]))
+        {
+            foreach (var action in PublicActions(controller))
+            {
+                var httpMethod = Assert.Single(action.GetCustomAttributes<HttpMethodAttribute>());
+                var isRead = httpMethod.HttpMethods.Contains("GET", StringComparer.Ordinal);
+                var isDelete = httpMethod.HttpMethods.Contains("DELETE", StringComparer.Ordinal);
+                var requiresLiveCheck = isDelete || (!isRead && purchaseOrderControllers.Contains(controller));
+                var permission = Assert.Single(action.GetCustomAttributes<RequirePermissionAttribute>());
+
+                Assert.Equal(requiresLiveCheck, permission.RequireLiveCheck);
+            }
+        }
+    }
+
     private static IEnumerable<MethodInfo> PublicActions(Type controller) =>
         controller.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
 }

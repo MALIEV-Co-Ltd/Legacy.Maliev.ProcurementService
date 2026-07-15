@@ -16,7 +16,7 @@ public sealed class SupplierAddressesController(IProcurementService service) : C
 {
     /// <summary>Creates and attaches a supplier address.</summary>
     [HttpPost("/suppliers/{supplierId:int}/addresses")]
-    [RequirePermission(ProcurementPermissions.SupplierAddressesWrite, ResourcePathTemplate = "/suppliers/{supplierId}", RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.SupplierAddressesWrite, ResourcePathTemplate = "/suppliers/{supplierId}")]
     public async Task<ActionResult> CreateSupplierAddressAsync(int supplierId, UpsertSupplierAddressRequest item, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(item.Address1) || item.CountryId == 0) return BadRequest();
@@ -32,7 +32,7 @@ public sealed class SupplierAddressesController(IProcurementService service) : C
 
     /// <summary>Gets an address record by identifier.</summary>
     [HttpGet("{addressId:int}", Name = "GetSupplierAddressRecord")]
-    [RequirePermission(ProcurementPermissions.SupplierAddressesRead, RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.SupplierAddressesRead)]
     public async Task<ActionResult<SupplierAddressResponse>> GetAddressAsync(int addressId, CancellationToken cancellationToken)
     {
         var address = await service.GetSupplierAddressByIdAsync(addressId, cancellationToken);
@@ -41,7 +41,7 @@ public sealed class SupplierAddressesController(IProcurementService service) : C
 
     /// <summary>Gets the address attached to a supplier.</summary>
     [HttpGet("/suppliers/{supplierId:int}/addresses", Name = "GetSupplierAddress")]
-    [RequirePermission(ProcurementPermissions.SupplierAddressesRead, ResourcePathTemplate = "/suppliers/{supplierId}", RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.SupplierAddressesRead, ResourcePathTemplate = "/suppliers/{supplierId}")]
     public async Task<ActionResult<SupplierAddressResponse>> GetSupplierAddressAsync(int supplierId, CancellationToken cancellationToken)
     {
         var address = await service.GetSupplierAddressAsync(supplierId, cancellationToken);
@@ -50,7 +50,7 @@ public sealed class SupplierAddressesController(IProcurementService service) : C
 
     /// <summary>Updates a Supplier-database address.</summary>
     [HttpPut("{addressId:int}")]
-    [RequirePermission(ProcurementPermissions.SupplierAddressesWrite, RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.SupplierAddressesWrite)]
     public async Task<ActionResult> UpdateSupplierAddressAsync(int addressId, UpsertSupplierAddressRequest item, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(item.Address1) || item.CountryId == 0) return BadRequest();

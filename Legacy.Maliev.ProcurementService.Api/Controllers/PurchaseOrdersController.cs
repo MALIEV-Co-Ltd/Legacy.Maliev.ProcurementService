@@ -32,7 +32,7 @@ public sealed class PurchaseOrdersController(IProcurementService service, IIdemp
 
     /// <summary>Gets a purchase-order page.</summary>
     [HttpGet]
-    [RequirePermission(ProcurementPermissions.PurchaseOrdersRead, RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.PurchaseOrdersRead)]
     public async Task<ActionResult<PaginatedResponse<PurchaseOrderResponse>>> GetPaginatedAsync(
         [FromQuery] PurchaseOrderSortType? sort, [FromQuery] string? search, [FromQuery] int? index, [FromQuery] int? size, CancellationToken cancellationToken)
     {
@@ -42,7 +42,7 @@ public sealed class PurchaseOrdersController(IProcurementService service, IIdemp
 
     /// <summary>Gets one purchase order.</summary>
     [HttpGet("{purchaseOrderId:int}", Name = "GetPurchaseOrder")]
-    [RequirePermission(ProcurementPermissions.PurchaseOrdersRead, ResourcePathTemplate = "/purchaseorders/{purchaseOrderId}", RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.PurchaseOrdersRead, ResourcePathTemplate = "/purchaseorders/{purchaseOrderId}")]
     public async Task<ActionResult<PurchaseOrderResponse>> GetPurchaseOrderAsync(int purchaseOrderId, CancellationToken cancellationToken)
     {
         var order = await service.GetPurchaseOrderAsync(purchaseOrderId, cancellationToken);
