@@ -17,7 +17,7 @@ public sealed class SuppliersController(IProcurementService service, IIdempotenc
 {
     /// <summary>Creates a supplier.</summary>
     [HttpPost]
-    [RequirePermission(ProcurementPermissions.SuppliersCreate, RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.SuppliersCreate)]
     public async Task<IActionResult> CreateSupplierAsync(UpsertSupplierRequest item, [FromHeader(Name = "Idempotency-Key")] string? idempotencyKey, CancellationToken cancellationToken)
     {
         var supplier = await IdempotentCreates.GetOrCreateAsync(idempotency, "supplier", idempotencyKey, () => service.CreateSupplierAsync(item, cancellationToken), cancellationToken);
@@ -32,7 +32,7 @@ public sealed class SuppliersController(IProcurementService service, IIdempotenc
 
     /// <summary>Gets a supplier page.</summary>
     [HttpGet]
-    [RequirePermission(ProcurementPermissions.SuppliersRead, RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.SuppliersRead)]
     public async Task<ActionResult<PaginatedResponse<SupplierResponse>>> GetPaginatedSuppliersAsync(
         [FromQuery] SupplierSortType? sort, [FromQuery] string? search, [FromQuery] int? index, [FromQuery] int? size, CancellationToken cancellationToken)
     {
@@ -42,7 +42,7 @@ public sealed class SuppliersController(IProcurementService service, IIdempotenc
 
     /// <summary>Gets one supplier.</summary>
     [HttpGet("{supplierId:int}", Name = "GetSupplier")]
-    [RequirePermission(ProcurementPermissions.SuppliersRead, ResourcePathTemplate = "/suppliers/{supplierId}", RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.SuppliersRead, ResourcePathTemplate = "/suppliers/{supplierId}")]
     public async Task<ActionResult<SupplierResponse>> GetSupplierAsync(int supplierId, CancellationToken cancellationToken)
     {
         var supplier = await service.GetSupplierAsync(supplierId, cancellationToken);
@@ -51,7 +51,7 @@ public sealed class SuppliersController(IProcurementService service, IIdempotenc
 
     /// <summary>Updates a supplier.</summary>
     [HttpPut("{supplierId:int}")]
-    [RequirePermission(ProcurementPermissions.SuppliersUpdate, ResourcePathTemplate = "/suppliers/{supplierId}", RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.SuppliersUpdate, ResourcePathTemplate = "/suppliers/{supplierId}")]
     public async Task<ActionResult> UpdateSupplierAsync(int supplierId, UpsertSupplierRequest item, CancellationToken cancellationToken) =>
         await service.UpdateSupplierAsync(supplierId, item, cancellationToken) ? NoContent() : NotFound();
 }

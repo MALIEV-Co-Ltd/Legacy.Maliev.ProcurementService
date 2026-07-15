@@ -29,14 +29,14 @@ public sealed class PurchaseOrderAddressesController(IProcurementService service
     public async Task<ActionResult> DeleteAddressAsync(int addressId, CancellationToken cancellationToken) => await service.DeletePurchaseOrderAddressAsync(addressId, cancellationToken) ? NoContent() : NotFound();
     /// <summary>Gets one purchase-order address.</summary>
     [HttpGet("{addressId:int}", Name = "GetPurchaseOrderAddress")]
-    [RequirePermission(ProcurementPermissions.PurchaseOrderAddressesRead, RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.PurchaseOrderAddressesRead)]
     public async Task<ActionResult<PurchaseOrderAddressResponse>> GetAddressAsync(int addressId, CancellationToken cancellationToken)
     {
         var address = await service.GetPurchaseOrderAddressAsync(addressId, cancellationToken); return address is null ? NotFound() : address;
     }
     /// <summary>Gets all purchase-order addresses.</summary>
     [HttpGet]
-    [RequirePermission(ProcurementPermissions.PurchaseOrderAddressesRead, RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.PurchaseOrderAddressesRead)]
     public async Task<ActionResult<IReadOnlyList<PurchaseOrderAddressResponse>>> GetAddressesAsync(CancellationToken cancellationToken)
     {
         var addresses = await service.GetPurchaseOrderAddressesAsync(cancellationToken); return addresses.Count == 0 ? NotFound() : Ok(addresses);
