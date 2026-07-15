@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj" />
+  <Project Path="Legacy.Maliev.ProcurementService.Application/Legacy.Maliev.ProcurementService.Application.csproj" />
+  <Project Path="Legacy.Maliev.ProcurementService.Data/Legacy.Maliev.ProcurementService.Data.csproj" />
+  <Project Path="Legacy.Maliev.ProcurementService.Domain/Legacy.Maliev.ProcurementService.Domain.csproj" />
+  <Project Path="Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj" />
+</Solution>
