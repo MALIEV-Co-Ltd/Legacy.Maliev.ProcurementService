@@ -8,7 +8,10 @@ tightly coupled legacy APIs while preserving their separate data ownership and H
 
 Dependency direction is `Api -> Application -> Domain`; the two PostgreSQL contexts, Redis
 adapter, and repositories live in `Data`. Scalar/OpenAPI, JWT validation, standard middleware,
-health endpoints, resilience, and structured logging come from `Maliev.Aspire.ServiceDefaults`.
+health endpoints, resilience, and structured logging come from the public
+`Legacy.Maliev.ServiceDefaults` package while preserving the existing
+`Maliev.Aspire.ServiceDefaults` CLR namespace. CI and image builds also use public
+`Legacy.Maliev.CompatibilityContracts` source, with no new-platform shared-library dependency.
 
 All 30 actions require authentication and explicit permissions. Supplier and purchase-order
 creates accept `Idempotency-Key`; purchase-order and order-item updates accept
