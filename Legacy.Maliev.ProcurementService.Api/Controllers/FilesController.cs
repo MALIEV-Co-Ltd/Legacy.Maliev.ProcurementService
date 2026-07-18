@@ -27,14 +27,14 @@ public sealed class FilesController(IProcurementService service) : ControllerBas
     public async Task<ActionResult> DeletePurchaseOrderFileAsync(int id, CancellationToken cancellationToken) => await service.DeletePurchaseOrderFileAsync(id, cancellationToken) ? NoContent() : NotFound();
     /// <summary>Gets one purchase-order file metadata row.</summary>
     [HttpGet("{id:int}", Name = "GetPurchaseOrderFile")]
-    [RequirePermission(ProcurementPermissions.FilesRead, RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.FilesRead)]
     public async Task<ActionResult<PurchaseOrderFileResponse>> GetPurchaseOrderFileAsync(int id, CancellationToken cancellationToken)
     {
         var file = await service.GetPurchaseOrderFileAsync(id, cancellationToken); return file is null ? NotFound() : file;
     }
     /// <summary>Gets file metadata rows owned by a purchase order.</summary>
     [HttpGet("/purchaseorders/{purchaseOrderId:int}/files")]
-    [RequirePermission(ProcurementPermissions.FilesRead, ResourcePathTemplate = "/purchaseorders/{purchaseOrderId}", RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.FilesRead, ResourcePathTemplate = "/purchaseorders/{purchaseOrderId}")]
     public async Task<ActionResult<IReadOnlyList<PurchaseOrderFileResponse>>> GetPurchaseOrderFilesAsync(int purchaseOrderId, CancellationToken cancellationToken)
     {
         var files = await service.GetPurchaseOrderFilesAsync(purchaseOrderId, cancellationToken); return files.Count == 0 ? NotFound() : Ok(files);

@@ -27,14 +27,14 @@ public sealed class OrderItemsController(IProcurementService service) : Controll
     public async Task<ActionResult> DeleteOrderItemAsync(int orderItemId, CancellationToken cancellationToken) => await service.DeleteOrderItemAsync(orderItemId, cancellationToken) ? NoContent() : NotFound();
     /// <summary>Gets one order item.</summary>
     [HttpGet("{orderItemId:int}", Name = "GetOrderItem")]
-    [RequirePermission(ProcurementPermissions.OrderItemsRead, RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.OrderItemsRead)]
     public async Task<ActionResult<OrderItemResponse>> GetOrderItemAsync(int orderItemId, CancellationToken cancellationToken)
     {
         var item = await service.GetOrderItemAsync(orderItemId, cancellationToken); return item is null ? NotFound() : item;
     }
     /// <summary>Gets items owned by a purchase order.</summary>
     [HttpGet("/purchaseorders/{purchaseOrderId:int}/orderitems")]
-    [RequirePermission(ProcurementPermissions.OrderItemsRead, ResourcePathTemplate = "/purchaseorders/{purchaseOrderId}", RequireLiveCheck = true)]
+    [RequirePermission(ProcurementPermissions.OrderItemsRead, ResourcePathTemplate = "/purchaseorders/{purchaseOrderId}")]
     public async Task<ActionResult<IReadOnlyList<OrderItemResponse>>> GetOrderItemsAsync(int purchaseOrderId, CancellationToken cancellationToken)
     {
         if (purchaseOrderId == 0) return BadRequest("Purchase order id is required"); var items = await service.GetOrderItemsAsync(purchaseOrderId, cancellationToken); return items.Count == 0 ? NotFound() : Ok(items);
