@@ -70,8 +70,8 @@ public sealed class ProcurementPostgresMigrationTests : IAsyncLifetime
         var item = await setup.CreateOrderItemAsync(new(order.Id, "A", "first", 1, 10m), CancellationToken.None);
         var staleOrderDate = order.ModifiedDate!.Value;
         var staleItemDate = item.ModifiedDate!.Value;
-        await setupContext.Database.ExecuteSqlInterpolatedAsync($"UPDATE \"PurchaseOrder\" SET \"ModifiedDate\" = {staleOrderDate.AddMinutes(1)} WHERE \"ID\" = {order.Id}");
-        await setupContext.Database.ExecuteSqlInterpolatedAsync($"UPDATE \"OrderItem\" SET \"ModifiedDate\" = {staleItemDate.AddMinutes(1)} WHERE \"ID\" = {item.Id}");
+        await setupContext.PurchaseOrders.Where(x => x.Id == order.Id).ExecuteUpdateAsync(setters => setters.SetProperty(x => x.ModifiedDate, staleOrderDate.AddMinutes(1)));
+        await setupContext.OrderItems.Where(x => x.Id == item.Id).ExecuteUpdateAsync(setters => setters.SetProperty(x => x.ModifiedDate, staleItemDate.AddMinutes(1)));
         setupContext.ChangeTracker.Clear();
         var repository = new PurchaseOrderRepository(setupContext, TimeProvider.System);
 

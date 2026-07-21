@@ -50,8 +50,8 @@ public sealed class SupplierDbContext(DbContextOptions<SupplierDbContext> option
 
     private static void ConfigureDates<TEntity>(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<TEntity> entity) where TEntity : class
     {
-        entity.Property<DateTime?>("CreatedDate").HasColumnType("timestamp with time zone").HasDefaultValueSql("CURRENT_TIMESTAMP");
-        entity.Property<DateTime?>("ModifiedDate").HasColumnType("timestamp with time zone").HasDefaultValueSql("CURRENT_TIMESTAMP");
+        entity.Property<DateTime?>("CreatedDate").HasColumnType("timestamp without time zone").HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+        entity.Property<DateTime?>("ModifiedDate").HasColumnType("timestamp without time zone").HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
     }
 }
 
@@ -150,7 +150,7 @@ public sealed class PurchaseOrderDbContext(DbContextOptions<PurchaseOrderDbConte
 
     private static void ConfigureDates<TEntity>(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<TEntity> entity) where TEntity : class
     {
-        entity.Property<DateTime?>("CreatedDate").HasColumnType("timestamp with time zone").HasDefaultValueSql("CURRENT_TIMESTAMP");
-        entity.Property<DateTime?>("ModifiedDate").HasColumnType("timestamp with time zone").HasDefaultValueSql("CURRENT_TIMESTAMP");
+        entity.Property<DateTime?>("CreatedDate").HasColumnType("timestamp without time zone").HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+        entity.Property<DateTime?>("ModifiedDate").HasColumnType("timestamp without time zone").HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
     }
 }

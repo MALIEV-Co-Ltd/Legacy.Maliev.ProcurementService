@@ -118,7 +118,7 @@ public sealed class SupplierRepository(SupplierDbContext dbContext, TimeProvider
         return true;
     }
 
-    private DateTime Now() => timeProvider.GetUtcNow().UtcDateTime;
+    private DateTime Now() => DateTime.SpecifyKind(timeProvider.GetUtcNow().UtcDateTime, DateTimeKind.Unspecified);
     private static SupplierResponse ToResponse(Supplier value) => new(value.Id, value.Name, value.Website, value.TaxNumber, value.Email, value.Note, value.AddressId, value.Telephone, value.Mobile, value.Fax, value.CreatedDate, value.ModifiedDate);
     private static SupplierAddressResponse ToResponse(SupplierAddress value) => new(value.Id, value.Building, value.Address1, value.Address2, value.City, value.State, value.PostalCode, value.CountryId, value.ModifiedDate, value.CreatedDate);
     private static IQueryable<SupplierResponse> Project(IQueryable<Supplier> query) => query.Select(value => new SupplierResponse(value.Id, value.Name, value.Website, value.TaxNumber, value.Email, value.Note, value.AddressId, value.Telephone, value.Mobile, value.Fax, value.CreatedDate, value.ModifiedDate));
@@ -156,7 +156,7 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
     public async Task<UpdateResult> UpdatePurchaseOrderAsync(int id, UpsertPurchaseOrderRequest request, DateTimeOffset? expectedModifiedDate, CancellationToken cancellationToken)
     {
         var entity = await dbContext.PurchaseOrders.FindAsync([id], cancellationToken); if (entity is null) return UpdateResult.NotFound;
-        if (expectedModifiedDate is not null) dbContext.Entry(entity).Property(value => value.ModifiedDate).OriginalValue = expectedModifiedDate.Value.UtcDateTime;
+        if (expectedModifiedDate is not null) dbContext.Entry(entity).Property(value => value.ModifiedDate).OriginalValue = DateTime.SpecifyKind(expectedModifiedDate.Value.UtcDateTime, DateTimeKind.Unspecified);
         Map(entity, request).ModifiedDate = Now();
         try { await dbContext.SaveChangesAsync(cancellationToken); return UpdateResult.Updated; }
         catch (DbUpdateConcurrencyException) { return UpdateResult.Conflict; }
@@ -196,7 +196,7 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
     public async Task<UpdateResult> UpdateOrderItemAsync(int id, UpsertOrderItemRequest request, DateTimeOffset? expectedModifiedDate, CancellationToken cancellationToken)
     {
         var entity = await dbContext.OrderItems.FindAsync([id], cancellationToken); if (entity is null) return UpdateResult.NotFound;
-        if (expectedModifiedDate is not null) dbContext.Entry(entity).Property(value => value.ModifiedDate).OriginalValue = expectedModifiedDate.Value.UtcDateTime;
+        if (expectedModifiedDate is not null) dbContext.Entry(entity).Property(value => value.ModifiedDate).OriginalValue = DateTime.SpecifyKind(expectedModifiedDate.Value.UtcDateTime, DateTimeKind.Unspecified);
         entity.PurchaseOrderId = request.PurchaseOrderId; entity.PartNumber = request.PartNumber; entity.Description = request.Description; entity.Quantity = request.Quantity; entity.UnitPrice = request.UnitPrice; entity.ModifiedDate = Now();
         try { await dbContext.SaveChangesAsync(cancellationToken); return UpdateResult.Updated; }
         catch (DbUpdateConcurrencyException) { return UpdateResult.Conflict; }
@@ -221,7 +221,7 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
         entity.PurchaseOrderId = request.PurchaseOrderId ?? entity.PurchaseOrderId; entity.Bucket = request.Bucket.Trim(); entity.ObjectName = request.ObjectName.Trim(); entity.ModifiedDate = Now(); await dbContext.SaveChangesAsync(cancellationToken); return true;
     }
 
-    private DateTime Now() => timeProvider.GetUtcNow().UtcDateTime;
+    private DateTime Now() => DateTime.SpecifyKind(timeProvider.GetUtcNow().UtcDateTime, DateTimeKind.Unspecified);
     private static PurchaseOrder Map(PurchaseOrder value, UpsertPurchaseOrderRequest request)
     {
         value.SupplierId = request.SupplierId; value.SupplierContactPerson = request.SupplierContactPerson; value.ShippingAddressId = request.ShippingAddressId;
