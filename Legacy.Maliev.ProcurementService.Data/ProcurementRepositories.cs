@@ -2,6 +2,7 @@ using Legacy.Maliev.ProcurementService.Application.Interfaces;
 using Legacy.Maliev.ProcurementService.Application.Models;
 using Legacy.Maliev.ProcurementService.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Legacy.Maliev.ProcurementService.Data;
 
@@ -72,32 +73,75 @@ public sealed class SupplierRepository(SupplierDbContext dbContext, TimeProvider
     /// <inheritdoc />
     public async Task<SupplierAddressResponse?> CreateAddressAsync(int supplierId, UpsertSupplierAddressRequest request, CancellationToken cancellationToken)
     {
-        var supplier = await dbContext.Suppliers.FindAsync([supplierId], cancellationToken);
-        if (supplier is null) return null;
-        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
-        var now = Now();
-        var address = new SupplierAddress { Building = request.Building, Address1 = request.Address1, Address2 = request.Address2, City = request.City, State = request.State, PostalCode = request.PostalCode, CountryId = request.CountryId, CreatedDate = now, ModifiedDate = now };
-        dbContext.Addresses.Add(address);
-        await dbContext.SaveChangesAsync(cancellationToken);
-        supplier.AddressId = address.Id;
-        supplier.ModifiedDate = now;
-        await dbContext.SaveChangesAsync(cancellationToken);
-        await transaction.CommitAsync(cancellationToken);
-        return ToResponse(address);
+        return await ExecuteAddressTransactionAsync<SupplierAddressResponse?>(async context =>
+        {
+            var supplier = await LockSupplierAsync(context, supplierId, cancellationToken);
+            if (supplier is null) return null;
+            var now = Now();
+            var address = new SupplierAddress { Building = request.Building, Address1 = request.Address1, Address2 = request.Address2, City = request.City, State = request.State, PostalCode = request.PostalCode, CountryId = request.CountryId, CreatedDate = now, ModifiedDate = now };
+            context.Addresses.Add(address);
+            await context.SaveChangesAsync(cancellationToken);
+            supplier.AddressId = address.Id;
+            supplier.ModifiedDate = now;
+            await context.SaveChangesAsync(cancellationToken);
+            return ToResponse(address);
+        }, cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<bool> DeleteAddressAsync(int supplierId, int addressId, CancellationToken cancellationToken)
     {
-        var supplier = await dbContext.Suppliers.SingleOrDefaultAsync(value => value.Id == supplierId && value.AddressId == addressId, cancellationToken);
-        if (supplier is null) return false;
-        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
-        supplier.AddressId = null;
-        supplier.ModifiedDate = Now();
-        await dbContext.SaveChangesAsync(cancellationToken);
-        var deleted = await dbContext.Addresses.Where(value => value.Id == addressId).ExecuteDeleteAsync(cancellationToken) == 1;
-        await transaction.CommitAsync(cancellationToken);
-        return deleted;
+        return await ExecuteAddressTransactionAsync(async context =>
+        {
+            var supplier = await LockSupplierAsync(context, supplierId, cancellationToken);
+            if (supplier is null || supplier.AddressId != addressId) return false;
+            supplier.AddressId = null;
+            supplier.ModifiedDate = Now();
+            await context.SaveChangesAsync(cancellationToken);
+            var deleted = await context.Addresses.Where(value => value.Id == addressId).ExecuteDeleteAsync(cancellationToken) == 1;
+            return deleted;
+        }, cancellationToken);
+    }
+
+    private static async Task<Supplier?> LockSupplierAsync(SupplierDbContext context, int supplierId, CancellationToken cancellationToken)
+    {
+        var rows = await context.Suppliers.FromSqlInterpolated($"SELECT * FROM \"Supplier\" WHERE \"ID\" = {supplierId} FOR UPDATE").ToListAsync(cancellationToken);
+        return rows.SingleOrDefault();
+    }
+
+    private Task<T> ExecuteAddressTransactionAsync<T>(Func<SupplierDbContext, Task<T>> action, CancellationToken cancellationToken)
+    {
+        var options = (DbContextOptions<SupplierDbContext>)dbContext.GetService<IDbContextOptions>();
+        return dbContext.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
+        {
+            var commitSubmitted = false;
+            try
+            {
+                await using var context = new SupplierDbContext(options);
+                await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+                try
+                {
+                    var result = await action(context);
+                    cancellationToken.ThrowIfCancellationRequested();
+                    commitSubmitted = true;
+                    await transaction.CommitAsync(cancellationToken);
+                    return result;
+                }
+                catch
+                {
+                    if (commitSubmitted) throw new ProcurementTransactionUncertainException();
+                    using var cleanup = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                    try { await transaction.RollbackAsync(cleanup.Token); }
+                    catch { throw new ProcurementTransactionUncertainException(); }
+                    throw;
+                }
+            }
+            catch when (commitSubmitted)
+            {
+                // Includes transaction/context teardown after COMMIT, not only its await.
+                throw new ProcurementTransactionUncertainException();
+            }
+        });
     }
 
     /// <inheritdoc />

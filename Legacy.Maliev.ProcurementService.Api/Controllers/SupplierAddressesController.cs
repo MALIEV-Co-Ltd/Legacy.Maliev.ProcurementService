@@ -20,15 +20,22 @@ public sealed class SupplierAddressesController(IProcurementService service) : C
     public async Task<ActionResult> CreateSupplierAddressAsync(int supplierId, UpsertSupplierAddressRequest item, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(item.Address1) || item.CountryId == 0) return BadRequest();
-        var address = await service.CreateSupplierAddressAsync(supplierId, item, cancellationToken);
-        return address is null ? NotFound() : CreatedAtRoute("GetSupplierAddressRecord", new { addressId = address.Id }, address);
+        try
+        {
+            var address = await service.CreateSupplierAddressAsync(supplierId, item, cancellationToken);
+            return address is null ? NotFound() : CreatedAtRoute("GetSupplierAddressRecord", new { addressId = address.Id }, address);
+        }
+        catch (ProcurementTransactionUncertainException) { return StatusCode(StatusCodes.Status503ServiceUnavailable); }
     }
 
     /// <summary>Deletes a supplier-owned address.</summary>
     [HttpDelete("/suppliers/{supplierId:int}/addresses/{addressId:int}")]
     [RequirePermission(ProcurementPermissions.SupplierAddressesDelete, ResourcePathTemplate = "/suppliers/{supplierId}/addresses/{addressId}", RequireLiveCheck = true)]
-    public async Task<ActionResult> DeleteSupplierAddressAsync(int supplierId, int addressId, CancellationToken cancellationToken) =>
-        await service.DeleteSupplierAddressAsync(supplierId, addressId, cancellationToken) ? NoContent() : NotFound();
+    public async Task<ActionResult> DeleteSupplierAddressAsync(int supplierId, int addressId, CancellationToken cancellationToken)
+    {
+        try { return await service.DeleteSupplierAddressAsync(supplierId, addressId, cancellationToken) ? NoContent() : NotFound(); }
+        catch (ProcurementTransactionUncertainException) { return StatusCode(StatusCodes.Status503ServiceUnavailable); }
+    }
 
     /// <summary>Gets an address record by identifier.</summary>
     [HttpGet("{addressId:int}", Name = "GetSupplierAddressRecord")]

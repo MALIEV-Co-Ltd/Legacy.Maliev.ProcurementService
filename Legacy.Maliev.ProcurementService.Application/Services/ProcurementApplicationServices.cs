@@ -19,14 +19,8 @@ public sealed class ProcurementApplicationService(
         return deleted;
     }
     /// <inheritdoc />
-    public async Task<SupplierResponse?> GetSupplierAsync(int id, CancellationToken cancellationToken)
-    {
-        var cached = await cache.GetAsync<SupplierResponse>(SupplierKey(id), cancellationToken);
-        if (cached is not null) return cached;
-        var supplier = await suppliers.GetSupplierAsync(id, cancellationToken);
-        if (supplier is not null) await cache.SetAsync(SupplierKey(id), supplier, TimeSpan.FromMinutes(5), cancellationToken);
-        return supplier;
-    }
+    public Task<SupplierResponse?> GetSupplierAsync(int id, CancellationToken cancellationToken) =>
+        suppliers.GetSupplierAsync(id, cancellationToken);
     /// <inheritdoc />
     public Task<PaginatedResponse<SupplierResponse>?> GetSuppliersAsync(SupplierSortType? sort, string? search, int? index, int? size, CancellationToken cancellationToken) =>
         suppliers.GetSuppliersAsync(sort, search, Math.Max(index ?? 1, 1), Math.Clamp(size ?? 50, 1, 250), cancellationToken);
@@ -68,14 +62,8 @@ public sealed class ProcurementApplicationService(
         return deleted;
     }
     /// <inheritdoc />
-    public async Task<PurchaseOrderResponse?> GetPurchaseOrderAsync(int id, CancellationToken cancellationToken)
-    {
-        var cached = await cache.GetAsync<PurchaseOrderResponse>(PurchaseOrderKey(id), cancellationToken);
-        if (cached is not null) return cached;
-        var purchaseOrder = await purchaseOrders.GetPurchaseOrderAsync(id, cancellationToken);
-        if (purchaseOrder is not null) await cache.SetAsync(PurchaseOrderKey(id), purchaseOrder, TimeSpan.FromMinutes(2), cancellationToken);
-        return purchaseOrder;
-    }
+    public Task<PurchaseOrderResponse?> GetPurchaseOrderAsync(int id, CancellationToken cancellationToken) =>
+        purchaseOrders.GetPurchaseOrderAsync(id, cancellationToken);
     /// <inheritdoc />
     public Task<PaginatedResponse<PurchaseOrderResponse>?> GetPurchaseOrdersAsync(PurchaseOrderSortType? sort, string? search, int? index, int? size, CancellationToken cancellationToken) =>
         purchaseOrders.GetPurchaseOrdersAsync(sort, search, Math.Max(index ?? 1, 1), Math.Clamp(size ?? 50, 1, 250), cancellationToken);
