@@ -10,16 +10,18 @@ namespace Legacy.Maliev.ProcurementService.Api.Controllers;
 /// <summary>Legacy purchase-order routes.</summary>
 /// <param name="service">Procurement application service.</param>
 /// <param name="idempotency">Create-response idempotency store.</param>
+/// <param name="durable">Default-off local durable-create adapter.</param>
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public sealed class PurchaseOrdersController(IProcurementService service, IIdempotencyStore idempotency) : ControllerBase
+public sealed class PurchaseOrdersController(IProcurementService service, IIdempotencyStore idempotency, DurableCreateEndpoint? durable = null) : ControllerBase
 {
     /// <summary>Creates a purchase order.</summary>
     [HttpPost]
     [RequirePermission(ProcurementPermissions.PurchaseOrdersCreate, RequireLiveCheck = true, IsCritical = true)]
     public async Task<IActionResult> CreatePurchaseOrderAsync(UpsertPurchaseOrderRequest item, [FromHeader(Name = "Idempotency-Key")] string? idempotencyKey, CancellationToken cancellationToken)
     {
+        if (durable?.Enabled == true && Request.Headers.ContainsKey("Idempotency-Key")) return await durable.PurchaseOrderAsync(this, item, cancellationToken);
         var order = await IdempotentCreates.GetOrCreateAsync(idempotency, "purchase-order", idempotencyKey, () => service.CreatePurchaseOrderAsync(item, cancellationToken), cancellationToken);
         return CreatedAtRoute("GetPurchaseOrder", new { purchaseOrderId = order.Id }, order);
     }
