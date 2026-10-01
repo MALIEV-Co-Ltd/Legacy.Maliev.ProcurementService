@@ -38,6 +38,8 @@ builder.Services.AddScoped<DistributedProcurementCache>();
 builder.Services.AddScoped<IProcurementCache>(provider => provider.GetRequiredService<DistributedProcurementCache>());
 builder.Services.AddScoped<IIdempotencyStore>(provider => provider.GetRequiredService<DistributedProcurementCache>());
 builder.Services.AddScoped<IProcurementService, ProcurementApplicationService>();
+builder.Services.AddScoped<IDurableProcurementCreates, DurableProcurementCreates>();
+builder.Services.AddScoped<Legacy.Maliev.ProcurementService.Api.DurableCreateEndpoint>();
 
 var app = builder.Build();
 

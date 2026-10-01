@@ -14,6 +14,7 @@ public sealed class SupplierDbContext(DbContextOptions<SupplierDbContext> option
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        CreateReceiptSchema.Configure(modelBuilder, "SupplierCreateReceipt", 1);
         var address = modelBuilder.Entity<SupplierAddress>();
         address.ToTable("Address");
         address.HasKey(value => value.Id);
@@ -70,6 +71,7 @@ public sealed class PurchaseOrderDbContext(DbContextOptions<PurchaseOrderDbConte
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        CreateReceiptSchema.Configure(modelBuilder, "PurchaseOrderCreateReceipt", 2);
         var address = modelBuilder.Entity<PurchaseOrderAddress>();
         address.ToTable("Address");
         address.HasKey(value => value.Id);

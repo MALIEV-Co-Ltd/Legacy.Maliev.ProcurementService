@@ -10,16 +10,18 @@ namespace Legacy.Maliev.ProcurementService.Api.Controllers;
 /// <summary>Legacy supplier master-data routes.</summary>
 /// <param name="service">Procurement application service.</param>
 /// <param name="idempotency">Create-response idempotency store.</param>
+/// <param name="durable">Default-off local durable-create adapter.</param>
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public sealed class SuppliersController(IProcurementService service, IIdempotencyStore idempotency) : ControllerBase
+public sealed class SuppliersController(IProcurementService service, IIdempotencyStore idempotency, DurableCreateEndpoint? durable = null) : ControllerBase
 {
     /// <summary>Creates a supplier.</summary>
     [HttpPost]
     [RequirePermission(ProcurementPermissions.SuppliersCreate)]
     public async Task<IActionResult> CreateSupplierAsync(UpsertSupplierRequest item, [FromHeader(Name = "Idempotency-Key")] string? idempotencyKey, CancellationToken cancellationToken)
     {
+        if (durable?.Enabled == true && Request.Headers.ContainsKey("Idempotency-Key")) return await durable.SupplierAsync(this, item, cancellationToken);
         var supplier = await IdempotentCreates.GetOrCreateAsync(idempotency, "supplier", idempotencyKey, () => service.CreateSupplierAsync(item, cancellationToken), cancellationToken);
         return CreatedAtRoute("GetSupplier", new { supplierId = supplier.Id }, supplier);
     }
