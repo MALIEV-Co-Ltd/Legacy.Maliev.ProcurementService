@@ -254,7 +254,10 @@ public sealed class AuthProgramProcurementJoinTests(JoinPostgresFixture fixture)
                 WorkloadStatuses.Add((int)response.StatusCode);
                 if (response.IsSuccessStatusCode)
                 {
-                    var body = await response.Content.ReadFromJsonAsync<JsonElement>(cancellationToken: cancellationToken);
+                    // Inspect a buffered copy: ReadFromJsonAsync disposes its content
+                    // stream, which the registered Procurement guard must still read.
+                    using var inspected = JsonDocument.Parse(await response.Content.ReadAsStringAsync(cancellationToken));
+                    var body = inspected.RootElement;
                     Assert.Equal(["accessToken", "expiresIn", "tokenType"], body.EnumerateObject().Select(property => property.Name).Order().ToArray());
                     var issued = body.Deserialize<ServiceTokenResponse>(new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
                     Assert.Equal("Bearer", issued.TokenType);
