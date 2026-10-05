@@ -22,7 +22,7 @@ the employee principal, exact permission/resource, `bypassCache:true` and separa
 live credential. It never issues tokens or replaces IIamServiceClient,
 authentication, authorization, identity readers, session stores or issuers.
 
-Ten HTTP join executions cover fresh live create/deny with distinct databases,
+Eleven HTTP join executions cover fresh live create/deny with distinct databases,
 supplier deletion/fresh denial despite the real employee's signed supplier grant,
 wrong secret and unknown-client actual Auth401 responses, missing live credential,
 IAM refusal/malformed responses and consumer issuer/audience refusal. Denials
@@ -32,7 +32,10 @@ token material. Owned seed/normalized-host connection pools are cleared after
 host/context disposal; producer fixtures initialize/dispose once per class.
 Cleanup attempts every owned resource while preserving the first exception;
 four additional deterministic cleanup executions cover early/middle/late and
-multiple failures. The strict harness gate requires all fourteen executions.
+multiple failures. The strict harness gate requires all fifteen executions.
+Supplier checks cover the unchanged resource-scope feature's disabled/global mode
+and explicitly enabled/exact-route mode. Both require fresh live decisions and
+retain the denied supplier; no production feature flag is activated.
 
 Hosted build, exact joined execution names/cardinality, full Procurement suite,
 focused lifecycle suite, generated-inclusive full-service coverage >=80% per

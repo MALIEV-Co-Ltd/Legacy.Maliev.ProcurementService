@@ -53,8 +53,10 @@ public sealed class AuthProgramProcurementJoinTests(JoinPostgresFixture fixture)
         Assert.Equal(session.Id.ToString("D"), join.Validate(join.EmployeeToken).FindFirst("sid")?.Value);
     }
 
-    [Fact]
-    public async Task RealWorkloadBearer_SupplierDeleteUsesEmployeeAndExactResource()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task RealWorkloadBearer_SupplierDeleteUsesEmployeeAndExactResource(bool resourceScoped)
     {
         await using var join = await Join.CreateAsync(fixture);
         int id;
@@ -70,13 +72,14 @@ public sealed class AuthProgramProcurementJoinTests(JoinPostgresFixture fixture)
             retainedId = retained.Id;
         }
         join.Permission = ProcurementPermissions.SuppliersDelete;
-        join.Resource = $"/suppliers/{id}";
+        join.ResourceScoped = resourceScoped;
+        join.Resource = resourceScoped ? $"/suppliers/{id}" : "global";
         await using var app = join.ProcurementFactory();
         using var client = join.EmployeeClient(app);
         using var deleted = await client.DeleteAsync($"/Suppliers/{id}");
         Assert.Equal(HttpStatusCode.NoContent, deleted.StatusCode);
         Assert.Contains(join.Validate(join.EmployeeToken).FindAll("permissions"), claim => claim.Value == ProcurementPermissions.SuppliersDelete);
-        join.Resource = $"/suppliers/{retainedId}";
+        join.Resource = resourceScoped ? $"/suppliers/{retainedId}" : "global";
         join.Allowed = false;
         using var denied = await client.DeleteAsync($"/Suppliers/{retainedId}");
         Assert.Equal(HttpStatusCode.Forbidden, denied.StatusCode);
@@ -140,6 +143,7 @@ public sealed class AuthProgramProcurementJoinTests(JoinPostgresFixture fixture)
         internal string EmployeeToken { get; private set; } = null!;
         internal string Mode { get; set; } = "allow";
         internal bool Allowed { get; set; } = true;
+        internal bool ResourceScoped { get; set; }
         internal string Permission { get; set; } = ProcurementPermissions.PurchaseOrderAddressesWrite;
         internal string Resource { get; set; } = "global";
         internal int WorkloadCalls { get; private set; }
@@ -227,6 +231,7 @@ public sealed class AuthProgramProcurementJoinTests(JoinPostgresFixture fixture)
                 ["ServiceAuthentication:ClientId"] = Mode == "unknown-client" ? "unenrolled-test-only" : ClientId,
                 ["ServiceAuthentication:ClientSecret"] = Mode == "wrong-secret" ? Convert.ToHexString(RandomNumberGenerator.GetBytes(32)) : secret,
                 ["IAM:LivePermissionChecks:Credential"] = Mode == "missing-live-key" ? null : liveKey,
+                ["Features:ResourceScopedAuthEnabled"] = ResourceScoped.ToString(),
             };
             app.AuthTransport = AuthAsync;
             app.IamTransport = IamAsync;
