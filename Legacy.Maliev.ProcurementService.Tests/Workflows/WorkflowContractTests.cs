@@ -7,6 +7,7 @@ namespace Legacy.Maliev.ProcurementService.Tests.Workflows;
 
 public sealed class WorkflowContractTests
 {
+    private const string ReviewedProducerVersion = "b27fbef06a3aa58c1f4fc0e75d7c70b32be76266";
     private static readonly string Workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "_build-and-test.yml"));
     private static readonly string ApiProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Api.csproj"));
@@ -188,7 +189,7 @@ public sealed class WorkflowContractTests
         var steps = ((YamlSequenceNode)ReadNode(job, "steps")).Children.Cast<YamlMappingNode>().ToArray();
         var expected = new (string Repository, string Commit)[]
         {
-            ("MALIEV-Co-Ltd/Legacy.Maliev.AuthService", "b27fbef06a3aa58c1f4fc0e75d7c70b32be76266"),
+            ("MALIEV-Co-Ltd/Legacy.Maliev.AuthService", ReviewedProducerVersion),
             ("MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults", "7edcd961024868513fd5f373cab3dcb261197f77"),
             ("MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts", "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7"),
             ("MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService", "26da4a1804c0a5833890e975680ee569c3aa4094"),

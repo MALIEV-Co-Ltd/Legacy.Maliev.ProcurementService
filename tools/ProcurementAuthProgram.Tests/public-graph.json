@@ -6,11 +6,13 @@
     { "repository": "Legacy.Maliev.CompatibilityContracts", "commit": "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7" },
     { "repository": "Legacy.Maliev.ProcurementService", "commit": "26da4a1804c0a5833890e975680ee569c3aa4094" }
   ],
-  "expectedCases": 10,
+  "expectedCases": 14,
   "expectedMethods": {
     "Procurement.AuthProgram.Tests.AuthProgramProcurementJoinTests.RealEmployeeAndWorkloadEndpoints_LiveCreateThenFreshDeny": 1,
     "Procurement.AuthProgram.Tests.AuthProgramProcurementJoinTests.RealWorkloadBearer_SupplierDeleteUsesEmployeeAndExactResource": 1,
-    "Procurement.AuthProgram.Tests.AuthProgramProcurementJoinTests.ActualProducerRefusalOrConsumerTrustFailure_CannotPersist": 8
+    "Procurement.AuthProgram.Tests.AuthProgramProcurementJoinTests.ActualProducerRefusalOrConsumerTrustFailure_CannotPersist": 8,
+    "Procurement.AuthProgram.Tests.OwnedCleanupTests.FailureAtAnyPosition_StillAttemptsEveryOwnedResource": 3,
+    "Procurement.AuthProgram.Tests.OwnedCleanupTests.MultipleFailures_PreserveFirstExceptionAndAttemptRemainingResources": 1
   },
   "fixtureEnrollment": "explicit synthetic client with iam.auth.check-permission in test configuration only",
   "productionEnrollmentProven": false,

@@ -199,7 +199,8 @@ public sealed class AuthProgramProcurementJoinTests(JoinPostgresFixture fixture)
             }
             catch
             {
-                await join.DisposeAsync();
+                try { await join.DisposeAsync(); }
+                catch { /* Cleanup attempted every owner; preserve the original startup failure. */ }
                 throw;
             }
         }
@@ -308,26 +309,35 @@ public sealed class AuthProgramProcurementJoinTests(JoinPostgresFixture fixture)
 
         public async ValueTask DisposeAsync()
         {
-            authTransport?.Dispose();
             var connections = new List<NpgsqlConnection>();
+            var releases = new List<Func<ValueTask>>
+            {
+                () => { authTransport?.Dispose(); return ValueTask.CompletedTask; },
+            };
             if (authStarted)
             {
-                await using (var scope = auth.Services.CreateAsyncScope())
+                releases.Add(async () =>
                 {
+                    await using var scope = auth.Services.CreateAsyncScope();
                     connections.Add((NpgsqlConnection)scope.ServiceProvider.GetRequiredService<CustomerIdentityDbContext>().Database.GetDbConnection());
                     connections.Add((NpgsqlConnection)scope.ServiceProvider.GetRequiredService<EmployeeIdentityDbContext>().Database.GetDbConnection());
                     connections.Add((NpgsqlConnection)scope.ServiceProvider.GetRequiredService<RefreshSessionDbContext>().Database.GetDbConnection());
-                }
+                });
             }
-            if (auth is not null) await auth.DisposeAsync();
+            if (auth is not null) releases.Add(() => auth.DisposeAsync());
             foreach (var context in new DbContext?[] { customers, employees, State })
             {
                 if (context is null) continue;
-                connections.Add((NpgsqlConnection)context.Database.GetDbConnection());
-                await context.DisposeAsync();
+                releases.Add(() => { connections.Add((NpgsqlConnection)context.Database.GetDbConnection()); return ValueTask.CompletedTask; });
+                releases.Add(() => context.DisposeAsync());
             }
-            foreach (var connection in connections) NpgsqlConnection.ClearPool(connection);
-            signing.Dispose();
+            releases.Add(() => OwnedCleanup.RunAsync(connections.Select(connection => new Func<ValueTask>(() =>
+            {
+                NpgsqlConnection.ClearPool(connection);
+                return ValueTask.CompletedTask;
+            })).ToArray()));
+            releases.Add(() => { signing.Dispose(); return ValueTask.CompletedTask; });
+            await OwnedCleanup.RunAsync(releases.ToArray());
         }
 
         private sealed class Factory(Join join) : WebApplicationFactory<FrozenAuthEntryPoint>
@@ -368,7 +378,6 @@ public sealed class JoinPostgresFixture : IAsyncLifetime
     public Task InitializeAsync() => Task.WhenAll(Auth.InitializeAsync(), Procurement.InitializeAsync());
     public async Task DisposeAsync()
     {
-        await Procurement.DisposeAsync();
-        await Auth.DisposeAsync();
+        await OwnedCleanup.RunAsync(() => new ValueTask(Procurement.DisposeAsync()), () => new ValueTask(Auth.DisposeAsync()));
     }
 }
