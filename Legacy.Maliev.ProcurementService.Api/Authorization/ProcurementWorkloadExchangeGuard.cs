@@ -61,7 +61,7 @@ internal sealed class ProcurementWorkloadExchangeGuard(IConfiguration configurat
         }
     }
 
-    private static async Task<T> AwaitOwnedAsync<T>(Task<T> pending, CancellationToken cancellationToken) where T : IDisposable
+    internal static async Task<T> AwaitOwnedAsync<T>(Task<T> pending, CancellationToken cancellationToken) where T : IDisposable
     {
         try { return await pending.WaitAsync(cancellationToken); }
         catch
@@ -86,4 +86,11 @@ internal sealed class ProcurementWorkloadExchangeGuard(IConfiguration configurat
     }
 
     private static HttpRequestException OversizedBody() => new("Procurement workload exchange response exceeded its byte budget.");
+}
+
+/// <summary>Retains ownership directly above the primary transport when cancellation wins its response race.</summary>
+internal sealed class ProcurementLateResponseOwner : DelegatingHandler
+{
+    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        => ProcurementWorkloadExchangeGuard.AwaitOwnedAsync(base.SendAsync(request, cancellationToken), cancellationToken);
 }

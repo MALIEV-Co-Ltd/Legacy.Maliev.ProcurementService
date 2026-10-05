@@ -10,6 +10,7 @@ internal static class ProcurementIamComposition
     {
         builder.AddLegacyAuthServiceTokenExchange();
         builder.Services.AddTransient<ProcurementWorkloadExchangeGuard>();
+        builder.Services.AddTransient<ProcurementLateResponseOwner>();
         builder.Services.AddHttpClient(LegacyServiceAccessTokenProvider.HttpClientName, client =>
         {
             client.BaseAddress = ResolveOrigin(builder.Configuration["Services:Auth:BaseUrl"]
@@ -19,6 +20,7 @@ internal static class ProcurementIamComposition
         .ConfigurePrimaryHttpMessageHandler(DisableRedirects)
         .RedactLoggedHeaders(["Authorization"])
         .AddHttpMessageHandler<ProcurementWorkloadExchangeGuard>()
+        .AddHttpMessageHandler<ProcurementLateResponseOwner>()
         .ConfigureAdditionalHttpMessageHandlers((handlers, _) =>
         {
             // Local contract rejection is not a transient network failure. Keep it
@@ -26,6 +28,11 @@ internal static class ProcurementIamComposition
             var guard = handlers.OfType<ProcurementWorkloadExchangeGuard>().Single();
             handlers.Remove(guard);
             handlers.Insert(0, guard);
+            // Retain primary transport results before inherited timeout/resilience
+            // handlers can abandon a response returned after cancellation.
+            var owner = handlers.OfType<ProcurementLateResponseOwner>().Single();
+            handlers.Remove(owner);
+            handlers.Add(owner);
         });
 
         builder.Services.AddScoped<IIamServiceClient, IamServiceClient>();
