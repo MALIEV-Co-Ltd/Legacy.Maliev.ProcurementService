@@ -41,5 +41,31 @@ class RuntimeInputs(unittest.TestCase):
             guard.require_equal(reviewed, reviewed)
 
 
+    def test_frozen_query_change_keeps_other_runtime_inputs(self):
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text())
+        guard.require_source_change(guard.tracked_inputs(guard.ROOT), manifest)
+
+    def test_unrelated_drift_is_rejected_even_when_witness_agrees(self):
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text())
+        reviewed = guard.tracked_inputs(guard.ROOT)
+        reviewed[guard.FIXTURE] = "100644 blob unrelated"
+        with self.assertRaises(ValueError):
+            guard.require_source_change(reviewed, manifest)
+
+    def test_query_blob_drift_is_rejected(self):
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text())
+        reviewed = guard.tracked_inputs(guard.ROOT)
+        reviewed[manifest["intentionalSourceChange"]["path"]] = "100644 blob unrelated"
+        with self.assertRaises(ValueError):
+            guard.require_source_change(reviewed, manifest)
+
+    def test_missing_source_change_record_is_rejected(self):
+        with self.assertRaises(KeyError):
+            guard.require_source_change(self.reviewed, {})
+
+
 if __name__ == "__main__":
     unittest.main()
