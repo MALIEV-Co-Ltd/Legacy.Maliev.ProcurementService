@@ -1,7 +1,17 @@
-name: Build and test
+name: Focused Procurement address and child lifecycles
 
 on:
-  workflow_call:
+  pull_request:
+    branches: [main, develop, staging, codex/procurement-http-source-acceptance-20261005]
+    paths:
+      - "Legacy.Maliev.ProcurementService.Application/**"
+      - "Legacy.Maliev.ProcurementService.Data/**"
+      - "Legacy.Maliev.ProcurementService.Tests/**"
+      - ".github/workflows/**"
+      - "docs/procurement-focused-lifecycle-contract.json"
+      - "scripts/verify-focused-lifecycle-results.py"
+      - "Legacy.Maliev.ProcurementService.Api/**"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,7 +24,8 @@ jobs:
       MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
       VSTestCollect: XPlat Code Coverage
       VSTestLogger: trx
-      VSTestResultsDirectory: ${{ github.workspace }}/runner-results
+      VSTestResultsDirectory: ${{ github.workspace }}/focused-results
+      VSTestTestCaseFilter: FullyQualifiedName~ProcurementAddressLifecycleTests|FullyQualifiedName~ProcurementChildLifecycleTests|FullyQualifiedName~ProcurementOpenApiHttpContractTests|FullyQualifiedName~ProcurementAuthenticatedIamTests
     steps:
       - name: Check out ProcurementService
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -37,15 +48,16 @@ jobs:
       - name: Validate .NET solution
         uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8
         with:
-          solution: Legacy.Maliev.ProcurementService.slnx
+          solution: Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj
           use-local-maliev-dependencies: 'true'
-      - name: Gate owned production coverage
-        run: python3 scripts/verify-runner-coverage.py runner-results
+      - name: Require every declared lifecycle case
+        if: always()
+        run: python3 -B scripts/verify-focused-lifecycle-results.py focused-results
       - name: Preserve validation evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: procurement-validation-${{ github.sha }}
-          path: runner-results
+          name: procurement-focused-${{ github.sha }}
+          path: focused-results
           if-no-files-found: warn
           retention-days: 7

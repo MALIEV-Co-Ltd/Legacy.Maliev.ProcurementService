@@ -1,0 +1,27 @@
+{
+  "expectedCases": 48,
+  "expectedMethods": {
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_CreateReadUpdate_PreservesWireShapeAndSeparateDatabase": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_MissingParentAndMissingRecords_ReturnNotFoundWithoutOrphan": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_ReadGrantCannotCreateOrUpdate_LeavesCommittedAddressIntact": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.PurchaseOrderAddress_ExactServiceGrant_CreateReadUpdateDelete_PreservesSeparateSchema": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.AddressWrites_BlankRequiredLine_RejectBeforePersistingEitherSchema": 3,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_AuthorizedDelete_DetachesAndDeletesOnlySupplierSchema": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.PurchaseOrderAddress_LiveWriteWithoutTrustedServiceOptIn_DoesNotPersist": 2,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.PurchaseOrderAddress_InUseDelete_RealForeignKeyPreservesOrderAndAddress": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_WrongOwnerDelete_CurrentSecurityPolicyPreservesBothAttachments": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.AddressWrites_PopulatedFields_SurviveCreateAndUpdate": 2,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests.OrderItem_Lifecycle_PreservesDecimalComputationAndParentScopedLists": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests.FileMetadata_Lifecycle_ResolvesLocationAndPreservesParentScopedOwnership": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests.OrderItem_ComputedSubtotal_PreservesSourceNullableAndSignedArithmetic": 5,
+    "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementOpenApiHttpContractTests.Production_DocumentationIsUnavailableAndSupplierReadRequiresAuthentication": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementOpenApiHttpContractTests.Development_DocumentPreservesThirtyOperationsQueriesHeadersAndResponses": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementOpenApiHttpContractTests.Development_SchemasMatchActualPascalWireAndKeepAddressAndScalarOwnershipSeparate": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveCreate_UsesWorkloadBearerAndFreshDecisionWithoutClaimFallback": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeSupplierDelete_UsesExactOwnedResourceAndNoEmployeeTokenAsWorkload": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist": 17,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.ExpiredEmployeeJwt_NeverReachesWorkloadExchangeOrIam": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.WorkloadResponseBodyDeadline_DeniesWithoutIamOrPersistence": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.WorkloadDeadline_IgnoringCancellationKeepsLateResourceOwnership": 3
+  }
+}

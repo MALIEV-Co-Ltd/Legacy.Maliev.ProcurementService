@@ -15,7 +15,17 @@ namespace Legacy.Maliev.ProcurementService.Api.Controllers;
 public sealed class FilesController(IProcurementService service) : ControllerBase
 {
     /// <summary>Creates purchase-order file metadata.</summary>
+    /// <param name="purchaseOrderId">The purchase order that owns the metadata.</param>
+    /// <param name="bucket" example="purchase-order-documents">The existing storage bucket name.</param>
+    /// <param name="objectName" example="orders/purchase-order.pdf">The existing object name, decoded from its query value.</param>
+    /// <param name="cancellationToken">Request cancellation.</param>
+    /// <response code="201">The retained file metadata.</response>
+    /// <response code="400">Bucket or object name is blank.</response>
+    /// <response code="404">The purchase order does not exist.</response>
     [HttpPost("/purchaseorders/{purchaseOrderId:int}/files")]
+    [ProducesResponseType<PurchaseOrderFileResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [RequirePermission(ProcurementPermissions.FilesWrite, ResourcePathTemplate = "/purchaseorders/{purchaseOrderId}", RequireLiveCheck = true)]
     public async Task<ActionResult> CreatePurchaseOrderFileEntryAsync(int purchaseOrderId, [FromQuery] string bucket, [FromQuery] string objectName, CancellationToken cancellationToken)
     {

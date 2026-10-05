@@ -18,7 +18,25 @@ $order = "order-$suffix"
 $api = "api-$suffix"
 $rsa = [Security.Cryptography.RSA]::Create(2048)
 $previousPublicKey = $env:Jwt__PublicKey
+$taskPriorEnvironment = @{}
+foreach ($taskEnvironmentName in 'POSTGRES_PASSWORD', 'ConnectionStrings__SupplierDbContext', 'ConnectionStrings__PurchaseOrderDbContext') {
+    $taskPriorEnvironment[$taskEnvironmentName] = [Environment]::GetEnvironmentVariable($taskEnvironmentName)
+}
 try {
+    $taskDbPassword = [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+    $env:POSTGRES_PASSWORD = $taskDbPassword
+    foreach ($taskDatabase in @(
+        @{ Host = $supplier; Database = 'supplier'; EnvironmentName = 'ConnectionStrings__SupplierDbContext' },
+        @{ Host = $order; Database = 'purchaseorder'; EnvironmentName = 'ConnectionStrings__PurchaseOrderDbContext' }
+    )) {
+        $taskConnection = [System.Data.Common.DbConnectionStringBuilder]::new()
+        $taskConnection['Host'] = $taskDatabase.Host
+        $taskConnection['Database'] = $taskDatabase.Database
+        $taskConnection['Username'] = 'postgres'
+        $taskConnection['Password'] = $taskDbPassword
+        [Environment]::SetEnvironmentVariable($taskDatabase.EnvironmentName, $taskConnection.ConnectionString)
+        $taskConnection.Clear()
+    }
     $env:Jwt__PublicKey = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($rsa.ExportSubjectPublicKeyInfoPem()))
     $now = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
     $header = ConvertTo-Base64Url ([Text.Encoding]::UTF8.GetBytes('{"alg":"RS256","typ":"JWT"}'))
@@ -31,13 +49,13 @@ try {
         [Security.Cryptography.HashAlgorithmName]::SHA256, [Security.Cryptography.RSASignaturePadding]::Pkcs1))
     $token = "$unsigned.$signature"
     Invoke-DockerChecked network create $network
-    Invoke-DockerChecked run --rm -d --name $supplier --network $network -e POSTGRES_PASSWORD=test-only-acceptance -e POSTGRES_DB=supplier postgres:18-alpine
-    Invoke-DockerChecked run --rm -d --name $order --network $network -e POSTGRES_PASSWORD=test-only-acceptance -e POSTGRES_DB=purchaseorder postgres:18-alpine
+    Invoke-DockerChecked run --rm -d --name $supplier --network $network -e POSTGRES_PASSWORD -e POSTGRES_DB=supplier postgres:18-alpine
+    Invoke-DockerChecked run --rm -d --name $order --network $network -e POSTGRES_PASSWORD -e POSTGRES_DB=purchaseorder postgres:18-alpine
     # Connection strings are fixture-only and passed at runtime, never persisted or printed.
     Invoke-DockerChecked run --rm -d --name $api --network $network -p 127.0.0.1::8080 -e Jwt__PublicKey `
         -e ASPNETCORE_ENVIRONMENT=Production -e Cache__RedisEnabled=false -e Logging__LogLevel__Default=Information `
-        -e "ConnectionStrings__SupplierDbContext=Host=$supplier;Database=supplier;Username=postgres;Password=test-only-acceptance" `
-        -e "ConnectionStrings__PurchaseOrderDbContext=Host=$order;Database=purchaseorder;Username=postgres;Password=test-only-acceptance" $Image
+        -e ConnectionStrings__SupplierDbContext `
+        -e ConnectionStrings__PurchaseOrderDbContext $Image
     $binding = Invoke-DockerChecked port $api 8080
     $baseUrl = "http://$binding"
     $live = $null
@@ -69,7 +87,7 @@ try {
     if ($events.Count -ne 2 -or @($events | Where-Object { $_.severity -ne 'CRITICAL' -or $_.State.IncidentId -notin $incidents }).Count) {
         throw 'Critical incident event mismatch.'
     }
-    if ($logs -match '42P01|does not exist|Npgsql.Internal|81927|test-only-acceptance' -or ($logs | Select-String -SimpleMatch $token)) {
+    if ($logs -match '42P01|does not exist|Npgsql.Internal|81927' -or ($logs | Select-String -SimpleMatch $token) -or ($logs | Select-String -SimpleMatch $taskDbPassword)) {
         throw 'Protected provider/request information appeared in logs; values withheld.'
     }
     $files = Invoke-DockerChecked exec $api sh -c 'ls /app'
@@ -81,6 +99,10 @@ try {
 } finally {
     $rsa.Dispose()
     $env:Jwt__PublicKey = $previousPublicKey
+    foreach ($taskEnvironmentName in $taskPriorEnvironment.Keys) {
+        [Environment]::SetEnvironmentVariable($taskEnvironmentName, $taskPriorEnvironment[$taskEnvironmentName])
+    }
+    $taskDbPassword = $null
     & docker rm -f $api $supplier $order 2>$null | Out-Null
     & docker network rm $network 2>$null | Out-Null
 }
