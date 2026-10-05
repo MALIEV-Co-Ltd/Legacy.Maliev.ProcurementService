@@ -19,18 +19,20 @@ internal sealed class ProcurementWorkloadExchangeGuard(IConfiguration configurat
 
         using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(10), clock);
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, deadline.Token);
-        var response = await base.SendAsync(request, linked.Token);
+        var response = await base.SendAsync(request, linked.Token).WaitAsync(linked.Token);
         try
         {
             if (response.Content.Headers.ContentLength is > 32768) throw OversizedBody();
             var declaredLength = response.Content.Headers.ContentLength;
-            await using var stream = await response.Content.ReadAsStreamAsync(linked.Token);
+            // HttpContent may buffer through a serializer that ignores the supplied token.
+            // Bound the await itself so a stalled body cannot escape the exchange deadline.
+            await using var stream = await response.Content.ReadAsStreamAsync(linked.Token).WaitAsync(linked.Token);
             using var content = new MemoryStream();
             var buffer = new byte[4096];
             while (true)
             {
                 var remaining = 32769 - (int)content.Length;
-                var read = await stream.ReadAsync(buffer.AsMemory(0, Math.Min(buffer.Length, remaining)), linked.Token);
+                var read = await stream.ReadAsync(buffer.AsMemory(0, Math.Min(buffer.Length, remaining)), linked.Token).AsTask().WaitAsync(linked.Token);
                 if (read == 0) break;
                 if (content.Length + read > 32768) throw OversizedBody();
                 content.Write(buffer, 0, read);

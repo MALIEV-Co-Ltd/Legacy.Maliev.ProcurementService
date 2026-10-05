@@ -261,12 +261,20 @@ public sealed class ProcurementAuthenticatedIamTests(ProcurementRuntimeFixture f
 
     private sealed class StalledContent(TaskCompletionSource entered) : HttpContent
     {
+        private readonly CancellationTokenSource disposed = new();
         protected override bool TryComputeLength(out long length) { length = 0; return false; }
         protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context) => throw new InvalidOperationException("Cancellation-aware body read required.");
         protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken cancellationToken)
         {
             entered.TrySetResult();
-            await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
+            using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, disposed.Token);
+            await Task.Delay(Timeout.InfiniteTimeSpan, linked.Token);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) disposed.Cancel();
+            base.Dispose(disposing);
         }
     }
 }
