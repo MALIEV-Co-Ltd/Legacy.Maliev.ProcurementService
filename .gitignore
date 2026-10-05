@@ -10,3 +10,5 @@ TestResults/
 *.pem
 .env
 .dependencies/
+.joined-public/
+auth-program-results/
