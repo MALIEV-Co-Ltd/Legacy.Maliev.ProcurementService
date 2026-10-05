@@ -69,6 +69,71 @@ public sealed class ProcurementMasterQuerySourceTests(ProcurementRuntimeFixture 
         else Assert.Equal(1, await scope.ServiceProvider.GetRequiredService<SupplierDbContext>().Suppliers.CountAsync());
     }
 
+    [Theory]
+    [InlineData("001234", 1234)]
+    [InlineData(" 1234 ", 1234)]
+    [InlineData("2147483648", 4567)]
+    [InlineData("part1234", 4567)]
+    [InlineData("PART1234", null)]
+    [InlineData("%", 6789)]
+    [InlineData("_", 6789)]
+    [InlineData(" part1234 ", null)]
+    [InlineData(" ", null)]
+    public async Task SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct(string search, int? expectedId)
+    {
+        await using (var scope = fixture.Factory.Services.CreateAsyncScope())
+        {
+            var database = scope.ServiceProvider.GetRequiredService<SupplierDbContext>();
+            database.Suppliers.AddRange(new Supplier { Id = 1234, Name = "Exact identity" },
+                new Supplier { Id = 4567, Name = "part1234", Website = "https://001234.invalid", TaxNumber = "2147483648" },
+                new Supplier { Id = 6789, Name = "Percent%Underscore_" }, new Supplier { Id = 8900, Name = null });
+            await database.SaveChangesAsync();
+        }
+        using var client = fixture.Client(ProcurementPermissions.SuppliersRead);
+        using var response = await client.GetAsync($"/Suppliers?search={Uri.EscapeDataString(search)}&size=10");
+        if (expectedId is null) Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        else
+        {
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var page = (await response.Content.ReadFromJsonAsync<PaginatedResponse<SupplierResponse>>())!;
+            Assert.Equal(expectedId.Value, Assert.Single(page.Items).Id);
+            Assert.Equal(1, page.TotalRecords);
+        }
+        await using var readScope = fixture.Factory.Services.CreateAsyncScope();
+        Assert.Equal(4, await readScope.ServiceProvider.GetRequiredService<SupplierDbContext>().Suppliers.CountAsync());
+    }
+
+    [Theory]
+    [InlineData("PROBE", 999)]
+    [InlineData("001203", 999)]
+    [InlineData("%", 6789)]
+    [InlineData("_", 6789)]
+    [InlineData(" probe ", null)]
+    [InlineData(" ", null)]
+    public async Task PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct(string search, int? expectedId)
+    {
+        await using (var scope = fixture.Factory.Services.CreateAsyncScope())
+        {
+            var database = scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>();
+            database.PurchaseOrders.AddRange(new PurchaseOrder { Id = 1203, Notes = null },
+                new PurchaseOrder { Id = 999, Notes = "Probe001203" },
+                new PurchaseOrder { Id = 6789, Notes = "Percent%Underscore_" });
+            await database.SaveChangesAsync();
+        }
+        using var client = fixture.Client(ProcurementPermissions.PurchaseOrdersRead);
+        using var response = await client.GetAsync($"/PurchaseOrders?search={Uri.EscapeDataString(search)}&size=10");
+        if (expectedId is null) Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        else
+        {
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var page = (await response.Content.ReadFromJsonAsync<PaginatedResponse<PurchaseOrderResponse>>())!;
+            Assert.Equal(expectedId.Value, Assert.Single(page.Items).Id);
+            Assert.Equal(1, page.TotalRecords);
+        }
+        await using var readScope = fixture.Factory.Services.CreateAsyncScope();
+        Assert.Equal(3, await readScope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().PurchaseOrders.CountAsync());
+    }
+
     private async Task SeedAsync(bool purchaseOrder, int count, int firstId)
     {
         await using var scope = fixture.Factory.Services.CreateAsyncScope();

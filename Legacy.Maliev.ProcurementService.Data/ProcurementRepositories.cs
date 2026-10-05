@@ -31,16 +31,14 @@ public sealed class SupplierRepository(SupplierDbContext dbContext, TimeProvider
     public async Task<PaginatedResponse<SupplierResponse>?> GetSuppliersAsync(SupplierSortType? sort, string? search, int pageIndex, int pageSize, CancellationToken cancellationToken)
     {
         IQueryable<Supplier> query = dbContext.Suppliers.AsNoTracking();
-        if (!string.IsNullOrWhiteSpace(search))
+        if (!string.IsNullOrEmpty(search))
         {
-            var value = search.Trim();
-            var numeric = int.TryParse(value, out var id);
-            var pattern = $"%{value}%";
-            query = query.Where(supplier => (numeric && supplier.Id == id)
-                || (supplier.Name != null && EF.Functions.ILike(supplier.Name, pattern))
-                || (supplier.Website != null && EF.Functions.ILike(supplier.Website, pattern))
-                || (supplier.TaxNumber != null && EF.Functions.ILike(supplier.TaxNumber, pattern))
-                || (supplier.Email != null && EF.Functions.ILike(supplier.Email, pattern)));
+            var numeric = int.TryParse(search, out var id);
+            query = numeric ? query.Where(supplier => supplier.Id == id)
+                : query.Where(supplier => (supplier.Name != null && supplier.Name.ToLower().Contains(search))
+                    || (supplier.Website != null && supplier.Website.ToLower().Contains(search))
+                    || (supplier.TaxNumber != null && supplier.TaxNumber.ToLower().Contains(search))
+                    || (supplier.Email != null && supplier.Email.ToLower().Contains(search)));
         }
         query = sort switch
         {
@@ -56,6 +54,7 @@ public sealed class SupplierRepository(SupplierDbContext dbContext, TimeProvider
         var total = await query.CountAsync(cancellationToken);
         if (total == 0) return null;
         var items = await Project(query).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+        if (items.Count == 0) return null;
         return new(items, pageIndex, (int)Math.Ceiling(total / (double)pageSize), total);
     }
 
@@ -186,14 +185,16 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
     public async Task<PaginatedResponse<PurchaseOrderResponse>?> GetPurchaseOrdersAsync(PurchaseOrderSortType? sort, string? search, int pageIndex, int pageSize, CancellationToken cancellationToken)
     {
         IQueryable<PurchaseOrder> query = dbContext.PurchaseOrders.AsNoTracking();
-        if (!string.IsNullOrWhiteSpace(search))
+        if (!string.IsNullOrEmpty(search))
         {
-            var value = search.Trim(); var numeric = int.TryParse(value, out var id); var pattern = $"%{value}%";
-            query = query.Where(order => (numeric && order.Id == id) || (order.Notes != null && EF.Functions.ILike(order.Notes, pattern)));
+            var value = search.ToLower();
+            query = query.Where(order => order.Id.ToString().Contains(value)
+                || (order.Notes != null && order.Notes.ToLower().Contains(value)));
         }
         query = sort switch { PurchaseOrderSortType.PurchaseOrderId_Descending => query.OrderByDescending(value => value.Id), PurchaseOrderSortType.PurchaseOrderCreatedDate_Ascending => query.OrderBy(value => value.CreatedDate), PurchaseOrderSortType.PurchaseOrderCreatedDate_Descending => query.OrderByDescending(value => value.CreatedDate), _ => query.OrderBy(value => value.Id) };
         var total = await query.CountAsync(cancellationToken); if (total == 0) return null;
         var items = await Project(query).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+        if (items.Count == 0) return null;
         return new(items, pageIndex, (int)Math.Ceiling(total / (double)pageSize), total);
     }
     /// <inheritdoc />
