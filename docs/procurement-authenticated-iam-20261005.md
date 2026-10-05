@@ -28,13 +28,16 @@ IAM:LivePermissionChecks:Credential supplies the separate live-check header;
 absence denies before transport. The shared IAM logical routing convention is
 retained when no explicit IAM origin is supplied. It proves no reachable bridge.
 
-The21 new runtime regression executions use actual Program/JWT/permission/client
+The24 new runtime regression executions use actual Program/JWT/permission/client
 registrations and PostgreSQL databases. Controlled remote Auth and IAM HTTP
 authorities issue and validate synthetic RS256 workload tokens. They cover fresh
 allow-to-deny changes, exact resource paths, missing enrollment/configuration,
 unknown client, wrong secret, URI refusal, missing live key,401/503/malformed and
 oversized responses, bounded stalled body reads, redirect refusal and expired
-employee JWT. No IIamServiceClient or authorization handler is replaced.
+employee JWT. Ignoring-cancellation transports also exercise late response/stream
+disposal and late fault handling after a bounded denial. Cleanup observes abandoned
+task failures and disposes any late owned result; it does not claim cancellation
+stops the underlying operation. No IIamServiceClient or authorization handler is replaced.
 
 These candidate controls require actual hosted execution. They do not constitute
 a real AuthService Program exchange, production IAM bridge, production enrollment

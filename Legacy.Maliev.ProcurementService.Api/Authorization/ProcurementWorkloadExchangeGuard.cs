@@ -19,20 +19,27 @@ internal sealed class ProcurementWorkloadExchangeGuard(IConfiguration configurat
 
         using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(10), clock);
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, deadline.Token);
-        var response = await base.SendAsync(request, linked.Token).WaitAsync(linked.Token);
+        var response = await AwaitOwnedAsync(base.SendAsync(request, linked.Token), linked.Token);
         try
         {
             if (response.Content.Headers.ContentLength is > 32768) throw OversizedBody();
             var declaredLength = response.Content.Headers.ContentLength;
             // HttpContent may buffer through a serializer that ignores the supplied token.
             // Bound the await itself so a stalled body cannot escape the exchange deadline.
-            await using var stream = await response.Content.ReadAsStreamAsync(linked.Token).WaitAsync(linked.Token);
+            await using var stream = await AwaitOwnedAsync(response.Content.ReadAsStreamAsync(linked.Token), linked.Token);
             using var content = new MemoryStream();
             var buffer = new byte[4096];
             while (true)
             {
                 var remaining = 32769 - (int)content.Length;
-                var read = await stream.ReadAsync(buffer.AsMemory(0, Math.Min(buffer.Length, remaining)), linked.Token).AsTask().WaitAsync(linked.Token);
+                var pendingRead = stream.ReadAsync(buffer.AsMemory(0, Math.Min(buffer.Length, remaining)), linked.Token).AsTask();
+                int read;
+                try { read = await pendingRead.WaitAsync(linked.Token); }
+                catch
+                {
+                    _ = ObserveFailureAsync(pendingRead);
+                    throw;
+                }
                 if (read == 0) break;
                 if (content.Length + read > 32768) throw OversizedBody();
                 content.Write(buffer, 0, read);
@@ -52,6 +59,30 @@ internal sealed class ProcurementWorkloadExchangeGuard(IConfiguration configurat
             response.Dispose();
             throw;
         }
+    }
+
+    private static async Task<T> AwaitOwnedAsync<T>(Task<T> pending, CancellationToken cancellationToken) where T : IDisposable
+    {
+        try { return await pending.WaitAsync(cancellationToken); }
+        catch
+        {
+            // Cancellation stops this wait, not necessarily the remote operation.
+            // Retain ownership of any late result without delaying the denied caller.
+            _ = DisposeLateResultAsync(pending);
+            throw;
+        }
+    }
+
+    private static async Task DisposeLateResultAsync<T>(Task<T> pending) where T : IDisposable
+    {
+        try { using var result = await pending; }
+        catch { /* Observe the abandoned operation's fault without disclosing its content. */ }
+    }
+
+    private static async Task ObserveFailureAsync(Task pending)
+    {
+        try { await pending; }
+        catch { /* Acquired response/stream disposal already owns resource cleanup. */ }
     }
 
     private static HttpRequestException OversizedBody() => new("Procurement workload exchange response exceeded its byte budget.");

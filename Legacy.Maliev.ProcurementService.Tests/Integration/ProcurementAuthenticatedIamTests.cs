@@ -129,6 +129,40 @@ public sealed class ProcurementAuthenticatedIamTests(ProcurementRuntimeFixture f
         Assert.Empty(await scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Addresses.AsNoTracking().ToListAsync());
     }
 
+    [Theory]
+    [InlineData("response")]
+    [InlineData("stream")]
+    [InlineData("fault")]
+    public async Task WorkloadDeadline_IgnoringCancellationKeepsLateResourceOwnership(string kind)
+    {
+        var authority = new Authority(fixture);
+        await using var app = Configure(authority);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var disposed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var responseCompletion = new TaskCompletionSource<HttpResponseMessage>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var streamCompletion = new TaskCompletionSource<Stream>(TaskCreationOptions.RunContinuationsAsynchronously);
+        app.AuthTransport = (_, _) =>
+        {
+            if (kind == "stream")
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new LateStreamContent(entered, streamCompletion.Task) });
+            entered.TrySetResult();
+            return responseCompletion.Task;
+        };
+        using var client = fixture.ClientAs(app, Authority.Employee, ProcurementPermissions.PurchaseOrderAddressesWrite);
+        var request = client.PostAsJsonAsync("/purchaseorders/addresses", Address());
+        await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        fixture.Clock.Advance(TimeSpan.FromSeconds(11));
+        using var denied = await request.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Equal(HttpStatusCode.Forbidden, denied.StatusCode);
+        Assert.Equal(0, authority.IamCalls);
+        if (kind == "stream") streamCompletion.SetResult(new TrackedStream(disposed));
+        else if (kind == "response") responseCompletion.SetResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new TrackedContent(disposed) });
+        else responseCompletion.SetException(new HttpRequestException("Synthetic late transport failure."));
+        if (kind != "fault") await disposed.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        await using var scope = app.Services.CreateAsyncScope();
+        Assert.Empty(await scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Addresses.AsNoTracking().ToListAsync());
+    }
+
     private ProcurementRuntimeFactory Configure(Authority authority)
     {
         var app = fixture.CreateFactory(false);
@@ -257,6 +291,35 @@ public sealed class ProcurementAuthenticatedIamTests(ProcurementRuntimeFixture f
         }
 
         private static HttpResponseMessage Response(HttpStatusCode status, object body) => new(status) { Content = JsonContent.Create(body) };
+    }
+
+    private sealed class TrackedContent(TaskCompletionSource disposed) : ByteArrayContent([])
+    {
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (disposing) disposed.TrySetResult();
+        }
+    }
+
+    private sealed class TrackedStream(TaskCompletionSource disposed) : MemoryStream
+    {
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (disposing) disposed.TrySetResult();
+        }
+    }
+
+    private sealed class LateStreamContent(TaskCompletionSource entered, Task<Stream> completion) : HttpContent
+    {
+        protected override bool TryComputeLength(out long length) { length = 0; return false; }
+        protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context) => throw new InvalidOperationException("Direct stream control required.");
+        protected override Task<Stream> CreateContentReadStreamAsync(CancellationToken cancellationToken)
+        {
+            entered.TrySetResult();
+            return completion;
+        }
     }
 
     private sealed class StalledContent(TaskCompletionSource entered) : HttpContent

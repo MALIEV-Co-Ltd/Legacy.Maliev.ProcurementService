@@ -58,7 +58,7 @@ remain separate existing tests/obligations; lifecycle tests do not waive them.
 
 The candidate also corrects runtime OpenAPI registration/JSON schema options and
 registers the real workload-exchange/IAM clients, described in
-`procurement-authenticated-iam-20261005.md`. The focused lane requires all 45
+`procurement-authenticated-iam-20261005.md`. The focused lane requires all 48
 declared address/child, OpenAPI and controlled Auth/IAM executions to pass with no
 skips. Hosted evidence is required for the current head: build, full suite,
 unexcluded owned-assembly coverage >=80%, formatting, dependency audit and secret
