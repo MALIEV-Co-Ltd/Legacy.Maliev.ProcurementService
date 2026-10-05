@@ -162,6 +162,56 @@ public sealed class WorkflowContractTests
             "          use-local-maliev-dependencies: 'true'\n        env:\n          GITHUB_ACTIONS: 'false'\n");
     }
 
+    [Fact]
+    public void ActualAuthProgramJoin_RequiresImmutableProducersAndAlwaysRetainedEvidence()
+    {
+        ValidateAuthProgramJoin(File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml")));
+    }
+
+    [Theory]
+    [InlineData("b27fbef06a3aa58c1f4fc0e75d7c70b32be76266", "main")]
+    [InlineData("if: always()", "if: failure()")]
+    [InlineData("python3 -B scripts/verify-procurement-auth-program.py results auth-program-results", "python3 -c 'print(0)'")]
+    public void ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate(string original, string replacement)
+    {
+        var source = File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml"));
+        Assert.Contains(original, source, StringComparison.Ordinal);
+        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(source.Replace(original, replacement, StringComparison.Ordinal)));
+    }
+
+    private static void ValidateAuthProgramJoin(string source)
+    {
+        var yaml = new YamlStream();
+        yaml.Load(new StringReader(source));
+        var root = (YamlMappingNode)yaml.Documents.Single().RootNode;
+        var job = (YamlMappingNode)ReadNode((YamlMappingNode)ReadNode(root, "jobs"), "auth-program");
+        var steps = ((YamlSequenceNode)ReadNode(job, "steps")).Children.Cast<YamlMappingNode>().ToArray();
+        var expected = new Dictionary<string, string>
+        {
+            ["MALIEV-Co-Ltd/Legacy.Maliev.AuthService"] = "b27fbef06a3aa58c1f4fc0e75d7c70b32be76266",
+            ["MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults"] = "7edcd961024868513fd5f373cab3dcb261197f77",
+            ["MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts"] = "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7",
+            ["MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService"] = "26da4a1804c0a5833890e975680ee569c3aa4094",
+        };
+        var checkouts = steps.Where(step => step.Children.TryGetValue(new YamlScalarNode("with"), out var node)
+            && node is YamlMappingNode settings && settings.Children.ContainsKey(new YamlScalarNode("repository"))).ToArray();
+        if (checkouts.Length != expected.Count) throw new InvalidOperationException("Require exactly the four reviewed producer checkouts.");
+        foreach (var checkout in checkouts)
+        {
+            var settings = (YamlMappingNode)ReadNode(checkout, "with");
+            if (!expected.TryGetValue(ReadScalar(settings, "repository"), out var pin) || ReadScalar(settings, "ref") != pin
+                || ReadScalar(settings, "persist-credentials") != "false")
+                throw new InvalidOperationException("Producer checkout must retain its reviewed hard pin without credentials.");
+        }
+        var results = steps.Single(step => step.Children.TryGetValue(new YamlScalarNode("run"), out var run)
+            && ((YamlScalarNode)run).Value == "python3 -B scripts/verify-procurement-auth-program.py results auth-program-results");
+        var artifact = steps.Single(step => step.Children.TryGetValue(new YamlScalarNode("uses"), out var uses)
+            && ((YamlScalarNode)uses).Value == "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+        if (ReadScalar(results, "if") != "always()" || ReadScalar(artifact, "if") != "always()"
+            || ReadScalar((YamlMappingNode)ReadNode(artifact, "with"), "path") != "auth-program-results")
+            throw new InvalidOperationException("Joined executions and failure evidence must always be checked/retained.");
+    }
+
     private static void AssertMutationRejected(string original, string replacement)
     {
         Assert.Contains(original, Workflow, StringComparison.Ordinal);

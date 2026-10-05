@@ -1,0 +1,84 @@
+name: Actual Auth Program and Procurement IAM join
+
+on:
+  pull_request:
+    branches: [main, develop, staging]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: procurement-auth-program-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  auth-program:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TreatWarningsAsErrors: 'true'
+      BuildInParallel: 'false'
+      DOTNET_PROCESSOR_COUNT: '1'
+      DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER: '1'
+      MSBUILDDISABLENODEREUSE: '1'
+      UseSharedCompilation: 'false'
+      MalievWorkspaceRoot: ${{ github.workspace }}/.joined-public
+      VSTestCollect: XPlat Code Coverage
+      VSTestLogger: trx
+      VSTestResultsDirectory: ${{ github.workspace }}/auth-program-results
+    steps:
+      - name: Check out owned join
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Check out actual Auth producer
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.AuthService
+          ref: b27fbef06a3aa58c1f4fc0e75d7c70b32be76266
+          path: .joined-public/Legacy.Maliev.AuthService
+          persist-credentials: false
+      - name: Check out accepted Defaults
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults
+          ref: 7edcd961024868513fd5f373cab3dcb261197f77
+          path: .joined-public/Legacy.Maliev.ServiceDefaults
+          persist-credentials: false
+      - name: Check out CompatibilityContracts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts
+          ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
+          path: .joined-public/Legacy.Maliev.CompatibilityContracts
+          persist-credentials: false
+      - name: Check out accepted Procurement production witness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService
+          ref: 26da4a1804c0a5833890e975680ee569c3aa4094
+          path: .joined-public/Legacy.Maliev.ProcurementService
+          persist-credentials: false
+      - name: Verify immutable producer graph and actual runtime inputs
+        run: python3 -B scripts/verify-procurement-auth-program.py inputs .joined-public
+      - name: Require runtime input guard mutation controls
+        run: python3 -B -m unittest discover -s scripts -p test_procurement_auth_program_inputs.py
+      - name: Validate normal Auth and Procurement join
+        uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8
+        with:
+          solution: tools/ProcurementAuthProgram.Tests/Procurement.AuthProgram.Tests.csproj
+          use-local-maliev-dependencies: 'true'
+      - name: Require every actual Auth Program join execution
+        if: always()
+        run: python3 -B scripts/verify-procurement-auth-program.py results auth-program-results
+      - name: Preserve actual Auth Program evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-auth-program-${{ github.sha }}
+          path: auth-program-results
+          if-no-files-found: warn
+          retention-days: 7
