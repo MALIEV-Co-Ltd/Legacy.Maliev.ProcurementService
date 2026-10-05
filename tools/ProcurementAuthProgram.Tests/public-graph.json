@@ -1,5 +1,5 @@
 {
-  "graphId": "procurement-actual-auth-program-defaults76-adoption-20261005",
+  "graphId": "procurement-nullable-sort-public-20261006",
   "references": [
     {
       "repository": "Legacy.Maliev.AuthService",
@@ -15,7 +15,7 @@
     },
     {
       "repository": "Legacy.Maliev.ProcurementService",
-      "commit": "8f2c5fc0678734e3240ce368b30e26db858e63d4"
+      "commit": "da6af357254f1e42d95ce592bc716b2ae0abb4cf"
     }
   ],
   "defaultsAdoption": {
@@ -39,11 +39,35 @@
   "productionEnrollmentProven": false,
   "productionIamBridgeProven": false,
   "wholeInitialSourceParityClosed": false,
-  "intentionalSourceChange": {
+  "previousMasterQuerySourceChange": {
     "baseCommit": "26da4a1804c0a5833890e975680ee569c3aa4094",
     "path": "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs",
     "baseBlob": "7c9342bf642f71cbf5087371377ebd46c960ee61",
     "candidateBlob": "87602ce7789dc1b5c27ca19ed1c6e8d12d292e00",
+    "unchangedInputCount": 51,
+    "unchangedInputSha256": "657ee76ed5af1272c2b21217ebe0145296f6d9aed774e5780422cb4ca5e5142c"
+  },
+  "nullableSortProducerAdvance": {
+    "previousProcurement": "8f2c5fc0678734e3240ce368b30e26db858e63d4",
+    "reviewedProcurement": "da6af357254f1e42d95ce592bc716b2ae0abb4cf",
+    "acceptedConsumerMain": "3be3bb1567edc1135cafd84de80b3ea69b281276",
+    "inputCount": 52,
+    "changedInput": "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs",
+    "previousBlob": "87602ce7789dc1b5c27ca19ed1c6e8d12d292e00",
+    "reviewedBlob": "79f6cbb8e70980e7ae48e0825a4a717f410ae09b",
+    "unchangedInputCount": 51,
+    "unchangedInputSha256": "657ee76ed5af1272c2b21217ebe0145296f6d9aed774e5780422cb4ca5e5142c",
+    "scope": "Eight nullable supplier name/date and purchase-order CreatedDate branches preserve SQLServer NULL-first ASC/NULL-last DESC; ID tie order deliberately stabilizes paging",
+    "stablePagingDecision": "Source only specifies the selected field; ascending ID tie order is a deliberate deterministic paging choice, not a claim of original SQLServer tie order",
+    "excluded": "Search, page50/cap250, enums, Defaults76, authority composition and immutable public runtime fixture unchanged; global collation parity is separate",
+    "independentReview": "Coordinator read complete one-input patch and24 normal authenticated HTTP/owned PostgreSQL cases with explicit postinsert storedNULL assertions on 2026-10-06",
+    "nativeAcceptance": "Pending fresh full293, nullable24, lifecycle48, query19, deadline6, actualAuth15 plus9 guard controls; no RED baseline executed"
+  },
+  "intentionalSourceChange": {
+    "baseCommit": "26da4a1804c0a5833890e975680ee569c3aa4094",
+    "path": "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs",
+    "baseBlob": "7c9342bf642f71cbf5087371377ebd46c960ee61",
+    "candidateBlob": "79f6cbb8e70980e7ae48e0825a4a717f410ae09b",
     "unchangedInputCount": 51,
     "unchangedInputSha256": "657ee76ed5af1272c2b21217ebe0145296f6d9aed774e5780422cb4ca5e5142c"
   }
