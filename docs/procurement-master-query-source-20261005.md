@@ -14,7 +14,10 @@ authentication/live policies, contact mapping, schemas and PascalCase DTOs remai
 Intranet consumers already map404 to empty results and supply bounded page sizes.
 
 Nineteen declared HTTP/PostgreSQL regressions include integer boundaries, literal
-case/wildcards, null fields and both separate databases. Existing actual Auth join
+case/wildcards, Thai and English text, null fields and both separate databases.
+SQL Server and PostgreSQL collation/lower behavior are not universally equivalent;
+these tested cases do not establish comparison parity for every locale or source
+database collation. Source SQL Server is not executed or modified. Existing actual Auth join
 still requires15 cases and byte-identical runtime/build/public-fixture inputs to
 the frozen query candidate8f2c5fc. Its manifest declares exactly one intentional
 production blob change and freezes the other51 input blobs against26da4a1.
