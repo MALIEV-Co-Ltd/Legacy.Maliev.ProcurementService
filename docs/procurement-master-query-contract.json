@@ -1,0 +1,11 @@
+{
+  "sourceSha": "5fac706a7983a6d359b39acbd670e6800afe020e",
+  "expectedCases": 19,
+  "expectedMethods": {
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierNumericSearch_SourceMatchesOnlyIdentifier_NotTextContainingSameDigits": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PurchaseOrderNumericSearch_SourceMatchesIdentifierSubstring": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PageBeyondLast_SourceReturnsNotFound": 2,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct": 9,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct": 6
+  }
+}

@@ -192,7 +192,7 @@ public sealed class WorkflowContractTests
             ("MALIEV-Co-Ltd/Legacy.Maliev.AuthService", ReviewedProducerVersion),
             ("MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults", "7edcd961024868513fd5f373cab3dcb261197f77"),
             ("MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts", "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7"),
-            ("MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService", "26da4a1804c0a5833890e975680ee569c3aa4094"),
+            ("MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService", "8f2c5fc0678734e3240ce368b30e26db858e63d4"),
         }.ToDictionary(entry => entry.Repository, entry => entry.Commit);
         var checkouts = steps.Where(step => step.Children.TryGetValue(new YamlScalarNode("with"), out var node)
             && node is YamlMappingNode settings && settings.Children.ContainsKey(new YamlScalarNode("repository"))).ToArray();

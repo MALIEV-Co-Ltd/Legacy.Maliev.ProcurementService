@@ -37,6 +37,17 @@ def require_equal(current, reviewed):
         raise ValueError("Runtime/build/public fixture drift requires a separately reviewed graph")
 
 
+def require_source_change(reviewed, manifest):
+    change = manifest["intentionalSourceChange"]
+    path = change["path"]
+    if path not in reviewed or reviewed[path].split()[2] != change["candidateBlob"]:
+        raise ValueError("Intentional source change does not match its frozen blob")
+    unchanged = {name: metadata for name, metadata in reviewed.items() if name != path}
+    digest = hashlib.sha256(json.dumps(unchanged, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    if len(unchanged) != change["unchangedInputCount"] or digest != change["unchangedInputSha256"]:
+        raise ValueError("Unrelated runtime/build/public fixture drift outside reviewed query source change")
+
+
 def inputs(root, manifest):
     for entry in manifest["references"]:
         repository, expected = entry["repository"], entry["commit"]
@@ -45,6 +56,7 @@ def inputs(root, manifest):
             raise ValueError("Producer checkout does not equal the immutable graph pin: " + repository)
     reviewed = tracked_inputs(root / "Legacy.Maliev.ProcurementService")
     require_equal(tracked_inputs(ROOT), reviewed)
+    require_source_change(reviewed, manifest)
     print(json.dumps({"graphId": manifest["graphId"], "references": manifest["references"], "identicalRuntimeBuildFixtureInputs": len(reviewed)}))
 
 
