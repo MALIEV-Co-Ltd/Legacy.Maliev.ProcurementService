@@ -43,12 +43,19 @@ public sealed class SupplierRepository(SupplierDbContext dbContext, TimeProvider
         query = sort switch
         {
             SupplierSortType.SupplierId_Descending => query.OrderByDescending(value => value.Id),
-            SupplierSortType.SupplierName_Ascending => query.OrderBy(value => value.Name),
-            SupplierSortType.SupplierName_Descending => query.OrderByDescending(value => value.Name),
-            SupplierSortType.SupplierCreatedDate_Ascending => query.OrderBy(value => value.CreatedDate),
-            SupplierSortType.SupplierCreatedDate_Descending => query.OrderByDescending(value => value.CreatedDate),
-            SupplierSortType.SupplierModifiedDate_Ascending => query.OrderBy(value => value.ModifiedDate),
-            SupplierSortType.SupplierModifiedDate_Descending => query.OrderByDescending(value => value.ModifiedDate),
+            // Preserve SQL Server NULL placement on PostgreSQL; ID ties keep paged equal values stable.
+            SupplierSortType.SupplierName_Ascending => query.OrderBy(value => value.Name != null)
+                .ThenBy(value => value.Name).ThenBy(value => value.Id),
+            SupplierSortType.SupplierName_Descending => query.OrderBy(value => value.Name == null)
+                .ThenByDescending(value => value.Name).ThenBy(value => value.Id),
+            SupplierSortType.SupplierCreatedDate_Ascending => query.OrderBy(value => value.CreatedDate != null)
+                .ThenBy(value => value.CreatedDate).ThenBy(value => value.Id),
+            SupplierSortType.SupplierCreatedDate_Descending => query.OrderBy(value => value.CreatedDate == null)
+                .ThenByDescending(value => value.CreatedDate).ThenBy(value => value.Id),
+            SupplierSortType.SupplierModifiedDate_Ascending => query.OrderBy(value => value.ModifiedDate != null)
+                .ThenBy(value => value.ModifiedDate).ThenBy(value => value.Id),
+            SupplierSortType.SupplierModifiedDate_Descending => query.OrderBy(value => value.ModifiedDate == null)
+                .ThenByDescending(value => value.ModifiedDate).ThenBy(value => value.Id),
             _ => query.OrderBy(value => value.Id),
         };
         var total = await query.CountAsync(cancellationToken);
@@ -191,7 +198,15 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
             query = query.Where(order => order.Id.ToString().Contains(value)
                 || (order.Notes != null && order.Notes.ToLower().Contains(value)));
         }
-        query = sort switch { PurchaseOrderSortType.PurchaseOrderId_Descending => query.OrderByDescending(value => value.Id), PurchaseOrderSortType.PurchaseOrderCreatedDate_Ascending => query.OrderBy(value => value.CreatedDate), PurchaseOrderSortType.PurchaseOrderCreatedDate_Descending => query.OrderByDescending(value => value.CreatedDate), _ => query.OrderBy(value => value.Id) };
+        query = sort switch
+        {
+            PurchaseOrderSortType.PurchaseOrderId_Descending => query.OrderByDescending(value => value.Id),
+            PurchaseOrderSortType.PurchaseOrderCreatedDate_Ascending => query.OrderBy(value => value.CreatedDate != null)
+                .ThenBy(value => value.CreatedDate).ThenBy(value => value.Id),
+            PurchaseOrderSortType.PurchaseOrderCreatedDate_Descending => query.OrderBy(value => value.CreatedDate == null)
+                .ThenByDescending(value => value.CreatedDate).ThenBy(value => value.Id),
+            _ => query.OrderBy(value => value.Id),
+        };
         var total = await query.CountAsync(cancellationToken); if (total == 0) return null;
         var items = await Project(query).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
         if (items.Count == 0) return null;
