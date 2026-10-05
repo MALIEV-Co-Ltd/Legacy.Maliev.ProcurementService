@@ -1,5 +1,5 @@
 {
-  "graphId": "procurement-actual-auth-program-defaults76-adoption-20261005",
+  "graphId": "procurement-actual-auth-program-query-source-20261005",
   "references": [
     {
       "repository": "Legacy.Maliev.AuthService",
@@ -7,7 +7,7 @@
     },
     {
       "repository": "Legacy.Maliev.ServiceDefaults",
-      "commit": "ecb05cbbd68717e415f69df2ac488c1d323b1da3"
+      "commit": "7edcd961024868513fd5f373cab3dcb261197f77"
     },
     {
       "repository": "Legacy.Maliev.CompatibilityContracts",
@@ -18,15 +18,6 @@
       "commit": "8f2c5fc0678734e3240ce368b30e26db858e63d4"
     }
   ],
-  "defaultsAdoption": {
-    "previousDefaults": "7edcd961024868513fd5f373cab3dcb261197f77",
-    "reviewedDefaults": "ecb05cbbd68717e415f69df2ac488c1d323b1da3",
-    "acceptedConsumerMain": "9c80113e76c0b209b3be113c400e3c24a460d5e6",
-    "scope": "Shared token-owner deadline and additive typed-response helpers only; all52 Procurement production/build/public fixture inputs and Auth/Contracts pins unchanged",
-    "localGuards": "Existing workload admission/body guard, late response owner, named client10s and normal IAM composition unchanged",
-    "priorGraph": "public-graph-accepted-9c801.json",
-    "nativeAcceptance": "Pending fresh Procurement full/focused and actual Auth Program join; prior accepted consumer evidence is historical"
-  },
   "expectedCases": 15,
   "expectedMethods": {
     "Procurement.AuthProgram.Tests.AuthProgramProcurementJoinTests.RealEmployeeAndWorkloadEndpoints_LiveCreateThenFreshDeny": 1,

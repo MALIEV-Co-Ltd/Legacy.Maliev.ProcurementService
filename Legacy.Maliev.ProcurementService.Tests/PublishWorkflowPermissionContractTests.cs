@@ -60,7 +60,7 @@ public sealed class PublishWorkflowPermissionContractTests
         Assert.Equal("legacy-production", Scalar(inputs, "environment"));
         Assert.Equal("${{ vars.LEGACY_WORKLOAD_IDENTITY_PROVIDER }}", Scalar(inputs, "workload-identity-provider"));
         Assert.Equal("${{ vars.LEGACY_PROCUREMENT_PUBLISHER_SERVICE_ACCOUNT }}", Scalar(inputs, "service-account"));
-        Assert.Equal("7edcd961024868513fd5f373cab3dcb261197f77", Scalar(inputs, "legacy-service-defaults-ref"));
+        Assert.Equal("ecb05cbbd68717e415f69df2ac488c1d323b1da3", Scalar(inputs, "legacy-service-defaults-ref"));
         Assert.Equal("78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7", Scalar(inputs, "compatibility-contracts-ref"));
     }
 
