@@ -1,5 +1,5 @@
 extern alias auth_api;
-using AuthProgram = auth_api::Program;
+using FrozenAuthEntryPoint = auth_api::Program;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Headers;
@@ -330,7 +330,7 @@ public sealed class AuthProgramProcurementJoinTests(JoinPostgresFixture fixture)
             signing.Dispose();
         }
 
-        private sealed class Factory(Join join) : WebApplicationFactory<AuthProgram>
+        private sealed class Factory(Join join) : WebApplicationFactory<FrozenAuthEntryPoint>
         {
             protected override void ConfigureWebHost(IWebHostBuilder builder)
             {

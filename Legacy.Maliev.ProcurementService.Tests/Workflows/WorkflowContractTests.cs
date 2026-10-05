@@ -186,13 +186,13 @@ public sealed class WorkflowContractTests
         var root = (YamlMappingNode)yaml.Documents.Single().RootNode;
         var job = (YamlMappingNode)ReadNode((YamlMappingNode)ReadNode(root, "jobs"), "auth-program");
         var steps = ((YamlSequenceNode)ReadNode(job, "steps")).Children.Cast<YamlMappingNode>().ToArray();
-        var expected = new Dictionary<string, string>
+        var expected = new (string Repository, string Commit)[]
         {
-            ["MALIEV-Co-Ltd/Legacy.Maliev.AuthService"] = "b27fbef06a3aa58c1f4fc0e75d7c70b32be76266",
-            ["MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults"] = "7edcd961024868513fd5f373cab3dcb261197f77",
-            ["MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts"] = "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7",
-            ["MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService"] = "26da4a1804c0a5833890e975680ee569c3aa4094",
-        };
+            ("MALIEV-Co-Ltd/Legacy.Maliev.AuthService", "b27fbef06a3aa58c1f4fc0e75d7c70b32be76266"),
+            ("MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults", "7edcd961024868513fd5f373cab3dcb261197f77"),
+            ("MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts", "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7"),
+            ("MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService", "26da4a1804c0a5833890e975680ee569c3aa4094"),
+        }.ToDictionary(entry => entry.Repository, entry => entry.Commit);
         var checkouts = steps.Where(step => step.Children.TryGetValue(new YamlScalarNode("with"), out var node)
             && node is YamlMappingNode settings && settings.Children.ContainsKey(new YamlScalarNode("repository"))).ToArray();
         if (checkouts.Length != expected.Count) throw new InvalidOperationException("Require exactly the four reviewed producer checkouts.");
