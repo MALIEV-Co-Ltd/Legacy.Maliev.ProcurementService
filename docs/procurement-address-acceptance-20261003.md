@@ -1,6 +1,6 @@
 # Address HTTP acceptance candidate
 
-This is unexecuted test preparation, not completed source parity. Source obligation:
+This is a hosted HTTP contract candidate, not completed source parity. Source obligation:
 `5fac706a7983a6d359b39acbd670e6800afe020e` (initial commit, no parents).
 Committed source head observed before preparation and rechecked afterward:
 `135e526d0dab85c415b3afdcefd7b70fe2c82e2f`.
@@ -56,8 +56,13 @@ Subtotal is decimal(18,2) conversion of UnitPrice*Quantity; the candidate checks
 metadata and never invoke GCS. Optional concurrency and idempotency compatibility
 remain separate existing tests/obligations; lifecycle tests do not waive them.
 
-No production/runtime edit has been made. Build, twenty-one new cases, full suite,
-unexcluded owned-assembly coverage >=80%, formatting, dependency audit, secret scan,
-joined BFF/employee IAM acceptance and protected-main exact-head CI remain pending.
+The candidate also corrects runtime OpenAPI registration/JSON schema options and
+registers the real workload-exchange/IAM clients, described in
+`procurement-authenticated-iam-20261005.md`. The focused lane requires all 45
+declared address/child, OpenAPI and controlled Auth/IAM executions to pass with no
+skips. Hosted evidence is required for the current head: build, full suite,
+unexcluded owned-assembly coverage >=80%, formatting, dependency audit and secret
+scan. Joined BFF, actual AuthService/production IAM and protected-main acceptance
+remain separate obligations; controlled HTTP authorities do not close them.
 
 Review follow-up: both address schemas now exercise populated Building, secondary line, City, State, PostalCode and changed CountryId through create/update HTTP and database readback. Existing null-omission cases remain separate. Child Location resolves the full expected record, and lifecycle timestamps must be populated and advance on updates.

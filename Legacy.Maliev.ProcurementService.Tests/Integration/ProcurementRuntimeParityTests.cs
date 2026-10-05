@@ -312,9 +312,12 @@ public sealed class ProcurementRuntimeFixture : IAsyncLifetime
     public ClaimsPrincipal ValidateSignedToken(string token) => new JwtSecurityTokenHandler { MapInboundClaims = false }.ValidateToken(token,
         new TokenValidationParameters
         {
-            ValidIssuer = "https://procurement-parity.invalid", ValidAudience = "procurement-parity",
-            IssuerSigningKey = new RsaSecurityKey(signingKey), ValidateIssuerSigningKey = true,
-            ValidAlgorithms = [SecurityAlgorithms.RsaSha256], ClockSkew = TimeSpan.Zero,
+            ValidIssuer = "https://procurement-parity.invalid",
+            ValidAudience = "procurement-parity",
+            IssuerSigningKey = new RsaSecurityKey(signingKey),
+            ValidateIssuerSigningKey = true,
+            ValidAlgorithms = [SecurityAlgorithms.RsaSha256],
+            ClockSkew = TimeSpan.Zero,
         }, out _);
 
     public async Task DisposeAsync()
