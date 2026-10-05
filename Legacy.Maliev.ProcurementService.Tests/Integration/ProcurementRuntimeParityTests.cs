@@ -300,6 +300,23 @@ public sealed class ProcurementRuntimeFixture : IAsyncLifetime
         return client;
     }
 
+    public string SignedToken(string subject, DateTime expires, params string[] permissions)
+    {
+        var claims = new[] { new Claim(JwtRegisteredClaimNames.Sub, subject), new Claim("identity_kind", subject.StartsWith("service:", StringComparison.Ordinal) ? "service" : "employee") }
+            .Concat(permissions.Select(value => new Claim("permission", value)));
+        var token = new JwtSecurityToken("https://procurement-parity.invalid", "procurement-parity", claims,
+            expires.AddMinutes(-10), expires, new SigningCredentials(new RsaSecurityKey(signingKey), SecurityAlgorithms.RsaSha256));
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public ClaimsPrincipal ValidateSignedToken(string token) => new JwtSecurityTokenHandler { MapInboundClaims = false }.ValidateToken(token,
+        new TokenValidationParameters
+        {
+            ValidIssuer = "https://procurement-parity.invalid", ValidAudience = "procurement-parity",
+            IssuerSigningKey = new RsaSecurityKey(signingKey), ValidateIssuerSigningKey = true,
+            ValidAlgorithms = [SecurityAlgorithms.RsaSha256], ClockSkew = TimeSpan.Zero,
+        }, out _);
+
     public async Task DisposeAsync()
     {
         if (Factory is not null) await Factory.DisposeAsync();
@@ -311,6 +328,10 @@ public sealed class ProcurementRuntimeFixture : IAsyncLifetime
 
 public sealed class ProcurementRuntimeFactory(string supplierConnection, string orderConnection, RSA key, ProcurementFaultCache cache, TimeProvider clock, bool optIn) : WebApplicationFactory<Program>
 {
+    public IReadOnlyDictionary<string, string?> WorkloadSettings { get; set; } = new Dictionary<string, string?>();
+    public Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>>? AuthTransport { get; set; }
+    public Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>>? IamTransport { get; set; }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Production");
@@ -320,6 +341,12 @@ public sealed class ProcurementRuntimeFactory(string supplierConnection, string 
             services.AddSingleton<IDistributedCache>(cache);
             services.RemoveAll<TimeProvider>();
             services.AddSingleton(clock);
+            var authTransport = AuthTransport;
+            if (authTransport is not null)
+                services.AddHttpClient("LegacyAuthServiceTokenExchange").ConfigurePrimaryHttpMessageHandler(() => new ProcurementAuthorityTransport(authTransport));
+            var iamTransport = IamTransport;
+            if (iamTransport is not null)
+                services.AddHttpClient("IAMService").ConfigurePrimaryHttpMessageHandler(() => new ProcurementAuthorityTransport(iamTransport));
         });
     }
 
@@ -336,7 +363,7 @@ public sealed class ProcurementRuntimeFactory(string supplierConnection, string 
             ["Cache:RedisEnabled"] = "false",
             ["Observability:TracingEnabled"] = "false",
             ["Observability:RuntimeMetricsEnabled"] = "false",
-        }));
+        }).AddInMemoryCollection(WorkloadSettings));
         return base.CreateHost(builder);
     }
 }

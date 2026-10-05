@@ -1,5 +1,5 @@
 {
-  "expectedCases": 24,
+  "expectedCases": 45,
   "expectedMethods": {
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_CreateReadUpdate_PreservesWireShapeAndSeparateDatabase": 1,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_MissingParentAndMissingRecords_ReturnNotFoundWithoutOrphan": 1,
@@ -16,6 +16,11 @@
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests.OrderItem_ComputedSubtotal_PreservesSourceNullableAndSignedArithmetic": 5,
     "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementOpenApiHttpContractTests.Production_DocumentationIsUnavailableAndSupplierReadRequiresAuthentication": 1,
     "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementOpenApiHttpContractTests.Development_DocumentPreservesThirtyOperationsQueriesHeadersAndResponses": 1,
-    "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementOpenApiHttpContractTests.Development_SchemasMatchActualPascalWireAndKeepAddressAndScalarOwnershipSeparate": 1
+    "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementOpenApiHttpContractTests.Development_SchemasMatchActualPascalWireAndKeepAddressAndScalarOwnershipSeparate": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveCreate_UsesWorkloadBearerAndFreshDecisionWithoutClaimFallback": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeSupplierDelete_UsesExactOwnedResourceAndNoEmployeeTokenAsWorkload": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist": 17,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.ExpiredEmployeeJwt_NeverReachesWorkloadExchangeOrIam": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.WorkloadResponseBodyDeadline_DeniesWithoutIamOrPersistence": 1
   }
 }

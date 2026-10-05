@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Legacy.Maliev.ProcurementService.Api.Authorization;
 using Legacy.Maliev.ProcurementService.Application.Interfaces;
 using Legacy.Maliev.ProcurementService.Application.Services;
 using Legacy.Maliev.ProcurementService.Data;
@@ -40,6 +41,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 // Activate this API assembly's XML documentation support for the published contract.
 builder.Services.AddOpenApi("v1");
 builder.Services.AddSingleton(TimeProvider.System);
+builder.AddProcurementIamComposition();
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
 builder.Services.AddScoped<DistributedProcurementCache>();

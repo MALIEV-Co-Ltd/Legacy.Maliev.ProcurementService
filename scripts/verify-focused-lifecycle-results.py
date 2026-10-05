@@ -24,7 +24,7 @@ if actual != manifest['expectedMethods'] or any(result.get('outcome') != 'Passed
     raise SystemExit('Actual focused method/cardinality/outcome differs from the declared contract.')
 coverage = list(root.rglob('coverage.cobertura.xml'))
 digests = {hashlib.sha256(path.read_bytes()).hexdigest() for path in coverage}
-if len(digests) != 1 or not E.parse(coverage[0]).findall('./packages/package/classes/class/lines/line'):
+if len(digests) != 1 or not ET.parse(coverage[0]).findall('./packages/package/classes/class/lines/line'):
     raise SystemExit('Expected executable unfiltered focused raw evidence.')
 proof = {'executed': expected, 'passed': expected, 'failed': 0, 'skipped': 0,
          'actualMethods': dict(actual), 'rawSha256': next(iter(digests)), 'exclusions': [],
