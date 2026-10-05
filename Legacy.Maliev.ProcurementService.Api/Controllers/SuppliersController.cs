@@ -43,7 +43,13 @@ public sealed class SuppliersController(IProcurementService service, IIdempotenc
     }
 
     /// <summary>Gets one supplier.</summary>
+    /// <param name="supplierId">The owned supplier identifier.</param>
+    /// <param name="cancellationToken">Request cancellation.</param>
+    /// <response code="200">The supplier master record.</response>
+    /// <response code="404">The supplier does not exist.</response>
     [HttpGet("{supplierId:int}", Name = "GetSupplier")]
+    [ProducesResponseType<SupplierResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [RequirePermission(ProcurementPermissions.SuppliersRead, ResourcePathTemplate = "/suppliers/{supplierId}")]
     public async Task<ActionResult<SupplierResponse>> GetSupplierAsync(int supplierId, CancellationToken cancellationToken)
     {

@@ -1,0 +1,63 @@
+name: Focused Procurement address and child lifecycles
+
+on:
+  pull_request:
+    branches: [main, develop, staging, codex/procurement-http-source-acceptance-20261005]
+    paths:
+      - "Legacy.Maliev.ProcurementService.Application/**"
+      - "Legacy.Maliev.ProcurementService.Data/**"
+      - "Legacy.Maliev.ProcurementService.Tests/**"
+      - ".github/workflows/**"
+      - "docs/procurement-focused-lifecycle-contract.json"
+      - "scripts/verify-focused-lifecycle-results.py"
+      - "Legacy.Maliev.ProcurementService.Api/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    env:
+      MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
+      VSTestCollect: XPlat Code Coverage
+      VSTestLogger: trx
+      VSTestResultsDirectory: ${{ github.workspace }}/focused-results
+      VSTestTestCaseFilter: FullyQualifiedName~ProcurementAddressLifecycleTests|FullyQualifiedName~ProcurementChildLifecycleTests|FullyQualifiedName~ProcurementOpenApiHttpContractTests
+    steps:
+      - name: Check out ProcurementService
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Check out Legacy.Maliev.ServiceDefaults
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults
+          ref: 7edcd961024868513fd5f373cab3dcb261197f77
+          path: .dependencies/Legacy.Maliev.ServiceDefaults
+          persist-credentials: false
+      - name: Check out Legacy.Maliev.CompatibilityContracts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts
+          ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
+          path: .dependencies/Legacy.Maliev.CompatibilityContracts
+          persist-credentials: false
+      - name: Validate .NET solution
+        uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8
+        with:
+          solution: Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj
+          use-local-maliev-dependencies: 'true'
+      - name: Require every declared lifecycle case
+        if: always()
+        run: python3 -B scripts/verify-focused-lifecycle-results.py focused-results
+      - name: Preserve validation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-focused-${{ github.sha }}
+          path: focused-results
+          if-no-files-found: warn
+          retention-days: 7
