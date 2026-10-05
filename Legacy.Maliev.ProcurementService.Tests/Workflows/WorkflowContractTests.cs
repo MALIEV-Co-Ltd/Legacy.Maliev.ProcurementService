@@ -80,8 +80,8 @@ public sealed class WorkflowContractTests
     public void BuildAndTest_RejectsCommentedDependencySha()
     {
         AssertMutationRejected(
-            "ref: 7edcd961024868513fd5f373cab3dcb261197f77",
-            "ref: main # 7edcd961024868513fd5f373cab3dcb261197f77");
+            "ref: ecb05cbbd68717e415f69df2ac488c1d323b1da3",
+            "ref: main # ecb05cbbd68717e415f69df2ac488c1d323b1da3");
     }
 
     [Fact]
@@ -171,6 +171,7 @@ public sealed class WorkflowContractTests
 
     [Theory]
     [InlineData("b27fbef06a3aa58c1f4fc0e75d7c70b32be76266", "main")]
+    [InlineData("ecb05cbbd68717e415f69df2ac488c1d323b1da3", "7edcd961024868513fd5f373cab3dcb261197f77")]
     [InlineData("if: always()", "if: failure()")]
     [InlineData("python3 -B scripts/verify-procurement-auth-program.py results auth-program-results", "python3 -c 'print(0)'")]
     public void ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate(string original, string replacement)
@@ -190,7 +191,7 @@ public sealed class WorkflowContractTests
         var expected = new (string Repository, string Commit)[]
         {
             ("MALIEV-Co-Ltd/Legacy.Maliev.AuthService", ReviewedProducerVersion),
-            ("MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults", "7edcd961024868513fd5f373cab3dcb261197f77"),
+            ("MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults", "ecb05cbbd68717e415f69df2ac488c1d323b1da3"),
             ("MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts", "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7"),
             ("MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService", "8f2c5fc0678734e3240ce368b30e26db858e63d4"),
         }.ToDictionary(entry => entry.Repository, entry => entry.Commit);
@@ -356,7 +357,7 @@ internal static partial class WorkflowContractValidator
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 ["repository"] = "MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults",
-                ["ref"] = "7edcd961024868513fd5f373cab3dcb261197f77",
+                ["ref"] = "ecb05cbbd68717e415f69df2ac488c1d323b1da3",
                 ["path"] = ".dependencies/Legacy.Maliev.ServiceDefaults",
                 ["persist-credentials"] = "false",
             });
