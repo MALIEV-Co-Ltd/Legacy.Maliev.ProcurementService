@@ -43,7 +43,7 @@ assembly, formatting, audit and credential scans are required before acceptance.
 Joined raw coverage is retained and must include executable lines from both real
 API assemblies; it is not a replacement for full-service coverage acceptance.
 
-This candidate is not yet executed. Actual production client enrollment, legacy
+Acceptance requires hosted evidence for the current head. Actual production client enrollment, legacy
 IAM bridge reachability/authorization and joined BFF proof remain separate
 obligations. It does not close the initial source baseline or change production
 permissions, deployment flags, provider activation, migrations or persisted data.
