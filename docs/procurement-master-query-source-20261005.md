@@ -9,6 +9,8 @@ Supplier integer parsing selects only the identifier; nonnumeric text matches
 lowercased nullable fields against the original literal search. PurchaseOrders
 match identifier substrings plus lowercased nullable notes against lowercased
 literal search. Nonempty whitespace is retained and percent/underscore are literal.
+The HTTP whitespace-only query follows existing MVC null binding and returns an
+unfiltered page; surrounding whitespace in nonempty literal text remains significant.
 Both return404 when the selected page has no rows. Existing default50/max250 bounds,
 authentication/live policies, contact mapping, schemas and PascalCase DTOs remain.
 Intranet consumers already map404 to empty results and supply bounded page sizes.
