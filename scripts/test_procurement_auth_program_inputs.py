@@ -41,7 +41,7 @@ class RuntimeInputs(unittest.TestCase):
             guard.require_equal(reviewed, reviewed)
 
 
-    def test_frozen_string_changes_keep_other_runtime_inputs(self):
+    def test_frozen_literal_changes_keep_other_runtime_inputs(self):
         import json
         manifest = json.loads(guard.MANIFEST.read_text())
         guard.require_source_change(guard.tracked_inputs(guard.ROOT), manifest)
@@ -50,7 +50,8 @@ class RuntimeInputs(unittest.TestCase):
         import json
         manifest = json.loads(guard.MANIFEST.read_text())
         reviewed = guard.tracked_inputs(guard.ROOT)
-        reviewed[guard.FIXTURE] = "100644 blob unrelated"
+        unchanged = next(path for path in reviewed if path not in manifest["intentionalSourceChanges"]["changedInputs"])
+        reviewed[unchanged] = "100644 blob unrelated"
         with self.assertRaises(ValueError):
             guard.require_source_change(reviewed, manifest)
 
@@ -72,15 +73,15 @@ class RuntimeInputs(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     guard.require_source_change(reviewed, manifest)
 
-    def test_missing_added_input_is_rejected(self):
+    def test_each_missing_reviewed_changed_input_is_rejected(self):
         import json
         manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
-        reviewed = guard.tracked_inputs(guard.ROOT)
-        path = next(path for path, binding in manifest["intentionalSourceChanges"]["changedInputs"].items()
-                    if binding["previousMetadata"] is None)
-        del reviewed[path]
-        with self.assertRaises(ValueError):
-            guard.require_source_change(reviewed, manifest)
+        for path in manifest["intentionalSourceChanges"]["changedInputs"]:
+            with self.subTest(path=path):
+                reviewed = guard.tracked_inputs(guard.ROOT)
+                del reviewed[path]
+                with self.assertRaises(ValueError):
+                    guard.require_source_change(reviewed, manifest)
 
     def test_missing_source_change_record_is_rejected(self):
         with self.assertRaises(KeyError):
