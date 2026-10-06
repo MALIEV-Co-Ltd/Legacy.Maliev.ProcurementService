@@ -224,7 +224,7 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
     /// <inheritdoc />
     public async Task<PurchaseOrderAddressResponse> CreateAddressAsync(UpsertPurchaseOrderAddressRequest request, CancellationToken cancellationToken)
     {
-        var now = Now(); var entity = new PurchaseOrderAddress { Building = request.Building, AddressLine1 = request.AddressLine1.Trim(), AddressLine2 = request.AddressLine2, City = request.City, State = request.State, PostalCode = request.PostalCode, CountryId = request.CountryId, CreatedDate = now, ModifiedDate = now };
+        var now = Now(); var entity = new PurchaseOrderAddress { Building = request.Building, AddressLine1 = request.AddressLine1, AddressLine2 = request.AddressLine2, City = request.City, State = request.State, PostalCode = request.PostalCode, CountryId = request.CountryId, CreatedDate = now, ModifiedDate = now };
         dbContext.Addresses.Add(entity); await dbContext.SaveChangesAsync(cancellationToken); return ToResponse(entity);
     }
     /// <inheritdoc />
@@ -237,7 +237,7 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
     public async Task<bool> UpdateAddressAsync(int id, UpsertPurchaseOrderAddressRequest request, CancellationToken cancellationToken)
     {
         var entity = await dbContext.Addresses.FindAsync([id], cancellationToken); if (entity is null) return false;
-        entity.Building = request.Building; entity.AddressLine1 = request.AddressLine1.Trim(); entity.AddressLine2 = request.AddressLine2; entity.City = request.City; entity.State = request.State; entity.PostalCode = request.PostalCode; entity.CountryId = request.CountryId; entity.ModifiedDate = Now();
+        entity.Building = request.Building; entity.AddressLine1 = request.AddressLine1; entity.AddressLine2 = request.AddressLine2; entity.City = request.City; entity.State = request.State; entity.PostalCode = request.PostalCode; entity.CountryId = request.CountryId; entity.ModifiedDate = Now();
         await dbContext.SaveChangesAsync(cancellationToken); return true;
     }
     /// <inheritdoc />
@@ -265,7 +265,7 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
     public async Task<PurchaseOrderFileResponse?> CreateFileAsync(int purchaseOrderId, string bucket, string objectName, CancellationToken cancellationToken)
     {
         if (!await dbContext.PurchaseOrders.AnyAsync(value => value.Id == purchaseOrderId, cancellationToken)) return null;
-        var now = Now(); var entity = new PurchaseOrderFile { PurchaseOrderId = purchaseOrderId, Bucket = bucket.Trim(), ObjectName = objectName, CreatedDate = now, ModifiedDate = now };
+        var now = Now(); var entity = new PurchaseOrderFile { PurchaseOrderId = purchaseOrderId, Bucket = bucket, ObjectName = objectName, CreatedDate = now, ModifiedDate = now };
         dbContext.Files.Add(entity); await dbContext.SaveChangesAsync(cancellationToken); return ToResponse(entity);
     }
     /// <inheritdoc />

@@ -1,5 +1,5 @@
 {
-  "graphId": "procurement-source-string-public-20261006",
+  "graphId": "procurement-source-literals-public-20261006",
   "references": [
     {
       "repository": "Legacy.Maliev.AuthService",
@@ -15,7 +15,7 @@
     },
     {
       "repository": "Legacy.Maliev.ProcurementService",
-      "commit": "d4b08faf07c684c3d4f8c75280486379d72532e2"
+      "commit": "cf114bcac6e4aa041ca51ec1e60739e868c8da06"
     }
   ],
   "defaultsAdoption": {
@@ -92,6 +92,34 @@
     "unchangedInputSha256": "657ee76ed5af1272c2b21217ebe0145296f6d9aed774e5780422cb4ca5e5142c"
   },
   "intentionalSourceChanges": {
+    "previousProcurement": "d4b08faf07c684c3d4f8c75280486379d72532e2",
+    "reviewedProcurement": "cf114bcac6e4aa041ca51ec1e60739e868c8da06",
+    "inputCount": 57,
+    "changedInputs": {
+      "Legacy.Maliev.ProcurementService.Api/Controllers/PurchaseOrderAddressesController.cs": {
+        "previousMetadata": "100644 blob e70c82d5841b83c3fb841bd7a3e45693c76d1275",
+        "reviewedMetadata": "100644 blob 91b6bf11646f89f5c6736e7f54af964e044ae6ed"
+      },
+      "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": {
+        "previousMetadata": "100644 blob 62276afe71d6a0513747be48d88760ee087d0cc4",
+        "reviewedMetadata": "100644 blob 34aead52a4555030d73da312dde868a3b58170c9"
+      },
+      "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs": {
+        "previousMetadata": "100644 blob c879519e879d91f4556962e0668db9a5b40e1c48",
+        "reviewedMetadata": "100644 blob 13bef56d1b51a1df43fffe2e48967bd4e6f16ba2"
+      }
+    },
+    "unchangedInputCount": 54,
+    "unchangedInputSha256": "865371657e11db227ea83813eb85b5d72a471fd1a02b4ccccae128f5a9f08c71",
+    "sourceReviewReceiptSha256": "646a525c02b72d91ee12285d08b611cc25a2cb2f57d2790b39aa825a19d40236",
+    "runtimeNativeAdmissionSha256": "045225728e27a8a46ac1b01f5f5b3abcf480fb176d57dff8abe9f4919414ef54",
+    "scope": "Reviewed literal controller/repository copies and public runtime literal expectation only; three changed inputs and54 unchanged. Peer pins unchanged.",
+    "nativeAcceptance": "Owned seven literal cases passed; final full316/Auth15/all8 native candidate acceptance pending",
+    "productionEnrollmentProven": false,
+    "productionIamBridgeProven": false,
+    "wholeInitialSourceParityClosed": false
+  },
+  "previousStringIntentionalSourceChanges": {
     "previousProcurement": "30333914eaaa7cd508a3874169f29003e627d055",
     "reviewedProcurement": "d4b08faf07c684c3d4f8c75280486379d72532e2",
     "inputCount": 57,

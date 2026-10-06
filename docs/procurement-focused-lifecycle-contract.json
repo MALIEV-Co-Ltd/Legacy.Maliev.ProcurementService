@@ -5,7 +5,7 @@
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_MissingParentAndMissingRecords_ReturnNotFoundWithoutOrphan": 1,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_ReadGrantCannotCreateOrUpdate_LeavesCommittedAddressIntact": 1,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.PurchaseOrderAddress_ExactServiceGrant_CreateReadUpdateDelete_PreservesSeparateSchema": 1,
-    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.AddressWrites_BlankRequiredLine_RejectBeforePersistingEitherSchema": 3,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.AddressWrites_NullAndBlankLinesFollowIndependentSourceContracts": 3,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_AuthorizedDelete_DetachesAndDeletesOnlySupplierSchema": 1,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.PurchaseOrderAddress_LiveWriteWithoutTrustedServiceOptIn_DoesNotPersist": 2,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.PurchaseOrderAddress_InUseDelete_RealForeignKeyPreservesOrderAndAddress": 1,

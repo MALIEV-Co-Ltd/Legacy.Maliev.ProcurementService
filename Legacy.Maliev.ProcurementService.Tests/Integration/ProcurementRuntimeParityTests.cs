@@ -135,7 +135,7 @@ public sealed class ProcurementRuntimeParityTests(ProcurementRuntimeFixture fixt
         Assert.Equal(HttpStatusCode.Created, addressResponse.StatusCode);
         var address = await addressResponse.Content.ReadFromJsonAsync<PurchaseOrderAddressResponse>();
         Assert.NotNull(address);
-        Assert.Equal("Bangkok", address.AddressLine1);
+        Assert.Equal("  Bangkok  ", address.AddressLine1);
         using var orderResponse = await client.PostAsJsonAsync("/PurchaseOrders", new { SupplierId = 92742, EmployeeId = 93742, ShippingAddressId = address.Id, BillingAddressId = address.Id });
         Assert.Equal(HttpStatusCode.Created, orderResponse.StatusCode);
         var order = await orderResponse.Content.ReadFromJsonAsync<PurchaseOrderResponse>();
