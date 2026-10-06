@@ -75,17 +75,19 @@ public sealed class ProcurementChildLifecycleTests(ProcurementRuntimeFixture fix
     [Fact]
     public async Task FileMetadata_Lifecycle_ResolvesLocationAndPreservesParentScopedOwnership()
     {
+        const string createdObject = "  documents/\u0e0a\u0e34\u0e49\u0e19\u0e07\u0e32\u0e19%_part drawing.pdf  ";
+        const string updatedObject = " documents/\u0e0a\u0e34\u0e49\u0e19\u0e07\u0e32\u0e19%_revision.pdf ";
         await using var factory = fixture.CreateFactory(true);
         using var client = fixture.ClientAs(factory, "service:procurement-parity",
             ProcurementPermissions.PurchaseOrdersCreate, ProcurementPermissions.FilesWrite,
             ProcurementPermissions.FilesRead, ProcurementPermissions.FilesDelete);
         var first = await OrderAsync(client, "Metadata parent");
         var second = await OrderAsync(client, "Other parent");
-        using var created = await client.PostAsync($"/purchaseorders/{first.Id}/files?bucket=owned-metadata&objectName=documents%2Fpart%20drawing.pdf", null);
+        using var created = await client.PostAsync($"/purchaseorders/{first.Id}/files?bucket=owned-metadata&objectName={Uri.EscapeDataString(createdObject)}", null);
         Assert.Equal(HttpStatusCode.Created, created.StatusCode);
         var file = (await created.Content.ReadFromJsonAsync<PurchaseOrderFileResponse>())!;
         Assert.Equal("owned-metadata", file.Bucket);
-        Assert.Equal("documents/part drawing.pdf", file.ObjectName);
+        Assert.Equal(createdObject, file.ObjectName);
         Assert.NotNull(file.CreatedDate);
         Assert.NotNull(file.ModifiedDate);
         Assert.NotNull(created.Headers.Location);
@@ -93,25 +95,40 @@ public sealed class ProcurementChildLifecycleTests(ProcurementRuntimeFixture fix
         Assert.Equal(HttpStatusCode.OK, location.StatusCode);
         var located = (await location.Content.ReadFromJsonAsync<PurchaseOrderFileResponse>())!;
         Assert.Equal(file, located);
+        Assert.Equal(file, Assert.Single((await client.GetFromJsonAsync<PurchaseOrderFileResponse[]>($"/purchaseorders/{first.Id}/files"))!));
+        using var emptyOther = await client.GetAsync($"/purchaseorders/{second.Id}/files");
+        Assert.Equal(HttpStatusCode.NotFound, emptyOther.StatusCode);
+        using var secondCreated = await client.PostAsync($"/purchaseorders/{second.Id}/files?bucket=other-metadata&objectName=unrelated.pdf", null);
+        Assert.Equal(HttpStatusCode.Created, secondCreated.StatusCode);
+        var unrelated = (await secondCreated.Content.ReadFromJsonAsync<PurchaseOrderFileResponse>())!;
+        await using (var scope = factory.Services.CreateAsyncScope())
+        {
+            var rows = await scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Files.AsNoTracking().ToArrayAsync();
+            Assert.Equal(createdObject, Assert.Single(rows, row => row.Id == file.Id).ObjectName);
+            Assert.Equal("unrelated.pdf", Assert.Single(rows, row => row.Id == unrelated.Id).ObjectName);
+        }
         using var other = await client.GetAsync($"/purchaseorders/{second.Id}/files");
-        Assert.Equal(HttpStatusCode.NotFound, other.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, other.StatusCode);
+        Assert.Equal(unrelated, Assert.Single((await other.Content.ReadFromJsonAsync<PurchaseOrderFileResponse[]>())!));
         fixture.Clock.Advance(TimeSpan.FromSeconds(1));
-        using var updated = await client.PutAsJsonAsync($"/purchaseorders/files/{file.Id}", new UpsertPurchaseOrderFileRequest(first.Id, "updated-metadata", "documents/revision.pdf"));
+        using var updated = await client.PutAsJsonAsync($"/purchaseorders/files/{file.Id}", new UpsertPurchaseOrderFileRequest(first.Id, "updated-metadata", updatedObject));
         Assert.Equal(HttpStatusCode.NoContent, updated.StatusCode);
         var listed = Assert.Single((await client.GetFromJsonAsync<PurchaseOrderFileResponse[]>($"/purchaseorders/{first.Id}/files"))!);
         Assert.Equal(file.Id, listed.Id);
         Assert.Equal(first.Id, listed.PurchaseOrderId);
         Assert.Equal("updated-metadata", listed.Bucket);
-        Assert.Equal("documents/revision.pdf", listed.ObjectName);
+        Assert.Equal(updatedObject, listed.ObjectName);
+        Assert.Equal(listed, await client.GetFromJsonAsync<PurchaseOrderFileResponse>($"/purchaseorders/files/{file.Id}"));
+        Assert.Equal(unrelated, await client.GetFromJsonAsync<PurchaseOrderFileResponse>($"/purchaseorders/files/{unrelated.Id}"));
         Assert.Equal(file.CreatedDate, listed.CreatedDate);
         Assert.True(listed.ModifiedDate > file.ModifiedDate);
         await using (var scope = factory.Services.CreateAsyncScope())
         {
-            var row = await scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Files.AsNoTracking().SingleAsync();
+            var row = await scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Files.AsNoTracking().SingleAsync(value => value.Id == file.Id);
             Assert.Equal(file.Id, row.Id);
             Assert.Equal(first.Id, row.PurchaseOrderId);
             Assert.Equal("updated-metadata", row.Bucket);
-            Assert.Equal("documents/revision.pdf", row.ObjectName);
+            Assert.Equal(updatedObject, row.ObjectName);
         }
         using var deleted = await client.DeleteAsync($"/purchaseorders/files/{file.Id}");
         using var missing = await client.GetAsync($"/purchaseorders/files/{file.Id}");
@@ -119,8 +136,16 @@ public sealed class ProcurementChildLifecycleTests(ProcurementRuntimeFixture fix
         Assert.Equal(HttpStatusCode.NoContent, deleted.StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, missing.StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, replay.StatusCode);
+        using var emptyAfterDelete = await client.GetAsync($"/purchaseorders/{first.Id}/files");
+        Assert.Equal(HttpStatusCode.NotFound, emptyAfterDelete.StatusCode);
         await using var finalScope = factory.Services.CreateAsyncScope();
-        Assert.Empty(await finalScope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Files.ToArrayAsync());
+        var remaining = Assert.Single(await finalScope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Files.AsNoTracking().ToArrayAsync());
+        Assert.Equal(unrelated.Id, remaining.Id);
+        Assert.Equal(unrelated.PurchaseOrderId, remaining.PurchaseOrderId);
+        Assert.Equal(unrelated.Bucket, remaining.Bucket);
+        Assert.Equal(unrelated.ObjectName, remaining.ObjectName);
+        Assert.Equal(unrelated.CreatedDate, remaining.CreatedDate);
+        Assert.Equal(unrelated.ModifiedDate, remaining.ModifiedDate);
         Assert.Equal(2, await finalScope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().PurchaseOrders.CountAsync());
     }
 

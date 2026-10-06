@@ -265,7 +265,7 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
     public async Task<PurchaseOrderFileResponse?> CreateFileAsync(int purchaseOrderId, string bucket, string objectName, CancellationToken cancellationToken)
     {
         if (!await dbContext.PurchaseOrders.AnyAsync(value => value.Id == purchaseOrderId, cancellationToken)) return null;
-        var now = Now(); var entity = new PurchaseOrderFile { PurchaseOrderId = purchaseOrderId, Bucket = bucket.Trim(), ObjectName = objectName.Trim(), CreatedDate = now, ModifiedDate = now };
+        var now = Now(); var entity = new PurchaseOrderFile { PurchaseOrderId = purchaseOrderId, Bucket = bucket.Trim(), ObjectName = objectName, CreatedDate = now, ModifiedDate = now };
         dbContext.Files.Add(entity); await dbContext.SaveChangesAsync(cancellationToken); return ToResponse(entity);
     }
     /// <inheritdoc />
@@ -278,7 +278,7 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
     public async Task<bool> UpdateFileAsync(int id, UpsertPurchaseOrderFileRequest request, CancellationToken cancellationToken)
     {
         var entity = await dbContext.Files.FindAsync([id], cancellationToken); if (entity is null) return false;
-        entity.PurchaseOrderId = request.PurchaseOrderId ?? entity.PurchaseOrderId; entity.Bucket = request.Bucket.Trim(); entity.ObjectName = request.ObjectName.Trim(); entity.ModifiedDate = Now(); await dbContext.SaveChangesAsync(cancellationToken); return true;
+        entity.PurchaseOrderId = request.PurchaseOrderId ?? entity.PurchaseOrderId; entity.Bucket = request.Bucket.Trim(); entity.ObjectName = request.ObjectName; entity.ModifiedDate = Now(); await dbContext.SaveChangesAsync(cancellationToken); return true;
     }
 
     private DateTime Now() => DateTime.SpecifyKind(timeProvider.GetUtcNow().UtcDateTime, DateTimeKind.Unspecified);
