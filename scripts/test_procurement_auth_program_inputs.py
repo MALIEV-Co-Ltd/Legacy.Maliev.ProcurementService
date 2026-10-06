@@ -41,7 +41,7 @@ class RuntimeInputs(unittest.TestCase):
             guard.require_equal(reviewed, reviewed)
 
 
-    def test_frozen_query_change_keeps_other_runtime_inputs(self):
+    def test_frozen_string_changes_keep_other_runtime_inputs(self):
         import json
         manifest = json.loads(guard.MANIFEST.read_text())
         guard.require_source_change(guard.tracked_inputs(guard.ROOT), manifest)
@@ -58,7 +58,27 @@ class RuntimeInputs(unittest.TestCase):
         import json
         manifest = json.loads(guard.MANIFEST.read_text())
         reviewed = guard.tracked_inputs(guard.ROOT)
-        reviewed[manifest["intentionalSourceChange"]["path"]] = "100644 blob unrelated"
+        reviewed[next(iter(manifest["intentionalSourceChanges"]["changedInputs"]))] = "100644 blob unrelated"
+        with self.assertRaises(ValueError):
+            guard.require_source_change(reviewed, manifest)
+
+    def test_each_reviewed_changed_input_drift_is_rejected(self):
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        for path in manifest["intentionalSourceChanges"]["changedInputs"]:
+            with self.subTest(path=path):
+                reviewed = guard.tracked_inputs(guard.ROOT)
+                reviewed[path] = "100644 blob unrelated"
+                with self.assertRaises(ValueError):
+                    guard.require_source_change(reviewed, manifest)
+
+    def test_missing_added_input_is_rejected(self):
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        reviewed = guard.tracked_inputs(guard.ROOT)
+        path = next(path for path, binding in manifest["intentionalSourceChanges"]["changedInputs"].items()
+                    if binding["previousMetadata"] is None)
+        del reviewed[path]
         with self.assertRaises(ValueError):
             guard.require_source_change(reviewed, manifest)
 

@@ -446,16 +446,18 @@ public sealed class ProcurementDurableCreateTests(ProcurementDurableCreateFixtur
     [InlineData(true)]
     public async Task MigrationDown_RefusesDestructiveReceiptRemovalAndPreservesCommittedProof(bool purchaseOrder)
     {
-        await using var factory = fixture.CreateFactory(purchaseOrder);
-        using var client = Client(factory, purchaseOrder, "actor-one");
-        using var created = await PostAsync(client, purchaseOrder, Payload(purchaseOrder, "Retained proof"));
-        Assert.Equal(HttpStatusCode.Created, created.StatusCode);
         await using var scope = fixture.Factory.Services.CreateAsyncScope();
         var database = Database(scope.ServiceProvider, purchaseOrder);
         var migrator = database.GetService<Microsoft.EntityFrameworkCore.Migrations.IMigrator>();
-        var before = (await database.Database.GetAppliedMigrationsAsync()).ToArray();
+        // Characterize the original receipt migration's Down boundary independently of later schema migrations.
+        await migrator.MigrateAsync(purchaseOrder ? "20261001013651_AddDurablePurchaseOrderCreateReceipts" : "20261001013648_AddDurableSupplierCreateReceipts");
         try
         {
+            await using var factory = fixture.CreateFactory(purchaseOrder);
+            using var client = Client(factory, purchaseOrder, "actor-one");
+            using var created = await PostAsync(client, purchaseOrder, Payload(purchaseOrder, "Retained proof"));
+            Assert.Equal(HttpStatusCode.Created, created.StatusCode);
+            var before = (await database.Database.GetAppliedMigrationsAsync()).ToArray();
             var failure = await Record.ExceptionAsync(() => migrator.MigrateAsync(purchaseOrder ? "20260721031258_FixTimestampColumnType" : "20260721031252_FixTimestampColumnType"));
             Assert.IsType<InvalidOperationException>(failure);
             Assert.Equal(before, (await database.Database.GetAppliedMigrationsAsync()).ToArray());

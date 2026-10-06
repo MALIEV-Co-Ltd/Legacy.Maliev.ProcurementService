@@ -278,7 +278,7 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
     public async Task<bool> UpdateFileAsync(int id, UpsertPurchaseOrderFileRequest request, CancellationToken cancellationToken)
     {
         var entity = await dbContext.Files.FindAsync([id], cancellationToken); if (entity is null) return false;
-        entity.PurchaseOrderId = request.PurchaseOrderId ?? entity.PurchaseOrderId; entity.Bucket = request.Bucket.Trim(); entity.ObjectName = request.ObjectName; entity.ModifiedDate = Now(); await dbContext.SaveChangesAsync(cancellationToken); return true;
+        entity.PurchaseOrderId = request.PurchaseOrderId ?? entity.PurchaseOrderId; entity.Bucket = request.Bucket; entity.ObjectName = request.ObjectName; entity.ModifiedDate = Now(); await dbContext.SaveChangesAsync(cancellationToken); return true;
     }
 
     private DateTime Now() => DateTime.SpecifyKind(timeProvider.GetUtcNow().UtcDateTime, DateTimeKind.Unspecified);

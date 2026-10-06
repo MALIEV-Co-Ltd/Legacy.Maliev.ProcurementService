@@ -4,15 +4,42 @@ using Legacy.Maliev.ProcurementService.Api.Authorization;
 using Legacy.Maliev.ProcurementService.Data;
 using Legacy.Maliev.ProcurementService.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Legacy.Maliev.ProcurementService.Tests.Integration;
 
 public sealed class ProcurementNullableSortSourceTests(ProcurementRuntimeFixture fixture)
     : IClassFixture<ProcurementRuntimeFixture>, IAsyncLifetime
 {
-    public Task InitializeAsync() => fixture.ResetAsync();
-    public Task DisposeAsync() => Task.CompletedTask;
+    private WebApplicationFactory<Program> historicalFactory = null!;
+
+    public async Task InitializeAsync()
+    {
+        await fixture.ResetAsync();
+        await using var scope = fixture.Factory.Services.CreateAsyncScope();
+        var current = scope.ServiceProvider.GetRequiredService<SupplierDbContext>();
+        string connection = current.Database.GetConnectionString()!;
+        // This class alone models a historical nullable-Name schema in its disposable owned database.
+        // Current source requiredness remains independently asserted by the normal model/schema cases.
+        await current.Database.ExecuteSqlRawAsync("ALTER TABLE \"Supplier\" ALTER COLUMN \"Name\" DROP NOT NULL");
+        historicalFactory = fixture.Factory.WithWebHostBuilder(builder => builder.ConfigureServices(services =>
+        {
+            services.RemoveAll<SupplierDbContext>();
+            services.RemoveAll<DbContextOptions<SupplierDbContext>>();
+            services.AddDbContext<SupplierDbContext>(options => options.UseNpgsql(connection)
+                .ReplaceService<IModelCustomizer, HistoricalNullableSupplierModelCustomizer>());
+        }));
+    }
+
+    public async Task DisposeAsync()
+    {
+        if (historicalFactory is not null)
+            await historicalFactory.DisposeAsync();
+    }
 
     [Theory]
     [InlineData(false, "SupplierName_Ascending", "11,33,44,22")]
@@ -35,7 +62,7 @@ public sealed class ProcurementNullableSortSourceTests(ProcurementRuntimeFixture
     {
         await SeedAsync();
         var before = await SnapshotAsync();
-        using var client = fixture.Client(purchaseOrder ? ProcurementPermissions.PurchaseOrdersRead : ProcurementPermissions.SuppliersRead);
+        using var client = fixture.ClientAs(historicalFactory, "employee:procurement-parity", purchaseOrder ? ProcurementPermissions.PurchaseOrdersRead : ProcurementPermissions.SuppliersRead);
         using var response = await client.GetAsync($"{Route(purchaseOrder)}?sort={sort}&size=10");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
@@ -53,7 +80,7 @@ public sealed class ProcurementNullableSortSourceTests(ProcurementRuntimeFixture
     {
         await SeedAsync();
         var before = await SnapshotAsync();
-        using var client = fixture.Client(purchaseOrder ? ProcurementPermissions.PurchaseOrdersRead : ProcurementPermissions.SuppliersRead);
+        using var client = fixture.ClientAs(historicalFactory, "employee:procurement-parity", purchaseOrder ? ProcurementPermissions.PurchaseOrdersRead : ProcurementPermissions.SuppliersRead);
         using var response = await client.GetAsync($"{Route(purchaseOrder)}?sort={sort}&index={index}&size=1");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
@@ -74,7 +101,7 @@ public sealed class ProcurementNullableSortSourceTests(ProcurementRuntimeFixture
     {
         await SeedAsync();
         var before = await SnapshotAsync();
-        using var client = anonymous ? fixture.Factory.CreateClient() : fixture.Client();
+        using var client = anonymous ? historicalFactory.CreateClient() : fixture.ClientAs(historicalFactory, "employee:procurement-parity");
         using var response = await client.GetAsync(Route(purchaseOrder) + "?sort=2");
         Assert.Equal(anonymous ? HttpStatusCode.Unauthorized : HttpStatusCode.Forbidden, response.StatusCode);
         Assert.DoesNotContain("Zulu", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
@@ -87,7 +114,7 @@ public sealed class ProcurementNullableSortSourceTests(ProcurementRuntimeFixture
 
     private async Task SeedAsync()
     {
-        await using var scope = fixture.Factory.Services.CreateAsyncScope();
+        await using var scope = historicalFactory.Services.CreateAsyncScope();
         var supplier = scope.ServiceProvider.GetRequiredService<SupplierDbContext>();
         supplier.Suppliers.AddRange(new Supplier { Id = 11, Name = null },
             new Supplier { Id = 22, Name = "Zulu", CreatedDate = Day(3), ModifiedDate = Day(1) },
@@ -115,7 +142,7 @@ public sealed class ProcurementNullableSortSourceTests(ProcurementRuntimeFixture
 
     private async Task<(string Supplier, string PurchaseOrder)> SnapshotAsync()
     {
-        await using var scope = fixture.Factory.Services.CreateAsyncScope();
+        await using var scope = historicalFactory.Services.CreateAsyncScope();
         var suppliers = scope.ServiceProvider.GetRequiredService<SupplierDbContext>();
         var orders = scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>();
         return (JsonSerializer.Serialize(await suppliers.Suppliers.AsNoTracking().OrderBy(row => row.Id).ToArrayAsync()),
