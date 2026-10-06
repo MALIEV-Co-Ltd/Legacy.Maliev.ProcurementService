@@ -134,7 +134,7 @@ public sealed class ProcurementAddressLifecycleTests(ProcurementRuntimeFixture f
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public async Task AddressWrites_BlankRequiredLine_RejectBeforePersistingEitherSchema(string? line)
+    public async Task AddressWrites_NullAndBlankLinesFollowIndependentSourceContracts(string? line)
     {
         await using var factory = fixture.CreateFactory(true);
         using var client = fixture.ClientAs(factory, "service:procurement-parity",
@@ -147,11 +147,15 @@ public sealed class ProcurementAddressLifecycleTests(ProcurementRuntimeFixture f
         // Source PUT looks up the address first; a missing address cannot prove storage requiredness.
         Assert.Equal(string.IsNullOrEmpty(line) ? HttpStatusCode.BadRequest : HttpStatusCode.NotFound, supplierCreate.StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, supplierUpdate.StatusCode);
-        Assert.Equal(HttpStatusCode.BadRequest, purchaseCreate.StatusCode);
-        Assert.Equal(HttpStatusCode.BadRequest, purchaseUpdate.StatusCode);
+        Assert.Equal(line is null ? HttpStatusCode.BadRequest : HttpStatusCode.Created, purchaseCreate.StatusCode);
+        Assert.Equal(line is null ? HttpStatusCode.BadRequest : HttpStatusCode.NotFound, purchaseUpdate.StatusCode);
         await using var scope = factory.Services.CreateAsyncScope();
         Assert.Empty(await scope.ServiceProvider.GetRequiredService<SupplierDbContext>().Addresses.ToArrayAsync());
-        Assert.Empty(await scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Addresses.ToArrayAsync());
+        var purchaseAddresses = await scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Addresses.AsNoTracking().ToArrayAsync();
+        if (line is null)
+            Assert.Empty(purchaseAddresses);
+        else
+            Assert.Equal(line, Assert.Single(purchaseAddresses).AddressLine1);
     }
 
     [Fact]

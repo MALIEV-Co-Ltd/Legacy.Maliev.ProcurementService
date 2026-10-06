@@ -19,7 +19,7 @@ public sealed class PurchaseOrderAddressesController(IProcurementService service
     [RequirePermission(ProcurementPermissions.PurchaseOrderAddressesWrite, RequireLiveCheck = true)]
     public async Task<ActionResult> CreateAddressAsync(UpsertPurchaseOrderAddressRequest item, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(item.AddressLine1)) return BadRequest();
+        if (item.AddressLine1 is null) return BadRequest();
         var address = await service.CreatePurchaseOrderAddressAsync(item, cancellationToken);
         return CreatedAtRoute("GetPurchaseOrderAddress", new { addressId = address.Id }, address);
     }
@@ -46,6 +46,6 @@ public sealed class PurchaseOrderAddressesController(IProcurementService service
     [RequirePermission(ProcurementPermissions.PurchaseOrderAddressesWrite, RequireLiveCheck = true)]
     public async Task<ActionResult> UpdateAddressAsync(int addressId, UpsertPurchaseOrderAddressRequest item, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(item.AddressLine1)) return BadRequest(); return await service.UpdatePurchaseOrderAddressAsync(addressId, item, cancellationToken) ? NoContent() : NotFound();
+        if (item.AddressLine1 is null) return BadRequest(); return await service.UpdatePurchaseOrderAddressAsync(addressId, item, cancellationToken) ? NoContent() : NotFound();
     }
 }
