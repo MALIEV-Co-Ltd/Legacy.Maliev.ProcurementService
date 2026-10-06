@@ -19,7 +19,7 @@ public sealed class SupplierDbContext(DbContextOptions<SupplierDbContext> option
         address.ToTable("Address");
         address.HasKey(value => value.Id);
         address.Property(value => value.Id).HasColumnName("ID").ValueGeneratedOnAdd();
-        address.Property(value => value.Address1).HasMaxLength(256);
+        address.Property(value => value.Address1).HasMaxLength(256).IsRequired();
         address.Property(value => value.Address2).HasMaxLength(256);
         address.Property(value => value.Building).HasMaxLength(256);
         address.Property(value => value.City).HasMaxLength(256);
@@ -36,7 +36,7 @@ public sealed class SupplierDbContext(DbContextOptions<SupplierDbContext> option
         supplier.Property(value => value.Email).HasMaxLength(256);
         supplier.Property(value => value.Fax).HasMaxLength(256);
         supplier.Property(value => value.Mobile).HasMaxLength(256);
-        supplier.Property(value => value.Name).HasMaxLength(256);
+        supplier.Property(value => value.Name).HasMaxLength(256).IsRequired();
         supplier.Property(value => value.Note).HasColumnType("text");
         supplier.Property(value => value.TaxNumber).HasMaxLength(256);
         supplier.Property(value => value.Telephone).HasMaxLength(256);
@@ -47,6 +47,8 @@ public sealed class SupplierDbContext(DbContextOptions<SupplierDbContext> option
             .HasForeignKey(value => value.AddressId)
             .OnDelete(DeleteBehavior.NoAction)
             .HasConstraintName("FK_Supplier_Address");
+        LegacyUtf16StringStorage.Configure(address, "Address");
+        LegacyUtf16StringStorage.Configure(supplier, "Supplier");
     }
 
     private static void ConfigureDates<TEntity>(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<TEntity> entity) where TEntity : class
@@ -148,6 +150,10 @@ public sealed class PurchaseOrderDbContext(DbContextOptions<PurchaseOrderDbConte
             .HasForeignKey(value => value.PurchaseOrderId)
             .OnDelete(DeleteBehavior.NoAction)
             .HasConstraintName("FK_PurchaseOrderFile_PurchaseOrder");
+        LegacyUtf16StringStorage.Configure(address, "Address");
+        LegacyUtf16StringStorage.Configure(purchaseOrder, "PurchaseOrder");
+        LegacyUtf16StringStorage.Configure(orderItem, "OrderItem");
+        LegacyUtf16StringStorage.Configure(file, "PurchaseOrderFile");
     }
 
     private static void ConfigureDates<TEntity>(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<TEntity> entity) where TEntity : class

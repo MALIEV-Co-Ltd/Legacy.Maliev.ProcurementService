@@ -54,6 +54,6 @@ public sealed class FilesController(IProcurementService service) : ControllerBas
     [RequirePermission(ProcurementPermissions.FilesWrite, RequireLiveCheck = true)]
     public async Task<ActionResult> UpdatePurchaseOrderFileAsync(int id, UpsertPurchaseOrderFileRequest item, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(item.Bucket) || string.IsNullOrWhiteSpace(item.ObjectName)) return BadRequest(); return await service.UpdatePurchaseOrderFileAsync(id, item, cancellationToken) ? NoContent() : NotFound();
+        return await service.UpdatePurchaseOrderFileAsync(id, item, cancellationToken) ? NoContent() : NotFound();
     }
 }
