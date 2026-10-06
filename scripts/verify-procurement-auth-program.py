@@ -38,14 +38,17 @@ def require_equal(current, reviewed):
 
 
 def require_source_change(reviewed, manifest):
-    change = manifest["intentionalSourceChange"]
-    path = change["path"]
-    if path not in reviewed or reviewed[path].split()[2] != change["candidateBlob"]:
-        raise ValueError("Intentional source change does not match its frozen blob")
-    unchanged = {name: metadata for name, metadata in reviewed.items() if name != path}
+    change = manifest["intentionalSourceChanges"]
+    changes = change["changedInputs"]
+    if not changes or len(reviewed) != change["inputCount"]:
+        raise ValueError("Missing reviewed changes or runtime input count drift")
+    for path, binding in changes.items():
+        if path not in reviewed or reviewed[path] != binding["reviewedMetadata"]:
+            raise ValueError("Intentional source changes do not match frozen metadata")
+    unchanged = {name: metadata for name, metadata in reviewed.items() if name not in changes}
     digest = hashlib.sha256(json.dumps(unchanged, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     if len(unchanged) != change["unchangedInputCount"] or digest != change["unchangedInputSha256"]:
-        raise ValueError("Unrelated runtime/build/public fixture drift outside reviewed query source change")
+        raise ValueError("Unrelated runtime/build/public fixture drift outside reviewed source string changes")
 
 
 def inputs(root, manifest):

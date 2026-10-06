@@ -143,8 +143,10 @@ public sealed class ProcurementAddressLifecycleTests(ProcurementRuntimeFixture f
         using var supplierUpdate = await client.PutAsJsonAsync("/suppliers/addresses/999999", Address(line));
         using var purchaseCreate = await client.PostAsJsonAsync("/purchaseorders/addresses", PurchaseAddress(line));
         using var purchaseUpdate = await client.PutAsJsonAsync("/purchaseorders/addresses/999999", PurchaseAddress(line));
-        Assert.Equal(HttpStatusCode.BadRequest, supplierCreate.StatusCode);
-        Assert.Equal(HttpStatusCode.BadRequest, supplierUpdate.StatusCode);
+        // Source POST rejects null/empty before lookup; all-space reaches the missing supplier.
+        // Source PUT looks up the address first; a missing address cannot prove storage requiredness.
+        Assert.Equal(string.IsNullOrEmpty(line) ? HttpStatusCode.BadRequest : HttpStatusCode.NotFound, supplierCreate.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, supplierUpdate.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, purchaseCreate.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, purchaseUpdate.StatusCode);
         await using var scope = factory.Services.CreateAsyncScope();
