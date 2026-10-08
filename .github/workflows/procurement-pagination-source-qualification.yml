@@ -1,0 +1,126 @@
+name: Procurement omitted-size source qualification
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/procurement-pagination-source-qualification.yml'
+      - 'ci-source/procurement-pagination/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Run source controls normally and with optimization
+        run: |
+          python3 -B ci-source/procurement-pagination/p1-controls.py
+          python3 -O -B ci-source/procurement-pagination/p1-controls.py
+  validate:
+    # Enable only in a reviewed successor commit that binds the accepted shared SHA.
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
+      TESTCONTAINERS_RYUK_DISABLED: 'true'
+      MSBUILDDISABLENODEREUSE: '1'
+      UseSharedCompilation: 'false'
+    steps:
+      - name: Set owned validation root
+        run: echo "VALIDATION_ROOT=$RUNNER_TEMP/procurement-pagination" >> "$GITHUB_ENV"
+      - name: Check out reviewed CI assets
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Validate required successor identity and create owned run ID
+        env:
+          SHARED_SHA: ACCEPTED_SHARED_SUCCESSOR_PENDING
+        run: |
+          python3 -B - <<'PY'
+          import os,re,uuid,yaml
+          value=os.environ['SHARED_SHA']
+          if value != 'ACCEPTED_SHARED_SUCCESSOR_PENDING' or not re.fullmatch('[0-9a-f]{40}',value):
+              raise ValueError('Root-reviewed successor SHA required')
+          with open(os.environ['GITHUB_ENV'],'a') as f:
+              f.write('MALIEV_TEST_RESOURCE_RUN_ID='+str(uuid.uuid4())+'\n')
+          PY
+      - name: Check out exact original implementation base
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 63e1c0e3e4179be944b26fb227e27a1226e472b1
+          path: _validation-base
+          persist-credentials: false
+      - name: Check out ServiceDefaults
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults
+          ref: ecb05cbbd68717e415f69df2ac488c1d323b1da3
+          path: .dependencies/Legacy.Maliev.ServiceDefaults
+          persist-credentials: false
+      - name: Check out CompatibilityContracts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts
+          ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
+          path: .dependencies/Legacy.Maliev.CompatibilityContracts
+          persist-credentials: false
+      - name: Check out Root-reviewed shared scanners and Gitleaks installer
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.Workflows
+          ref: ACCEPTED_SHARED_SUCCESSOR_PENDING
+          path: .dependencies/Legacy.Maliev.Workflows
+          persist-credentials: false
+      - name: Set up reviewed SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.401
+      - name: Serial healthy baseline RED then candidate build and focused 32
+        timeout-minutes: 30
+        env:
+          SHARED_SHA: ACCEPTED_SHARED_SUCCESSOR_PENDING
+        run: |
+          python3 -B ci-source/procurement-pagination/procurement_pagination_hosted_driver.py \
+            --phase focused --root "$VALIDATION_ROOT" --base "$GITHUB_WORKSPACE/_validation-base" \
+            --packet "$GITHUB_WORKSPACE/ci-source/procurement-pagination/source-packet.zip" \
+            --shared-sha "$SHARED_SHA" \
+            --helper "$GITHUB_WORKSPACE/ci-source/procurement-pagination/OwnedProcurementTestContainers.cs" \
+            --helper-sha bd510692924e83ec52505565af975054335b868ee039fcd59c64e3f5e30f9e99 \
+            --assembly "$GITHUB_WORKSPACE/ci-source/procurement-pagination/ProcurementResourceAssembly.cs" \
+            --assembly-sha ca86647f4081372cb5fedd3ee3739c12bccd5e5e7b4f097949967d04d335e61c
+      - name: Affected full suite, coverage, format, typed audit, and shared security gates
+        timeout-minutes: 25
+        env:
+          SHARED_SHA: ACCEPTED_SHARED_SUCCESSOR_PENDING
+        run: |
+          python3 -B ci-source/procurement-pagination/procurement_pagination_hosted_driver.py \
+            --phase full --root "$VALIDATION_ROOT" --shared-sha "$SHARED_SHA" \
+            --shared-checkout "$GITHUB_WORKSPACE/.dependencies/Legacy.Maliev.Workflows"
+      - name: Verify exact owned resource cleanup
+        if: always()
+        timeout-minutes: 2
+        run: |
+          if test -f "$VALIDATION_ROOT/receipt.json"; then
+            python3 -B ci-source/procurement-pagination/procurement_pagination_hosted_driver.py \
+              --phase cleanup --root "$VALIDATION_ROOT"
+          fi
+      - name: Retain receipts, raw logs, TRX, coverage, and resolved package evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-pagination-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/procurement-pagination/*.json
+            ${{ runner.temp }}/procurement-pagination/*.log
+            ${{ runner.temp }}/procurement-pagination/*-results
+            ${{ runner.temp }}/procurement-pagination/candidate/**/obj/project.assets.json
+            ${{ runner.temp }}/procurement-pagination/candidate/**/packages.lock.json
+          if-no-files-found: warn
+          retention-days: 7
