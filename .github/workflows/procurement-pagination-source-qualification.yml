@@ -29,11 +29,12 @@ jobs:
     timeout-minutes: 60
     env:
       MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
-      VALIDATION_ROOT: ${{ runner.temp }}/procurement-pagination
       TESTCONTAINERS_RYUK_DISABLED: 'true'
       MSBUILDDISABLENODEREUSE: '1'
       UseSharedCompilation: 'false'
     steps:
+      - name: Set owned validation root
+        run: echo "VALIDATION_ROOT=$RUNNER_TEMP/procurement-pagination" >> "$GITHUB_ENV"
       - name: Check out reviewed CI assets
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
