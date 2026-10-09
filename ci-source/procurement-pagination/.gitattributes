@@ -1,0 +1,3 @@
+# Immutable qualification assets are verified by exact SHA256, including newlines.
+# Keep this override scoped to the source carrier; application policy is unchanged.
+* -text -eol

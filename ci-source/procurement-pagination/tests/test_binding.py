@@ -83,4 +83,12 @@ class Controls(unittest.TestCase):
         self.assertTrue(all('runner.' not in str(value) for value in job['env'].values()))
         setup=job['steps'][0]['run']
         self.assertIn("os.environ['RUNNER_TEMP']",setup);self.assertIn('MALIEV_PROCUREMENT_ALLOCATION_FILE=',setup)
+    def test_hash_pinned_carrier_preserves_exact_newlines(self):
+        leaf=R/'ci-source/procurement-pagination'
+        self.assertIn('* -text -eol',(leaf/'.gitattributes').read_text())
+        pins=json.loads((leaf/'reviewed-runtime-pins.json').read_bytes())
+        self.assertEqual(24,len(pins))
+        for row in pins:
+            raw=(leaf/row['path']).read_bytes()
+            self.assertEqual(row['bytes'],len(raw));self.assertEqual(row['sha256'],hashlib.sha256(raw).hexdigest())
 if __name__=='__main__':unittest.main()
