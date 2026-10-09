@@ -46,13 +46,19 @@ jobs:
     timeout-minutes: 60
     env:
       MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
-      VALIDATION_ROOT: ${{ runner.temp }}/procurement-pagination
       TESTCONTAINERS_RYUK_DISABLED: 'true'
       MSBUILDDISABLENODEREUSE: '1'
       UseSharedCompilation: 'false'
-      MALIEV_PROCUREMENT_ALLOCATION_FILE: ${{ runner.temp }}/procurement-original-allocation.json
       MALIEV_PROCUREMENT_ALLOCATION_SHA: ${{ inputs.original_allocation_sha256 }}
     steps:
+      - name: Set owned validation and allocation paths on the assigned runner
+        run: |
+          python3 -B - <<'PY'
+          import os
+          with open(os.environ['GITHUB_ENV'],'a') as f:
+              f.write('VALIDATION_ROOT='+os.environ['RUNNER_TEMP']+'/procurement-pagination\n')
+              f.write('MALIEV_PROCUREMENT_ALLOCATION_FILE='+os.environ['RUNNER_TEMP']+'/procurement-original-allocation.json\n')
+          PY
       - name: Check out reviewed CI assets
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:

@@ -1,4 +1,4 @@
-import hashlib,json,sys,tempfile,unittest
+import hashlib,json,sys,tempfile,unittest,yaml
 from datetime import datetime,timezone,timedelta
 from pathlib import Path
 from unittest.mock import patch
@@ -77,4 +77,10 @@ class Controls(unittest.TestCase):
         text=(R/b.WORKFLOW).read_text()
         self.assertLess(text.index('Admit exact original hosted allocation'),text.index('Set up reviewed SDK'))
         self.assertIn('if: ${{ false }}',text);self.assertIn('timeout-minutes: 60',text)
+    def test_runner_context_is_initialized_in_step_not_job_env(self):
+        caller=yaml.safe_load((R/b.WORKFLOW).read_bytes());job=caller['jobs']['validate']
+        self.assertNotIn('VALIDATION_ROOT',job['env']);self.assertNotIn('MALIEV_PROCUREMENT_ALLOCATION_FILE',job['env'])
+        self.assertTrue(all('runner.' not in str(value) for value in job['env'].values()))
+        setup=job['steps'][0]['run']
+        self.assertIn("os.environ['RUNNER_TEMP']",setup);self.assertIn('MALIEV_PROCUREMENT_ALLOCATION_FILE=',setup)
 if __name__=='__main__':unittest.main()
