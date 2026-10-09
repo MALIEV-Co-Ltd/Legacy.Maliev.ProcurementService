@@ -2,13 +2,14 @@
 from pathlib import Path
 import argparse, hashlib, json, os, re, selectors, shutil, signal, subprocess, sys, time, uuid, zipfile
 import xml.etree.ElementTree as ET
-from procurement_pagination_hosted_guards import IntegrityError, require, install_spec, apply_go_spec, sanitize_runner_env, runner_environment, settings, binary_hashes, common_test_args, observe_roster, trx
+from procurement_pagination_hosted_guards import IntegrityError, require, install_spec, apply_go_spec, sanitize_runner_env, runner_environment, settings, binary_hashes, common_test_args, observe_roster, trx, associated_roster, baseline_roster, BASELINE_FILTER, CANDIDATE_FILTER, require_class_attribution_qualification
+from procurement_fixture_attribution import observe as observe_fixture, prove as prove_fixture, install as install_fixture
 OWNER = '01a1009c-aa47-72d2-9914-3a0784a67c0e'
-BASE = '63e1c0e3e4179be944b26fb227e27a1226e472b1'
-PACKET_SHA = '852f7e85cf730bb3448fb8ecb4e3caa84d476b985444256609d1e41689791801'
-MANIFEST_SHA = 'f5b64eb0242277a7000fa106d2ba8b3c563ce078ab0f0ad6e82a4bb44029d9be'
+BASE = '1249989e04040bd1326842ebf2e1f438369cf8c9'
+PACKET_SHA = 'd8748cf62c5ee7bd88b6cadbd949cb6056d4662d83e9153493328d0a95f06658'
+MANIFEST_SHA = 'af76f4d18ecabe559d9e0a47077febbfaf209daa4f72a772733f5a22412726a7'
 PROJECT = 'Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj'
-FILTER = 'FullyQualifiedName~ProcurementOmittedSizeSourceTests'
+FILTER = BASELINE_FILTER
 NS = {'t': 'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'}
 LIMIT = 32 * 1024 * 1024
 
@@ -32,20 +33,30 @@ class Driver:
         return raw[raw.rfind(')') + 2:].split()[19]
 
     def command(self, name, argv, cwd, timeout, allow_failure=False, monitor=False):
+        if self.receipt.get('hostedExecutionBinding'):
+            from procurement_hosted_binding import remaining
+            require(remaining(self.receipt['hostedExecutionBinding']) >= timeout + 15, 'Original allocation cannot cover command and unchanged cleanup cap')
         if argv[0] in ('dotnet', 'go'):
             mem = re.search('MemAvailable:\\s+(\\d+)', Path('/proc/meminfo').read_text())
             if not mem or int(mem.group(1)) < 4194304:
                 raise RuntimeError('Fresh 4GiB admission floor unavailable')
         start = time.monotonic()
         log = self.root / (name + '.log')
-        proc = subprocess.Popen(argv, cwd=cwd, env=runner_environment(os.environ) if argv[0] == 'dotnet' else os.environ.copy(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)
-        row = {'name': name, 'pid': proc.pid, 'birth': self.birth(proc.pid), 'executable': str(Path(f'/proc/{proc.pid}/exe').resolve()), 'timeoutSeconds': timeout, 'exited': False, 'handleClosed': False}
+        from datetime import datetime, timezone, timedelta
+        proc = sel = None
+        row = {'name': name, 'timeoutSeconds': timeout, 'started': False, 'exited': False, 'handleClosed': False, 'stdoutClosed': False, 'selectorClosed': False, 'cleanupFailures': []}
         self.receipt['processes'].append(row)
-        self.save()
-        sel = selectors.DefaultSelector()
-        sel.register(proc.stdout, selectors.EVENT_READ)
-        next_probe = 0
+        row['commandAbsoluteDeadlineMonotonic'] = start + timeout + 15
+        row['outerCustodyExpiresUtc'] = (datetime.now(timezone.utc) + timedelta(seconds=timeout + 15)).isoformat()
         try:
+            proc = subprocess.Popen(argv, cwd=cwd, env=runner_environment(os.environ) if argv[0] == 'dotnet' else os.environ.copy(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)
+            row.update(pid=proc.pid, started=True, birth=None, executable=None)
+            row['birth'] = self.birth(proc.pid)
+            row['executable'] = str(Path(f'/proc/{proc.pid}/exe').resolve(strict=True))
+            self.save()
+            sel = selectors.DefaultSelector()
+            sel.register(proc.stdout, selectors.EVENT_READ)
+            next_probe = 0
             with log.open('xb') as f:
                 while sel.get_map():
                     if time.monotonic() - start > timeout:
@@ -68,46 +79,137 @@ class Driver:
                     raise RuntimeError(name + ' failed; see retained log')
                 return (code, log.read_text(errors='replace'))
         finally:
-            members = []
-            for item in Path('/proc').iterdir():
-                if not item.name.isdigit():
-                    continue
-                try:
-                    stat = (item / 'stat').read_text()
-                    fields = stat[stat.rfind(')') + 2:].split()
-                    if int(fields[3]) == proc.pid:
-                        members.append((int(item.name), fields[19]))
-                except (FileNotFoundError, ProcessLookupError, PermissionError):
-                    pass
+            primary = sys.exception()
+            try: self._settle_command(proc, row, sel, primary)
+            except BaseException as cleanup_error:
+                if primary is None: raise
+                try: primary.add_note('Secondary command cleanup failure: ' + type(cleanup_error).__name__)
+                except BaseException: pass
+
+    def _settle_command(self, proc, row, sel, primary):
+        # Independently settle exact task custody; never replace an active primary failure.
+        failures = []
+        def failed(boundary, error):
+            failures.append({'boundary': boundary, 'type': type(error).__name__})
+        members = []
+        enumerated = proc is None
+        if proc is not None:
+            deadline = row.setdefault('cleanupAbsoluteDeadlineMonotonic', min(row['commandAbsoluteDeadlineMonotonic'], time.monotonic() + 10.3))
+            row['outerCustodyExpired'] = time.monotonic() >= row['commandAbsoluteDeadlineMonotonic']
+            try:
+                leader_reused = False
+                if row.get('birth') is not None:
+                    try: leader_reused = self.birth(proc.pid) != row['birth']
+                    except (FileNotFoundError, ProcessLookupError): pass
+                if leader_reused:
+                    raise RuntimeError('Leader PID identity changed; session ownership unproved')
+                if row.get('birth') is None and proc.poll() is not None:
+                    raise RuntimeError('Partial-start exited child has no proved session birth')
+                for item in Path('/proc').iterdir():
+                    if not item.name.isdigit(): continue
+                    try:
+                        stat = (item / 'stat').read_text()
+                        fields = stat[stat.rfind(')') + 2:].split()
+                        if int(fields[3]) == proc.pid:
+                            members.append((int(item.name), fields[19]))
+                    except (FileNotFoundError, ProcessLookupError): pass
+                enumerated = True
+            except BaseException as error: failed('session-inventory', error)
+            # A retained Popen child is also settled if metadata/selector startup failed.
             for sig in (signal.SIGTERM, signal.SIGKILL):
                 for pid, birth in members:
                     try:
-                        if self.birth(pid) == birth:
-                            os.kill(pid, sig)
-                    except (FileNotFoundError, ProcessLookupError):
-                        pass
-                if sig == signal.SIGTERM:
-                    time.sleep(0.3)
-            proc.wait(timeout=10)
-            row['exited'] = True
-            proc.stdout.close()
-            sel.close()
-            row['handleClosed'] = True
-            remaining = []
-            for pid, birth in members:
+                        if self.birth(pid) == birth: os.kill(pid, sig)
+                    except (FileNotFoundError, ProcessLookupError): pass
+                    except BaseException as error: failed('exact-session-signal', error)
                 try:
-                    stat = Path(f'/proc/{pid}/stat').read_text()
-                    fields = stat[stat.rfind(')') + 2:].split()
-                    if fields[19] == birth and fields[0] != 'Z':
-                        remaining.append(pid)
-                except FileNotFoundError:
-                    pass
-            row['privateSessionMembers'] = [{'pid': pid, 'birth': birth} for pid, birth in members]
-            row['liveOwnedSessionMembersRemaining'] = remaining
-            row['ownedIdentityAbsent'] = not Path(f'/proc/{proc.pid}').exists()
-            self.save()
-            if remaining:
-                raise RuntimeError('Exact owned session cleanup incomplete')
+                    if proc.poll() is None:
+                        if row.get('birth') is None or self.birth(proc.pid) == row['birth']:
+                            (proc.terminate if sig == signal.SIGTERM else proc.kill)()
+                except (FileNotFoundError, ProcessLookupError): pass
+                except BaseException as error: failed('retained-child-signal', error)
+                if sig == signal.SIGTERM:
+                    try:
+                        grace_remaining = deadline-time.monotonic()
+                        if grace_remaining > 0: time.sleep(min(0.3, grace_remaining))
+                    except BaseException as error: failed('grace-wait', error)
+            row['cleanupWaitBudgetSeconds'] = 10
+            for attempt in range(2):
+                try:
+                    remaining_wait = deadline-time.monotonic()
+                    if remaining_wait <= 0: break
+                    proc.wait(timeout=min(5, remaining_wait))
+                    break
+                except BaseException as error: failed('retained-child-wait', error)
+            try:
+                row['exited'] = proc.poll() is not None
+            except BaseException as error: failed('exit-observation', error)
+        else:
+            row['exited'] = True
+        remaining = []
+        for pid, birth in members:
+            try:
+                stat = Path(f'/proc/{pid}/stat').read_text()
+                fields = stat[stat.rfind(')') + 2:].split()
+                if fields[19] == birth and fields[0] != 'Z': remaining.append(pid)
+            except (FileNotFoundError, ProcessLookupError): pass
+            except BaseException as error:
+                enumerated = False
+                failed('exact-member-exit', error)
+        if proc is not None and enumerated:
+            try:
+                known = set(members)
+                for item in Path('/proc').iterdir():
+                    if not item.name.isdigit(): continue
+                    try:
+                        stat = (item / 'stat').read_text()
+                        fields = stat[stat.rfind(')') + 2:].split()
+                        if int(fields[3]) == proc.pid and fields[0] != 'Z' and (int(item.name), fields[19]) not in known:
+                            enumerated = False
+                            failed('new-session-writer', RuntimeError('Unobserved session member'))
+                    except (FileNotFoundError, ProcessLookupError): pass
+            except BaseException as error:
+                enumerated = False
+                failed('terminal-session-inventory', error)
+        row['privateSessionMembers'] = [{'pid': pid, 'birth': birth} for pid, birth in members]
+        row['liveOwnedSessionMembersRemaining'] = remaining
+        # Selector closure does not close the pipe. Pipe closure requires all writers settled.
+        if sel is not None:
+            try: sel.close(); row['selectorClosed'] = True
+            except BaseException as error: failed('selector-close', error)
+        else: row['selectorClosed'] = True
+        safe_pipe = row['exited'] and enumerated and not remaining
+        if proc is None: row['stdoutClosed'] = True
+        elif safe_pipe:
+            try: proc.stdout.close(); row['stdoutClosed'] = True
+            except BaseException as error: failed('stdout-close', error)
+        row['handleClosed'] = row['stdoutClosed'] and row['selectorClosed']
+        row['ownedIdentityAbsent'] = proc is None
+        if proc is not None:
+            try:
+                row['ownedIdentityAbsent'] = not Path(f'/proc/{proc.pid}').exists() or (row.get('birth') is not None and self.birth(proc.pid) != row['birth'])
+            except (FileNotFoundError, ProcessLookupError): row['ownedIdentityAbsent'] = True
+            except BaseException as error: failed('identity-absence', error)
+        row['cleanupFailures'].extend(failures)
+        custody = getattr(self, '_pending_commands', [])
+        custody = [entry for entry in custody if entry[1] is not row]
+        if not row['handleClosed'] or not row['exited'] or not enumerated or remaining:
+            custody.append((proc, row, None if row['selectorClosed'] else sel))
+            row['outerCustodyRequired'] = True
+            row['outerCustodyRun'] = self.run
+            row['originalCommandTimeoutSeconds'] = row['timeoutSeconds']
+            row['outerCustodyReason'] = 'Exact exit/writer or handle settlement unproved; retained objects, no live-writer pipe closure.'
+        else: row['outerCustodyRequired'] = False
+        self._pending_commands = custody
+        try: self.save()
+        except BaseException as error:
+            failed('receipt-save', error)
+            row['cleanupFailures'].append(failures[-1])
+        if failures or row['outerCustodyRequired']:
+            if primary is not None:
+                try: primary.add_note('Owned command cleanup has secondary failure or retained outer custody; inspect process receipt.')
+                except BaseException: pass
+            else: raise RuntimeError('Exact owned command cleanup incomplete; inspect retained receipt')
 
     def quick(self, argv, timeout=8):
         proc = subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -154,7 +256,7 @@ class Driver:
         require(host['Tmpfs'].get('/var/lib/postgresql') == 'rw,size=512m', "Integrity guard: host['Tmpfs'].get('/var/lib/postgresql') == 'rw,size=512m'")
         require(all((port['HostIp'] == '127.0.0.1' for ports in value['NetworkSettings']['Ports'].values() if ports for port in ports)), "Integrity guard: all((port['HostIp'] == '127.0.0.1' for ports in value['NetworkSettings']['Ports'].values() if ports for port in ports))")
         require(not any((mount['Type'] in ('bind', 'volume') for mount in value.get('Mounts', []))), "Integrity guard: not any((mount['Type'] in ('bind', 'volume') for mount in value.get('Mounts', [])))")
-        row = {'id': cid, 'image': value['Config']['Image'], 'labels': labels, 'memory': host['Memory'], 'nanoCpus': host['NanoCpus'], 'persistentData': False}
+        row = {'id': cid, 'createdUtc': value['Created'], 'image': value['Config']['Image'], 'labels': labels, 'memory': host['Memory'], 'nanoCpus': host['NanoCpus'], 'persistentData': False}
         return (value, row)
 
     def probe_postgres(self):
@@ -170,6 +272,25 @@ class Driver:
                     require(180000 <= int(raw) < 190000, 'Integrity guard: 180000 <= int(raw) < 190000')
                     row['serverVersionNum'] = int(raw)
             self.receipt['postgres'][cid] = row
+        if hasattr(self, 'fixture_phase'):
+            observe_fixture(self, self.fixture_phase, self.fixture_directory)
+        self.save()
+
+    def begin_fixture_phase(self, phase):
+        from datetime import datetime, timezone
+        self.fixture_phase = phase
+        self.fixture_directory = self.root / (phase + '-fixture-receipts')
+        self.fixture_directory.mkdir()
+        self.receipt.setdefault('fixturePhaseStarts', {})[phase] = datetime.now(timezone.utc).isoformat()
+        self.save()
+        os.environ['MALIEV_TEST_RESOURCE_PHASE'] = phase
+        os.environ['MALIEV_TEST_RESOURCE_RECEIPTS'] = str(self.fixture_directory.resolve())
+
+    def finish_fixture_phase(self):
+        observe_fixture(self, self.fixture_phase, self.fixture_directory)
+        self.cleanup()
+        proof = prove_fixture(self, self.fixture_phase, self.fixture_directory)
+        self.receipt.setdefault('fixtureQualification', {})[self.fixture_phase] = proof
         self.save()
 
     def cleanup(self):
@@ -190,6 +311,12 @@ class Driver:
 
     def finish(self):
         pending = sys.exception()
+        custody_error = None
+        for proc, row, sel in list(getattr(self, '_pending_commands', [])):
+            try: self._settle_command(proc, row, sel, pending)
+            except BaseException as error:
+                self.receipt['commandCustodyFailure'] = type(error).__name__
+                if custody_error is None: custody_error = error
         try:
             self.cleanup()
         except BaseException as exc:
@@ -197,8 +324,14 @@ class Driver:
             self.save()
             if pending is None:
                 raise
+        if pending is None and custody_error is not None:
+            raise custody_error
 
 def prepare(args, driver):
+    from procurement_consumer_association import verify_context
+    driver.receipt['originalConsumerSourceAssociation'] = verify_context(args.base, os.environ['MalievWorkspaceRoot'])
+    require(args.shared_sha == driver.receipt['originalConsumerSourceAssociation']['qualifiedSharedSourceCommit'], 'Original published shared source revision differs')
+    driver.save()
     require(os.name == 'posix' and os.environ.get('GITHUB_ACTIONS') == 'true', "Integrity guard: os.name == 'posix' and os.environ.get('GITHUB_ACTIONS') == 'true'")
     require(re.fullmatch('[0-9a-f]{40}', args.shared_sha), "Integrity guard: re.fullmatch('[0-9a-f]{40}', args.shared_sha)")
     require(args.shared_sha != 'e3a6093324a24968876782153286f52db8b29fd8', "Integrity guard: args.shared_sha != 'e3a6093324a24968876782153286f52db8b29fd8'")
@@ -206,32 +339,31 @@ def prepare(args, driver):
     packet = driver.root / 'packet'
     packet.mkdir()
     with zipfile.ZipFile(args.packet) as z:
-        require(len(z.namelist()) == 18 and all((not name.startswith('/') and '..' not in Path(name).parts for name in z.namelist())), "Integrity guard: len(z.namelist()) == 18 and all((not name.startswith('/') and '..' not in Path(name).parts for name in z.namelist()))")
+        require(len(z.namelist()) == 8 and len(set(z.namelist())) == 8 and all((not name.startswith('/') and '..' not in Path(name).parts for name in z.namelist())), 'Exact eight unique safe packet entries required')
         z.extractall(packet)
     require(digest(packet / 'manifest.json') == MANIFEST_SHA, "Integrity guard: digest(packet / 'manifest.json') == MANIFEST_SHA")
     manifest = json.loads((packet / 'manifest.json').read_bytes())
     require(manifest['baseSha'] == BASE, "Integrity guard: manifest['baseSha'] == BASE")
-    for row in manifest['changedFiles']:
+    require(set(z.namelist()) == {'manifest.json'} | {'candidate/' + row['path'] for row in manifest['changes']}, 'Packet entries differ from reviewed seven-file source')
+    for row in manifest['changes']:
         require(digest(packet / 'candidate' / row['path']) == row['postimageSha256'], "Integrity guard: digest(packet / 'candidate' / row['path']) == row['postimageSha256']")
     code, head = driver.command('base-identity', ['git', 'rev-parse', 'HEAD'], args.base, 10)
     require(head.strip() == BASE, 'Integrity guard: head.strip() == BASE')
+    for row in manifest['sourceJoins']:
+        require(digest(Path(args.base) / row['path']) == row['sha256'], 'Current-main source/instruction join differs')
+    for row in manifest['changes']:
+        path = Path(args.base) / row['path']
+        require((not path.exists()) if row['preimageSha256'] is None else digest(path) == row['preimageSha256'], 'Business preimage differs')
     for phase in ('baseline', 'candidate'):
         dest = driver.root / phase
         shutil.copytree(args.base, dest, ignore=shutil.ignore_patterns('.git', 'bin', 'obj'))
-        for row in manifest['changedFiles']:
+        for row in manifest['changes']:
             path = row['path']
-            if phase == 'baseline' and (not path.endswith('ProcurementOmittedSizeSourceTests.cs')):
+            if phase == 'baseline' and (not path.endswith('ProcurementPaginationSourceTests.cs')):
                 continue
             target = dest / path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes((packet / 'candidate' / path).read_bytes())
-        if phase == 'baseline':
-            regression = dest / 'Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementOmittedSizeSourceTests.cs'
-            text = regression.read_text()
-            old = 'foreach (var value in cases)'
-            require(text.count(old) == 1, 'Integrity guard: text.count(old) == 1')
-            regression.write_text(text.replace(old, 'foreach (var value in cases.Where(value => value.Size is null && value.Index is null && (value.Search == "match" || value.Search is null)))'))
-            driver.receipt['baselineSelection'] = {'cases': 4, 'meaning': 'Only omitted size, first/default page, filtered251 or unfiltered258, both routes; all32 candidate cases remain unchanged', 'selectedSourceSha256': digest(regression)}
         tests = dest / 'Legacy.Maliev.ProcurementService.Tests'
         helper = Path(args.helper)
         assembly = Path(args.assembly)
@@ -248,6 +380,14 @@ def prepare(args, driver):
             if changed != text:
                 file.write_text(changed, encoding='utf-8')
         require(replacements == 9, 'Integrity guard: replacements == 9')
+        install_fixture(tests, phase)
+        if phase == 'baseline':
+            regression = dest / 'Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPaginationSourceTests.cs'
+            text = regression.read_text()
+            old = 'foreach (var value in cases)'
+            require(text.count(old) == 1, 'Integrity guard: text.count(old) == 1')
+            regression.write_text(text.replace(old, 'foreach (var value in cases.Where(value => value.Index is null && ((value.Size is null && (value.Search == "match" || value.Search is null)) || ((value.Size == 251 || value.Size == 999) && value.Search == "match"))))'))
+            driver.receipt['baselineSelection'] = {'cases': 16, 'meaning': 'Omitted filtered503/unfiltered510 and explicit251/999 first page; two routes and both ID sort directions. All68 candidate HTTP cases unchanged.', 'selectedSourceSha256': digest(regression)}
         driver.command(phase + '-git-init', ['git', 'init'], dest, 10)
         driver.command(phase + '-git-index', ['git', 'add', '.'], dest, 20)
     driver.receipt['resourceOverlay'] = {'helperSha256': args.helper_sha, 'assemblySha256': args.assembly_sha, 'builderSites': 9, 'businessManifestSha256': MANIFEST_SHA}
@@ -256,7 +396,7 @@ def prepare(args, driver):
 def main():
     require(os.name == 'posix' and os.environ.get('GITHUB_ACTIONS') == 'true', 'Hosted Linux entry required')
     parser = argparse.ArgumentParser()
-    parser.add_argument('--phase', choices=['focused', 'full', 'cleanup'], required=True)
+    parser.add_argument('--phase', choices=['focused', 'full', 'injections', 'cleanup'], required=True)
     for name in ('root', 'base', 'packet', 'shared-sha', 'shared-checkout', 'helper', 'helper-sha', 'assembly', 'assembly-sha'):
         parser.add_argument('--' + name, required=name == 'root')
     args = parser.parse_args()
@@ -270,6 +410,30 @@ def main():
     if args.phase == 'cleanup':
         driver.cleanup()
         return
+    # A fresh exact original hosted allocation permits collecting qualification
+    # evidence; it does not qualify attribution or grant native acceptance.
+    from procurement_hosted_binding import admit
+    binding = admit(os.environ.get('MALIEV_PROCUREMENT_ALLOCATION_FILE', ''), os.environ.get('MALIEV_PROCUREMENT_ALLOCATION_SHA'))
+    prior = driver.receipt.get('hostedExecutionBinding')
+    require(prior is None or all(prior[key] == binding[key] for key in ('allocationId', 'expiresUtc', 'transportCommit', 'runId', 'runAttempt')), 'Original hosted allocation changed between phases')
+    driver.receipt['hostedExecutionBinding'] = binding
+    driver.save()
+    require_class_attribution_qualification(execution_admitted=binding['qualificationExecutionAllowed'])
+    if args.phase == 'injections':
+        require(driver.receipt.get('owner') == OWNER and driver.receipt.get('run') == run, 'Original owned run receipt required')
+        suite = driver.receipt.get('fullSuite', {})
+        require(suite.get('actualCases') == 410 and suite.get('passed') == 410 and suite.get('failed') == 0, 'Original actual410 full proof required')
+        require(driver.receipt.get('effectiveGoVersion', '').startswith('go version go1.26.9 '), 'Existing qualified actual Go1.26.9 evidence required')
+        require(driver.receipt.get('fixtureQualification', {}).get('candidate-full', {}).get('classAttributionQualified') is True, 'Original native class attribution proof required')
+        from procurement_native_injections import run as run_injections
+        os.environ['GITHUB_ACTIONS'] = 'false'
+        os.environ['TESTCONTAINERS_RYUK_DISABLED'] = 'true'
+        os.environ['MSBUILDDISABLENODEREUSE'] = '1'
+        try:
+            run_injections(driver, root / 'candidate')
+        finally:
+            driver.finish()
+        return
     if args.phase == 'full':
         shared = Path(args.shared_checkout)
         cwd = root / 'candidate'
@@ -282,6 +446,7 @@ def main():
         os.environ['MSBUILDDISABLENODEREUSE'] = '1'
         action = (shared / 'actions/dotnet-validate/action.yml').read_text()
         spec = install_spec(action)
+        require(spec['env']['GOTOOLCHAIN'] == 'go1.26.9', 'Qualified Go1.26.9 scanner prerequisite required')
         apply_go_spec(os.environ, spec)
         driver.receipt['reviewedGoStep'] = {'stepSha256': spec['stepSha256'], 'package': spec['package'], 'GOTOOLCHAIN': spec['env']['GOTOOLCHAIN']}
         driver.save()
@@ -292,6 +457,7 @@ def main():
             require(effective.strip() == spec['env']['GOTOOLCHAIN'], 'Go discarded reviewed toolchain environment')
             _, version = driver.command('effective-go-version', ['go', 'version'], cwd, 15)
             driver.receipt['effectiveGoVersion'] = version.strip()
+            require(version.strip().startswith('go version go1.26.9 '), 'Actual scanner toolchain differs')
             driver.save()
             driver.command('install-reviewed-gitleaks', ['go', 'install', spec['package']], cwd, 240)
             _, gopath = driver.command('go-path', ['go', 'env', 'GOPATH'], cwd, 15)
@@ -305,6 +471,8 @@ def main():
             results.mkdir()
             full_roster = observe_roster(driver, 'candidate-full', cwd)
             require(full_roster['filter'] is None, 'Full roster/run must have no filter')
+            associated_roster(full_roster, full=True)
+            driver.begin_fixture_phase('candidate-full')
             driver.command('candidate-full', common_test_args(cwd, settings(root)) + ['-p:VSTestTestCaseFilter=', '--collect', 'XPlat Code Coverage', '--logger', 'trx;LogFileName=full.trx', '--results-directory', str(results)], cwd, 720, monitor=True)
             driver.command('candidate-coverage', ['python3', '-B', 'scripts/verify-runner-coverage.py', str(results)], cwd, 30)
             require(json.loads((root / 'gitleaks.json').read_bytes()) == [], "Integrity guard: json.loads((root / 'gitleaks.json').read_bytes()) == []")
@@ -346,11 +514,12 @@ def main():
             require(actual == expected, 'Integrity guard: actual == expected')
             require(binary_hashes(cwd) == full_roster['binaryHashes'], 'Full execution inputs drifted')
             proof = trx(results, full_roster)
-            require(proof['actualCases'] >= 32, "Integrity guard: proof['actualCases'] >= 32")
+            require(proof['actualCases'] == 410, 'Full terminal roster count differs')
+            driver.finish_fixture_phase()
             driver.receipt['fullSuite'] = proof
             driver.save()
             classes = {method.attrib['className'].split(',')[0] for method in ET.parse(next(results.glob('*.trx'))).findall('.//t:TestMethod', NS)}
-            for required in ('ProcurementControllerContractTests', 'ProcurementPostgresMigrationTests', 'ProcurementRuntimeParityTests', 'ProcurementOmittedSizeSourceTests'):
+            for required in ('ProcurementControllerContractTests', 'ProcurementPostgresMigrationTests', 'ProcurementRuntimeParityTests', 'ProcurementPaginationSourceTests', 'ProcurementPaginationWireContractTests', 'ProcurementIndependentContactTests'):
                 require(any((value.endswith('.' + required) for value in classes)), "Integrity guard: any((value.endswith('.' + required) for value in classes))")
         except BaseException as exc:
             driver.receipt.setdefault('firstFailure', type(exc).__name__)
@@ -373,16 +542,24 @@ def main():
             require(re.search('\\b0 Warning\\(s\\)', build) and re.search('\\b0 Error\\(s\\)', build), "Integrity guard: re.search('\\\\b0 Warning\\\\(s\\\\)', build) and re.search('\\\\b0 Error\\\\(s\\\\)', build)")
             results = root / (phase + '-results')
             results.mkdir()
-            testfilter = FILTER if phase == 'baseline' else FILTER + '|FullyQualifiedName~ListBoundaries_ForwardOmittedSizeToTheOwningFilteredRepository'
+            testfilter = BASELINE_FILTER if phase == 'baseline' else CANDIDATE_FILTER
             roster = observe_roster(driver, phase + '-focused', cwd, testfilter)
-            require(len(roster['names']) == (4 if phase == 'baseline' else 32), 'Focused compiled roster differs')
+            require(len(roster['names']) == (16 if phase == 'baseline' else 94), 'Focused compiled roster differs')
+            if phase == 'candidate':
+                associated_roster(roster, full=False)
+            else:
+                baseline_roster(roster)
+            driver.begin_fixture_phase(phase)
             before = set(driver.receipt['postgres'])
             code, _ = driver.command(phase + '-focused', common_test_args(cwd, settings(root)) + ['--filter', testfilter, '--logger', 'trx;LogFileName=focused.trx', '--results-directory', str(results)], cwd, 480, allow_failure=phase == 'baseline', monitor=True)
             healthy = [r for cid, r in driver.receipt['postgres'].items() if cid not in before and r.get('serverVersionNum')]
+            driver.receipt['resourceAttribution'] = {'globallyHealthyCount': len(healthy), 'classAttributionQualified': False, 'nativeAccepted': False}
             require(len(healthy) >= 2, 'Integrity guard: len(healthy) >= 2')
             require(binary_hashes(cwd) == roster['binaryHashes'], 'Focused execution inputs drifted')
             proof = trx(results, roster, red=phase == 'baseline')
+            require(proof['failed'] == (16 if phase == 'baseline' else 0), 'All selected behavioral baseline cases must fail; candidate must pass')
             require((code != 0) == (phase == 'baseline'), "Integrity guard: (code != 0) == (phase == 'baseline')")
+            driver.finish_fixture_phase()
             driver.receipt['phases'][phase] = proof
             driver.save()
             driver.cleanup()

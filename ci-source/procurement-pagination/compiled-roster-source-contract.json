@@ -1,0 +1,1710 @@
+{
+  "baseSha": "1249989e04040bd1326842ebf2e1f438369cf8c9",
+  "authenticatedMainRun": 37820690927,
+  "authenticatedMainArtifactId": 11569590909,
+  "artifactZipDigestFromGitHub": "sha256:2bf8570daf4976859aca3db1118b9fbd07b4b7c55638fa7f8f2ad4fd058df979",
+  "mainTrxSha256": "65eac1dc102af66fb54cc9d0351dbd5122f9e96d7e34758015b925dac7862610",
+  "originalMainIdentities": [
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests.DetailRead_PropagatesRepositoryErrorAndCancellationWithoutCache(purchaseOrder: False, cancelled: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests",
+      "methodName": "DetailRead_PropagatesRepositoryErrorAndCancellationWithoutCache"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests.DetailRead_PropagatesRepositoryErrorAndCancellationWithoutCache(purchaseOrder: False, cancelled: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests",
+      "methodName": "DetailRead_PropagatesRepositoryErrorAndCancellationWithoutCache"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests.DetailRead_PropagatesRepositoryErrorAndCancellationWithoutCache(purchaseOrder: True, cancelled: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests",
+      "methodName": "DetailRead_PropagatesRepositoryErrorAndCancellationWithoutCache"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests.DetailRead_PropagatesRepositoryErrorAndCancellationWithoutCache(purchaseOrder: True, cancelled: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests",
+      "methodName": "DetailRead_PropagatesRepositoryErrorAndCancellationWithoutCache"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests.GetPurchaseOrder_UsesPostgresDespiteStaleCacheWithoutReadingOrFillingCache",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests",
+      "methodName": "GetPurchaseOrder_UsesPostgresDespiteStaleCacheWithoutReadingOrFillingCache"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests.GetSupplier_UsesPostgresDespiteStaleCacheWithoutReadingOrFillingCache",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests",
+      "methodName": "GetSupplier_UsesPostgresDespiteStaleCacheWithoutReadingOrFillingCache"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests.ListBoundaries_NormalizePageAndClampSizeWithoutChangingWireContract",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests",
+      "methodName": "ListBoundaries_NormalizePageAndClampSizeWithoutChangingWireContract"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Caching.DistributedProcurementCacheTests.Cache_RoundTripsAuthorizedReadAndSupportsInvalidation",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Caching.DistributedProcurementCacheTests",
+      "methodName": "Cache_RoundTripsAuthorizedReadAndSupportsInvalidation"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Caching.DistributedProcurementCacheTests.GetAsync_does_not_swallow_cancellation",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Caching.DistributedProcurementCacheTests",
+      "methodName": "GetAsync_does_not_swallow_cancellation"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Caching.DistributedProcurementCacheTests.IdempotencyStore_RoundTripsResponseWithoutUsingRawClientKey",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Caching.DistributedProcurementCacheTests",
+      "methodName": "IdempotencyStore_RoundTripsResponseWithoutUsingRawClientKey"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Caching.DistributedProcurementCacheTests.RemoveAsync_does_not_swallow_cancellation",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Caching.DistributedProcurementCacheTests",
+      "methodName": "RemoveAsync_does_not_swallow_cancellation"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Caching.DistributedProcurementCacheTests.SetAsync_does_not_swallow_cancellation",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Caching.DistributedProcurementCacheTests",
+      "methodName": "SetAsync_does_not_swallow_cancellation"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.Controllers_PreserveAllThirtyLegacyActionsWithPermissionChecks",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "Controllers_PreserveAllThirtyLegacyActionsWithPermissionChecks"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.Controllers_PreserveLegacyBaseRoutesAndRequireAuthentication(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.FilesController), route: \"purchaseorders/files\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "Controllers_PreserveLegacyBaseRoutesAndRequireAuthentication"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.Controllers_PreserveLegacyBaseRoutesAndRequireAuthentication(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.OrderItemsController), route: \"purchaseorders/orderitems\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "Controllers_PreserveLegacyBaseRoutesAndRequireAuthentication"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.Controllers_PreserveLegacyBaseRoutesAndRequireAuthentication(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.PurchaseOrderAddressesController), route: \"purchaseorders/addresses\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "Controllers_PreserveLegacyBaseRoutesAndRequireAuthentication"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.Controllers_PreserveLegacyBaseRoutesAndRequireAuthentication(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.PurchaseOrdersController), route: \"[controller]\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "Controllers_PreserveLegacyBaseRoutesAndRequireAuthentication"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.Controllers_PreserveLegacyBaseRoutesAndRequireAuthentication(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.SupplierAddressesController), route: \"suppliers/addresses\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "Controllers_PreserveLegacyBaseRoutesAndRequireAuthentication"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.Controllers_PreserveLegacyBaseRoutesAndRequireAuthentication(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.SuppliersController), route: \"[controller]\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "Controllers_PreserveLegacyBaseRoutesAndRequireAuthentication"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.CriticalWrites_RequireLiveCriticalAuthorization(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.PurchaseOrdersController), action: \"CreatePurchaseOrderAsync\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "CriticalWrites_RequireLiveCriticalAuthorization"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.CriticalWrites_RequireLiveCriticalAuthorization(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.PurchaseOrdersController), action: \"DeletePurchaseOrderAsync\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "CriticalWrites_RequireLiveCriticalAuthorization"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.CriticalWrites_RequireLiveCriticalAuthorization(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.PurchaseOrdersController), action: \"UpdatePurchaseOrderAsync\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "CriticalWrites_RequireLiveCriticalAuthorization"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.CriticalWrites_RequireLiveCriticalAuthorization(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.SuppliersController), action: \"DeleteSupplierAsync\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "CriticalWrites_RequireLiveCriticalAuthorization"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.CrossResourceRoutes_PreserveLegacyAbsoluteTemplates(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.FilesController), action: \"CreatePurchaseOrderFileEntryAsync\", template: \"/purchaseorders/{purchaseOrderId:int}/files\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "CrossResourceRoutes_PreserveLegacyAbsoluteTemplates"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.CrossResourceRoutes_PreserveLegacyAbsoluteTemplates(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.FilesController), action: \"GetPurchaseOrderFilesAsync\", template: \"/purchaseorders/{purchaseOrderId:int}/files\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "CrossResourceRoutes_PreserveLegacyAbsoluteTemplates"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.CrossResourceRoutes_PreserveLegacyAbsoluteTemplates(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.OrderItemsController), action: \"GetOrderItemsAsync\", template: \"/purchaseorders/{purchaseOrderId:int}/orderitems\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "CrossResourceRoutes_PreserveLegacyAbsoluteTemplates"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.CrossResourceRoutes_PreserveLegacyAbsoluteTemplates(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.SupplierAddressesController), action: \"CreateSupplierAddressAsync\", template: \"/suppliers/{supplierId:int}/addresses\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "CrossResourceRoutes_PreserveLegacyAbsoluteTemplates"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.CrossResourceRoutes_PreserveLegacyAbsoluteTemplates(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.SupplierAddressesController), action: \"DeleteSupplierAddressAsync\", template: \"/suppliers/{supplierId:int}/addresses/{addressId:i\"···)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "CrossResourceRoutes_PreserveLegacyAbsoluteTemplates"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.CrossResourceRoutes_PreserveLegacyAbsoluteTemplates(controller: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.SupplierAddressesController), action: \"GetSupplierAddressAsync\", template: \"/suppliers/{supplierId:int}/addresses\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "CrossResourceRoutes_PreserveLegacyAbsoluteTemplates"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests.SignedPermissionClaims_AreAuthoritativeOutsideDestructiveAndPurchaseOrderWrites",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementControllerContractTests",
+      "methodName": "SignedPermissionClaims_AreAuthoritativeOutsideDestructiveAndPurchaseOrderWrites"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementOpenApiHttpContractTests.Development_DocumentPreservesThirtyOperationsQueriesHeadersAndResponses",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementOpenApiHttpContractTests",
+      "methodName": "Development_DocumentPreservesThirtyOperationsQueriesHeadersAndResponses"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementOpenApiHttpContractTests.Development_SchemasMatchActualPascalWireAndKeepAddressAndScalarOwnershipSeparate",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementOpenApiHttpContractTests",
+      "methodName": "Development_SchemasMatchActualPascalWireAndKeepAddressAndScalarOwnershipSeparate"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementOpenApiHttpContractTests.Production_DocumentationIsUnavailableAndSupplierReadRequiresAuthentication",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Controllers.ProcurementOpenApiHttpContractTests",
+      "methodName": "Production_DocumentationIsUnavailableAndSupplierReadRequiresAuthentication"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementModelCompatibilityTests.PurchaseOrderModel_PreservesTablesRelationsComputedSubtotalAndDateConcurrency",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementModelCompatibilityTests",
+      "methodName": "PurchaseOrderModel_PreservesTablesRelationsComputedSubtotalAndDateConcurrency"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementModelCompatibilityTests.SupplierAndPurchaseOrderAddresses_RemainIsolatedLegacySchemas",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementModelCompatibilityTests",
+      "methodName": "SupplierAndPurchaseOrderAddresses_RemainIsolatedLegacySchemas"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementPostgresMigrationTests.InitialMigrations_PreserveBothIndependentSchemasAndRepositoryBehavior",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementPostgresMigrationTests",
+      "methodName": "InitialMigrations_PreserveBothIndependentSchemasAndRepositoryBehavior"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementPostgresMigrationTests.ModifiedDateConcurrency_RejectsStalePurchaseOrderAndOrderItemUpdates",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementPostgresMigrationTests",
+      "methodName": "ModifiedDateConcurrency_RejectsStalePurchaseOrderAndOrderItemUpdates"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.InvalidRetainedRowsRejectMigrationWithoutChangingRowsSchemaOrHistory(purchaseOrder: False, field: \"Address1\", kind: \"null\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests",
+      "methodName": "InvalidRetainedRowsRejectMigrationWithoutChangingRowsSchemaOrHistory"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.InvalidRetainedRowsRejectMigrationWithoutChangingRowsSchemaOrHistory(purchaseOrder: False, field: \"Name\", kind: \"null\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests",
+      "methodName": "InvalidRetainedRowsRejectMigrationWithoutChangingRowsSchemaOrHistory"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.InvalidRetainedRowsRejectMigrationWithoutChangingRowsSchemaOrHistory(purchaseOrder: False, field: \"Name\", kind: \"oversize\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests",
+      "methodName": "InvalidRetainedRowsRejectMigrationWithoutChangingRowsSchemaOrHistory"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.InvalidRetainedRowsRejectMigrationWithoutChangingRowsSchemaOrHistory(purchaseOrder: True, field: \"PartNumber\", kind: \"oversize\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests",
+      "methodName": "InvalidRetainedRowsRejectMigrationWithoutChangingRowsSchemaOrHistory"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.PostgreSqlUnicodeExpressionCountsSupplementaryScalarsAsTwoUtf16Units",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests",
+      "methodName": "PostgreSqlUnicodeExpressionCountsSupplementaryScalarsAsTwoUtf16Units"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.ValidRetainedLiteralsSurviveUpgradeRepeatAndRollback(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests",
+      "methodName": "ValidRetainedLiteralsSurviveUpgradeRepeatAndRollback"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.ValidRetainedLiteralsSurviveUpgradeRepeatAndRollback(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests",
+      "methodName": "ValidRetainedLiteralsSurviveUpgradeRepeatAndRollback"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Data.TimestampMigrationContractTests.TimestampMigrations_UseExplicitUtcConversions(relativePath: \"Legacy.Maliev.ProcurementService.Data/Migrations/P\"···, tableColumns: [\"PurchaseOrderFile\", \"ModifiedDate\", \"PurchaseOrderFile\", \"CreatedDate\", \"PurchaseOrder\", ···])",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Data.TimestampMigrationContractTests",
+      "methodName": "TimestampMigrations_UseExplicitUtcConversions"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Data.TimestampMigrationContractTests.TimestampMigrations_UseExplicitUtcConversions(relativePath: \"Legacy.Maliev.ProcurementService.Data/Migrations/S\"···, tableColumns: [\"Supplier\", \"ModifiedDate\", \"Supplier\", \"CreatedDate\", \"Address\", ···])",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Data.TimestampMigrationContractTests",
+      "methodName": "TimestampMigrations_UseExplicitUtcConversions"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressAndFileCreateLiteralSourceTests.FilePostKeepsPaddedNonEmptyBucketAndDefaultBindingRejectsAllSpace(allSpace: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressAndFileCreateLiteralSourceTests",
+      "methodName": "FilePostKeepsPaddedNonEmptyBucketAndDefaultBindingRejectsAllSpace"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressAndFileCreateLiteralSourceTests.FilePostKeepsPaddedNonEmptyBucketAndDefaultBindingRejectsAllSpace(allSpace: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressAndFileCreateLiteralSourceTests",
+      "methodName": "FilePostKeepsPaddedNonEmptyBucketAndDefaultBindingRejectsAllSpace"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressAndFileCreateLiteralSourceTests.MissingWritePermissionCannotPersistEitherLiteralRoute(file: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressAndFileCreateLiteralSourceTests",
+      "methodName": "MissingWritePermissionCannotPersistEitherLiteralRoute"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressAndFileCreateLiteralSourceTests.MissingWritePermissionCannotPersistEitherLiteralRoute(file: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressAndFileCreateLiteralSourceTests",
+      "methodName": "MissingWritePermissionCannotPersistEitherLiteralRoute"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressAndFileCreateLiteralSourceTests.PurchaseOrderAddressJsonPostAndPutCopyValidLiteralsAndZeroCountryExactly(literal: \"  ไทย  \")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressAndFileCreateLiteralSourceTests",
+      "methodName": "PurchaseOrderAddressJsonPostAndPutCopyValidLiteralsAndZeroCountryExactly"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressAndFileCreateLiteralSourceTests.PurchaseOrderAddressJsonPostAndPutCopyValidLiteralsAndZeroCountryExactly(literal: \" \")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressAndFileCreateLiteralSourceTests",
+      "methodName": "PurchaseOrderAddressJsonPostAndPutCopyValidLiteralsAndZeroCountryExactly"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressAndFileCreateLiteralSourceTests.PurchaseOrderAddressJsonPostAndPutCopyValidLiteralsAndZeroCountryExactly(literal: \"\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressAndFileCreateLiteralSourceTests",
+      "methodName": "PurchaseOrderAddressJsonPostAndPutCopyValidLiteralsAndZeroCountryExactly"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.AddressWrites_NullAndBlankLinesFollowIndependentSourceContracts(line: \" \")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests",
+      "methodName": "AddressWrites_NullAndBlankLinesFollowIndependentSourceContracts"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.AddressWrites_NullAndBlankLinesFollowIndependentSourceContracts(line: \"\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests",
+      "methodName": "AddressWrites_NullAndBlankLinesFollowIndependentSourceContracts"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.AddressWrites_NullAndBlankLinesFollowIndependentSourceContracts(line: null)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests",
+      "methodName": "AddressWrites_NullAndBlankLinesFollowIndependentSourceContracts"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.AddressWrites_PopulatedFields_SurviveCreateAndUpdate(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests",
+      "methodName": "AddressWrites_PopulatedFields_SurviveCreateAndUpdate"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.AddressWrites_PopulatedFields_SurviveCreateAndUpdate(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests",
+      "methodName": "AddressWrites_PopulatedFields_SurviveCreateAndUpdate"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.PurchaseOrderAddress_ExactServiceGrant_CreateReadUpdateDelete_PreservesSeparateSchema",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests",
+      "methodName": "PurchaseOrderAddress_ExactServiceGrant_CreateReadUpdateDelete_PreservesSeparateSchema"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.PurchaseOrderAddress_InUseDelete_RealForeignKeyPreservesOrderAndAddress",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests",
+      "methodName": "PurchaseOrderAddress_InUseDelete_RealForeignKeyPreservesOrderAndAddress"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.PurchaseOrderAddress_LiveWriteWithoutTrustedServiceOptIn_DoesNotPersist(optIn: False, subject: \"service:procurement-parity\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests",
+      "methodName": "PurchaseOrderAddress_LiveWriteWithoutTrustedServiceOptIn_DoesNotPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.PurchaseOrderAddress_LiveWriteWithoutTrustedServiceOptIn_DoesNotPersist(optIn: True, subject: \"employee:procurement-parity\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests",
+      "methodName": "PurchaseOrderAddress_LiveWriteWithoutTrustedServiceOptIn_DoesNotPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_AuthorizedDelete_DetachesAndDeletesOnlySupplierSchema",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests",
+      "methodName": "SupplierAddress_AuthorizedDelete_DetachesAndDeletesOnlySupplierSchema"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_CreateReadUpdate_PreservesWireShapeAndSeparateDatabase",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests",
+      "methodName": "SupplierAddress_CreateReadUpdate_PreservesWireShapeAndSeparateDatabase"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_MissingParentAndMissingRecords_ReturnNotFoundWithoutOrphan",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests",
+      "methodName": "SupplierAddress_MissingParentAndMissingRecords_ReturnNotFoundWithoutOrphan"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_ReadGrantCannotCreateOrUpdate_LeavesCommittedAddressIntact",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests",
+      "methodName": "SupplierAddress_ReadGrantCannotCreateOrUpdate_LeavesCommittedAddressIntact"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_WrongOwnerDelete_CurrentSecurityPolicyPreservesBothAttachments",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests",
+      "methodName": "SupplierAddress_WrongOwnerDelete_CurrentSecurityPolicyPreservesBothAttachments"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveCreate_UsesWorkloadBearerAndFreshDecisionWithoutClaimFallback",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveCreate_UsesWorkloadBearerAndFreshDecisionWithoutClaimFallback"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"auth-denied\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"auth-http\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"auth-malformed\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"auth-oversized\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"auth-unavailable\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"iam-denied\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"iam-http\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"iam-malformed\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"iam-redirect\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"iam-unauthorized\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"iam-unavailable\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"long-secret\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"missing-client\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"missing-live-key\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"short-secret\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"unknown-client\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist(mode: \"wrong-secret\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeSupplierDelete_UsesExactOwnedResourceAndNoEmployeeTokenAsWorkload",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "EmployeeSupplierDelete_UsesExactOwnedResourceAndNoEmployeeTokenAsWorkload"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.ExpiredEmployeeJwt_NeverReachesWorkloadExchangeOrIam",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "ExpiredEmployeeJwt_NeverReachesWorkloadExchangeOrIam"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.WorkloadDeadline_IgnoringCancellationKeepsLateResourceOwnership(kind: \"fault\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "WorkloadDeadline_IgnoringCancellationKeepsLateResourceOwnership"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.WorkloadDeadline_IgnoringCancellationKeepsLateResourceOwnership(kind: \"response\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "WorkloadDeadline_IgnoringCancellationKeepsLateResourceOwnership"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.WorkloadDeadline_IgnoringCancellationKeepsLateResourceOwnership(kind: \"stream\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "WorkloadDeadline_IgnoringCancellationKeepsLateResourceOwnership"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.WorkloadResponseBodyDeadline_DeniesWithoutIamOrPersistence",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests",
+      "methodName": "WorkloadResponseBodyDeadline_DeniesWithoutIamOrPersistence"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests.FileMetadata_Lifecycle_ResolvesLocationAndPreservesParentScopedOwnership",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests",
+      "methodName": "FileMetadata_Lifecycle_ResolvesLocationAndPreservesParentScopedOwnership"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests.OrderItem_ComputedSubtotal_PreservesSourceNullableAndSignedArithmetic(quantity: -2, priceText: \"12.34\", subtotalText: \"-24.68\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests",
+      "methodName": "OrderItem_ComputedSubtotal_PreservesSourceNullableAndSignedArithmetic"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests.OrderItem_ComputedSubtotal_PreservesSourceNullableAndSignedArithmetic(quantity: 0, priceText: \"12.34\", subtotalText: \"0.00\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests",
+      "methodName": "OrderItem_ComputedSubtotal_PreservesSourceNullableAndSignedArithmetic"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests.OrderItem_ComputedSubtotal_PreservesSourceNullableAndSignedArithmetic(quantity: 2, priceText: null, subtotalText: null)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests",
+      "methodName": "OrderItem_ComputedSubtotal_PreservesSourceNullableAndSignedArithmetic"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests.OrderItem_ComputedSubtotal_PreservesSourceNullableAndSignedArithmetic(quantity: null, priceText: \"12.34\", subtotalText: null)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests",
+      "methodName": "OrderItem_ComputedSubtotal_PreservesSourceNullableAndSignedArithmetic"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests.OrderItem_ComputedSubtotal_PreservesSourceNullableAndSignedArithmetic(quantity: null, priceText: null, subtotalText: null)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests",
+      "methodName": "OrderItem_ComputedSubtotal_PreservesSourceNullableAndSignedArithmetic"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests.OrderItem_Lifecycle_PreservesDecimalComputationAndParentScopedLists",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementChildLifecycleTests",
+      "methodName": "OrderItem_Lifecycle_PreservesDecimalComputationAndParentScopedLists"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDefaultsOwnerDeadlineTests.CallerCancellation_PreservesCoalescingCacheAndFreshLiveWrite",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDefaultsOwnerDeadlineTests",
+      "methodName": "CallerCancellation_PreservesCoalescingCacheAndFreshLiveWrite"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDefaultsOwnerDeadlineTests.LocalAdmissionGuard_RejectsShortSecretBeforePrimaryTransport",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDefaultsOwnerDeadlineTests",
+      "methodName": "LocalAdmissionGuard_RejectsShortSecretBeforePrimaryTransport"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDefaultsOwnerDeadlineTests.MalformedAuthorityDiagnostics_DoNotExposeBodySecretOrPrivateOrigin",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDefaultsOwnerDeadlineTests",
+      "methodName": "MalformedAuthorityDiagnostics_DoNotExposeBodySecretOrPrivateOrigin"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDefaultsOwnerDeadlineTests.SharedDeadline_DeniesThenRetriesWithoutCachingLateResult(kind: \"fault\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDefaultsOwnerDeadlineTests",
+      "methodName": "SharedDeadline_DeniesThenRetriesWithoutCachingLateResult"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDefaultsOwnerDeadlineTests.SharedDeadline_DeniesThenRetriesWithoutCachingLateResult(kind: \"response\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDefaultsOwnerDeadlineTests",
+      "methodName": "SharedDeadline_DeniesThenRetriesWithoutCachingLateResult"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDefaultsOwnerDeadlineTests.SharedDeadline_DeniesThenRetriesWithoutCachingLateResult(kind: \"stream\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDefaultsOwnerDeadlineTests",
+      "methodName": "SharedDeadline_DeniesThenRetriesWithoutCachingLateResult"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay(purchaseOrder: False, teardown: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay(purchaseOrder: False, teardown: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay(purchaseOrder: True, teardown: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay(purchaseOrder: True, teardown: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CacheLossAfterAcknowledgement_ReplaysExactResponse(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_CacheLossAfterAcknowledgement_ReplaysExactResponse"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CacheLossAfterAcknowledgement_ReplaysExactResponse(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_CacheLossAfterAcknowledgement_ReplaysExactResponse"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort(purchaseOrder: False, duringProbe: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort(purchaseOrder: False, duringProbe: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort(purchaseOrder: True, duringProbe: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort(purchaseOrder: True, duringProbe: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CommitAttemptExceptionWithoutReceipt_DoesNotRetryMutationAndReturns503(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_CommitAttemptExceptionWithoutReceipt_DoesNotRetryMutationAndReturns503"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CommitAttemptExceptionWithoutReceipt_DoesNotRetryMutationAndReturns503(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_CommitAttemptExceptionWithoutReceipt_DoesNotRetryMutationAndReturns503"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CommittedReceiptWithUnavailableFreshProof_Returns503WithoutReplayingEffect(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_CommittedReceiptWithUnavailableFreshProof_Returns503WithoutReplayingEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CommittedReceiptWithUnavailableFreshProof_Returns503WithoutReplayingEffect(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_CommittedReceiptWithUnavailableFreshProof_Returns503WithoutReplayingEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CorruptPersistedResponse_FailsClosedWithoutAnotherRoot(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_CorruptPersistedResponse_FailsClosedWithoutAnotherRoot"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CorruptPersistedResponse_FailsClosedWithoutAnotherRoot(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_CorruptPersistedResponse_FailsClosedWithoutAnotherRoot"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts(purchaseOrder: False, enabled: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts(purchaseOrder: False, enabled: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts(purchaseOrder: True, enabled: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts(purchaseOrder: True, enabled: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_DifferentSignedActorSameKey_HasIndependentNamespace(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_DifferentSignedActorSameKey_HasIndependentNamespace"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_DifferentSignedActorSameKey_HasIndependentNamespace(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_DifferentSignedActorSameKey_HasIndependentNamespace"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_ExactKeyCaseAndUtf8Boundary_AreDistinctValidatedNamespaces(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_ExactKeyCaseAndUtf8Boundary_AreDistinctValidatedNamespaces"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_ExactKeyCaseAndUtf8Boundary_AreDistinctValidatedNamespaces(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_ExactKeyCaseAndUtf8Boundary_AreDistinctValidatedNamespaces"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity(purchaseOrder: False, mode: \"cancel\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity(purchaseOrder: False, mode: \"rollback\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity(purchaseOrder: False, mode: \"transient\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity(purchaseOrder: True, mode: \"cancel\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity(purchaseOrder: True, mode: \"rollback\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity(purchaseOrder: True, mode: \"transient\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_HealthyReplayRequiresCurrentPermission(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_HealthyReplayRequiresCurrentPermission"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_HealthyReplayRequiresCurrentPermission(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_HealthyReplayRequiresCurrentPermission"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_IndependentHostsConcurrentDifferentPayload_LoserConflictsAndRollsBackRoot(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_IndependentHostsConcurrentDifferentPayload_LoserConflictsAndRollsBackRoot"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_IndependentHostsConcurrentDifferentPayload_LoserConflictsAndRollsBackRoot(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_IndependentHostsConcurrentDifferentPayload_LoserConflictsAndRollsBackRoot"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_IndependentHostsConcurrentSameKey_CommitOneResponse(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_IndependentHostsConcurrentSameKey_CommitOneResponse"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_IndependentHostsConcurrentSameKey_CommitOneResponse(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_IndependentHostsConcurrentSameKey_CommitOneResponse"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_InvalidIdempotencyHeader_RejectsBeforeEffect(purchaseOrder: False, invalid: \"multiple\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_InvalidIdempotencyHeader_RejectsBeforeEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_InvalidIdempotencyHeader_RejectsBeforeEffect(purchaseOrder: False, invalid: \"oversized\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_InvalidIdempotencyHeader_RejectsBeforeEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_InvalidIdempotencyHeader_RejectsBeforeEffect(purchaseOrder: True, invalid: \"multiple\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_InvalidIdempotencyHeader_RejectsBeforeEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_InvalidIdempotencyHeader_RejectsBeforeEffect(purchaseOrder: True, invalid: \"oversized\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_InvalidIdempotencyHeader_RejectsBeforeEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: False, kind: \"blank\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_MalformedExactKey_RejectsWithoutReceipt"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: False, kind: \"comma\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_MalformedExactKey_RejectsWithoutReceipt"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: False, kind: \"control\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_MalformedExactKey_RejectsWithoutReceipt"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: False, kind: \"unicode-overflow\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_MalformedExactKey_RejectsWithoutReceipt"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: True, kind: \"blank\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_MalformedExactKey_RejectsWithoutReceipt"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: True, kind: \"comma\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_MalformedExactKey_RejectsWithoutReceipt"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: True, kind: \"control\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_MalformedExactKey_RejectsWithoutReceipt"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: True, kind: \"unicode-overflow\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_MalformedExactKey_RejectsWithoutReceipt"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: False, drift: \"check\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: False, drift: \"missing\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: False, drift: \"nullable\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: False, drift: \"primary\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: True, drift: \"check\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: True, drift: \"missing\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: True, drift: \"nullable\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: True, drift: \"primary\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_RenewedSignedToken_ReplaysOriginalBytesAndLocationAfterEntityDeletion(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_RenewedSignedToken_ReplaysOriginalBytesAndLocationAfterEntityDeletion"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_RenewedSignedToken_ReplaysOriginalBytesAndLocationAfterEntityDeletion(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_RenewedSignedToken_ReplaysOriginalBytesAndLocationAfterEntityDeletion"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_SameActorAndKeyChangedPayload_ConflictsWithoutMutation(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_SameActorAndKeyChangedPayload_ConflictsWithoutMutation"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_SameActorAndKeyChangedPayload_ConflictsWithoutMutation(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_SameActorAndKeyChangedPayload_ConflictsWithoutMutation"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: False, drift: \"default\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: False, drift: \"deferrable\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: False, drift: \"extra-fk\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: False, drift: \"forced-rls\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: False, drift: \"generated\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: False, drift: \"rls\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: False, drift: \"trigger\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: True, drift: \"default\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: True, drift: \"deferrable\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: True, drift: \"extra-fk\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: True, drift: \"forced-rls\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: True, drift: \"generated\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: True, drift: \"rls\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: True, drift: \"trigger\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.MigrationDown_RefusesDestructiveReceiptRemovalAndPreservesCommittedProof(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "MigrationDown_RefusesDestructiveReceiptRemovalAndPreservesCommittedProof"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.MigrationDown_RefusesDestructiveReceiptRemovalAndPreservesCommittedProof(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "MigrationDown_RefusesDestructiveReceiptRemovalAndPreservesCommittedProof"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.OwningDatabase_MigrationsContainIndependentDurableReceiptSchema(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "OwningDatabase_MigrationsContainIndependentDurableReceiptSchema"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.OwningDatabase_MigrationsContainIndependentDurableReceiptSchema(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "OwningDatabase_MigrationsContainIndependentDurableReceiptSchema"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.PurchaseOrderCreate_DefaultOffExactServicePolicy_StillDeniesBeforeCreate",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "PurchaseOrderCreate_DefaultOffExactServicePolicy_StillDeniesBeforeCreate"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.PurchaseOrderCreate_SameSignedServiceAndKeyChangedEmployeeId_ConflictsWithoutChangingActorOrEffect",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "PurchaseOrderCreate_SameSignedServiceAndKeyChangedEmployeeId_ConflictsWithoutChangingActorOrEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.SupplierCreate_AmbiguousSignedSubject_RejectsBeforeReceiptOrEffect",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "SupplierCreate_AmbiguousSignedSubject_RejectsBeforeReceiptOrEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.SupplierCreate_EmptyAndNullAreDifferentEffectivePayloads_Conflict",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "SupplierCreate_EmptyAndNullAreDifferentEffectivePayloads_Conflict"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.SupplierCreate_IdempotencyResponseWriteFails_AcknowledgedRetryDoesNotDuplicate",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "SupplierCreate_IdempotencyResponseWriteFails_AcknowledgedRetryDoesNotDuplicate"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.SupplierCreate_NullAndOmittedFields_ReplaySameEffectivePayload",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "SupplierCreate_NullAndOmittedFields_ReplaySameEffectivePayload"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.SupplierCreate_WrongSignedIssuer_NormalMiddlewareRejectsWithoutEffect",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "methodName": "SupplierCreate_WrongSignedIssuer_NormalMiddlewareRejectsWithoutEffect"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PageBeyondLast_SourceReturnsNotFound(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "PageBeyondLast_SourceReturnsNotFound"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PageBeyondLast_SourceReturnsNotFound(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "PageBeyondLast_SourceReturnsNotFound"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PurchaseOrderNumericSearch_SourceMatchesIdentifierSubstring",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "PurchaseOrderNumericSearch_SourceMatchesIdentifierSubstring"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct(search: \" probe \", expectedId: null)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct(search: \"%\", expectedId: 6789)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct(search: \"001203\", expectedId: 999)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct(search: \"PROBE\", expectedId: 999)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct(search: \"_\", expectedId: 6789)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct(search: \"ใบสั่งซื้อ\", expectedId: 999)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierNumericSearch_SourceMatchesOnlyIdentifier_NotTextContainingSameDigits",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "SupplierNumericSearch_SourceMatchesOnlyIdentifier_NotTextContainingSameDigits"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct(search: \" \", expectedId: 0)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct(search: \" 1234 \", expectedId: 1234)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct(search: \" part1234 \", expectedId: null)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct(search: \"%\", expectedId: 6789)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct(search: \"001234\", expectedId: 1234)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct(search: \"2147483648\", expectedId: 4567)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct(search: \"PART1234\", expectedId: null)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct(search: \"part1234\", expectedId: 4567)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct(search: \"ชิ้นงาน\", expectedId: 4567)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests",
+      "methodName": "SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: False, sort: \"2\", ids: \"11,33,44,22\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: False, sort: \"3\", ids: \"22,33,44,11\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: False, sort: \"4\", ids: \"11,33,44,22\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: False, sort: \"5\", ids: \"22,33,44,11\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: False, sort: \"6\", ids: \"11,22,33,44\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: False, sort: \"7\", ids: \"33,44,22,11\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: False, sort: \"SupplierCreatedDate_Ascending\", ids: \"11,33,44,22\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: False, sort: \"SupplierCreatedDate_Descending\", ids: \"22,33,44,11\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: False, sort: \"SupplierModifiedDate_Ascending\", ids: \"11,22,33,44\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: False, sort: \"SupplierModifiedDate_Descending\", ids: \"33,44,22,11\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: False, sort: \"SupplierName_Ascending\", ids: \"11,33,44,22\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: False, sort: \"SupplierName_Descending\", ids: \"22,33,44,11\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: True, sort: \"2\", ids: \"101,303,404,202\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: True, sort: \"3\", ids: \"202,303,404,101\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: True, sort: \"PurchaseOrderCreatedDate_Ascending\", ids: \"101,303,404,202\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp(purchaseOrder: True, sort: \"PurchaseOrderCreatedDate_Descending\", ids: \"202,303,404,101\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "EightNullableBranches_SourceNullPlacementAndStableTiesThroughNamedAndNumericHttp"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.NullableSort_StableIdentifierTiePrecedesPagingAndKeepsMetadata(purchaseOrder: False, sort: \"SupplierModifiedDate_Descending\", index: 2, id: 44)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "NullableSort_StableIdentifierTiePrecedesPagingAndKeepsMetadata"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.NullableSort_StableIdentifierTiePrecedesPagingAndKeepsMetadata(purchaseOrder: False, sort: \"SupplierName_Ascending\", index: 2, id: 33)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "NullableSort_StableIdentifierTiePrecedesPagingAndKeepsMetadata"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.NullableSort_StableIdentifierTiePrecedesPagingAndKeepsMetadata(purchaseOrder: True, sort: \"PurchaseOrderCreatedDate_Ascending\", index: 3, id: 404)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "NullableSort_StableIdentifierTiePrecedesPagingAndKeepsMetadata"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.NullableSort_StableIdentifierTiePrecedesPagingAndKeepsMetadata(purchaseOrder: True, sort: \"PurchaseOrderCreatedDate_Descending\", index: 3, id: 404)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "NullableSort_StableIdentifierTiePrecedesPagingAndKeepsMetadata"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.SortedRead_AnonymousOrWrongPermissionCannotDiscloseOrMutateMasters(purchaseOrder: False, anonymous: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "SortedRead_AnonymousOrWrongPermissionCannotDiscloseOrMutateMasters"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.SortedRead_AnonymousOrWrongPermissionCannotDiscloseOrMutateMasters(purchaseOrder: False, anonymous: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "SortedRead_AnonymousOrWrongPermissionCannotDiscloseOrMutateMasters"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.SortedRead_AnonymousOrWrongPermissionCannotDiscloseOrMutateMasters(purchaseOrder: True, anonymous: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "SortedRead_AnonymousOrWrongPermissionCannotDiscloseOrMutateMasters"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests.SortedRead_AnonymousOrWrongPermissionCannotDiscloseOrMutateMasters(purchaseOrder: True, anonymous: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementNullableSortSourceTests",
+      "methodName": "SortedRead_AnonymousOrWrongPermissionCannotDiscloseOrMutateMasters"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests.BothOwnedDatabasesEnforceOriginalUtf16LengthWithoutTrimming(orderItem: False, exceeds: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests",
+      "methodName": "BothOwnedDatabasesEnforceOriginalUtf16LengthWithoutTrimming"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests.BothOwnedDatabasesEnforceOriginalUtf16LengthWithoutTrimming(orderItem: False, exceeds: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests",
+      "methodName": "BothOwnedDatabasesEnforceOriginalUtf16LengthWithoutTrimming"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests.BothOwnedDatabasesEnforceOriginalUtf16LengthWithoutTrimming(orderItem: True, exceeds: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests",
+      "methodName": "BothOwnedDatabasesEnforceOriginalUtf16LengthWithoutTrimming"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests.BothOwnedDatabasesEnforceOriginalUtf16LengthWithoutTrimming(orderItem: True, exceeds: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests",
+      "methodName": "BothOwnedDatabasesEnforceOriginalUtf16LengthWithoutTrimming"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests.FileJsonUpdatePreservesValidEmptyAndWhitespaceLiteralsWithoutCallingStorage(literal: \" \")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests",
+      "methodName": "FileJsonUpdatePreservesValidEmptyAndWhitespaceLiteralsWithoutCallingStorage"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests.FileJsonUpdatePreservesValidEmptyAndWhitespaceLiteralsWithoutCallingStorage(literal: \"\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests",
+      "methodName": "FileJsonUpdatePreservesValidEmptyAndWhitespaceLiteralsWithoutCallingStorage"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests.SupplierAddressCreateKeepsAllSpaceLiteralAndUpdateKeepsSourceValidEmptyAndZeroCountry",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests",
+      "methodName": "SupplierAddressCreateKeepsAllSpaceLiteralAndUpdateKeepsSourceValidEmptyAndZeroCountry"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests.SupplierSourceExplicitRequiredPropertiesAreRequiredInTheOwnedModel(address: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests",
+      "methodName": "SupplierSourceExplicitRequiredPropertiesAreRequiredInTheOwnedModel"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests.SupplierSourceExplicitRequiredPropertiesAreRequiredInTheOwnedModel(address: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRequiredAndLiteralSourceTests",
+      "methodName": "SupplierSourceExplicitRequiredPropertiesAreRequiredInTheOwnedModel"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.DetailRead_CommittedUpdateWithRemovalFailure_ReturnsOwningDatabaseState(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "DetailRead_CommittedUpdateWithRemovalFailure_ReturnsOwningDatabaseState"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.DetailRead_CommittedUpdateWithRemovalFailure_ReturnsOwningDatabaseState(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "DetailRead_CommittedUpdateWithRemovalFailure_ReturnsOwningDatabaseState"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.DetailRead_LateStaleCacheFillAfterSuccessfulInvalidation_CannotOverrideCommittedState(purchaseOrder: False)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "DetailRead_LateStaleCacheFillAfterSuccessfulInvalidation_CannotOverrideCommittedState"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.DetailRead_LateStaleCacheFillAfterSuccessfulInvalidation_CannotOverrideCommittedState(purchaseOrder: True)",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "DetailRead_LateStaleCacheFillAfterSuccessfulInvalidation_CannotOverrideCommittedState"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.PurchaseOrderGraph_EnabledExactServiceGrant_IsolatedSchemasComputedItemAndForeignKeyFailure",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "PurchaseOrderGraph_EnabledExactServiceGrant_IsolatedSchemasComputedItemAndForeignKeyFailure"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.PurchaseOrderUpdate_StaleExpectedModifiedDate_PreservesFirstCommittedWrite",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "PurchaseOrderUpdate_StaleExpectedModifiedDate_PreservesFirstCommittedWrite"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.PurchaseOrderWrite_OnlyOptedInExactServiceGrantCanReachDatabase(optIn: False, subject: \"service:procurement-parity\", grant: \"exact\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "PurchaseOrderWrite_OnlyOptedInExactServiceGrantCanReachDatabase"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.PurchaseOrderWrite_OnlyOptedInExactServiceGrantCanReachDatabase(optIn: True, subject: \"Service:procurement-parity\", grant: \"exact\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "PurchaseOrderWrite_OnlyOptedInExactServiceGrantCanReachDatabase"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.PurchaseOrderWrite_OnlyOptedInExactServiceGrantCanReachDatabase(optIn: True, subject: \"employee:procurement-parity\", grant: \"exact\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "PurchaseOrderWrite_OnlyOptedInExactServiceGrantCanReachDatabase"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.PurchaseOrderWrite_OnlyOptedInExactServiceGrantCanReachDatabase(optIn: True, subject: \"service:procurement-parity\", grant: \"missing\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "PurchaseOrderWrite_OnlyOptedInExactServiceGrantCanReachDatabase"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.PurchaseOrderWrite_OnlyOptedInExactServiceGrantCanReachDatabase(optIn: True, subject: \"service:procurement-parity\", grant: \"wildcard\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "PurchaseOrderWrite_OnlyOptedInExactServiceGrantCanReachDatabase"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.PurchaseOrderWrite_OnlyOptedInExactServiceGrantCanReachDatabase(optIn: True, subject: \"service:procurement-parity\", grant: \"wrong\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "PurchaseOrderWrite_OnlyOptedInExactServiceGrantCanReachDatabase"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.SupplierAddress_ActualConfiguredRetryPipeline_AttachesAtomically",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "SupplierAddress_ActualConfiguredRetryPipeline_AttachesAtomically"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.SupplierAddress_ActualRepositoryUnderRegisteredStrategy_DoesNotRejectItsOwnTransaction",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "SupplierAddress_ActualRepositoryUnderRegisteredStrategy_DoesNotRejectItsOwnTransaction"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.SupplierCreate_AnonymousOrWrongSignedGrant_DoesNotMutateEitherDatabase",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "SupplierCreate_AnonymousOrWrongSignedGrant_DoesNotMutateEitherDatabase"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.SupplierCreate_HealthySequentialIdempotency_ReplaysOneCommittedRow",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "SupplierCreate_HealthySequentialIdempotency_ReplaysOneCommittedRow"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests.SupplierUpdate_CommittedWriteWithRemovalFailure_SubsequentReadSeesCurrentDatabase",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementRuntimeParityTests",
+      "methodName": "SupplierUpdate_CommittedWriteWithRemovalFailure_SubsequentReadSeesCurrentDatabase"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests.CallerSuppliedRetryUnit_ActualCommitThenLostAcknowledgement_DoesNotCreateSecondAddress",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests",
+      "methodName": "CallerSuppliedRetryUnit_ActualCommitThenLostAcknowledgement_DoesNotCreateSecondAddress"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests.CallerSuppliedRetryUnit_CancellationAtHeldParentLock_DoesNotInsertCandidateBeforeIntentRead",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests",
+      "methodName": "CallerSuppliedRetryUnit_CancellationAtHeldParentLock_DoesNotInsertCandidateBeforeIntentRead"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests.CallerSuppliedRetryUnit_FailureBetweenSaves_RollsBackInsertedAddressAndPointer",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests",
+      "methodName": "CallerSuppliedRetryUnit_FailureBetweenSaves_RollsBackInsertedAddressAndPointer"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests.CallerSuppliedRetryUnit_TransactionTeardownAfterCommit_DoesNotReplayCommittedMutation",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests",
+      "methodName": "CallerSuppliedRetryUnit_TransactionTeardownAfterCommit_DoesNotReplayCommittedMutation"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests.CallerSuppliedRetryUnit_TransientBetweenSaves_UsesFreshStateAndExactlyOneCommittedAddress",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests",
+      "methodName": "CallerSuppliedRetryUnit_TransientBetweenSaves_UsesFreshStateAndExactlyOneCommittedAddress"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests.CallerSuppliedRetryUnits_ConcurrentExplicitReplacements_LockParentBeforeInsertsAndRetainSourceSemantics",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests",
+      "methodName": "CallerSuppliedRetryUnits_ConcurrentExplicitReplacements_LockParentBeforeInsertsAndRetainSourceSemantics"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests.CreateAddress_CancellationAfterKnownCommit_ReturnsCommittedResultWithoutReplay",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests",
+      "methodName": "CreateAddress_CancellationAfterKnownCommit_ReturnsCommittedResultWithoutReplay"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests.CreateAddress_NormalHttpLostCommitAcknowledgement_ReturnsGeneric503WithoutReplay",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests",
+      "methodName": "CreateAddress_NormalHttpLostCommitAcknowledgement_ReturnsGeneric503WithoutReplay"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests.DeleteAddress_NormalConfiguredHttpPipeline_DetachesOnlyTheCurrentAddress",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierTransactionBoundaryTests",
+      "methodName": "DeleteAddress_NormalConfiguredHttpPipeline_DetachesOnlyTheCurrentAddress"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.ProcurementFailureBoundaryTests.CorrelationScope_ContainsTemplateButNoLiteralProcurementPath(pattern: \"PurchaseOrders/{purchaseOrderId:int}\", requestPath: \"/PurchaseOrders/81927\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.ProcurementFailureBoundaryTests",
+      "methodName": "CorrelationScope_ContainsTemplateButNoLiteralProcurementPath"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.ProcurementFailureBoundaryTests.CorrelationScope_ContainsTemplateButNoLiteralProcurementPath(pattern: \"Suppliers/{supplierId:int}\", requestPath: \"/Suppliers/81927\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.ProcurementFailureBoundaryTests",
+      "methodName": "CorrelationScope_ContainsTemplateButNoLiteralProcurementPath"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.ProcurementFailureBoundaryTests.UnhandledRequest_UsesRedactedRouteAndTraceId(controllerType: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.PurchaseOrdersController), controllerRoute: \"PurchaseOrders\", actionRoute: \"{purchaseOrderId:int}\", requestPath: \"/PurchaseOrders/81927\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.ProcurementFailureBoundaryTests",
+      "methodName": "UnhandledRequest_UsesRedactedRouteAndTraceId"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.ProcurementFailureBoundaryTests.UnhandledRequest_UsesRedactedRouteAndTraceId(controllerType: typeof(Legacy.Maliev.ProcurementService.Api.Controllers.SuppliersController), controllerRoute: \"Suppliers\", actionRoute: \"{supplierId:int}\", requestPath: \"/Suppliers/81927\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.ProcurementFailureBoundaryTests",
+      "methodName": "UnhandledRequest_UsesRedactedRouteAndTraceId"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.ProcurementJwtExternalizationTests.ProcurementApi_UsesExternalPublicKeyWithoutAStoredSymmetricKey",
+      "className": "Legacy.Maliev.ProcurementService.Tests.ProcurementJwtExternalizationTests",
+      "methodName": "ProcurementApi_UsesExternalPublicKeyWithoutAStoredSymmetricKey"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.ProcurementJwtExternalizationTests.ProductionProcurementValidator_AcceptsOnlyConfiguredRs256IssuerAndAudience",
+      "className": "Legacy.Maliev.ProcurementService.Tests.ProcurementJwtExternalizationTests",
+      "methodName": "ProductionProcurementValidator_AcceptsOnlyConfiguredRs256IssuerAndAudience"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.ProcurementJwtExternalizationTests.ProductionProcurementValidator_DoesNotFallBackToLegacySymmetricKey",
+      "className": "Legacy.Maliev.ProcurementService.Tests.ProcurementJwtExternalizationTests",
+      "methodName": "ProductionProcurementValidator_DoesNotFallBackToLegacySymmetricKey"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests.PublishWorkflow_ScopesOidcToPublishJobs",
+      "className": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests",
+      "methodName": "PublishWorkflow_ScopesOidcToPublishJobs"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests.Publisher_GrantsOnlyThreeRequiredJobPermissionsAndPreservesPinnedInputs",
+      "className": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests",
+      "methodName": "Publisher_GrantsOnlyThreeRequiredJobPermissionsAndPreservesPinnedInputs"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests.Publisher_RejectsMissingElevatedOrAdditionalPermission(name: \"actions\", value: \"\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests",
+      "methodName": "Publisher_RejectsMissingElevatedOrAdditionalPermission"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests.Publisher_RejectsMissingElevatedOrAdditionalPermission(name: \"actions\", value: \"write\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests",
+      "methodName": "Publisher_RejectsMissingElevatedOrAdditionalPermission"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests.Publisher_RejectsMissingElevatedOrAdditionalPermission(name: \"contents\", value: \"\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests",
+      "methodName": "Publisher_RejectsMissingElevatedOrAdditionalPermission"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests.Publisher_RejectsMissingElevatedOrAdditionalPermission(name: \"contents\", value: \"write\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests",
+      "methodName": "Publisher_RejectsMissingElevatedOrAdditionalPermission"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests.Publisher_RejectsMissingElevatedOrAdditionalPermission(name: \"id-token\", value: \"\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests",
+      "methodName": "Publisher_RejectsMissingElevatedOrAdditionalPermission"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests.Publisher_RejectsMissingElevatedOrAdditionalPermission(name: \"id-token\", value: \"read\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests",
+      "methodName": "Publisher_RejectsMissingElevatedOrAdditionalPermission"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests.Publisher_RejectsMissingElevatedOrAdditionalPermission(name: \"packages\", value: \"write\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests",
+      "methodName": "Publisher_RejectsMissingElevatedOrAdditionalPermission"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests.Publisher_UsesReviewedImmutableValidationProducer",
+      "className": "Legacy.Maliev.ProcurementService.Tests.PublishWorkflowPermissionContractTests",
+      "methodName": "Publisher_UsesReviewedImmutableValidationProducer"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Startup.DockerContextPrivacyTests.ActualDockerContext_ExcludesNestedPrivateArtifactsAndKeepsRequiredDependencySources",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Startup.DockerContextPrivacyTests",
+      "methodName": "ActualDockerContext_ExcludesNestedPrivateArtifactsAndKeepsRequiredDependencySources"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests.ProductionArtifact_PreservesNativeProvidersDependenciesAndIsolatedXml",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests",
+      "methodName": "ProductionArtifact_PreservesNativeProvidersDependenciesAndIsolatedXml"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests.ProductionCacheFailure_KeepsFallbackAndTypeOnlyDiagnostics",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests",
+      "methodName": "ProductionCacheFailure_KeepsFallbackAndTypeOnlyDiagnostics"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests.ProductionControllerFailure_UsesActualJwtAuthorizationAndRedactedStructuredEvent(path: \"/PurchaseOrders/81927\", template: \"PurchaseOrders/{purchaseOrderId:int}\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests",
+      "methodName": "ProductionControllerFailure_UsesActualJwtAuthorizationAndRedactedStructuredEvent"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests.ProductionControllerFailure_UsesActualJwtAuthorizationAndRedactedStructuredEvent(path: \"/Suppliers/81927\", template: \"Suppliers/{supplierId:int}\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests",
+      "methodName": "ProductionControllerFailure_UsesActualJwtAuthorizationAndRedactedStructuredEvent"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests.ProductionDatabaseFailure_PreservesSafeIncidentWithoutProviderMessages(path: \"/PurchaseOrders/81927\", exceptionType: \"PostgresException\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests",
+      "methodName": "ProductionDatabaseFailure_PreservesSafeIncidentWithoutProviderMessages"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests.ProductionDatabaseFailure_PreservesSafeIncidentWithoutProviderMessages(path: \"/Suppliers/81927\", exceptionType: \"PostgresException\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests",
+      "methodName": "ProductionDatabaseFailure_PreservesSafeIncidentWithoutProviderMessages"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests.ProductionDatabaseFailure_PreservesSafeIncidentWithoutProviderMessages(path: \"/acceptance/save-order\", exceptionType: \"DbUpdateException\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests",
+      "methodName": "ProductionDatabaseFailure_PreservesSafeIncidentWithoutProviderMessages"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests.ProductionDatabaseFailure_PreservesSafeIncidentWithoutProviderMessages(path: \"/acceptance/save-supplier\", exceptionType: \"DbUpdateException\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests",
+      "methodName": "ProductionDatabaseFailure_PreservesSafeIncidentWithoutProviderMessages"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests.ProductionStartedResponse_DoesNotAppendFailureDetailsOrChangeStatus",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests",
+      "methodName": "ProductionStartedResponse_DoesNotAppendFailureDetailsOrChangeStatus"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests.ProductionStartup_EnforcesAnonymousAndPermissionBoundariesAndLegacyJson",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Startup.ProcurementStartupLoggingTests",
+      "methodName": "ProductionStartup_EnforcesAnonymousAndPermissionBoundariesAndLegacyJson"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate(original: \"b27fbef06a3aa58c1f4fc0e75d7c70b32be76266\", replacement: \"main\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate(original: \"ecb05cbbd68717e415f69df2ac488c1d323b1da3\", replacement: \"7edcd961024868513fd5f373cab3dcb261197f77\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate(original: \"if: always()\", replacement: \"if: failure()\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate(original: \"python3 -B scripts/verify-procurement-auth-program\"···, replacement: \"python3 -c 'print(0)'\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ActualAuthProgramJoin_RequiresImmutableProducersAndAlwaysRetainedEvidence",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "ActualAuthProgramJoin_RequiresImmutableProducersAndAlwaysRetainedEvidence"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ApiProject_UsesOnlyLegacyServiceDefaults",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "ApiProject_UsesOnlyLegacyServiceDefaults"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_RejectsCommentedDependencySha",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "BuildAndTest_RejectsCommentedDependencySha"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_RejectsEvidenceThatDoesNotSurviveFailure",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "BuildAndTest_RejectsEvidenceThatDoesNotSurviveFailure"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_RejectsJobPermissionEscalation",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "BuildAndTest_RejectsJobPermissionEscalation"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_RejectsMissingLocalDependencyOptIn",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "BuildAndTest_RejectsMissingLocalDependencyOptIn"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_RejectsMissingOwnedCoverageGate",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "BuildAndTest_RejectsMissingOwnedCoverageGate"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_RejectsReservedGitHubActionsOverride",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "BuildAndTest_RejectsReservedGitHubActionsOverride"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_RejectsSecretExpressionInJobEnvironment(expression: \"${{ secrets['X'] }}\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "BuildAndTest_RejectsSecretExpressionInJobEnvironment"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_RejectsSecretExpressionInJobEnvironment(expression: \"${{secrets.X}}\")",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "BuildAndTest_RejectsSecretExpressionInJobEnvironment"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_RejectsSecretReferenceAnywhere",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "BuildAndTest_RejectsSecretReferenceAnywhere"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_RejectsSharedActionMainWithPinnedShaComment",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "BuildAndTest_RejectsSharedActionMainWithPinnedShaComment"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_RejectsWhitespaceObfuscatedRestoreCommand",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "BuildAndTest_RejectsWhitespaceObfuscatedRestoreCommand"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_SatisfiesStructuralContract",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "BuildAndTest_SatisfiesStructuralContract"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.DependabotConfiguration_AllowsCoordinatedEfUpdatesAndDefersSharedRuntimePackages",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "DependabotConfiguration_AllowsCoordinatedEfUpdatesAndDefersSharedRuntimePackages"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.DependabotConfiguration_ScansOnlyIndependentlyResolvableProjectDirectories",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "DependabotConfiguration_ScansOnlyIndependentlyResolvableProjectDirectories"
+    },
+    {
+      "displayName": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.EfDesignDependency_IsOwnedByDataProjectOnly",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests",
+      "methodName": "EfDesignDependency_IsOwnedByDataProjectOnly"
+    }
+  ],
+  "approvedExistingFactRename": {
+    "from": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests.ListBoundaries_NormalizePageAndClampSizeWithoutChangingWireContract",
+    "to": "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests.ListBoundaries_NormalizePageAndPreservePositiveSizeWithoutChangingWireContract"
+  },
+  "associatedDisplayNames": [
+    "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests.OmittedSize_ReachesRepositoryUnchanged(purchaseOrder: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests.OmittedSize_ReachesRepositoryUnchanged(purchaseOrder: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementIndependentContactTests.PostAndPutPreserveIndependentContactsThroughFreshReads(supplier: \"\", shipping: \" \")",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementIndependentContactTests.PostAndPutPreserveIndependentContactsThroughFreshReads(supplier: \"Supplier Thai ผู้ขาย \", shipping: \"Shipping Thai ผู้รับ \")",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementIndependentContactTests.PostAndPutPreserveIndependentContactsThroughFreshReads(supplier: \"Supplier only\", shipping: null)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementIndependentContactTests.PostAndPutPreserveIndependentContactsThroughFreshReads(supplier: null, shipping: \"Shipping only\")",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 12, index: 21, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 12, index: 21, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 12, index: 22, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 12, index: 22, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 250, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 250, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 251, index: 2, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 251, index: 2, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 251, index: 3, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 251, index: 3, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 251, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 251, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 50, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 50, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 999, index: 2, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 999, index: 2, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 999, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 999, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: -4, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: -4, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: 0, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: 0, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: 2, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: 2, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: 2147483647, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: 2147483647, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: null, search: \"1001\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: null, search: \"1001\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: null, search: \"absent\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: null, search: \"absent\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: null, search: null, descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: null, search: null, descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 12, index: 21, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 12, index: 21, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 12, index: 22, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 12, index: 22, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 250, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 250, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 251, index: 2, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 251, index: 2, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 251, index: 3, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 251, index: 3, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 251, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 251, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 50, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 50, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 999, index: 2, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 999, index: 2, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 999, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 999, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: -4, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: -4, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: 0, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: 0, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: 2, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: 2, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: 2147483647, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: 2147483647, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: null, search: \"1001\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: null, search: \"1001\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: null, search: \"absent\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: null, search: \"absent\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: null, search: null, descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: null, search: null, descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: False, descending: False, page: 0)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: False, descending: False, page: 1)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: False, descending: False, page: 2)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: False, descending: False, page: 3)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: False, descending: False, page: 4)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: False, descending: True, page: 0)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: False, descending: True, page: 1)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: False, descending: True, page: 2)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: False, descending: True, page: 3)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: False, descending: True, page: 4)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: True, descending: False, page: 0)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: True, descending: False, page: 1)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: True, descending: False, page: 2)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: True, descending: False, page: 3)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: True, descending: False, page: 4)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: True, descending: True, page: 0)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: True, descending: True, page: 1)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: True, descending: True, page: 2)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: True, descending: True, page: 3)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus(supplier: True, descending: True, page: 4)"
+  ],
+  "baselineDisplayNames": [
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 251, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 251, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 999, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: 999, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: null, search: null, descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: False, size: null, index: null, search: null, descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 251, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 251, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 999, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: 999, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: null, search: \"match\", descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: null, search: \"match\", descending: True)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: null, search: null, descending: False)",
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize(supplier: True, size: null, index: null, search: null, descending: True)"
+  ],
+  "sourceAssociationSha256": "af76f4d18ecabe559d9e0a47077febbfaf209daa4f72a772733f5a22412726a7",
+  "nativeDiscoveryObservedForNewCases": false,
+  "displaySpecification": "Exact source tuples and parameter order; xUnit2.9.3 True/False/string display conventions observed in authenticated original main TRX. Future compiled discovery must equal this specification; mismatch refuses acceptance."
+}

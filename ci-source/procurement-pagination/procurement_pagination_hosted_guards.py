@@ -7,9 +7,72 @@ import yaml
 
 NS={'t':'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'}
 PROJECT='Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj'
-METHOD='LegacyListUsesFilteredCountForOmissionAndRetainsExplicitGuards'
+METHOD='LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize'
 
 class IntegrityError(ValueError):pass
+
+ASSOCIATED_METHOD_COUNTS = {
+    'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationSourceTests.LegacyListUsesFilteredCountAndPreservesExplicitPositiveSize': 68,
+    'Legacy.Maliev.ProcurementService.Tests.Application.ProcurementApplicationServiceTests.OmittedSize_ReachesRepositoryUnchanged': 2,
+    'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPaginationWireContractTests.ListPage_PreservesRawEnvelopeFlagsNullOmissionAndEmptyStatus': 20,
+    'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementIndependentContactTests.PostAndPutPreserveIndependentContactsThroughFreshReads': 4,
+}
+
+BASELINE_FILTER = 'FullyQualifiedName~ProcurementPaginationSourceTests'
+CANDIDATE_FILTER = BASELINE_FILTER + '|FullyQualifiedName~OmittedSize_ReachesRepositoryUnchanged|FullyQualifiedName~ProcurementPaginationWireContractTests|FullyQualifiedName~ProcurementIndependentContactTests'
+ROSTER_CONTRACT_SHA = 'c84df15498aeb11a53cae5b49c43ef50b232890276dd0851eb79bae00d67408b'
+CLASS_RESOURCE_ATTRIBUTION_QUALIFIED = False
+
+def roster_contract():
+    path = Path(__file__).resolve().parent / 'compiled-roster-source-contract.json'
+    require(sha(path) == ROSTER_CONTRACT_SHA, 'Authenticated/source roster contract drift')
+    value = json.loads(path.read_bytes())
+    require(value['baseSha'] == '1249989e04040bd1326842ebf2e1f438369cf8c9', 'Original main identity differs')
+    original = value['originalMainIdentities']
+    require(len(original) == 316 and len({row['displayName'] for row in original}) == 316, 'Original316 unique identities missing')
+    require(len(value['associatedDisplayNames']) == len(set(value['associatedDisplayNames'])) == 94, 'Associated94 exact display grammar missing')
+    require(len(value['baselineDisplayNames']) == len(set(value['baselineDisplayNames'])) == 16, 'Baseline16 exact display grammar missing')
+    return value
+
+def selected_names(complete, testfilter):
+    require(testfilter in (BASELINE_FILTER, CANDIDATE_FILTER), 'Unreviewed focused selection')
+    terms = [clause.split('~', 1)[1] for clause in testfilter.split('|')]
+    selected = [name for name in complete if any(term in name.split('(', 1)[0] for term in terms)]
+    require(selected, 'Compiled focused selection empty')
+    return selected
+
+def require_class_attribution_qualification(execution_admitted=False):
+    require(CLASS_RESOURCE_ATTRIBUTION_QUALIFIED or execution_admitted is True, 'Native qualification/acceptance blocked: three-class exact owned PostgreSQL attribution remains unproved')
+
+def baseline_roster(roster):
+    contract = roster_contract()
+    expected = [row['displayName'] for row in contract['originalMainIdentities']] + contract['baselineDisplayNames']
+    complete = roster.get('allUnfilteredDiscoveredNames')
+    require(type(complete) is list and len(complete) == len(set(complete)) == 332 and Counter(complete) == Counter(expected), 'Baseline original316 plus exact16 compiled identities differ')
+    require(roster.get('filter') == BASELINE_FILTER and Counter(roster['names']) == Counter(contract['baselineDisplayNames']), 'Baseline exact16 selection differs')
+
+def associated_roster(roster, full):
+    require(type(roster) is dict and roster.get('source') == 'compiled-vstest-discovery', 'Independent compiled association required')
+    names = roster.get('names')
+    complete = roster.get('allUnfilteredDiscoveredNames')
+    require(type(names) is list and all(type(name) is str for name in names), 'Associated compiled names missing')
+    require(type(complete) is list and len(complete) == 410 and all(type(name) is str for name in complete), 'Complete compiled410 roster required')
+    require(len(set(complete)) == 410 and len(set(names)) == len(names), 'Repeated/bare compiled display identities refused')
+    contract = roster_contract()
+    rename = contract['approvedExistingFactRename']
+    original = [row['displayName'] for row in contract['originalMainIdentities']]
+    expected_original = [rename['to'] if name == rename['from'] else name for name in original]
+    expected_complete = expected_original + contract['associatedDisplayNames']
+    require(Counter(complete) == Counter(expected_complete), 'Original316 exact identities or associated94 source display grammar differ')
+    require(len(names) == (410 if full else 94), 'Associated selection count differs')
+    require(roster.get('filter') is None if full else type(roster.get('filter')) is str and bool(roster['filter']), 'Full association must remain unfiltered')
+    selected_counts, complete_counts = Counter(names), Counter(complete)
+    require(selected_counts == complete_counts if full else all(selected_counts[name] <= complete_counts[name] for name in names), 'Selected roster not joined to complete discovery')
+    require(Counter(names) == Counter(expected_complete if full else contract['associatedDisplayNames']), 'Exact associated source displays missing')
+    for method, expected in ASSOCIATED_METHOD_COUNTS.items():
+        require(sum(name.split('(', 1)[0] == method for name in complete) == expected, 'Complete associated method roster differs')
+        require(sum(name.split('(', 1)[0] == method for name in names) == expected, 'Selected associated method roster differs')
+    return {'newCases': 94, 'fullCases': 410, 'methodCounts': dict(ASSOCIATED_METHOD_COUNTS), 'source': 'compiled-vstest-discovery'}
 
 def require(condition,reason):
     if not condition:raise IntegrityError(reason)
@@ -45,7 +108,7 @@ def sanitize_runner_env(environ):
     return sorted(removed)
 
 def runner_environment(environ):
-    allowed={'PATH','HOME','USER','LOGNAME','SHELL','TMPDIR','TMP','TEMP','LANG','LC_ALL','DOTNET_ROOT','DOTNET_MULTILEVEL_LOOKUP','DOTNET_CLI_HOME','DOTNET_NOLOGO','DOTNET_SKIP_FIRST_TIME_EXPERIENCE','DOTNET_CLI_TELEMETRY_OPTOUT','DOTNET_CLI_UI_LANGUAGE','VSLANG','NUGET_PACKAGES','GITHUB_ACTIONS','GITHUB_WORKSPACE','RUNNER_TEMP','MalievWorkspaceRoot','USE_LOCAL_MALIEV_DEPENDENCIES','MALIEV_TEST_RESOURCE_RUN_ID','TESTCONTAINERS_RYUK_DISABLED','MSBUILDDISABLENODEREUSE','UseSharedCompilation'}
+    allowed={'PATH','HOME','USER','LOGNAME','SHELL','TMPDIR','TMP','TEMP','LANG','LC_ALL','DOTNET_ROOT','DOTNET_MULTILEVEL_LOOKUP','DOTNET_CLI_HOME','DOTNET_NOLOGO','DOTNET_SKIP_FIRST_TIME_EXPERIENCE','DOTNET_CLI_TELEMETRY_OPTOUT','DOTNET_CLI_UI_LANGUAGE','VSLANG','NUGET_PACKAGES','GITHUB_ACTIONS','GITHUB_WORKSPACE','RUNNER_TEMP','MalievWorkspaceRoot','USE_LOCAL_MALIEV_DEPENDENCIES','MALIEV_TEST_RESOURCE_RUN_ID','MALIEV_TEST_RESOURCE_PHASE','MALIEV_TEST_RESOURCE_RECEIPTS','MALIEV_QUALIFICATION_CASE','MALIEV_QUALIFICATION_CONTROLS','TESTCONTAINERS_RYUK_DISABLED','MSBUILDDISABLENODEREUSE','UseSharedCompilation'}
     result={key:value for key,value in environ.items() if key in allowed}
     result['DOTNET_CLI_UI_LANGUAGE']='en-US';result['VSLANG']='1033';result['NO_COLOR']='1'
     return result
@@ -86,12 +149,7 @@ def observe_roster(driver,label,cwd,testfilter=None):
     require(names,'No compiled test cases discovered')
     complete=names[:]
     if testfilter is not None:
-        clauses=testfilter.split('|')
-        require(all(clause.startswith('FullyQualifiedName~') for clause in clauses),'Only reviewed FQN contains selection supported')
-        terms=[clause.split('~',1)[1] for clause in clauses]
-        require(all(term in ('ProcurementOmittedSizeSourceTests','ListBoundaries_ForwardOmittedSizeToTheOwningFilteredRepository') for term in terms),'Unreviewed focused selection')
-        names=[name for name in names if any(term in name.split('(',1)[0] for term in terms)]
-        require(names,'Compiled focused selection empty')
+        names=selected_names(complete,testfilter)
     payload={'source':'compiled-vstest-discovery','names':names,'allUnfilteredDiscoveredNames':complete,'binaryHashes':before,'assemblyPath':str((folder/'Legacy.Maliev.ProcurementService.Tests.dll').resolve()),'settingsSha256':sha(runsettings),'discoveryLogSha256':sha(driver.root/(label+'-compiled-discovery.log')),'filter':testfilter,'removedRunnerEnvironmentKeys':removed}
     target=driver.root/(label+'-compiled-roster.json');target.write_text(json.dumps(payload,indent=2))
     driver.receipt.setdefault('compiledRosters',{})[label]={'path':str(target),'sha256':sha(target),'cases':len(names),'filter':testfilter};driver.save()
@@ -158,7 +216,7 @@ def trx(folder,roster,red=False):
         if outcome=='Passed':passed+=1;continue
         message=result.findtext('t:Output/t:ErrorInfo/t:Message','',NS);stack=result.findtext('t:Output/t:ErrorInfo/t:StackTrace','',NS)
         require(red and 'Assert.Equal() Failure' in message and METHOD in stack and METHOD in result.attrib['testName'],'RED failure is not the exact behavioral assertion')
-        require(re.search(r'\bsize:\s*null',result.attrib['testName']) is not None,'RED explicit size mismatch')
+        require(re.search(r'\bsize:\s*(?:null|251|999)(?=\s*[,)]|$)',result.attrib['testName']) is not None,'RED size not in reviewed omission/positive baseline')
         require(not any(word in message for word in ('Exception','Npgsql','Docker','Unauthorized','Forbidden','InternalServerError')),'Infrastructure failure cannot qualify RED')
         failed.append(result.attrib['testName'])
     require(set(defs)==seen_test and passed==counts['passed'] and len(failed)==counts['failed'],'Completed result/counter mismatch')
