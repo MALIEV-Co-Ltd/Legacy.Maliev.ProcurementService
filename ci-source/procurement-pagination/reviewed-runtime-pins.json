@@ -118,5 +118,10 @@
     "bytes": 29178,
     "sha256": "bd36908d4389ba302731e080c56b7b27fbe8d9e9e8ff05d7371b7fb3013fe32e",
     "path": "injection-postimages/ProcurementRuntimeParityTests.cs"
+  },
+  {
+    "bytes": 6804,
+    "sha256": "ce8912b56d7b4e9731a5fc6de87f1efb98a506e8e648b0d1b4de5ab8619022d6",
+    "path": "procurement_checkout_source.py"
   }
 ]

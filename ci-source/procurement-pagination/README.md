@@ -1,24 +1,13 @@
-# Original Procurement qualification transport
+# Original Procurement route binding V5 against protected main 209227
 
-The existing source-controls PR job verifies this carrier without native workloads.
-The original native `validate` job remains disabled (`if: false`). Publication and
-ordinary repo PR CI do not provide qualification acceptance or an allocation.
+Current published main 209227c7f6f580946853c395f0fafccec59b65a7 keeps the native job disabled. This off-repository candidate proposes the existing job only for workflow_dispatch with nonempty allocation JSON and SHA inputs. It has not been committed, published, activated, or granted a native allocation.
 
-The coordinator must reserve a fresh nonce for exactly one dispatch in its
-existing allocation ledger and supply exact allocation JSON bytes and SHA256
-after reviewing the published transport commit. Admission checks the first hosted
-attempt, exact source/run tuple, UTC expiry (at most3600s), unchanged60-minute job
-cap and fresh4GiB floor before SDK setup. Actual class ownership/PG18 health,
-terminal absence, exact16RED/94GREEN/full410 and separate9 injections remain unrun.
+Exact finite admission precedes source restoration and SDK setup. All 24 independently reviewed V4 runtime assets retain their raw hashes. One added helper restores four clean, exact-HEAD source checkouts from raw Git exports, proving all469 unchanged Git blob identities. Git checkout and ordinary Git archive both apply CRLF rules to seven PowerShell files. A fresh exclusive task-local .git/info/attributes override is held only during attribute-free Git archive and removed through immediate handle/fstat custody; preexisting or uncertain identities are preserved. No capsule, source pin, global Git setting, business code, provider cap, or original expiry is normalized or waived.
 
-Source controls: `python -B -Werror ci-source/procurement-pagination/tests/compile_source.py`,
-`python -B ci-source/procurement-pagination/p1-controls.py`, and
-`python -B -m unittest discover -s ci-source/procurement-pagination/tests -v`;
-repeat controls with `-O` to ensure guards remain active under optimization.
+Actual owned Git replay reproduced7checkout mismatches, then all4repositories/469files passed restoration. An actual dirty-source negative was rejected without overwriting the file. All four temporary attribute files were absent afterward. Current real-function partial write/close/fstat and replacement-identity controls cover cleanup custody; the prior failed source/long-path/archive attempts are retained.
 
-Runtime assets retain exact independently reviewed V4 bytes; only caller's
-existing PR source-controls trigger/job and regression-test paths are adapted.
-V4 manifest d2a655213a67b85469c60888edaaee2a7d1804087408ffca978987ad63e3330c
-V4 seal43b209e18d38f565a2e955600a9ee6ac5dfdfc9f943e34e7968805494eca9c7a
-V3 manifest30c41380a1079d979376aaf9eff61594092eae0d13421fb44823ff5432eb211e
-V3 seal2c0938b9406553755f820bb1f85f5bf55de73d9e7d64b824a6264c1978abb2ce
+The coordinator must reserve one fresh nonce for exactly one dispatch in its existing original ledger, review and publish the exact conditional successor, then bind allocation bytes/SHA to that published transport commit. Existing first-attempt/source/run/UTC expiry/fixed4GiB floor/60-minute job and per-command timeout+15 boundaries remain enforced. Retried phases cannot renew allocation or cleanup time. Cleanup remains required on failure.
+
+Validation:14Python sources and inline caller snippets compile with warnings treated as errors. Actionlint passes. Normal and optimized each pass103source tests plus35roster controls (=138). These checks and the ordinary316-test main CI are not native qualification.
+
+Original build0W/E, exact16baselineRED/94candidateGREEN/full410 and separate9finite CSharp injection cases remain UNRUN. No new native allocation or dispatch has occurred.

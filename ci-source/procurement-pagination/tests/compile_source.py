@@ -13,10 +13,11 @@ for f in files:
     if any(isinstance(n,ast.Assert) for n in ast.walk(ast.parse(text))):raise ValueError('Assert-dependent guard')
 workflow=R/'.github/workflows/procurement-pagination-source-qualification.yml'
 caller=yaml.safe_load(workflow.read_bytes());job=caller['jobs']['validate']
-if job['if']!='${{ false }}' or job['timeout-minutes']!=60:raise ValueError('Native activation or caps changed')
+guard="${{ github.event_name == 'workflow_dispatch' && inputs.original_allocation_sha256 != '' && inputs.original_allocation_json != '' }}"
+if job['if']!=guard or job['timeout-minutes']!=60:raise ValueError('Original dispatch admission or caps changed')
 for step in job['steps']:
     lines=step.get('run','').splitlines()
     for i,line in enumerate(lines):
         if "<<'PY'" in line:
             end=lines.index('PY',i+1);compile('\n'.join(lines[i+1:end]),step['name'],'exec')
-print(str(len(files))+' Python sources and caller snippets compile; reviewed V4 runtime bytes retained; native job disabled.')
+print(str(len(files))+' Python sources and caller snippets compile; reviewed V4 bytes retained; proposed dispatch-only route requires exact admission.')
