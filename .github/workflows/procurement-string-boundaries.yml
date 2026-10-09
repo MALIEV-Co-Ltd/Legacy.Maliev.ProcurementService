@@ -13,6 +13,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
       VSTestCollect: XPlat Code Coverage
@@ -38,6 +39,12 @@ jobs:
           ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
           path: .dependencies/Legacy.Maliev.CompatibilityContracts
           persist-credentials: false
+      - name: Preload exact official PostgreSQL images
+        timeout-minutes: 5
+        run: |
+          python3 -B scripts/ci-postgres-preload/test_preload_official_postgres.py
+          python3 -B -O scripts/ci-postgres-preload/test_preload_official_postgres.py
+          python3 -B scripts/ci-postgres-preload/preload_official_postgres.py
       - name: Validate normal HTTP and both owned source string schemas
         uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8
         with:
@@ -51,5 +58,17 @@ jobs:
         with:
           name: procurement-source-strings-${{ github.sha }}
           path: string-results
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Release owned image preload tags
+        if: always()
+        timeout-minutes: 2
+        run: python3 -B scripts/ci-postgres-preload/preload_official_postgres.py cleanup
+      - name: Preserve image custody evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: postgres-preload-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/procurement-postgres-preload.json
           if-no-files-found: warn
           retention-days: 7
