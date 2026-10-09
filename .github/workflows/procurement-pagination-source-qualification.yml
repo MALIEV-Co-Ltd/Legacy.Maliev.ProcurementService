@@ -1,4 +1,4 @@
-name: Procurement omitted-size source qualification
+name: Procurement associated pagination wire and contacts qualification
 
 on:
   pull_request:
@@ -6,6 +6,20 @@ on:
       - '.github/workflows/procurement-pagination-source-qualification.yml'
       - 'ci-source/procurement-pagination/**'
   workflow_dispatch:
+    inputs:
+      original_allocation_json:
+        description: Exact fresh coordinator-reviewed original finite allocation bytes
+        required: true
+        type: string
+      original_allocation_sha256:
+        description: SHA256 of those exact reviewed allocation bytes
+        required: true
+        type: string
+      shared_workflows_sha:
+        description: Root-reviewed successor shared workflow SHA; old e3a revision is refused
+        required: true
+        default: e5732037fe94b7ed6e5be2cd4c23dbf6ef5e2617
+        type: string
 
 permissions:
   contents: read
@@ -18,12 +32,15 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - name: Run source controls normally and with optimization
+      - name: Compile source then run regression controls normally and optimized
         run: |
+          python3 -B -Werror ci-source/procurement-pagination/tests/compile_source.py
           python3 -B ci-source/procurement-pagination/p1-controls.py
           python3 -O -B ci-source/procurement-pagination/p1-controls.py
+          python3 -B -m unittest discover -s ci-source/procurement-pagination/tests -v
+          python3 -O -B -m unittest discover -s ci-source/procurement-pagination/tests -v
   validate:
-    # Enable only in a reviewed successor commit that binds the accepted shared SHA.
+    # Source association only. A reviewed activation and fresh Root allocation are required.
     if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -32,29 +49,44 @@ jobs:
       TESTCONTAINERS_RYUK_DISABLED: 'true'
       MSBUILDDISABLENODEREUSE: '1'
       UseSharedCompilation: 'false'
+      MALIEV_PROCUREMENT_ALLOCATION_SHA: ${{ inputs.original_allocation_sha256 }}
     steps:
-      - name: Set owned validation root
-        run: echo "VALIDATION_ROOT=$RUNNER_TEMP/procurement-pagination" >> "$GITHUB_ENV"
+      - name: Set owned validation and allocation paths on the assigned runner
+        run: |
+          python3 -B - <<'PY'
+          import os
+          with open(os.environ['GITHUB_ENV'],'a') as f:
+              f.write('VALIDATION_ROOT='+os.environ['RUNNER_TEMP']+'/procurement-pagination\n')
+              f.write('MALIEV_PROCUREMENT_ALLOCATION_FILE='+os.environ['RUNNER_TEMP']+'/procurement-original-allocation.json\n')
+          PY
       - name: Check out reviewed CI assets
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
       - name: Validate required successor identity and create owned run ID
         env:
-          SHARED_SHA: ACCEPTED_SHARED_SUCCESSOR_PENDING
+          SHARED_SHA: ${{ inputs.shared_workflows_sha }}
+          ORIGINAL_ALLOCATION_JSON: ${{ inputs.original_allocation_json }}
         run: |
           python3 -B - <<'PY'
-          import os,re,uuid,yaml
+          import os,re,uuid,json
           value=os.environ['SHARED_SHA']
-          if value != 'ACCEPTED_SHARED_SUCCESSOR_PENDING' or not re.fullmatch('[0-9a-f]{40}',value):
+          if value!='e5732037fe94b7ed6e5be2cd4c23dbf6ef5e2617':
               raise ValueError('Root-reviewed successor SHA required')
+          raw=os.environ['ORIGINAL_ALLOCATION_JSON']
+          if len(raw.encode('utf-8'))>8192: raise ValueError('Allocation quota')
+          allocation=json.loads(raw)
+          run=str(uuid.UUID(allocation['allocationId']))
+          if run!=allocation['allocationId']: raise ValueError('Exact allocation UUID required')
+          with open(os.environ['MALIEV_PROCUREMENT_ALLOCATION_FILE'],'xb') as f:
+              f.write(raw.encode('utf-8'))
           with open(os.environ['GITHUB_ENV'],'a') as f:
-              f.write('MALIEV_TEST_RESOURCE_RUN_ID='+str(uuid.uuid4())+'\n')
+              f.write('MALIEV_TEST_RESOURCE_RUN_ID='+run+'\n')
           PY
       - name: Check out exact original implementation base
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: 63e1c0e3e4179be944b26fb227e27a1226e472b1
+          ref: 1249989e04040bd1326842ebf2e1f438369cf8c9
           path: _validation-base
           persist-credentials: false
       - name: Check out ServiceDefaults
@@ -75,17 +107,27 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: MALIEV-Co-Ltd/Legacy.Maliev.Workflows
-          ref: ACCEPTED_SHARED_SUCCESSOR_PENDING
+          ref: e5732037fe94b7ed6e5be2cd4c23dbf6ef5e2617
           path: .dependencies/Legacy.Maliev.Workflows
           persist-credentials: false
+      - name: Admit exact original hosted allocation before SDK setup
+        timeout-minutes: 1
+        run: |
+          PYTHONPATH=ci-source/procurement-pagination python3 -B - <<'PY'
+          import os,json
+          from procurement_hosted_binding import admit
+          proof=admit(os.environ['MALIEV_PROCUREMENT_ALLOCATION_FILE'],os.environ['MALIEV_PROCUREMENT_ALLOCATION_SHA'])
+          with open(os.environ['RUNNER_TEMP']+'/procurement-original-admission.json','x') as f:
+              json.dump(proof,f,indent=2)
+          PY
       - name: Set up reviewed SDK
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
         with:
           dotnet-version: 10.0.401
-      - name: Serial healthy baseline RED then candidate build and focused 32
+      - name: Build first, healthy baseline16 RED, then associated candidate94 GREEN
         timeout-minutes: 30
         env:
-          SHARED_SHA: ACCEPTED_SHARED_SUCCESSOR_PENDING
+          SHARED_SHA: ${{ inputs.shared_workflows_sha }}
         run: |
           python3 -B ci-source/procurement-pagination/procurement_pagination_hosted_driver.py \
             --phase focused --root "$VALIDATION_ROOT" --base "$GITHUB_WORKSPACE/_validation-base" \
@@ -98,11 +140,16 @@ jobs:
       - name: Affected full suite, coverage, format, typed audit, and shared security gates
         timeout-minutes: 25
         env:
-          SHARED_SHA: ACCEPTED_SHARED_SUCCESSOR_PENDING
+          SHARED_SHA: ${{ inputs.shared_workflows_sha }}
         run: |
           python3 -B ci-source/procurement-pagination/procurement_pagination_hosted_driver.py \
             --phase full --root "$VALIDATION_ROOT" --shared-sha "$SHARED_SHA" \
             --shared-checkout "$GITHUB_WORKSPACE/.dependencies/Legacy.Maliev.Workflows"
+      - name: Nine finite CSharp failure injections in the separate qualification copy
+        timeout-minutes: 25
+        run: |
+          python3 -B ci-source/procurement-pagination/procurement_pagination_hosted_driver.py \
+            --phase injections --root "$VALIDATION_ROOT"
       - name: Verify exact owned resource cleanup
         if: always()
         timeout-minutes: 2
@@ -117,9 +164,17 @@ jobs:
         with:
           name: procurement-pagination-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
+            ${{ runner.temp }}/procurement-original-admission.json
+            ${{ runner.temp }}/procurement-original-allocation.json
             ${{ runner.temp }}/procurement-pagination/*.json
             ${{ runner.temp }}/procurement-pagination/*.log
             ${{ runner.temp }}/procurement-pagination/*-results
+            ${{ runner.temp }}/procurement-pagination/*-fixture-receipts/*.jsonl
+            ${{ runner.temp }}/procurement-pagination/injection-*/*.json
+            ${{ runner.temp }}/procurement-pagination/injection-*/*.log
+            ${{ runner.temp }}/procurement-pagination/injection-*/results
+            ${{ runner.temp }}/procurement-pagination/injection-*/controls
+            ${{ runner.temp }}/procurement-pagination/injection-*/*-fixture-receipts
             ${{ runner.temp }}/procurement-pagination/candidate/**/obj/project.assets.json
             ${{ runner.temp }}/procurement-pagination/candidate/**/packages.lock.json
           if-no-files-found: warn
