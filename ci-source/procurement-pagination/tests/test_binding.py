@@ -76,7 +76,7 @@ class Controls(unittest.TestCase):
     def test_caller_admits_before_sdk_and_remains_unactivated(self):
         text=(R/b.WORKFLOW).read_text()
         self.assertLess(text.index('Admit exact original hosted allocation'),text.index('Set up reviewed SDK'))
-        self.assertIn('if: ${{ false }}',text);self.assertIn('timeout-minutes: 60',text)
+        self.assertIn("if: ${{ github.event_name == 'workflow_dispatch' && inputs.original_allocation_sha256 != '' && inputs.original_allocation_json != '' }}",text);self.assertIn('timeout-minutes: 60',text)
     def test_runner_context_is_initialized_in_step_not_job_env(self):
         caller=yaml.safe_load((R/b.WORKFLOW).read_bytes());job=caller['jobs']['validate']
         self.assertNotIn('VALIDATION_ROOT',job['env']);self.assertNotIn('MALIEV_PROCUREMENT_ALLOCATION_FILE',job['env'])
@@ -87,7 +87,7 @@ class Controls(unittest.TestCase):
         leaf=R/'ci-source/procurement-pagination'
         self.assertIn('* -text -eol',(leaf/'.gitattributes').read_text())
         pins=json.loads((leaf/'reviewed-runtime-pins.json').read_bytes())
-        self.assertEqual(24,len(pins))
+        self.assertEqual(25,len(pins))
         for row in pins:
             raw=(leaf/row['path']).read_bytes()
             self.assertEqual(row['bytes'],len(raw));self.assertEqual(row['sha256'],hashlib.sha256(raw).hexdigest())

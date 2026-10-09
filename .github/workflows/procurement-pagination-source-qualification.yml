@@ -40,8 +40,8 @@ jobs:
           python3 -B -m unittest discover -s ci-source/procurement-pagination/tests -v
           python3 -O -B -m unittest discover -s ci-source/procurement-pagination/tests -v
   validate:
-    # Source association only. A reviewed activation and fresh Root allocation are required.
-    if: ${{ false }}
+    # Proposed original route: dispatch only; exact finite admission precedes SDK.
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.original_allocation_sha256 != '' && inputs.original_allocation_json != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -120,6 +120,25 @@ jobs:
           with open(os.environ['RUNNER_TEMP']+'/procurement-original-admission.json','x') as f:
               json.dump(proof,f,indent=2)
           PY
+      - name: Restore and verify four exact Git source checkouts before SDK
+        timeout-minutes: 3
+        run: |
+          PYTHONPATH=ci-source/procurement-pagination python3 -B - <<'PY'
+          import os,json
+          from pathlib import Path
+          from procurement_hosted_binding import admit
+          from procurement_checkout_source import restore
+          from procurement_pagination_hosted_driver import Driver
+          root=Path(os.environ['VALIDATION_ROOT'])
+          root.mkdir(parents=True,exist_ok=False)
+          driver=Driver(root,os.environ['MALIEV_TEST_RESOURCE_RUN_ID'])
+          driver.receipt['hostedExecutionBinding']=admit(os.environ['MALIEV_PROCUREMENT_ALLOCATION_FILE'],os.environ['MALIEV_PROCUREMENT_ALLOCATION_SHA'])
+          driver.save()
+          try:
+              restore(driver,Path(os.environ['GITHUB_WORKSPACE'])/'_validation-base',os.environ['MalievWorkspaceRoot'])
+          finally:
+              driver.finish()
+          PY
       - name: Set up reviewed SDK
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
         with:
@@ -166,6 +185,7 @@ jobs:
           path: |
             ${{ runner.temp }}/procurement-original-admission.json
             ${{ runner.temp }}/procurement-original-allocation.json
+            ${{ runner.temp }}/procurement-pagination/raw-source-*.zip
             ${{ runner.temp }}/procurement-pagination/*.json
             ${{ runner.temp }}/procurement-pagination/*.log
             ${{ runner.temp }}/procurement-pagination/*-results
