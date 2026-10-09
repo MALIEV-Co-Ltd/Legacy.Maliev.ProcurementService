@@ -51,7 +51,9 @@
         "size": 183
       }
     ],
-    "mirror": "public.ecr.aws/docker/library/postgres@sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873"
+    "mirror": "public.ecr.aws/docker/library/postgres@sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873",
+    "hubMetadataBytes": 5527,
+    "hubMetadataSha256": "e79aa0846a929248549af8330d4d588f3a807e41a0f019c0e0be21ad6ebe0664"
   },
   {
     "tag": "postgres:18.1-alpine",
@@ -105,7 +107,9 @@
         "size": 186
       }
     ],
-    "mirror": "public.ecr.aws/docker/library/postgres@sha256:aa6eb304ddb6dd26df23d05db4e5cb05af8951cda3e0dc57731b771e0ef4ab29"
+    "mirror": "public.ecr.aws/docker/library/postgres@sha256:aa6eb304ddb6dd26df23d05db4e5cb05af8951cda3e0dc57731b771e0ef4ab29",
+    "hubMetadataBytes": 5527,
+    "hubMetadataSha256": "8e7d19ffc8d3bce32feed4131c98cedfb75b5ce49abd48dd8159a8abcf31a93d"
   },
   {
     "tag": "postgres:18.1-bookworm",
@@ -179,6 +183,8 @@
         "size": 186
       }
     ],
-    "mirror": "public.ecr.aws/docker/library/postgres@sha256:cc9f4143a8d2fa8cf3749d0cb4d26ecf2d53a77a2ac807e9ebd67ae22426221a"
+    "mirror": "public.ecr.aws/docker/library/postgres@sha256:cc9f4143a8d2fa8cf3749d0cb4d26ecf2d53a77a2ac807e9ebd67ae22426221a",
+    "hubMetadataBytes": 5537,
+    "hubMetadataSha256": "610cc7af5b3df185a67a45a578a3f04287d29aa60574f5a2a1ddce6f894d5537"
   }
 ]

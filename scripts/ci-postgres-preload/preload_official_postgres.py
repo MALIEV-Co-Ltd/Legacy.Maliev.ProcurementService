@@ -1,14 +1,17 @@
 """Bounded ordinary-CI image preparation; never starts containers."""
-import hashlib,json,subprocess,time,urllib.request
+import hashlib,json,subprocess,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent
-class NoRedirect(urllib.request.HTTPRedirectHandler):
- def redirect_request(self,*args):raise ValueError('Registry redirect refused')
-def fetch(url,token=None):
- headers={'Accept':'application/vnd.oci.image.index.v1+json, application/vnd.oci.image.manifest.v1+json, application/json'}
- if token:headers['Authorization']='Bearer '+token
- with urllib.request.build_opener(NoRedirect).open(urllib.request.Request(url,headers=headers),timeout=12) as r:return r.read()
 def digest(raw):return 'sha256:'+hashlib.sha256(raw).hexdigest()
+def read_metadata(row):
+ tag=row['tag'].split(':')[1]
+ def read(name):
+  path=(ROOT/name).resolve()
+  if path.parent!=ROOT.resolve():raise ValueError('Metadata path outside owned source')
+  return path.read_bytes()
+ hub=read(tag+'.hub-metadata.json')
+ if len(hub)!=row['hubMetadataBytes'] or hashlib.sha256(hub).hexdigest()!=row['hubMetadataSha256']:raise ValueError('Reviewed Hub proof byte drift')
+ return hub,read(tag+'-index.json'),read(tag+'-manifest.json')
 def validate(row,hub,index,manifest):
  if digest(index)!=row['indexDigest'] or digest(manifest)!=row['manifestDigest']:raise ValueError('Immutable manifest drift')
  h=json.loads(hub);i=json.loads(index);m=json.loads(manifest)
@@ -68,14 +71,10 @@ def cleanup(data,run,save):
   except Exception as error:errors.append(error)
  # Recover independent references even if one reference/receipt failed.
  if errors:raise ExceptionGroup('Image cleanup failures; unresolved references preserved',errors)
-def preload(rows,run,network,receipt):
+def preload(rows,run,receipt,metadata=read_metadata):
  # Verify ALL provenance before any Docker mutation.
  for row in rows:
-  tag=row['tag'].split(':')[1]
-  token=json.loads(network('https://public.ecr.aws/token/?service=public.ecr.aws&scope=repository:docker/library/postgres:pull'))['token']
-  hub=network('https://hub.docker.com/v2/repositories/library/postgres/tags/'+tag)
-  index=network('https://public.ecr.aws/v2/docker/library/postgres/manifests/'+row['indexDigest'],token)
-  manifest=network('https://public.ecr.aws/v2/docker/library/postgres/manifests/'+row['manifestDigest'],token)
+  hub,index,manifest=metadata(row)
   validate(row,hub,index,manifest)
  for row in rows:
   current=run(['docker','image','inspect',row['tag']],False)
@@ -113,7 +112,7 @@ def main():
  data={'createdTags':[],'owner':'ordinary-hosted-job','containersStarted':False,'deadlineSeconds':240,'cleanupDeadlineSeconds':90,'hostedRunId':os.environ.get('GITHUB_RUN_ID'),'hostedRunAttempt':os.environ.get('GITHUB_RUN_ATTEMPT'),'hostedJob':os.environ.get('GITHUB_JOB'),'leaseExpiresUtc':(datetime.now(timezone.utc)+timedelta(minutes=30)).isoformat(),'leaseExpiryDoesNotProveDaemonSettlement':True,'settlementAuthority':'successful CLI completion or externally verified ephemeral runner destruction'}
  def save():atomic_save(path,data)
  save();receipt={'createdTags':data['createdTags'],'write':save}
- preserve_primary(lambda:preload(json.loads((ROOT/'image-pins.json').read_bytes()),run,fetch,receipt),save)
+ preserve_primary(lambda:preload(json.loads((ROOT/'image-pins.json').read_bytes()),run,receipt),save)
  save()
 def atomic_save(path,data):
  import os

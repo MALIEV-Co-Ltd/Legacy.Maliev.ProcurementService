@@ -32,10 +32,7 @@ class Controls(unittest.TestCase):
     with self.assertRaises(ValueError):p.inspect_ok(self.row,item)
  def scenario(self,mode):
   calls=[];created=[];saved=[]
-  def network(url,token=None):
-   if 'token/' in url:return b'{"token":"unused-fake"}'
-   if 'hub.docker' in url:return self.hub if mode!='metadata-fail' else b'{}'
-   return self.index if url.endswith(self.row['indexDigest']) else self.manifest
+  def metadata(row):return self.hub if mode!='metadata-fail' else b'{}',self.index,self.manifest
   def run(args,required=True):
    calls.append(args)
    if args[1:3]==['image','inspect']:
@@ -49,7 +46,7 @@ class Controls(unittest.TestCase):
    if args[1]=='tag':created.append(args[-1])
    return b''
   receipt={'createdTags':[],'write':lambda:saved.append(True)}
-  return calls,created,saved,lambda:p.preload([self.row],run,network,receipt)
+  return calls,created,saved,lambda:p.preload([self.row],run,receipt,metadata)
  def test_preload(self):
   calls,created,saved,invoke=self.scenario('success');invoke();self.assertEqual(created,[self.row['tag']]);self.assertEqual(len(saved),2)
  def test_existing_cache(self):
@@ -119,6 +116,27 @@ class Controls(unittest.TestCase):
   entries,removed,saved,invoke=self.cleanup_scenario('remove-fail')
   with self.assertRaises(ExceptionGroup):invoke()
   self.assertEqual(removed,['independent'])
+ def test_actual_cached_metadata_all_three(self):
+  for row in json.loads((R/'image-pins.json').read_bytes()):p.validate(row,*p.read_metadata(row))
+ def test_cached_hub_digest_tamper(self):
+  row=copy.deepcopy(self.row);row['hubMetadataSha256']='0'*64
+  with self.assertRaises(ValueError):p.read_metadata(row)
+ def test_cached_hub_length_tamper(self):
+  row=copy.deepcopy(self.row);row['hubMetadataBytes']+=1
+  with self.assertRaises(ValueError):p.read_metadata(row)
+ def test_metadata_acquisition_requires_no_http(self):
+  from unittest.mock import patch
+  import urllib.request
+  with patch.object(urllib.request,'urlopen',side_effect=AssertionError('HTTP forbidden')),patch.object(urllib.request.OpenerDirector,'open',side_effect=AssertionError('HTTP forbidden')):
+   p.preload([self.row],lambda *args:json.dumps([self.ins]).encode(),{'createdTags':[],'write':lambda:None})
+ def test_cached_index_tamper_before_any_docker(self):
+  calls=[]
+  with self.assertRaises(ValueError):p.preload([self.row],lambda *args:calls.append(args),{'createdTags':[],'write':lambda:None},lambda row:(self.hub,self.index+b' ',self.manifest))
+  self.assertFalse(calls)
+ def test_cached_manifest_tamper_before_any_docker(self):
+  calls=[]
+  with self.assertRaises(ValueError):p.preload([self.row],lambda *args:calls.append(args),{'createdTags':[],'write':lambda:None},lambda row:(self.hub,self.index,self.manifest+b' '))
+  self.assertFalse(calls)
  def test_late_daemon_mutation_never_discharges_intent(self):
   entry={'tag':'late','configDigest':self.row['configDigest'],'preExisting':False,'state':'intent','commandSettled':False};daemon={'present':False};saved=[];removed=[]
   def run(args,required=True):
