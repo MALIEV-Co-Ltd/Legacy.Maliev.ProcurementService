@@ -14,9 +14,17 @@ public sealed class WorkflowContractTests
     private static readonly string DataProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.ProcurementService.Data", "Legacy.Maliev.ProcurementService.Data.csproj"));
 
+    private static void BuildAndTest_RejectsPreviousUploadArtifactPin()
+    {
+        var previousPin = Workflow.Replace("actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a", "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02", StringComparison.Ordinal);
+        Assert.NotEqual(Workflow, previousPin);
+        Assert.Throws<InvalidOperationException>(() => WorkflowContractValidator.Validate(previousPin));
+    }
+
     [Fact]
     public void BuildAndTest_SatisfiesStructuralContract()
     {
+        BuildAndTest_RejectsPreviousUploadArtifactPin();
         WorkflowContractValidator.Validate(Workflow);
     }
 
@@ -209,7 +217,7 @@ public sealed class WorkflowContractTests
         var results = steps.Single(step => step.Children.TryGetValue(new YamlScalarNode("run"), out var run)
             && ((YamlScalarNode)run).Value == "python3 -B scripts/verify-procurement-auth-program.py results auth-program-results");
         var artifact = steps.Single(step => step.Children.TryGetValue(new YamlScalarNode("uses"), out var uses)
-            && ((YamlScalarNode)uses).Value == "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+            && ((YamlScalarNode)uses).Value == "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a");
         if (ReadScalar(results, "if") != "always()" || ReadScalar(artifact, "if") != "always()"
             || ReadScalar((YamlMappingNode)ReadNode(artifact, "with"), "path") != "auth-program-results")
             throw new InvalidOperationException("Joined executions and failure evidence must always be checked/retained.");
@@ -333,7 +341,7 @@ internal static partial class WorkflowContractValidator
 
         RequireScalarValue(evidence, "name", "Preserve validation evidence");
         RequireScalarValue(evidence, "if", "always()");
-        RequireScalarValue(evidence, "uses", "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+        RequireScalarValue(evidence, "uses", "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a");
         var evidenceInputs = RequireMapping(evidence, "with");
         if (evidenceInputs.Children.Count != 4)
         {
