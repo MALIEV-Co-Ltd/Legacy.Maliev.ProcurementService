@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Legacy.Maliev.ProcurementService.Application.Models;
 
 /// <summary>Legacy supplier response.</summary>
@@ -5,7 +7,15 @@ public sealed record SupplierResponse(int Id, string? Name, string? Website, str
 /// <summary>Legacy Supplier-database address response.</summary>
 public sealed record SupplierAddressResponse(int Id, string? Building, string? Address1, string? Address2, string? City, string? State, string? PostalCode, int CountryId, DateTime? ModifiedDate, DateTime? CreatedDate);
 /// <summary>Supplier create/update request.</summary>
-public sealed record UpsertSupplierRequest(string? Name, string? Website, string? TaxNumber, string? Email, string? Note, string? Telephone, string? Mobile, string? Fax);
+public sealed record UpsertSupplierRequest(
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Name,
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Website,
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? TaxNumber,
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Email,
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Note,
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Telephone,
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Mobile,
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Fax);
 /// <summary>Supplier address create/update request.</summary>
 public sealed record UpsertSupplierAddressRequest(string? Building, string? Address1, string? Address2, string? City, string? State, string? PostalCode, int CountryId);
 
