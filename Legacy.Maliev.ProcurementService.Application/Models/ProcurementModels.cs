@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Legacy.Maliev.ProcurementService.Application.Models;
 
 /// <summary>Legacy supplier response.</summary>
@@ -7,7 +9,7 @@ public sealed record SupplierAddressResponse(int Id, string? Building, string? A
 /// <summary>Supplier create/update request.</summary>
 public sealed record UpsertSupplierRequest(string? Name, string? Website, string? TaxNumber, string? Email, string? Note, string? Telephone, string? Mobile, string? Fax);
 /// <summary>Supplier address create/update request.</summary>
-public sealed record UpsertSupplierAddressRequest(string? Building, string? Address1, string? Address2, string? City, string? State, string? PostalCode, int CountryId);
+public sealed record UpsertSupplierAddressRequest([property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? Building, [property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? Address1, [property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? Address2, [property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? City, [property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? State, [property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? PostalCode, int CountryId);
 
 /// <summary>Legacy purchase-order response.</summary>
 public sealed record PurchaseOrderResponse(
