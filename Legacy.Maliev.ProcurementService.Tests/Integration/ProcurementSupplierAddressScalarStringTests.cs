@@ -139,13 +139,13 @@ public sealed class ProcurementSupplierAddressScalarStringTests(ProcurementRunti
         var (supplier, original) = await PrepareAsync(client, true);
         var before = await SnapshotAsync();
         foreach (var update in new[] { false, true })
-        foreach (var nested in new[] { "[]", "{}" })
-        {
-            var body = "{" + string.Join(",", Fields.Select(value => $"\"{value}\":{(value == field ? nested : "\"Valid\"")}")) + ",\"CountryId\":7}";
-            using var response = await SendAsync(client, update, update ? original!.Id : supplier.Id, body);
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Equal(before, await SnapshotAsync());
-        }
+            foreach (var nested in new[] { "[]", "{}" })
+            {
+                var body = "{" + string.Join(",", Fields.Select(value => $"\"{value}\":{(value == field ? nested : "\"Valid\"")}")) + ",\"CountryId\":7}";
+                using var response = await SendAsync(client, update, update ? original!.Id : supplier.Id, body);
+                Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+                Assert.Equal(before, await SnapshotAsync());
+            }
     }
 
     [Theory]
