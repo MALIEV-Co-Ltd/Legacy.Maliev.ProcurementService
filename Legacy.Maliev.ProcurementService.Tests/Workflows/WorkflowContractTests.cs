@@ -172,6 +172,7 @@ public sealed class WorkflowContractTests
     [Theory]
     [InlineData("b27fbef06a3aa58c1f4fc0e75d7c70b32be76266", "main")]
     [InlineData("ecb05cbbd68717e415f69df2ac488c1d323b1da3", "7edcd961024868513fd5f373cab3dcb261197f77")]
+    [InlineData("c40fd246c17b738879c9345c6bcca44d96faf025", "main")]
     [InlineData("if: always()", "if: failure()")]
     [InlineData("python3 -B scripts/verify-procurement-auth-program.py results auth-program-results", "python3 -c 'print(0)'")]
     public void ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate(string original, string replacement)
@@ -193,7 +194,7 @@ public sealed class WorkflowContractTests
             ("MALIEV-Co-Ltd/Legacy.Maliev.AuthService", ReviewedProducerVersion),
             ("MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults", "ecb05cbbd68717e415f69df2ac488c1d323b1da3"),
             ("MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts", "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7"),
-            ("MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService", "cf114bcac6e4aa041ca51ec1e60739e868c8da06"),
+            ("MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService", "c40fd246c17b738879c9345c6bcca44d96faf025"),
         }.ToDictionary(entry => entry.Repository, entry => entry.Commit);
         var checkouts = steps.Where(step => step.Children.TryGetValue(new YamlScalarNode("with"), out var node)
             && node is YamlMappingNode settings && settings.Children.ContainsKey(new YamlScalarNode("repository"))).ToArray();
