@@ -5,6 +5,7 @@ namespace Legacy.Maliev.ProcurementService.Tests.Workflows;
 public sealed class SupplierAddressCausalWorkflowTests
 {
     private const string Baseline = "95d5b212b64f56ba3dfdfe4abe05b18110fc248d";
+    private const string FixtureProducer = "89aafbae9b6e0b42811ccf5112e084e276125bbe";
     private static string Source => File.ReadAllText(FindWorkflow());
 
     [Fact]
@@ -17,6 +18,10 @@ public sealed class SupplierAddressCausalWorkflowTests
         var mutations = new (string Original, string Replacement)[]
         {
             (Baseline, "main"),
+            (FixtureProducer, "main"),
+            ("path: .dependencies/ProcurementFixtureProducer", "path: .address-baseline"),
+            ("fetch-depth: 1", "fetch-depth: 0"),
+            ("timeout-minutes: 2", "timeout-minutes: 0"),
             ("timeout-minutes: 30", "timeout-minutes: 0"),
             ("ref: ecb05cbbd68717e415f69df2ac488c1d323b1da3", "ref: main"),
             ("contents: read", "contents: write"),
@@ -52,7 +57,7 @@ public sealed class SupplierAddressCausalWorkflowTests
         var names = new[]
         {
             "Check out candidate", "Check out immutable baseline", "Check out accepted Defaults",
-            "Check out CompatibilityContracts", "Set up accepted SDK", "Verify causal verifier controls",
+            "Check out CompatibilityContracts", "Check out immutable fixture producer", "Set up accepted SDK", "Verify causal verifier controls",
             "Bind identical harness and unchanged baseline", "Build baseline before expected assertion failures",
             "Execute actual baseline33 and observe providers", "Require genuine baseline13 assertion failures and20 passes",
             "Build candidate before focused execution", "Execute actual candidate33 and observe providers",
@@ -63,7 +68,7 @@ public sealed class SupplierAddressCausalWorkflowTests
         {
             Require(Scalar(steps[index], "name") == names[index]);
             Require(!steps[index].Children.ContainsKey(new YamlScalarNode("continue-on-error")));
-            Require(index == 13 || !steps[index].Children.ContainsKey(new YamlScalarNode("if")));
+            Require(index == 14 || !steps[index].Children.ContainsKey(new YamlScalarNode("if")));
         }
         for (var index = 0; index < 4; index++)
         {
@@ -74,30 +79,36 @@ public sealed class SupplierAddressCausalWorkflowTests
         Require(Scalar(Map(steps[1], "with"), "path") == ".address-baseline");
         Require(Scalar(Map(steps[2], "with"), "ref") == "ecb05cbbd68717e415f69df2ac488c1d323b1da3");
         Require(Scalar(Map(steps[3], "with"), "ref") == "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7");
-        Require(Scalar(steps[4], "uses") == "actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68");
-        Require(Scalar(Map(steps[4], "with"), "dotnet-version") == "10.0.x");
-        Commands(steps[5], "python3 -B -m unittest discover -s scripts -p test_supplier_address_fixture_overlay.py\n"
+        Require(Scalar(steps[4], "uses") == "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1");
+        Require(Scalar(steps[4], "timeout-minutes") == "2");
+        var producer = Map(steps[4], "with");
+        Require(producer.Children.Count == 4 && Scalar(producer, "ref") == FixtureProducer
+            && Scalar(producer, "path") == ".dependencies/ProcurementFixtureProducer"
+            && Scalar(producer, "fetch-depth") == "1" && Scalar(producer, "persist-credentials") == "false");
+        Require(Scalar(steps[5], "uses") == "actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68");
+        Require(Scalar(Map(steps[5], "with"), "dotnet-version") == "10.0.x");
+        Commands(steps[6], "python3 -B -m unittest discover -s scripts -p test_supplier_address_fixture_overlay.py\n"
             + "python3 -O -B -m unittest discover -s scripts -p test_supplier_address_fixture_overlay.py\n"
             + "python3 -B -m unittest discover -s scripts -p test_supplier_address_causal_results.py\n"
             + "python3 -O -B -m unittest discover -s scripts -p test_supplier_address_causal_results.py\n"
             + "python3 -B -m unittest discover -s scripts -p test_supplier_address_provider_observation.py\n"
             + "python3 -O -B -m unittest discover -s scripts -p test_supplier_address_provider_observation.py");
-        Commands(steps[6], "python3 -B scripts/prepare-supplier-address-causal-baseline.py .address-baseline docs/procurement-supplier-address-causal-contract.json");
+        Commands(steps[7], "python3 -B scripts/prepare-supplier-address-causal-baseline.py .address-baseline docs/procurement-supplier-address-causal-contract.json");
         const string build = "export GITHUB_ACTIONS=false\ndotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true\n"
             + "dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true";
-        Commands(steps[7], build);
-        Require(Scalar(steps[7], "working-directory") == ".address-baseline");
-        Commands(steps[10], build);
-        foreach (var index in new[] { 7, 10 }) Require(Scalar(steps[index], "timeout-minutes") == "5");
-        foreach (var index in new[] { 8, 11 }) Require(Scalar(steps[index], "timeout-minutes") == "6");
-        Commands(steps[8], "python3 -B scripts/observe-supplier-address-providers.py .address-baseline address-causal-results/baseline baseline");
-        Commands(steps[9], "python3 -B scripts/verify-supplier-address-causal-results.py address-causal-results/baseline docs/procurement-supplier-address-causal-contract.json baseline \"$(cat address-causal-results/baseline/test-exit-code.txt)\"");
-        Commands(steps[11], "python3 -B scripts/observe-supplier-address-providers.py . address-causal-results/candidate candidate");
-        Commands(steps[12], "python3 -B scripts/verify-supplier-address-causal-results.py address-causal-results/candidate docs/procurement-supplier-address-causal-contract.json candidate \"$(cat address-causal-results/candidate/test-exit-code.txt)\"\n"
+        Commands(steps[8], build);
+        Require(Scalar(steps[8], "working-directory") == ".address-baseline");
+        Commands(steps[11], build);
+        foreach (var index in new[] { 8, 11 }) Require(Scalar(steps[index], "timeout-minutes") == "5");
+        foreach (var index in new[] { 9, 12 }) Require(Scalar(steps[index], "timeout-minutes") == "6");
+        Commands(steps[9], "python3 -B scripts/observe-supplier-address-providers.py .address-baseline address-causal-results/baseline baseline");
+        Commands(steps[10], "python3 -B scripts/verify-supplier-address-causal-results.py address-causal-results/baseline docs/procurement-supplier-address-causal-contract.json baseline \"$(cat address-causal-results/baseline/test-exit-code.txt)\"");
+        Commands(steps[12], "python3 -B scripts/observe-supplier-address-providers.py . address-causal-results/candidate candidate");
+        Commands(steps[13], "python3 -B scripts/verify-supplier-address-causal-results.py address-causal-results/candidate docs/procurement-supplier-address-causal-contract.json candidate \"$(cat address-causal-results/candidate/test-exit-code.txt)\"\n"
             + "python3 -B scripts/prepare-supplier-address-causal-baseline.py .address-baseline docs/procurement-supplier-address-causal-contract.json --verify-only");
-        Require(Scalar(steps[13], "if") == "always()");
-        Require(Scalar(steps[13], "uses") == "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
-        Require(Scalar(Map(steps[13], "with"), "path") == "address-causal-results");
+        Require(Scalar(steps[14], "if") == "always()");
+        Require(Scalar(steps[14], "uses") == "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+        Require(Scalar(Map(steps[14], "with"), "path") == "address-causal-results");
     }
 
     private static void Commands(YamlMappingNode node, string expected)

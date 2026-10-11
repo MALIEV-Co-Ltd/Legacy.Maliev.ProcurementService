@@ -15,14 +15,18 @@ class RuntimeInputs(unittest.TestCase):
         from unittest.mock import patch
         original_root = guard.ROOT
         self.original_root = original_root
+        from unittest.mock import patch
+        historical_manifest=original_root / "tools/ProcurementAuthProgram.Tests/public-graph-fixture-startup-journal.json"
+        manifest_patch=patch.object(guard, "MANIFEST", historical_manifest)
+        manifest_patch.start();self.addCleanup(manifest_patch.stop)
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         committed_root = pathlib.Path(temporary.name)
         for source in (original_root / "tools/ProcurementAuthProgram.Tests").glob("public-graph*.json"):
             relative = source.relative_to(original_root)
-            if source == guard.MANIFEST:
+            if source.name == "public-graph-fixture-owner-correlation.json":
                 continue
-            raw = subprocess.check_output(["git", "-C", str(original_root), "show", "HEAD:" + relative.as_posix()], timeout=15)
+            raw = subprocess.check_output(["git", "-C", str(SOURCE_REPO), "show", "HEAD:" + relative.as_posix()], timeout=15)
             target = committed_root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(raw)
@@ -32,6 +36,13 @@ class RuntimeInputs(unittest.TestCase):
         self.reviewed = {project + "/Input.cs": "100644 blob reviewed" for project in guard.PROJECTS}
         for path in guard.FIXTURE_INPUTS:
             self.reviewed[path] = "100644 blob fixture"
+
+    def historical_inputs(self):
+        # Immutable predecessor source map, not native validation evidence.
+        selected = {path: value for path, value in guard.FROZEN_OWNER_INPUT_METADATA.items()
+                    if path not in guard.FIXTURE_INPUTS or path in (guard.FIXTURE, guard.JOURNAL, guard.JOURNAL_CONTROLS)}
+        selected[guard.FIXTURE] = guard.FROZEN_OWNER_SOURCE_CHANGE["changedInputs"][guard.FIXTURE]["previousMetadata"]
+        return selected
 
     def test_identical_reviewed_runtime_and_fixture_pass(self):
         guard.require_equal(dict(self.reviewed), self.reviewed)
@@ -86,13 +97,13 @@ class RuntimeInputs(unittest.TestCase):
 
     def test_frozen_literal_changes_keep_other_runtime_inputs(self):
         import json
-        manifest = json.loads(guard.MANIFEST.read_text())
-        guard.require_source_change(guard.tracked_inputs(self.original_root), manifest)
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        guard.require_source_change(self.historical_inputs(), manifest)
 
     def test_unrelated_drift_is_rejected_even_when_witness_agrees(self):
         import json
-        manifest = json.loads(guard.MANIFEST.read_text())
-        reviewed = guard.tracked_inputs(self.original_root)
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        reviewed = self.historical_inputs()
         unchanged = next(path for path in reviewed if path not in manifest["intentionalSourceChanges"]["changedInputs"])
         reviewed[unchanged] = "100644 blob unrelated"
         with self.assertRaises(ValueError):
@@ -100,8 +111,8 @@ class RuntimeInputs(unittest.TestCase):
 
     def test_query_blob_drift_is_rejected(self):
         import json
-        manifest = json.loads(guard.MANIFEST.read_text())
-        reviewed = guard.tracked_inputs(self.original_root)
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        reviewed = self.historical_inputs()
         reviewed[next(iter(manifest["intentionalSourceChanges"]["changedInputs"]))] = "100644 blob unrelated"
         with self.assertRaises(ValueError):
             guard.require_source_change(reviewed, manifest)
@@ -111,7 +122,7 @@ class RuntimeInputs(unittest.TestCase):
         manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
         for path in manifest["intentionalSourceChanges"]["changedInputs"]:
             with self.subTest(path=path):
-                reviewed = guard.tracked_inputs(self.original_root)
+                reviewed = self.historical_inputs()
                 reviewed[path] = "100644 blob unrelated"
                 with self.assertRaises(ValueError):
                     guard.require_source_change(reviewed, manifest)
@@ -121,7 +132,7 @@ class RuntimeInputs(unittest.TestCase):
         manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
         for path in manifest["intentionalSourceChanges"]["changedInputs"]:
             with self.subTest(path=path):
-                reviewed = guard.tracked_inputs(self.original_root)
+                reviewed = self.historical_inputs()
                 del reviewed[path]
                 with self.assertRaises(ValueError):
                     guard.require_source_change(reviewed, manifest)
@@ -225,6 +236,102 @@ class RuntimeInputs(unittest.TestCase):
         source.write_bytes(committed.replace(b"\n", b"\r\n"))
         with self.assertRaises(ValueError):
             guard.require_historical_graph(manifest)
+
+
+
+# Source-only controls use immutable Git bytes and temporary simulated baseline scopes.
+from pathlib import Path
+import copy, hashlib, json, os, subprocess
+from unittest.mock import patch
+SOURCE_REPO=Path(os.environ.get("OWNER_GUARD_SOURCE_REPO", str(Path(__file__).resolve().parents[1])))
+def source_bytes(path, ref="HEAD"):
+    return subprocess.check_output(["git", "-C", str(SOURCE_REPO), "show", ref+":"+path], timeout=15)
+class AuthOwnerControls(unittest.TestCase):
+ def setUp(self):
+  self.original_root=guard.ROOT;self.original_producer=guard.REVIEWED_CORRELATION_PRODUCER
+  import tempfile
+  temporary=tempfile.TemporaryDirectory(prefix='owner-graph-source-control-');self.addCleanup(temporary.cleanup)
+  guard.ROOT=Path(temporary.name);guard.REVIEWED_CORRELATION_PRODUCER='a'*40
+  for entry in (SOURCE_REPO/'tools/ProcurementAuthProgram.Tests').glob('public-graph*.json'):
+   if entry.name=='public-graph-fixture-owner-correlation.json':continue
+   relative=entry.relative_to(SOURCE_REPO);target=guard.ROOT/relative;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(source_bytes(relative.as_posix()))
+  self.addCleanup(setattr,guard,'ROOT',self.original_root);self.addCleanup(setattr,guard,'REVIEWED_CORRELATION_PRODUCER',self.original_producer)
+  self.graph=json.loads(guard.MANIFEST.read_text(encoding='utf-8'))
+  for ref in self.graph['references']:
+   if ref['repository']=='Legacy.Maliev.ProcurementService':ref['commit']='a'*40
+  self.graph['ownerCorrelationSourceBinding']['reviewedProducer']='a'*40;self.graph['ownerCorrelationSourceBinding']['releaseAllowed']=True
+  self.graph['intentionalSourceChanges']['reviewedProcurement']='a'*40
+  self.inputs=dict(guard.FROZEN_OWNER_INPUT_METADATA)
+ def test_actual_bound_producer_graph_and_git80_pass(self):
+  guard.REVIEWED_CORRELATION_PRODUCER=self.original_producer
+  graph=json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+  guard.require_owner_graph(graph)
+  actual=guard.tracked_inputs(SOURCE_REPO)
+  guard.require_owner_inputs(actual,actual,graph)
+ def test_exact80_graph_and_metadata_positive_source_control(self):
+  guard.require_owner_graph(self.graph);guard.require_owner_inputs(self.inputs,self.inputs,self.graph)
+ def test_unbound_real_draft_is_rejected_before_admission(self):
+  guard.REVIEWED_CORRELATION_PRODUCER=None
+  with self.assertRaises(ValueError):guard.require_owner_graph(self.graph)
+ def test_mutable_or_noncanonical_producer_rejected(self):
+  for value in ['main','A'*40,'not-a-sha']:
+   guard.REVIEWED_CORRELATION_PRODUCER=value
+   with self.assertRaises(ValueError):guard.require_owner_graph(self.graph)
+ def test_false_release_flag_rejected(self):
+  self.graph['ownerCorrelationSourceBinding']['releaseAllowed']=False
+  with self.assertRaises(ValueError):guard.require_owner_graph(self.graph)
+ def test_producer_reference_drift_rejected(self):
+  self.graph['references'][-1]['commit']='b'*40
+  with self.assertRaises(ValueError):guard.require_owner_graph(self.graph)
+ def test_external_reference_drift_rejected(self):
+  self.graph['references'][0]['commit']='b'*40
+  with self.assertRaises(ValueError):guard.require_owner_graph(self.graph)
+ def test_auth15_case_drift_rejected(self):
+  self.graph['expectedCases']=16
+  with self.assertRaises(ValueError):guard.require_owner_graph(self.graph)
+ def test_auth15_method_drift_rejected(self):
+  self.graph['expectedMethods']['unknown.method']=1
+  with self.assertRaises(ValueError):guard.require_owner_graph(self.graph)
+ def test_authority_widening_rejected(self):
+  for field in ['productionEnrollmentProven','productionIamBridgeProven','wholeInitialSourceParityClosed']:
+   graph=copy.deepcopy(self.graph);graph[field]=True
+   with self.assertRaises(ValueError):guard.require_owner_graph(graph)
+ def test_predecessor69_sha_drift_rejected(self):
+  self.graph['previousReviewedStartupJournalGraph']['sha256']='0'*64
+  with self.assertRaises(ValueError):guard.require_owner_graph(self.graph)
+ def test_graph_unknown_or_missing_field_rejected(self):
+  graph=copy.deepcopy(self.graph);graph['unknownField']=True
+  with self.assertRaises(ValueError):guard.require_owner_graph(graph)
+  del self.graph['ownerCorrelationSourceBinding']
+  with self.assertRaises(ValueError):guard.require_owner_graph(self.graph)
+ def test_source_change_metadata_drift_rejected(self):
+  self.graph['intentionalSourceChanges']['changedInputs'][guard.FIXTURE]['previousMetadata']='forged'
+  with self.assertRaises(ValueError):guard.require_owner_graph(self.graph)
+ def test_66_digest_drift_rejected(self):
+  self.graph['intentionalSourceChanges']['productionBuildInputSha256']='0'*64
+  with self.assertRaises(ValueError):guard.require_owner_graph(self.graph)
+ def test_preserved_predecessor_annotation_drift_rejected(self):
+  self.graph['fixtureEnrollment']='forged'
+  with self.assertRaises(ValueError):guard.require_owner_graph(self.graph)
+ def test_any_missing_explicit_path_rejected_even_if_both_maps_agree(self):
+  for path in guard.FIXTURE_INPUTS:
+   current=dict(self.inputs);del current[path]
+   with self.assertRaises(ValueError):guard.require_owner_inputs(current,current,self.graph)
+ def test_each_source_blob_drift_rejected_even_if_both_maps_agree(self):
+  for path in guard.FIXTURE_INPUTS:
+   current=dict(self.inputs);current[path]='100644 blob '+'0'*40
+   with self.assertRaises(ValueError):guard.require_owner_inputs(current,current,self.graph)
+ def test_added_selected_path_rejected(self):
+  current=dict(self.inputs);current['Legacy.Maliev.ProcurementService.Api/Added.cs']='100644 blob '+'0'*40
+  with self.assertRaises(ValueError):guard.require_owner_inputs(current,current,self.graph)
+ def test_production_blob_drift_rejected(self):
+  current=dict(self.inputs);path=next(path for path in current if path not in guard.FIXTURE_INPUTS);current[path]='100644 blob '+'0'*40
+  with self.assertRaises(ValueError):guard.require_owner_inputs(current,current,self.graph)
+ def test_selection_rule_picks_exact80_and_not_unattributed_test_tree(self):
+  records=[(metadata+'\t'+path).encode()+b'\0' for path,metadata in self.inputs.items()]
+  records.append(('100644 blob '+'0'*40+'\tLegacy.Maliev.ProcurementService.Tests/Integration/Unselected.cs').encode()+b'\0')
+  with patch.object(guard.subprocess,'check_output',return_value=b''.join(records)):
+   self.assertEqual(self.inputs,guard.tracked_inputs(Path('unit-only-no-native-checkout')))
 
 
 if __name__ == "__main__":

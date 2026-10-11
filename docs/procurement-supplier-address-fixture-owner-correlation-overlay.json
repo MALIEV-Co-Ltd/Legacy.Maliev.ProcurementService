@@ -1,0 +1,44 @@
+{
+  "reviewedFixtureProducer": "89aafbae9b6e0b42811ccf5112e084e276125bbe",
+  "fixturePath": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs",
+  "reviewedFixtureBlob": "006d1f0f51d09a0dfac35d40f75baa5d1dff44bd",
+  "reviewedFixtureSha256": "e92a338f8c20afb577d3d459b3e44bff04a8c0b29dd3da18cb51ba8c5e9654bc",
+  "originalBaseline": "95d5b212b64f56ba3dfdfe4abe05b18110fc248d",
+  "originalBaselineFixtureSha256": "7a5823479455c30cac411b51cfed4ebbe247f2648e7d087167392e62be8efb20",
+  "scope": "Same reviewed runtime startup journal fixture plus helper in both causal phases; no production/source33 harness changes",
+  "nativeAcceptance": "NOT RUN on graph successor; new baseline/candidate33 + raw source binding and natural cleanup required",
+  "previousReviewedFixtureOverlay": {
+    "path": "docs/procurement-supplier-address-fixture-overlay.json",
+    "sha256": "73ac06dfd1af3523cfe13a03ad88bee20c8b9a46c9bb051dba02002fa5ff87d2",
+    "producer": "1e520e795ec534ac9512ccf1bdb272a34e5140e9",
+    "fixtureSha256": "b5a69c9200bad7dd57e577125e9c75935ce3540af87f1b3410b3f5f9453c33e6",
+    "qualification": "Reviewed source only; not native fixture acceptance"
+  },
+  "previousReviewedStartupOverlay": {
+    "path": "docs/procurement-supplier-address-fixture-startup-overlay.json",
+    "sha256": "b70ce7d077a58961fa08b7035adc0687133629fae7466f88df15e60c08af72b5",
+    "producer": "61746f2fe03fd71eb3f208bfbf861eef800b9599",
+    "qualification": "Preserve original617 diagnostic overlay as immutable predecessor"
+  },
+  "helperOverlay": {
+    "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementFixtureStartupJournal.cs",
+    "producer": "24099f8e88ea14eebfa9a995dcd5f7569dad3dbf",
+    "gitBlob": "6f9ab7b766565ceba5522e53df39cd4008c38a7e",
+    "sha256": "4642aba334a59cd3dfb0cc636c903d4ea3a9cae6a1e68951b387dde30faf7253",
+    "classification": "Additional test-only runtime journal/publication dependency; must be absent in untouched95d5 baseline; identical in both phases"
+  },
+  "previousReviewedJournalOverlay": {
+    "path": "docs/procurement-supplier-address-fixture-journal-overlay.json",
+    "sha256": "56e8b42df2a8a64c241dfd214f086f79ed7c71b5c2d8e18e71dbf491b857396a",
+    "producer": "24099f8e88ea14eebfa9a995dcd5f7569dad3dbf",
+    "qualification": "Immutable predecessor journal overlay; not new correlation acceptance"
+  },
+  "ownerCorrelationHelper": {
+    "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementFixtureOwnerCorrelation.cs",
+    "producer": "89aafbae9b6e0b42811ccf5112e084e276125bbe",
+    "gitBlob": "42fed43b45e6aeb62f924f493ed72aa91b8dd18a",
+    "sha256": "4166f3832c64fb2bc46839f9a0f5228a551c899036c12302c4cd58d098420596",
+    "classification": "Additional test-only owner correlation helper; absent in untouched95 baseline; identical in both phases"
+  },
+  "releaseAllowed": true
+}
