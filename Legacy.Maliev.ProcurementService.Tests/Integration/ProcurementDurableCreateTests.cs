@@ -858,6 +858,8 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
     private readonly ProcurementFixtureLifetime cleanupLifetime = new();
     private readonly List<string> observedContainerIds = [];
     private readonly List<string> observedVolumeIds = [];
+    private readonly List<object> connectionEndpoints = [];
+    private readonly List<Exception> connectionObservationFailures = [];
     private string failureStage = "none";
     private Task? supplierStart;
     private Task? orderStart;
@@ -896,9 +898,13 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
             Factory = CreateFactory(false);
             scope = Factory.Services.CreateAsyncScope();
             stage = "supplier-migration";
-            await scope.Value.ServiceProvider.GetRequiredService<SupplierDbContext>().Database.MigrateAsync();
+            var supplierContext = scope.Value.ServiceProvider.GetRequiredService<SupplierDbContext>();
+            ObserveConnectionEndpoint("supplier", supplierContext, supplier);
+            await supplierContext.Database.MigrateAsync();
             stage = "purchase-order-migration";
-            await scope.Value.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Database.MigrateAsync();
+            var orderContext = scope.Value.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>();
+            ObserveConnectionEndpoint("purchase-order", orderContext, order);
+            await orderContext.Database.MigrateAsync();
         }
         catch (Exception primary)
         {
@@ -917,15 +923,13 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
                 }
             }
         }
-        if (failures.Count == 0) return;
-        initializationFailed = true;
-        try { await WriteFailureEvidenceAsync(failures); }
-        catch (AggregateException observationFailure) { failures.AddRange(observationFailure.InnerExceptions); }
-        catch (Exception observationFailure) { failures.Add(observationFailure); }
-        try { await DisposeAsync(); }
-        catch (AggregateException cleanupFailure) { failures.AddRange(cleanupFailure.InnerExceptions); }
-        catch (Exception cleanupFailure) { failures.Add(cleanupFailure); }
-        ProcurementFixtureDiagnosticFailures.PublishOrThrow(() => { }, failures);
+        var primaryFailures = failures.ToArray();
+        await ProcurementDurableFixtureFailureCompletion.CompleteAsync(failures, connectionObservationFailures,
+            observationOnly =>
+            {
+                if (observationOnly) failureStage = "connection-observation";
+                initializationFailed = true;
+            }, () => WriteFailureEvidenceAsync(primaryFailures), DisposeAsync);
     }
 
     public async Task ResetAsync()
@@ -963,6 +967,41 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
         () => { signingKey.Dispose(); return Task.CompletedTask; },
         WriteFailureCleanupEvidenceAsync);
 
+    private void ObserveConnectionEndpoint(string role, DbContext context, PostgreSqlContainer container)
+    {
+        try
+        {
+            // Parse only the already-configured connection. Never open/probe it or publish its text.
+            var actual = new Npgsql.NpgsqlConnectionStringBuilder(context.Database.GetDbConnection().ConnectionString);
+            var expected = new Npgsql.NpgsqlConnectionStringBuilder(container.GetConnectionString());
+            connectionEndpoints.Add(new
+            {
+                Role = role,
+                ExpectedPort = expected.Port,
+                EffectivePort = actual.Port,
+                EffectiveHostCategory = actual.Host is "localhost" or "127.0.0.1" or "::1" ? "loopback" : "other-redacted",
+                EffectiveHostMatchesContainer = actual.Host == expected.Host,
+                EffectivePortMatchesContainer = actual.Port == expected.Port,
+                EffectiveDatabaseMatchesContainer = actual.Database == expected.Database,
+                actual.Pooling,
+                actual.MinPoolSize,
+                actual.MaxPoolSize,
+                actual.ConnectionIdleLifetime,
+                actual.ConnectionPruningInterval,
+                actual.Timeout,
+                actual.CommandTimeout,
+                EfCommandTimeout = context.Database.GetCommandTimeout(),
+                SslMode = actual.SslMode.ToString(),
+                ConnectionOpenedByObserver = false,
+            });
+        }
+        catch (Exception observationFailure)
+        {
+            connectionObservationFailures.Add(observationFailure);
+            connectionEndpoints.Add(new { Role = role, ObservationFailureType = observationFailure.GetType().FullName, ConnectionOpenedByObserver = false });
+        }
+    }
+
     private static Docker.DotNet.DockerClientConfiguration ReadOnlyLocalDockerConfiguration()
     {
         var endpoint = OperatingSystem.IsWindows() ? "npipe://./pipe/docker_engine" : "unix:///var/run/docker.sock";
@@ -975,7 +1014,7 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
     private async Task WriteFailureEvidenceAsync(IReadOnlyCollection<Exception> primaryFailures)
     {
         var rows = new List<object>();
-        var failures = new List<Exception>();
+        var failures = connectionObservationFailures.ToList();
         using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
         try
         {
@@ -1027,6 +1066,7 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
             InitializationFailureStage = failureStage,
             ObservedAtUtc = DateTimeOffset.UtcNow,
             Resources = rows,
+            ConnectionEndpoints = connectionEndpoints,
             PrimaryFailureTypes = primaryFailures.Select(error => error.GetType().FullName).ToArray(),
             ObservationFailureTypes = failures.Select(error => error.GetType().FullName).ToArray(),
             DestructiveObserverActions = 0,
@@ -1094,6 +1134,25 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
         File.WriteAllText(Path.Combine(directory, resourceRunId + "-" + phase + ".json"), JsonSerializer.Serialize(evidence));
     }
 
+}
+
+internal static class ProcurementDurableFixtureFailureCompletion
+{
+    internal static async Task CompleteAsync(List<Exception> failures, IReadOnlyCollection<Exception> observationFailures,
+        Action<bool> markFailure, Func<Task> publishBeforeCleanup, Func<Task> cleanup)
+    {
+        var observationOnly = failures.Count == 0 && observationFailures.Count > 0;
+        failures.AddRange(observationFailures);
+        if (failures.Count == 0) return;
+        markFailure(observationOnly);
+        try { await publishBeforeCleanup(); }
+        catch (AggregateException observationFailure) { failures.AddRange(observationFailure.InnerExceptions); }
+        catch (Exception observationFailure) { failures.Add(observationFailure); }
+        try { await cleanup(); }
+        catch (AggregateException cleanupFailure) { failures.AddRange(cleanupFailure.InnerExceptions); }
+        catch (Exception cleanupFailure) { failures.Add(cleanupFailure); }
+        ProcurementFixtureDiagnosticFailures.PublishOrThrow(() => { }, failures.Distinct<Exception>(ReferenceEqualityComparer.Instance).ToArray());
+    }
 }
 
 public sealed class ProcurementDurableCreateFactory(string supplierConnection, string orderConnection, RSA key, ProcurementDurableCreateCache cache, TimeProvider clock, bool optIn, bool durable) : WebApplicationFactory<Program>
