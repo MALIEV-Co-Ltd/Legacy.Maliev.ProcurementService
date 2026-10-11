@@ -9,7 +9,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-purchase-order-address.json"
+MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-fixture-containment.json"
 HISTORICAL_PATH = "tools/ProcurementAuthProgram.Tests/public-graph.json"
 HISTORICAL_SHA256 = "205063c79697948343ba659b13757b68ef4814d1b62861484a1dd90c0b8e7d41"
 PREVIOUS_ACCEPTED_PATH = "tools/ProcurementAuthProgram.Tests/public-graph-child-replay.json"
@@ -99,6 +99,12 @@ def require_historical_graph(manifest):
     bucket_graph = json.loads(bucket_bytes)
     if bucket_custody["procurement"] != "232211084ce15682391036fbbbe777c6c723e773" or bucket_custody["inputCount"] != 66 or bucket_graph["intentionalSourceChanges"]["inputCount"] != 66:
         raise ValueError("Accepted bucket66 witness must remain exact")
+    scalar_custody = manifest["latestAcceptedPurchaseOrderAddressGraph"]
+    scalar_path = "tools/ProcurementAuthProgram.Tests/public-graph-purchase-order-address.json"
+    scalar_sha = "9ac11ba51211e1c17cde9385bb31f8e952eef302892233c867c8e04c64bb5c0a"
+    scalar_bytes = (ROOT / scalar_path).read_bytes()
+    if scalar_custody != {"path": scalar_path, "sha256": scalar_sha, "procurement": "430d2cabbdaa712e3536a119abe88f9167021358", "inputCount": 67} or hashlib.sha256(scalar_bytes).hexdigest() != scalar_sha:
+        raise ValueError("Accepted purchase-order address67 graph custody must remain exact")
     external = lambda graph: {entry["repository"]: entry["commit"] for entry in graph["references"] if entry["repository"] != "Legacy.Maliev.ProcurementService"}
     if external(manifest) != external(historical) or manifest["expectedCases"] != historical["expectedCases"] or manifest["expectedMethods"] != historical["expectedMethods"]:
         raise ValueError("External producer pins and actual Auth execution identities must remain unchanged")
