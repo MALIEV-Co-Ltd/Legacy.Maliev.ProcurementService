@@ -1,6 +1,6 @@
 # Fixture observation contract
 
-Outer receipt schema 2 uses `one-running-snapshot-full-id-census-v1`.
+Outer receipt schema 3 uses `one-running-snapshot-full-id-census-v2`.
 
 The independent observer acquires one running snapshot for every full container ID.
 Acquisition records the actual limits, loopback bindings, role, run and parent labels,
@@ -34,7 +34,7 @@ Provider-free regression controls cover known acquired removal, unknown removal,
 short-prefix collisions, missing fifth resource, wrong birth/labels, pre-running
 acquisition, late session resources and volumes, shared deadlines and multiple
 original errors. Passing these controls does not qualify native cleanup. New
-hosted execution and its original artifacts are required for schema 2 acceptance.
+hosted execution and its original artifacts are required for schema 3 acceptance.
 
 The final process census runs independently after the Docker census attempt,
 including when Docker acquisition or a session/global query fails. It retains late
@@ -42,3 +42,20 @@ process identities and closes every acquired PID handle. This census shares the
 original cleanup deadline, checked before process reads and during enumeration.
 An exhausted deadline or census error records explicit process uncertainty and
 all original errors; it never grants a new cleanup interval or qualifies absence.
+
+The supplier and purchase-order resources are Testcontainers-created and must
+provide valid actual session labels, represented as creationKind=testcontainers
+and a non-null testcontainersSessionId included in the independent terminal
+session census. Missing, invalid or foreign provider sessions fail qualification.
+
+The forced-expiry producer in ProcurementFixtureProviderContainmentTests.cs
+creates its resource directly through Docker API with exactly its owner, run,
+parent, role, expiry and persistent-data labels; it has no Testcontainers session.
+Only that fixed role uses creationKind=docker-api-manual with
+testcontainersSessionId=null, explicitly not applicable for this producer.
+Claiming a Testcontainers session on that manual resource is rejected. It still
+requires the full-ID running snapshot, matching run/parent/role, actual PID/birth,
+64MiB limits, 0.1 CPU, no port bindings, finite expiry, volumes, its native 137
+expiry receipt before cleanup, and independent exact container/volume absence.
+Unknown roles or spoofed manual identity fail the five-resource proof. No session
+UUID is invented, and no source/provider configuration or time budget changes.

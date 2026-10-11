@@ -175,7 +175,7 @@ def verify(root):
         if type(failure["exitCode"]) is not int or failure["exitCode"] == 0 or type(failure["stderrBytes"]) is not int or not 0 <= failure["stderrBytes"] <= 65536 or not re.fullmatch(r"[a-f0-9]{64}", failure["stderrSha256"]):
             raise ValueError("Invalid bounded command failure custody")
     if outer["commandFailures"]: raise ValueError("Any failed observation prevents qualification")
-    if outer["schemaVersion"] != 2 or outer["observationContract"] != "one-running-snapshot-full-id-census-v1" or outer["testExitCode"] != 0 or outer["remaining"] or outer["errorTypes"] or outer["destructiveDockerActions"] != 0 or not outer["sessions"]:
+    if outer["schemaVersion"] != 3 or outer["observationContract"] != "one-running-snapshot-full-id-census-v2" or outer["testExitCode"] != 0 or outer["remaining"] or outer["errorTypes"] or outer["destructiveDockerActions"] != 0 or not outer["sessions"]:
         raise ValueError("Independent cleanup witness failed")
     if timestamp(outer["completedAtUtc"]) < timestamp(outer["startedAtUtc"]):
         raise ValueError("Outer timing differs")
@@ -200,11 +200,20 @@ def verify(root):
         guid(session.replace("-", ""))
     resource_rows = {}
     for row in outer["observedResources"]:
-        exact(row, "id role resourceRunId parentRunId createdAt startedAt processId memoryBytes memorySwapBytes nanoCpus expiresAt volumes hostIps")
+        exact(row, "id role creationKind testcontainersSessionId resourceRunId parentRunId createdAt startedAt processId memoryBytes memorySwapBytes nanoCpus expiresAt volumes hostIps")
         guid(row["resourceRunId"])
         if row["parentRunId"] != outer["runId"] or row["id"] in resource_rows or row["processId"] <= 0:
             raise ValueError("Independent running resource identity differs")
         forced = row["role"] == "forced-expiry-control"
+        if forced:
+            if row["creationKind"] != "docker-api-manual" or row["testcontainersSessionId"] is not None:
+                raise ValueError("Manual expiry source session applicability differs")
+        else:
+            if row["creationKind"] != "testcontainers" or not isinstance(row["testcontainersSessionId"], str):
+                raise ValueError("Testcontainers provider session ownership missing")
+            guid(row["testcontainersSessionId"].replace("-", ""))
+            if row["testcontainersSessionId"] not in outer["sessions"]:
+                raise ValueError("Provider session missing from independent terminal census")
         memory = 67108864 if forced else 1073741824
         cpu = 100000000 if forced else 750000000
         binding_matches = row["hostIps"] == [] if forced else set(row["hostIps"]) == {"127.0.0.1"}
@@ -226,7 +235,7 @@ def verify(root):
             raise ValueError("Outer witness missed owned provider resources")
         for row in value["Resources"]:
             actual = resource_rows[row["Id"]]
-            if actual["resourceRunId"] != value["ResourceRunId"] or actual["role"] != row["Role"] or set(actual["volumes"]) != set(row["Volumes"]):
+            if actual["resourceRunId"] != value["ResourceRunId"] or actual["role"] != row["Role"] or set(actual["volumes"]) != set(row["Volumes"]) or actual["testcontainersSessionId"] != row["Labels"].get("org.testcontainers.session-id"):
                 raise ValueError("Independent provider run, role, or volume custody differs")
     expiry = json.loads((root / "fixture-containment/forced-expiry.json").read_text())
     exact(expiry, "Scenario ResourceRunId ContainerId ParentRunId Owner Volumes VolumesAbsent ExpiredBeforeCleanup ExitCode ElapsedSeconds ContainerAbsent UnsettledOperations ObservedOperationFailureTypes PersistentData")

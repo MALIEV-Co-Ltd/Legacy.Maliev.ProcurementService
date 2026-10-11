@@ -271,7 +271,7 @@ def terminal_census(identity):
     return rows
 
 
-OBSERVATION_CONTRACT = "one-running-snapshot-full-id-census-v1"
+OBSERVATION_CONTRACT = "one-running-snapshot-full-id-census-v2"
 
 
 def observe(run, owned, sessions, volumes, observations):
@@ -298,8 +298,15 @@ def observe(run, owned, sessions, volumes, observations):
             resource_run = labels.get("maliev.codex.run")
             session = labels.get("org.testcontainers.session-id")
             uuid.UUID(hex=resource_run)
-            uuid.UUID(hex=session)
             forced = role == "forced-expiry-control"
+            if forced:
+                # This fixed producer creates the expiry control through Docker API, not Testcontainers.
+                if "org.testcontainers.session-id" in labels:
+                    raise ValueError("Manual expiry producer unexpectedly claims a Testcontainers session")
+            else:
+                if not isinstance(session, str) or not session:
+                    raise ValueError("Testcontainers provider requires actual session ownership")
+                uuid.UUID(hex=session)
             memory = 67108864 if forced else 1073741824
             cpu = 100000000 if forced else 750000000
             if row["HostConfig"]["Memory"] != memory or row["HostConfig"]["MemorySwap"] != memory or row["HostConfig"]["NanoCpus"] != cpu:
@@ -309,7 +316,8 @@ def observe(run, owned, sessions, volumes, observations):
             row_volumes = [mount["Name"] for mount in row["Mounts"] if mount["Type"] == "volume"]
             if not row_volumes or any(not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_.-]*", name) for name in row_volumes):
                 raise ValueError("Independent volume acquisition missing or unsafe")
-            owned.add(identity); sessions.add(session); volumes.update(row_volumes)
+            owned.add(identity); volumes.update(row_volumes)
+            if not forced: sessions.add(session)
             if len(owned) > MAX_RESOURCES or len(sessions) > MAX_RESOURCES or len(volumes) > MAX_RESOURCES:
                 raise BufferError("Owned resource metadata cardinality exceeded")
             if row["State"]["Running"]:
@@ -322,6 +330,7 @@ def observe(run, owned, sessions, volumes, observations):
                 if started < created or expires <= started or type(row["State"]["Pid"]) is not int or row["State"]["Pid"] <= 0:
                     raise ValueError("Independent acquisition birth or lease differs")
                 observations[identity] = {"id": identity, "role": role,
+                    "creationKind": "docker-api-manual" if forced else "testcontainers", "testcontainersSessionId": session,
                     "resourceRunId": resource_run, "parentRunId": run,
                     "createdAt": row["Created"], "startedAt": row["State"]["StartedAt"],
                     "processId": row["State"]["Pid"], "memoryBytes": row["HostConfig"]["Memory"],
@@ -510,7 +519,7 @@ def run(root):
         custody = {"launchProcess": identity, "expectedTestExecutable": expected_executable, "testProcess": None}
         try: custody = process_custody(identity, expected_executable, observed_processes)
         except BaseException as error: errors.append(error)
-        receipt = {"schemaVersion": 2, "observationContract": OBSERVATION_CONTRACT, "runId": run_id, "startedAtUtc": started,
+        receipt = {"schemaVersion": 3, "observationContract": OBSERVATION_CONTRACT, "runId": run_id, "startedAtUtc": started,
                    "completedAtUtc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                    **custody, "testExitCode": exit_code,
                    "observedProcesses": observed_processes, "ownedContainers": sorted(owned),

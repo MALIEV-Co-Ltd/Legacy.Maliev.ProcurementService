@@ -1,6 +1,7 @@
 """Fake handles and subprocesses only; never launch native tests or Docker."""
 import importlib.util
 import json
+import re
 import errno
 import pathlib
 import signal
@@ -288,6 +289,62 @@ class ResourceAcquisitionControls(unittest.TestCase):
 
     def observe(self):
         observer.observe(self.run, self.owned, self.sessions, self.volumes, self.rows)
+
+    def manual_resource(self, identity):
+        row = self.resource(identity)
+        row["Config"]["Labels"]["maliev.codex.role"] = "forced-expiry-control"
+        del row["Config"]["Labels"]["org.testcontainers.session-id"]
+        row["HostConfig"] = {"Memory": 67108864, "MemorySwap": 67108864, "NanoCpus": 100000000}
+        row["NetworkSettings"]["Ports"] = {}
+        return row
+
+    def test_actual_manual_producer_labels_acquire_without_inventing_tc_session(self):
+        producer = (pathlib.Path(__file__).resolve().parents[1] / "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementFixtureProviderContainmentTests.cs").read_text(encoding="utf-8")
+        contract = producer.split("CreateContainerAsync(new CreateContainerParameters", 1)[1].split("HostConfig =", 1)[0]
+        keys = set(re.findall(r'\["([^"]+)"\]\s*=', contract))
+        self.assertEqual({"maliev.codex.owner", "maliev.codex.run", "maliev.codex.parent-run",
+            "maliev.codex.role", "maliev.codex.expires-utc", "maliev.codex.persistent-data"}, keys)
+        self.assertIn('"forced-expiry-control"', contract)
+        identity = "a" * 64
+        with patch.object(observer, "docker", side_effect=[identity, json.dumps([self.manual_resource(identity)])]):
+            self.observe()
+        self.assertEqual("docker-api-manual", self.rows[identity]["creationKind"])
+        self.assertIsNone(self.rows[identity]["testcontainersSessionId"])
+        self.assertFalse(self.sessions)
+        self.assertEqual({identity}, self.owned); self.assertEqual({identity}, self.volumes)
+
+    def test_pg_missing_or_invalid_actual_session_never_uses_manual_exception(self):
+        identity = "a" * 64
+        for session in (None, "", "invalid"):
+            row = self.resource(identity)
+            if session is None: del row["Config"]["Labels"]["org.testcontainers.session-id"]
+            else: row["Config"]["Labels"]["org.testcontainers.session-id"] = session
+            with self.subTest(session=session), patch.object(observer, "docker", side_effect=[identity, json.dumps([row])]):
+                with self.assertRaises(BaseExceptionGroup): self.observe()
+        self.assertFalse(self.rows)
+
+    def test_manual_session_claim_and_pg_role_spoof_still_fail(self):
+        identity = "a" * 64
+        for mode in ("manual-session", "pg-spoof", "unknown-role"):
+            row = self.manual_resource(identity)
+            if mode == "manual-session": row["Config"]["Labels"]["org.testcontainers.session-id"] = "c" * 32
+            elif mode == "pg-spoof": row["Config"]["Labels"]["maliev.codex.role"] = "supplier"
+            else: row["Config"]["Labels"]["maliev.codex.role"] = "unknown"
+            with self.subTest(mode=mode), patch.object(observer, "docker", side_effect=[identity, json.dumps([row])]):
+                with self.assertRaises(BaseExceptionGroup): self.observe()
+        self.assertFalse(self.rows)
+
+    def test_wrong_manual_identity_lease_caps_or_binding_remain_fail_closed(self):
+        identity = "a" * 64
+        for mode in ("id", "expiry", "caps", "bindings"):
+            row = self.manual_resource(identity)
+            if mode == "id": row["Id"] = "b" * 64
+            elif mode == "expiry": row["Config"]["Labels"]["maliev.codex.expires-utc"] = row["State"]["StartedAt"]
+            elif mode == "caps": row["HostConfig"]["Memory"] = 0
+            else: row["NetworkSettings"]["Ports"] = {"5432/tcp": [{"HostIp": "127.0.0.1"}]}
+            with self.subTest(mode=mode), patch.object(observer, "docker", side_effect=[identity, json.dumps([row])]):
+                with self.assertRaises(BaseExceptionGroup): self.observe()
+        self.assertFalse(self.rows)
 
     def test_known_acquired_removed_resource_is_not_reinspected(self):
         identity = "a" * 64

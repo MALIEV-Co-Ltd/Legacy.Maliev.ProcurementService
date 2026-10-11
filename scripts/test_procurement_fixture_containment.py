@@ -217,7 +217,7 @@ class OuterWitnessControls(unittest.TestCase):
                   "ObservedOperationFailureTypes": [], "PersistentData": False}
         (directory / "forced-expiry.json").write_text(json.dumps(expiry))
         process = {"pid": 17, "startTicks": 123, "group": 17, "session": 17, "executable": "/usr/share/dotnet/dotnet"}
-        outer = {"schemaVersion": 2, "observationContract": "one-running-snapshot-full-id-census-v1", "runId": "b" * 32, "startedAtUtc": "2026-10-11T09:00:00+00:00",
+        outer = {"schemaVersion": 3, "observationContract": "one-running-snapshot-full-id-census-v2", "runId": "b" * 32, "startedAtUtc": "2026-10-11T09:00:00+00:00",
                  "completedAtUtc": "2026-10-11T09:01:00+00:00", "testProcess": process, "launchProcess": dict(process, executable="/python3"), "expectedTestExecutable": process["executable"],
                  "testExitCode": 0, "observedProcesses": [dict(process, executable="/python3"), process], "ownedContainers": [str(i) * 64 for i in range(1, 6)],
                  "ownedVolumes": [str(i) * 64 for i in range(1, 6)], "sessions": ["c" * 32],
@@ -225,11 +225,11 @@ class OuterWitnessControls(unittest.TestCase):
         outer["observedResources"] = []
         for value in (normal, failed):
             for row in value["Resources"]:
-                outer["observedResources"].append({"id": row["Id"], "role": row["Role"], "resourceRunId": value["ResourceRunId"], "parentRunId": "b" * 32,
+                outer["observedResources"].append({"id": row["Id"], "role": row["Role"], "creationKind": "testcontainers", "testcontainersSessionId": "c" * 32, "resourceRunId": value["ResourceRunId"], "parentRunId": "b" * 32,
                     "createdAt": "2026-10-11T09:00:00+00:00", "startedAt": "2026-10-11T09:00:01+00:00", "processId": 123,
                     "memoryBytes": row["MemoryBytes"], "memorySwapBytes": row["MemorySwapBytes"], "nanoCpus": row["NanoCpus"],
                     "expiresAt": "2026-10-11T09:32:00+00:00", "volumes": row["Volumes"], "hostIps": ["127.0.0.1"]})
-        outer["observedResources"].append({"id": "5" * 64, "role": "forced-expiry-control", "resourceRunId": "e" * 32, "parentRunId": "b" * 32,
+        outer["observedResources"].append({"id": "5" * 64, "role": "forced-expiry-control", "creationKind": "docker-api-manual", "testcontainersSessionId": None, "resourceRunId": "e" * 32, "parentRunId": "b" * 32,
             "createdAt": "2026-10-11T09:00:00+00:00", "startedAt": "2026-10-11T09:00:01+00:00", "processId": 125,
             "memoryBytes": 67108864, "memorySwapBytes": 67108864, "nanoCpus": 100000000,
             "expiresAt": "2026-10-11T09:00:30+00:00", "volumes": ["5" * 64], "hostIps": []})
@@ -246,6 +246,25 @@ class OuterWitnessControls(unittest.TestCase):
                 elif mode == "late-session": outer["remaining"] = ["session-container:" + "9" * 64]
                 elif mode == "late-volume": outer["remaining"] = ["session-volume:late-volume"]
                 else: outer["observationContract"] = "continuous-caps-unproven"
+                (root / "outer-process-cleanup.json").write_text(json.dumps(outer))
+                with self.subTest(mode=mode), self.assertRaises(ValueError): guard.verify(root)
+
+    def test_role_specific_session_ownership_and_manual_correlation_are_strict(self):
+        for mode in ("missing-pg", "invalid-pg", "foreign-pg", "foreign-all-snapshots", "manual-session", "manual-kind", "spoof-pg-kind", "wrong-manual-id", "wrong-expiry"):
+            with tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory); outer, _ = self.files(root)
+                pg, manual = outer["observedResources"][0], outer["observedResources"][-1]
+                if mode == "missing-pg": pg["testcontainersSessionId"] = None
+                elif mode == "invalid-pg": pg["testcontainersSessionId"] = "invalid"
+                elif mode == "foreign-pg": pg["testcontainersSessionId"] = "d" * 32
+                elif mode == "foreign-all-snapshots":
+                    outer["sessions"] = ["d" * 32]
+                    for row in outer["observedResources"][:-1]: row["testcontainersSessionId"] = "d" * 32
+                elif mode == "manual-session": manual["testcontainersSessionId"] = "c" * 32
+                elif mode == "manual-kind": manual["creationKind"] = "testcontainers"
+                elif mode == "spoof-pg-kind": pg["creationKind"] = "docker-api-manual"
+                elif mode == "wrong-manual-id": manual["id"] = "9" * 64
+                else: manual["expiresAt"] = manual["startedAt"]
                 (root / "outer-process-cleanup.json").write_text(json.dumps(outer))
                 with self.subTest(mode=mode), self.assertRaises(ValueError): guard.verify(root)
 
