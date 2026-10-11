@@ -15,11 +15,13 @@ public sealed class ProcurementPurchaseOrderAddressScalarStringTests(Procurement
     : IClassFixture<ProcurementRuntimeFixture>, IAsyncLifetime
 {
     private static readonly string[] Fields = ["Building", "AddressLine1", "AddressLine2", "City", "State", "PostalCode"];
+    private ProcurementRuntimeFactory app = null!;
 
     public async Task InitializeAsync()
     {
         await fixture.ResetAsync();
-        await using var scope = fixture.Factory.Services.CreateAsyncScope();
+        app = fixture.CreateFactory(true);
+        await using var scope = app.Services.CreateAsyncScope();
         var suppliers = scope.ServiceProvider.GetRequiredService<SupplierDbContext>();
         suppliers.Addresses.Add(new SupplierAddress { Id = 80, Address1 = "Unrelated supplier address", CountryId = 7 });
         suppliers.Suppliers.Add(new Supplier { Id = 80, Name = "Unrelated supplier", AddressId = 80 });
@@ -32,7 +34,7 @@ public sealed class ProcurementPurchaseOrderAddressScalarStringTests(Procurement
         await orders.SaveChangesAsync();
     }
 
-    public Task DisposeAsync() => Task.CompletedTask;
+    public Task DisposeAsync() => app.DisposeAsync().AsTask();
 
     [Theory]
     [InlineData(false, "123", "123")]
@@ -179,7 +181,7 @@ public sealed class ProcurementPurchaseOrderAddressScalarStringTests(Procurement
     [InlineData(true)]
     public async Task MissingWritePermission_CannotPersistScalarAddress(bool authenticated)
     {
-        using var client = authenticated ? fixture.Client(ProcurementPermissions.PurchaseOrderAddressesRead) : fixture.Factory.CreateClient();
+        using var client = authenticated ? fixture.ClientAs(app, "service:procurement-parity", ProcurementPermissions.PurchaseOrderAddressesRead) : app.CreateClient();
         using var writer = Writer();
         var original = await PrepareAsync(writer);
         var before = await SnapshotAsync();
@@ -202,7 +204,7 @@ public sealed class ProcurementPurchaseOrderAddressScalarStringTests(Procurement
         Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<UpsertPurchaseOrderAddressRequest>("{\"AddressLine1\":\"Valid\",\"CountryId\":true}"));
     }
 
-    private HttpClient Writer() => fixture.Client(ProcurementPermissions.PurchaseOrderAddressesWrite, ProcurementPermissions.PurchaseOrderAddressesRead);
+    private HttpClient Writer() => fixture.ClientAs(app, "service:procurement-parity", ProcurementPermissions.PurchaseOrderAddressesWrite, ProcurementPermissions.PurchaseOrderAddressesRead);
     private static string Payload(string token) => "{" + string.Join(",", Fields.Select(field => $"\"{field}\":{token}")) + ",\"CountryId\":7}";
     private static string?[] Text(PurchaseOrderAddressResponse value) => [value.Building, value.AddressLine1, value.AddressLine2, value.City, value.State, value.PostalCode];
     private static async Task<HttpResponseMessage> SendAsync(HttpClient client, bool update, int id, string body)
@@ -218,7 +220,7 @@ public sealed class ProcurementPurchaseOrderAddressScalarStringTests(Procurement
     }
     private async Task VerifyRowAsync(PurchaseOrderAddressResponse current)
     {
-        await using var scope = fixture.Factory.Services.CreateAsyncScope();
+        await using var scope = app.Services.CreateAsyncScope();
         var orders = scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>();
         var row = await orders.Addresses.AsNoTracking().SingleAsync(value => value.Id == current.Id);
         Assert.Equal(Text(current), new string?[] { row.Building, row.AddressLine1, row.AddressLine2, row.City, row.State, row.PostalCode });
@@ -229,7 +231,7 @@ public sealed class ProcurementPurchaseOrderAddressScalarStringTests(Procurement
     }
     private async Task<string> SnapshotAsync(int? excludedAddressId = null)
     {
-        await using var scope = fixture.Factory.Services.CreateAsyncScope();
+        await using var scope = app.Services.CreateAsyncScope();
         var suppliers = scope.ServiceProvider.GetRequiredService<SupplierDbContext>();
         var orders = scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>();
         return JsonSerializer.Serialize(new
