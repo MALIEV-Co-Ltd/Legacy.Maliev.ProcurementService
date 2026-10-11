@@ -144,12 +144,15 @@ internal sealed class ProcurementFixtureOwnerCorrelation
             if (resources.Count == 2) throw new InvalidOperationException("Fixture provider receipt limit exceeded.");
             resources.Add(new
             {
-                Role = role, DeclaredContainerId = declaredId, InspectedContainerId = actual.ID,
+                Role = role,
+                DeclaredContainerId = declaredId,
+                InspectedContainerId = actual.ID,
                 OwnerLabelsAvailable = expectedOwner is not null,
                 Labels = labels.Where(pair => pair.Key is "maliev.codex.owner" or "maliev.codex.run" or
                     "maliev.codex.role" or "maliev.codex.parent-run" or "maliev.codex.expires-utc" or
                     "maliev.codex.persistent-data" or "org.testcontainers.session-id").ToDictionary(pair => pair.Key, pair => pair.Value),
-                ActualBindings = bindings, ActualTcpPeerProven = false,
+                ActualBindings = bindings,
+                ActualTcpPeerProven = false,
                 ResourceContainmentQualified = false,
             });
         }
@@ -164,11 +167,18 @@ internal sealed class ProcurementFixtureOwnerCorrelation
                 throw new InvalidOperationException("Fixture receipt metadata limit exceeded.");
             var bytes = JsonSerializer.SerializeToUtf8Bytes(new
             {
-                SchemaVersion = 1, Identity, CleanupInvocation = invocation, Phase = phase,
-                Events = events.ToArray(), Resources = resources.ToArray(), Overflow = overflow,
+                SchemaVersion = 1,
+                Identity,
+                CleanupInvocation = invocation,
+                Phase = phase,
+                Events = events.ToArray(),
+                Resources = resources.ToArray(),
+                Overflow = overflow,
                 ObservationFailureTypes = failures.Select(error => error.GetType().FullName).ToArray(),
-                NativeExecutionId = (string?)null, TerminalCleanupProven = false,
-                ActualTcpPeerProven = false, BackendProcessIdIsContainerAttribution = false,
+                NativeExecutionId = (string?)null,
+                TerminalCleanupProven = false,
+                ActualTcpPeerProven = false,
+                BackendProcessIdIsContainerAttribution = false,
             });
             if (bytes.Length > 65536) throw new InvalidOperationException("Fixture owner receipt byte limit exceeded.");
             return bytes;

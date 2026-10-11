@@ -275,8 +275,10 @@ public sealed class ProcurementFixtureOwnerCorrelationTests
             configProperty.SetValue(response, config);
             config.GetType().GetProperty("Labels")!.SetValue(config, new Dictionary<string, string>
             {
-                ["maliev.codex.owner"] = "synthetic-owned-fixture", ["maliev.codex.run"] = owner.Identity.ResourceRunId,
-                ["maliev.codex.role"] = role, ["org.testcontainers.session-id"] = session,
+                ["maliev.codex.owner"] = "synthetic-owned-fixture",
+                ["maliev.codex.run"] = owner.Identity.ResourceRunId,
+                ["maliev.codex.role"] = role,
+                ["org.testcontainers.session-id"] = session,
             });
             var settingsProperty = typeof(Docker.DotNet.Models.ContainerInspectResponse).GetProperty("NetworkSettings")!;
             settingsProperty.SetValue(response, Activator.CreateInstance(settingsProperty.PropertyType));
