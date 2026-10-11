@@ -108,6 +108,7 @@
         "id": null
       }
     ],
-    "activationRequires": "Actual reviewed source producer, actual discovered GUIDs, explicit source admission; remove Skip and enable filter/strict extension together"
+    "activationRequires": "Actual reviewed source producer, actual discovered GUIDs, explicit source admission; remove Skip and enable filter/strict extension together",
+    "discoveryOnly": true
   }
 }

@@ -31,6 +31,35 @@ def finite_activation(extension):
         if str(uuid.UUID(case.get("id") or "")) != case["id"]: raise ValueError("Finite native ID unreviewed")
     return extension["cases"]
 
+def finite_bootstrap(extension):
+    if extension.get("discoveryOnly") is not True or extension["enabled"]:
+        raise ValueError("Explicit inactive discovery mode required")
+    if os.environ.get("MALIEV_FINITE_OWNER_DISCOVERY") != "reviewed-source-only":
+        raise ValueError("Existing reviewed workflow discovery declaration required")
+    source_root = pathlib.Path(__file__).resolve().parents[1]
+    binding = json.loads((source_root / "docs/procurement-finite-owner-source-binding.json").read_text())
+    producer = binding.get("bootstrapReviewedProducer")
+    if binding.get("bootstrapSourceAdmission") is not True or not isinstance(producer, str) or not re.fullmatch(r"[a-f0-9]{40}", producer):
+        raise ValueError("Real source producer and explicit source admission not reviewed")
+    if binding["releaseAllowed"] is not False or binding["reviewedProducer"] is not None or binding["nativeIds"] is not None:
+        raise ValueError("Discovery cannot be final acceptance")
+    declared = os.environ.get("MALIEV_FINITE_OWNER_SOURCE_HEAD")
+    if not isinstance(declared, str) or not re.fullmatch(r"[a-f0-9]{40}", declared):
+        raise ValueError("Original CI source head missing")
+    for revision in [producer, declared]:
+        ancestry = subprocess.run(["git", "-C", str(source_root), "merge-base", "--is-ancestor", revision, "HEAD"], capture_output=True, timeout=10)
+        if ancestry.returncode: raise ValueError("Actual source ancestry unavailable")
+    for pin in binding["inputs"]:
+        if hashlib.sha256((source_root / pin["path"]).read_bytes()).hexdigest() != pin["sha256"]:
+            raise ValueError("Discovery source pin drift")
+        original = subprocess.check_output(["git", "-C", str(source_root), "show", producer + ":" + pin["path"]], timeout=10)
+        blob = subprocess.check_output(["git", "-C", str(source_root), "rev-parse", producer + ":" + pin["path"]], timeout=10, text=True).strip()
+        if hashlib.sha256(original).hexdigest() != pin["sha256"] or blob != pin["proposedGitBlob"]:
+            raise ValueError("Actual reviewed producer Git bytes differ")
+    if len(extension["cases"]) != 5 or any(case["id"] is not None for case in extension["cases"]):
+        raise ValueError("Discovery IDs must remain unqualified")
+    return extension["cases"]
+
 def finite_receipt(value, observation, outer):
     required="Scenario Profile Image ImageId ImageDigests Launcher ResourceRunId ContainerId ParentRunId Owner ScopeCaptured Volumes VolumesAbsent Acquired Running StoppedBeforeCleanup LauncherExpiryCandidate OwnerWatchdogInvoked StoppedByOwner OwnerActions FiniteLifecycleOwnerCleanupObserved FiniteLifecycleQualified ExternalTerminationExcluded NaturalExpiryProven ExitCode ElapsedSeconds ContainerAbsent PublicationSnapshotPendingCount PayloadWrittenBeforePublicationCompletion ObservedOperationFailureTypes PersistentData"
     exact(value,required)
@@ -103,13 +132,14 @@ def finite_receipt(value, observation, outer):
 import xml.etree.ElementTree as ET
 
 
-def native_cases(root):
+def native_cases(root, discovery=False):
     manifest = json.loads((pathlib.Path(__file__).resolve().parents[1] / "docs/procurement-fixture-containment-cases.json").read_text())
     extension=manifest.get("finiteOwnerExtension", {"enabled":False})
-    extra=finite_activation(extension)
+    extra=finite_bootstrap(extension) if discovery else finite_activation(extension)
     total=18+len(extra)
-    reviewed = {(case["name"], case["id"]) for case in manifest["cases"]+extra}
-    if manifest["expectedCases"] != 18 or len(manifest["cases"]) != 18 or len(reviewed) != total:
+    reviewed = {(case["name"], case["id"]) for case in manifest["cases"] + ([] if discovery else extra)}
+    expected_names = {case["name"] for case in manifest["cases"] + extra}
+    if manifest["expectedCases"] != 18 or len(manifest["cases"]) != 18 or len(reviewed) != (18 if discovery else total) or len(expected_names) != total:
         raise ValueError("Frozen focused execution roster must contain exactly 18 identities")
     lifetime = "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests."
     provider_class = "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureProviderContainmentTests."
@@ -138,6 +168,8 @@ def native_cases(root):
     if len(reports) != 1:
         raise ValueError("Exactly one separate focused TRX required")
     document = ET.parse(reports[0])
+    if discovery and (document.getroot().tag.rsplit("}", 1)[-1] != "TestRun" or str(uuid.UUID(document.getroot().get("id") or "")) != document.getroot().get("id")):
+        raise ValueError("Canonical original TestRun identity required for discovery")
     summaries = document.findall("./{*}ResultSummary")
     if len(document.findall(".//{*}ResultSummary")) != 1:
         raise ValueError("Exactly one direct root summary required")
@@ -191,11 +223,16 @@ def native_cases(root):
         expected_suffix = "/Legacy.Maliev.ProcurementService.Tests/bin/Release/net10.0/Legacy.Maliev.ProcurementService.Tests.dll"
         if not codebase.endswith(expected_suffix) or definition.get("storage", "").replace("\\", "/").lower() != codebase.lower() or method.get("adapterTypeName") != "executor://xunit/VsTestRunner3/netcore/":
             raise ValueError("Focused DLL/adapter custody differs")
+        display_qualified = row.get("testName", "").split("(", 1)[0]
+        actual_qualified = method.get("className", "") + "." + method.get("name", "")
+        if display_qualified != actual_qualified:
+            raise ValueError("Per-row frozen display name/class/method mapping differs")
         actual[method.get("className", "") + "." + method.get("name", "")] += 1
         identities.add(test_id); executions.add(execution)
         names.add((row.get("testName"), test_id))
-    if dict(actual) != expected or names != reviewed:
+    if dict(actual) != expected or (not discovery and names != reviewed) or (discovery and (not reviewed <= names or {name for name, _ in names} != expected_names)):
         raise ValueError("Focused method executions differ from authored 15+3 roster")
+    return [{"name": name, "id": test_id} for name, test_id in sorted(names) if name not in {case["name"] for case in manifest["cases"]}]
 
 
 def exact(value, keys):
@@ -257,8 +294,8 @@ def provider(value, scenario, parent):
     return ids, volumes
 
 
-def verify(root):
-    native_cases(root)
+def verify(root, discovery=False):
+    discovered = native_cases(root, discovery)
     outer = json.loads((root / "outer-process-cleanup.json").read_text())
     exact(outer, "schemaVersion observationContract runId startedAtUtc completedAtUtc launchProcess expectedTestExecutable testProcess testExitCode observedProcesses observedResources ownedContainers ownedVolumes sessions remaining errorTypes commandFailures destructiveDockerActions")
     guid(outer["runId"])
@@ -354,7 +391,7 @@ def verify(root):
         raise ValueError("Independent expiry-control running identity differs")
     finite_ids, finite_volumes = set(), set()
     extension=json.loads((pathlib.Path(__file__).resolve().parents[1]/"docs/procurement-fixture-containment-cases.json").read_text()).get("finiteOwnerExtension", {"enabled":False})
-    if extension["enabled"]:
+    if extension["enabled"] or discovery:
         for profile in ["bookworm","alpine"]:
             value=json.loads((root/"fixture-containment"/("expiry-profile-"+profile+".json")).read_text())
             if value["Profile"]!=profile or value["ContainerId"] in observed_ids|finite_ids|{expiry["ContainerId"]} or set(value["Volumes"]) & (observed_volumes|finite_volumes|set(expiry["Volumes"])):
@@ -363,9 +400,21 @@ def verify(root):
             finite_ids.add(value["ContainerId"]);finite_volumes.update(value["Volumes"])
     if set(outer["ownedContainers"]) != observed_ids | {expiry["ContainerId"]} | finite_ids or set(outer["ownedVolumes"]) != observed_volumes | set(expiry["Volumes"]) | finite_volumes:
         raise ValueError("Unknown owned resources appeared outside the three reviewed scenarios")
-    return {"providerScenarios": 3, "independentCleanup": True, "focusedPassed": 18+(5 if extension["enabled"] else 0), "finiteOwnerLifecycleProfiles":len(finite_ids),
-            "fullSuiteAcceptance": False, "productionQualification": False}
+    return {"providerScenarios": 3, "independentCleanup": True, "focusedPassed": 18+(5 if extension["enabled"] or discovery else 0), "finiteOwnerLifecycleProfiles":len(finite_ids),
+            "fullSuiteAcceptance": False, "productionQualification": False,
+            "provisionalDiscovery": discovery, "finiteExtensionQualified": extension["enabled"] and not discovery,
+            "discoveredUnreviewedIdentities": discovered if discovery else []}
 
 
 if __name__ == "__main__":
-    print(json.dumps(verify(pathlib.Path(sys.argv[1]))))
+    discovery = len(sys.argv) == 3 and sys.argv[2] == "--provisional-discovery"
+    if len(sys.argv) > 2 and not discovery: raise ValueError("Unknown verification mode")
+    root = pathlib.Path(sys.argv[1])
+    result = verify(root, discovery)
+    if discovery:
+        payload = (json.dumps(result, indent=2) + "\n").encode()
+        if len(payload) > 65536: raise ValueError("Provisional discovery payload exceeds bound")
+        with (root / "provisional-discovery.json").open("xb") as stream: stream.write(payload)
+        print(json.dumps(result))
+        raise SystemExit(2)  # Explicit provisional evidence, never a green acceptance gate.
+    print(json.dumps(result))

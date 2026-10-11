@@ -7,38 +7,38 @@
   "inputs": [
     {
       "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementImageExpiryProfileWitnessTests.cs",
-      "sha256": "735bbf7d0453d6079d86c340f69ae087dda42ef21ca558707d537144e51db67a",
-      "proposedGitBlob": "e892b7a34e2abc0fc82a5f83850e4f9137f6571a"
+      "sha256": "1f49934594a48ce4e8712ad7694f2c6c6c9e35c4d140f77c5c156fe6ded0c47a",
+      "proposedGitBlob": "75329033318c28f5544bb1800275f95b3da8e65a"
     },
     {
       "path": "scripts/observe-procurement-fixture-process.py",
-      "sha256": "19afb3ff47c197b02f8ee81d0503b016e39f22fc1e2a2418d496c1c0dc864601",
-      "proposedGitBlob": "87af07731db77590fc243ebf547445eb9b95c858"
+      "sha256": "e66878771f4811499170cd75257c151f69368e72f4a929c647355620c63c2a8e",
+      "proposedGitBlob": "33326f8a6cb04e480707b7da9b0496a25fafe2fb"
     },
     {
       "path": "scripts/verify-procurement-fixture-containment.py",
-      "sha256": "fe17f945c2b02fdf3424d8f8185f2a57561d82edacf7ceae2cbe6de5b759518d",
-      "proposedGitBlob": "e43dcd0a4b22630c1e718213106edf6d198e9360"
+      "sha256": "f303d972ca02c48d0f8403f9e525d7e2644d901878446ba0c8a5b6a068ea9f19",
+      "proposedGitBlob": "95e51bef8cd9d0a21a9ee5323ed499622d431ac8"
     },
     {
       "path": "scripts/test_procurement_fixture_process_observer.py",
-      "sha256": "cf56832b3d7b39dd39b4596021b79ed1acd5cccfca3775696a49bc41850989e4",
-      "proposedGitBlob": "46a7ea9ddbbf1874b4e75ff017d2de203273e967"
+      "sha256": "f6cd81067152837acbef9051e62e5c5cfd25594275fa0317a8ee6a93e9e397b4",
+      "proposedGitBlob": "6def4cbc54318a798f25707250807f632d26e8b7"
     },
     {
       "path": "scripts/test_procurement_fixture_containment.py",
-      "sha256": "05073b7dcb80defee58055daf63e5d0160f858450be4943ecbb83db047207b69",
-      "proposedGitBlob": "24e34b7b59e5cec91b324ffe145f333f12661c2c"
+      "sha256": "bbd5b6d1eb2182e9f9d35d1c3a09829c2638028d3aaf9d27d716f2500f00575c",
+      "proposedGitBlob": "72e985aa121751ce1c4d2d548fe0e03ac5826e32"
     },
     {
       "path": "docs/procurement-fixture-containment-cases.json",
-      "sha256": "9d20d2e744a487d1bf5c40c74e1a4ed2fcbd6d826c5148d8196ffdefcfe9d704",
-      "proposedGitBlob": "184ab8f46f682f90f226325ce2be962dbbbcc029"
+      "sha256": "67f38f965fe101b3d93000c85f430642c9d607fdb2aa0e0f2acf40db9eda48d2",
+      "proposedGitBlob": "251b686f4bc875fc1cac2933308872dc1183e72f"
     },
     {
       "path": ".github/workflows/procurement-fixture-containment.yml",
-      "sha256": "645c2d6cb484996d6807362a8ccb583b0e91526f35e55f87efb10e6dac7ec591",
-      "proposedGitBlob": "cfd4dd931f7bab8cdb43f9d4018d98a58d2e150b"
+      "sha256": "322effde015ab669b4608cce572a607e99d07de4f76594e2e6aaa2e2fa3aaad8",
+      "proposedGitBlob": "4775d9ff4fe5142e42424a81d5ca6c4e770926b2"
     },
     {
       "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs",
@@ -54,5 +54,7 @@
     "originalGitBlob": "006d1f0f51d09a0dfac35d40f75baa5d1dff44bd",
     "proposedGitBlob": "a4fda2edca34c7e8f918d8c43edd72438ed66f05",
     "producer": null
-  }
+  },
+  "bootstrapReviewedProducer": null,
+  "bootstrapSourceAdmission": null
 }

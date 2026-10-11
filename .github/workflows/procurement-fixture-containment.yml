@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
+      MALIEV_FINITE_OWNER_DISCOVERY: 'reviewed-source-only'
       MALIEV_FINITE_OWNER_SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
       MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
       DOTNET_PROCESSOR_COUNT: '1'
@@ -61,7 +62,7 @@ jobs:
           python3 -B -O -m unittest discover -s scripts -p test_procurement_fixture_containment.py
           python3 -B -m unittest discover -s scripts -p test_procurement_fixture_process_observer.py
           python3 -B -O -m unittest discover -s scripts -p test_procurement_fixture_process_observer.py
-          python3 -B scripts/verify-procurement-fixture-containment.py containment-results
+          python3 -B scripts/verify-procurement-fixture-containment.py containment-results --provisional-discovery
       - name: Preserve original containment evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

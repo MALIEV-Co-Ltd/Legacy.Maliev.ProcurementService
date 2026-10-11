@@ -9,11 +9,53 @@ namespace Legacy.Maliev.ProcurementService.Tests.Integration;
 
 public sealed class ProcurementImageExpiryProfileWitnessTests
 {
+    private static void RequireImageAdmission()
+    {
+        // Runs before Docker client/image allocation in either full or focused native paths.
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        string? root = null;
+        for (var depth = 0; directory is not null && depth < 16; depth++, directory = directory.Parent)
+        {
+            if (File.Exists(Path.Combine(directory.FullName, "docs", "procurement-finite-owner-source-binding.json")))
+            {
+                root = directory.FullName;
+                break;
+            }
+        }
+        if (root is null) throw new InvalidOperationException("Reviewed witness source root unavailable.");
+        var bytes = File.ReadAllBytes(Path.Combine(root, "docs", "procurement-finite-owner-source-binding.json"));
+        if (bytes.Length > 65536) throw new InvalidOperationException("Witness admission exceeds bound.");
+        using var document = JsonDocument.Parse(bytes);
+        var binding = document.RootElement;
+        var bootstrap = binding.TryGetProperty("bootstrapSourceAdmission", out var admission)
+            && admission.ValueKind == JsonValueKind.True;
+        var producerField = bootstrap ? "bootstrapReviewedProducer" : "reviewedProducer";
+        var producer = binding.GetProperty(producerField);
+        var declared = Environment.GetEnvironmentVariable("MALIEV_FINITE_OWNER_SOURCE_HEAD");
+        if (producer.ValueKind != JsonValueKind.String || !System.Text.RegularExpressions.Regex.IsMatch(producer.GetString()!, "\\A[a-f0-9]{40}\\z")
+            || declared is null || !System.Text.RegularExpressions.Regex.IsMatch(declared, "\\A[a-f0-9]{40}\\z")
+            || (!bootstrap && binding.GetProperty("releaseAllowed").ValueKind != JsonValueKind.True)
+            || (bootstrap && Environment.GetEnvironmentVariable("MALIEV_FINITE_OWNER_DISCOVERY") != "reviewed-source-only"))
+            throw new InvalidOperationException("Witness source admission is unbound.");
+        var pins = binding.GetProperty("inputs").EnumerateArray().ToArray();
+        if (pins.Length != 8) throw new InvalidOperationException("Witness input roster differs.");
+        foreach (var pin in pins)
+        {
+            var path = Path.GetFullPath(Path.Combine(root, pin.GetProperty("path").GetString()!));
+            if (!path.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.Ordinal))
+                throw new InvalidOperationException("Witness source path outside reviewed root.");
+            var actual = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(path)));
+            if (actual != pin.GetProperty("sha256").GetString())
+                throw new InvalidOperationException("Witness source pin differs.");
+        }
+    }
+
     [Theory(Skip = "Pending reviewed finite-lifecycle integration and native admission")]
     [InlineData("18.1-bookworm", "bookworm")]
     [InlineData("18.1-alpine", "alpine")]
     public async Task ImageSpecificControl_HasFiniteOwnerCleanup(string tag, string profile)
     {
+        RequireImageAdmission();
         using var configuration = new DockerClientConfiguration(new Uri(OperatingSystem.IsWindows() ? "npipe://./pipe/docker_engine" : "unix:///var/run/docker.sock"));
         using var docker = configuration.CreateClient();
         // Alpine is a candidate: this test must fail if its binary/options or exit semantics differ.

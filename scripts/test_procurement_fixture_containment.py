@@ -378,3 +378,65 @@ class ActualRecoveryTaskSourceControls(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ProvisionalDiscoveryControls(unittest.TestCase):
+    def test_null_source_admission_cannot_start_native_discovery(self):
+        extension = json.loads((pathlib.Path(__file__).resolve().parents[1] / "docs/procurement-fixture-containment-cases.json").read_text())["finiteOwnerExtension"]
+        with self.assertRaises(ValueError): guard.finite_bootstrap(extension)
+
+    def test_unreviewed_discovery_keeps_original_eighteen_guid_pins(self):
+        from unittest.mock import patch
+        extension = json.loads((pathlib.Path(__file__).resolve().parents[1] / "docs/procurement-fixture-containment-cases.json").read_text())["finiteOwnerExtension"]
+        document = NativeRosterControls().document()
+        document.set("id", str(uuid.uuid4()))
+        for case in extension["cases"]:
+            name = case["name"]; test_id = str(uuid.uuid4()); execution = str(uuid.uuid4())
+            qualified = name.split("(", 1)[0]; cls, method = qualified.rsplit(".", 1)
+            codebase = "/host/Legacy.Maliev.ProcurementService.Tests/bin/Release/net10.0/Legacy.Maliev.ProcurementService.Tests.dll"
+            definition = ET.SubElement(document.find("TestDefinitions"), "UnitTest", id=test_id, name=name, storage=codebase.lower())
+            ET.SubElement(definition, "Execution", id=execution)
+            ET.SubElement(definition, "TestMethod", className=cls, name=method, codeBase=codebase, adapterTypeName="executor://xunit/VsTestRunner3/netcore/")
+            ET.SubElement(document.find("TestEntries"), "TestEntry", testId=test_id, executionId=execution)
+            ET.SubElement(document.find("Results"), "UnitTestResult", testId=test_id, executionId=execution, testName=name, outcome="Passed")
+        counters = document.find("./ResultSummary/Counters")
+        for key in ("total", "executed", "passed"): counters.set(key, "23")
+        with tempfile.TemporaryDirectory() as directory, patch.object(guard, "finite_bootstrap", return_value=extension["cases"]):
+            root = pathlib.Path(directory); path = root / "synthetic.trx"
+            ET.ElementTree(document).write(path)
+            self.assertEqual(5, len(guard.native_cases(root, True)))
+            for mode in ("old-guid-drift", "skipped", "failed", "missing-definition", "new-name-permutation"):
+                changed = ET.fromstring(ET.tostring(document))
+                if mode == "new-name-permutation":
+                    definitions = list(changed.find("TestDefinitions"))[-2:]
+                    rows = list(changed.find("Results"))[-2:]
+                    first, second = rows[0].get("testName"), rows[1].get("testName")
+                    rows[0].set("testName", second); definitions[0].set("name", second)
+                    rows[1].set("testName", first); definitions[1].set("name", first)
+                elif mode == "old-guid-drift": changed.find("./Results/UnitTestResult").set("testId", str(uuid.uuid4()))
+                elif mode == "missing-definition": changed.find("TestDefinitions").remove(changed.find("./TestDefinitions/UnitTest"))
+                else: changed.find("./Results/UnitTestResult").set("outcome", "NotExecuted" if mode == "skipped" else "Failed")
+                ET.ElementTree(changed).write(path)
+                with self.subTest(mode=mode), self.assertRaises(ValueError): guard.native_cases(root, True)
+
+    def test_discovery_rejects_missing_receipts_unsettled_workers_or_uncertain_absence(self):
+        from unittest.mock import patch
+        for mode in ("missing-receipt", "unsettled-operation", "remaining-worker", "uncertain-absence"):
+            with tempfile.TemporaryDirectory() as directory, patch.object(guard, "native_cases", return_value=[]):
+                root = pathlib.Path(directory); outer, _ = OuterWitnessControls().files(root)
+                receipt_path = root / "fixture-containment/successful-lifecycle.json"
+                if mode == "missing-receipt": receipt_path.unlink()
+                elif mode == "unsettled-operation":
+                    value = json.loads(receipt_path.read_text()); value["UnsettledOperations"] = 1
+                    receipt_path.write_text(json.dumps(value))
+                elif mode == "remaining-worker": outer["remaining"] = ["owned-worker-still-running"]
+                else: outer["errorTypes"] = ["TimeoutError"]
+                (root / "outer-process-cleanup.json").write_text(json.dumps(outer))
+                with self.subTest(mode=mode), self.assertRaises((ValueError, FileNotFoundError)):
+                    guard.verify(root, True)
+
+    def test_positive_image_theory_remains_skipped_and_admission_precedes_docker_client(self):
+        text = (pathlib.Path(__file__).resolve().parents[1] / "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementImageExpiryProfileWitnessTests.cs").read_text(encoding="utf-8")
+        self.assertIn('[Theory(Skip = "Pending reviewed finite-lifecycle integration and native admission")]', text)
+        body = text.split("public async Task ImageSpecificControl_HasFiniteOwnerCleanup", 1)[1]
+        self.assertLess(body.index("RequireImageAdmission();"), body.index("new DockerClientConfiguration"))

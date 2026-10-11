@@ -17,7 +17,12 @@ MAX_OUTPUT_BYTES = 1024 * 1024
 MAX_ERROR_BYTES = 65536
 MAX_PROC_BYTES = 4096
 MAX_PROCESSES = 4096
+def native_extension():
+    return json.loads((pathlib.Path(__file__).resolve().parents[1]/"docs/procurement-fixture-containment-cases.json").read_text()).get("finiteOwnerExtension", {"enabled":False})
+
+
 MAX_RESOURCES = 64
+profile_roles_admitted = False
 phase_deadline = 0.0
 phase_name = "not-started"
 
@@ -341,6 +346,8 @@ def observe(run, owned, sessions, volumes, observations):
             session = labels.get("org.testcontainers.session-id")
             uuid.UUID(hex=resource_run)
             profile_control = role in ("expiry-profile-bookworm", "expiry-profile-alpine")
+            if profile_control and not profile_roles_admitted:
+                raise ValueError("Finite profile role outside admitted existing lane")
             forced = role == "forced-expiry-control" or profile_control
             if forced:
                 # This fixed producer creates the expiry control through Docker API, not Testcontainers.
@@ -481,12 +488,17 @@ def run(root):
                "--configuration", "Release", "--no-build", "--no-restore", "-p:UseLocalMalievDependencies=true",
                "--filter", "FullyQualifiedName~ProcurementFixtureLifetimeTests|FullyQualifiedName~ProcurementFixtureProviderContainmentTests",
                "--logger", "trx", "--results-directory", str(root.resolve())]
-    extension = json.loads((pathlib.Path(__file__).resolve().parents[1]/"docs/procurement-fixture-containment-cases.json").read_text()).get("finiteOwnerExtension", {"enabled":False})
-    if extension["enabled"]:
+    extension = native_extension()
+    if extension["enabled"] or extension.get("discoveryOnly") is True:
         import importlib.util
         spec=importlib.util.spec_from_file_location("containment_verifier",pathlib.Path(__file__).with_name("verify-procurement-fixture-containment.py"))
         verifier=importlib.util.module_from_spec(spec);spec.loader.exec_module(verifier)
-        verifier.finite_activation(extension)
+        if extension.get("discoveryOnly") is True:
+            verifier.finite_bootstrap(extension)
+        else:
+            verifier.finite_activation(extension)
+        global profile_roles_admitted
+        profile_roles_admitted = True
         at=command.index("--filter")+1
         command[at]+="|FullyQualifiedName~ProcurementImageExpiryProfileWitnessTests"
     owned, sessions, volumes, processes, errors = set(), set(), set(), {}, []

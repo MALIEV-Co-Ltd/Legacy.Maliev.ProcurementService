@@ -30,7 +30,11 @@ def flattened(error):
 
 
 class ObserverControls(unittest.TestCase):
-    def setUp(self): observer.phase_deadline = observer.time.monotonic() + 30
+    def setUp(self):
+        observer.phase_deadline = observer.time.monotonic() + 30
+        # Existing fake-host cleanup tests intentionally exercise the frozen old18 lane.
+        declaration = patch.object(observer, "native_extension", return_value={"enabled": False})
+        declaration.start(); self.addCleanup(declaration.stop)
 
     def test_query_primary_and_both_stream_close_errors_are_retained(self):
         child = MagicMock(pid=17); child.poll.return_value = 2; child.returncode = 2
@@ -442,6 +446,16 @@ class ResourceAcquisitionControls(unittest.TestCase):
 
 
 class FiniteOriginalCustodyControls(unittest.TestCase):
+    def setUp(self):
+        eligibility = patch.object(observer, "profile_roles_admitted", True)
+        eligibility.start(); self.addCleanup(eligibility.stop)
+    def test_unadmitted_profile_role_refused_before_handoff(self):
+        fixture, identity, row = self.profile_row()
+        with patch.object(observer, "profile_roles_admitted", False), patch.object(observer, "docker", side_effect=[identity, json.dumps([row])]), patch.object(observer, "publish_recovery_scope") as publish:
+            with self.assertRaises(BaseExceptionGroup): fixture.observe()
+            publish.assert_not_called()
+        self.assertNotIn(identity, fixture.rows)
+
     def rows(self):
         import copy
         row={"Id":"a"*64,"Image":"sha256:"+"b"*64,"Created":"2026-10-12T00:00:00Z", "Config":{"Labels":{"maliev.codex.expires-utc":"2026-10-12T00:00:30Z"},"Entrypoint":["sh"],"Cmd":[]},"Mounts":[{"Name":"original"}],"State":{"StartedAt":"2026-10-12T00:00:01Z","Pid":17,"Running":True}}
