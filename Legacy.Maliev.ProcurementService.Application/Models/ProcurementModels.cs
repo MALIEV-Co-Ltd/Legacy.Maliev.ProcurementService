@@ -37,7 +37,14 @@ public sealed record UpsertPurchaseOrderRequest(
 /// <summary>Legacy PurchaseOrder-database address response.</summary>
 public sealed record PurchaseOrderAddressResponse(int Id, string? Building, string AddressLine1, string? AddressLine2, string? City, string? State, string? PostalCode, int CountryId, DateTime? CreatedDate, DateTime? ModifiedDate);
 /// <summary>PurchaseOrder address create/update request.</summary>
-public sealed record UpsertPurchaseOrderAddressRequest(string? Building, string AddressLine1, string? AddressLine2, string? City, string? State, string? PostalCode, int CountryId);
+public sealed record UpsertPurchaseOrderAddressRequest(
+    [property: JsonConverter(typeof(PurchaseOrderAddressScalarStringJsonConverter))] string? Building,
+    [property: JsonConverter(typeof(PurchaseOrderAddressScalarStringJsonConverter))] string AddressLine1,
+    [property: JsonConverter(typeof(PurchaseOrderAddressScalarStringJsonConverter))] string? AddressLine2,
+    [property: JsonConverter(typeof(PurchaseOrderAddressScalarStringJsonConverter))] string? City,
+    [property: JsonConverter(typeof(PurchaseOrderAddressScalarStringJsonConverter))] string? State,
+    [property: JsonConverter(typeof(PurchaseOrderAddressScalarStringJsonConverter))] string? PostalCode,
+    int CountryId);
 /// <summary>Legacy order-item response.</summary>
 public sealed record OrderItemResponse(int Id, int? PurchaseOrderId, string? PartNumber, string? Description, int? Quantity, decimal? UnitPrice, decimal? Subtotal, DateTime? CreatedDate, DateTime? ModifiedDate);
 /// <summary>Order-item create/update request.</summary>
