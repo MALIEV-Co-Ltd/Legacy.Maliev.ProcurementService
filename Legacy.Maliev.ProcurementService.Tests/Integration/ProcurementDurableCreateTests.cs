@@ -26,8 +26,8 @@ using Testcontainers.PostgreSql;
 
 namespace Legacy.Maliev.ProcurementService.Tests.Integration;
 
-public sealed class ProcurementDurableCreateTests(ProcurementDurableCreateFixture fixture)
-    : IClassFixture<ProcurementDurableCreateFixture>, IAsyncLifetime
+public sealed class ProcurementDurableCreateTests(DurableCreateOwnedFixture fixture)
+    : IClassFixture<DurableCreateOwnedFixture>, IAsyncLifetime
 {
     public Task InitializeAsync() => fixture.ResetAsync();
     public Task DisposeAsync() => Task.CompletedTask;
@@ -849,18 +849,18 @@ public sealed class ProcurementDurableCreateTests(ProcurementDurableCreateFixtur
     }
 }
 
-public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
+public class ProcurementDurableCreateFixture : IAsyncLifetime
 {
     private const string DiagnosticOwner = "procurement-durable-create-fixture";
-    private readonly string resourceRunId = Guid.NewGuid().ToString("N");
-    private readonly PostgreSqlContainer supplier;
-    private readonly PostgreSqlContainer order;
-    private readonly ProcurementFixtureLifetime cleanupLifetime = new();
-    private readonly List<string> observedContainerIds = [];
-    private readonly List<string> observedVolumeIds = [];
-    private readonly List<object> connectionEndpoints = [];
-    private readonly List<Exception> connectionObservationFailures = [];
-    private readonly ProcurementConnectionJournal connectionJournal = new();
+    private readonly string resourceRunId;
+    private PostgreSqlContainer supplier = null!;
+    private PostgreSqlContainer order = null!;
+    private readonly ProcurementFixtureLifetime cleanupLifetime;
+    private readonly List<string> observedContainerIds;
+    private readonly List<string> observedVolumeIds;
+    private readonly List<object> connectionEndpoints;
+    private readonly List<Exception> connectionObservationFailures;
+    private readonly ProcurementConnectionJournal connectionJournal;
     private ProcurementConnectionEvent[] connectionEvents = [];
     private bool connectionEventsOverflow;
     private string failureStage = "none";
@@ -868,10 +868,22 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
     private Task? orderStart;
     private bool initializationFailed;
 
-    public ProcurementDurableCreateFixture()
+    private readonly ProcurementFixtureOwnerCorrelation ownerCorrelation;
+    public ProcurementDurableCreateFixture() : this(ProcurementFixtureConsumer.UnattributedDurable) { }
+
+    private protected ProcurementDurableCreateFixture(ProcurementFixtureConsumer consumer)
     {
-        supplier = DiagnosticContainer("supplier");
-        order = DiagnosticContainer("purchase-order");
+        ProcurementFixtureOwnerCorrelation.Validate(consumer, GetType().FullName!);
+        resourceRunId = Guid.NewGuid().ToString("N");
+        ownerCorrelation = new(consumer, GetType().FullName!, resourceRunId);
+        cleanupLifetime = new();
+        observedContainerIds = [];
+        observedVolumeIds = [];
+        connectionEndpoints = [];
+        connectionObservationFailures = [];
+        connectionJournal = new();
+        Cache = new();
+        Clock = new(new DateTimeOffset(2026, 10, 1, 0, 0, 0, TimeSpan.Zero));
     }
 
     private PostgreSqlContainer DiagnosticContainer(string role) => new PostgreSqlBuilder("postgres:18.1-bookworm")
@@ -879,10 +891,10 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
         .WithLabel("maliev.codex.run", resourceRunId)
         .WithLabel("maliev.codex.role", role)
         .Build();
-    private readonly RSA signingKey = RSA.Create(2048);
+    private RSA signingKey = null!;
     public ProcurementDurableCreateFactory Factory { get; private set; } = null!;
-    public ProcurementDurableCreateCache Cache { get; } = new();
-    public FakeTimeProvider Clock { get; } = new(new DateTimeOffset(2026, 10, 1, 0, 0, 0, TimeSpan.Zero));
+    public ProcurementDurableCreateCache Cache { get; }
+    public FakeTimeProvider Clock { get; }
     public ProcurementDurableCreateFactory CreateFactory(bool optIn, bool durable = true) => new(supplier.GetConnectionString(), order.GetConnectionString(), signingKey, Cache, Clock, optIn, durable);
 
     public async Task InitializeAsync()
@@ -890,9 +902,14 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
         var failures = new List<Exception>();
         AsyncServiceScope? scope = null;
         Task? starts = null;
-        var stage = "provider-start";
+        var stage = "resource-allocation";
         try
         {
+            signingKey = RSA.Create(2048);
+            supplier = DiagnosticContainer("supplier");
+            order = DiagnosticContainer("purchase-order");
+            ownerCorrelation.Record(0, "initialize-invoked");
+            stage = "provider-start";
             supplierStart = supplier.StartAsync();
             orderStart = order.StartAsync();
             starts = Task.WhenAll(supplierStart, orderStart);
@@ -968,12 +985,16 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
         return client;
     }
 
-    public Task DisposeAsync() => cleanupLifetime.CleanupAsync(
-        () => Factory is null ? Task.CompletedTask : Factory.DisposeAsync().AsTask(),
-        () => supplier.DisposeAsync().AsTask(),
-        () => order.DisposeAsync().AsTask(),
-        () => { signingKey.Dispose(); return Task.CompletedTask; },
-        WriteFailureCleanupEvidenceAsync);
+    public Task DisposeAsync()
+    {
+        var invocation = ownerCorrelation.BeginCleanup();
+        return cleanupLifetime.CleanupAsync(
+            () => ownerCorrelation.ObserveCleanupAsync(invocation, "host", () => Factory is null ? Task.CompletedTask : Factory.DisposeAsync().AsTask()),
+            () => ownerCorrelation.ObserveCleanupAsync(invocation, "supplier", () => supplier is null ? Task.CompletedTask : supplier.DisposeAsync().AsTask()),
+            () => ownerCorrelation.ObserveCleanupAsync(invocation, "purchase-order", () => order is null ? Task.CompletedTask : order.DisposeAsync().AsTask()),
+            () => ownerCorrelation.ObserveCleanupAsync(invocation, "rsa", () => { signingKey?.Dispose(); return Task.CompletedTask; }),
+            () => ownerCorrelation.ObserveCleanupAsync(invocation, "observer", () => WriteFailureCleanupEvidenceAsync(invocation)));
+    }
 
     private void ObserveConnectionEndpoint(string role, DbContext context, PostgreSqlContainer container)
     {
@@ -1032,12 +1053,24 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
             {
                 try
                 {
+                    if (container is null)
+                    {
+                        rows.Add(new { Role = role, AllocationCompleted = false, ContainerId = (string?)null });
+                        continue;
+                    }
                     var actual = await docker.Containers.InspectContainerAsync(container.Id, deadline.Token);
                     if (actual.ID != container.Id || actual.Config.Labels["maliev.codex.owner"] != DiagnosticOwner || actual.Config.Labels["maliev.codex.run"] != resourceRunId || actual.Config.Labels["maliev.codex.role"] != role)
                         throw new InvalidOperationException("Durable fixture observation ownership mismatch.");
-                    observedContainerIds.Add(actual.ID);
-                    var volumes = actual.Mounts.Where(mount => mount.Type == "volume").Select(mount => mount.Name).ToArray();
-                    observedVolumeIds.AddRange(volumes);
+                    string[] volumes = [];
+                    ProcurementFixtureOwnerCorrelation.PreserveOwnedScope(
+                        () =>
+                        {
+                            observedContainerIds.Add(actual.ID);
+                            volumes = actual.Mounts.Where(mount => mount.Type == "volume").Select(mount => mount.Name).ToArray();
+                            observedVolumeIds.AddRange(volumes);
+                        },
+                        () => ownerCorrelation.CaptureInspection(role, container.Id, actual, DiagnosticOwner, false),
+                        failures);
                     rows.Add(new
                     {
                         Id = actual.ID,
@@ -1071,6 +1104,8 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
         ProcurementFixtureDiagnosticFailures.PublishOrThrow(() => WriteFailureEvidence("before-cleanup", new
         {
             ResourceRunId = resourceRunId,
+            OwnerCorrelation = ownerCorrelation.Identity,
+            CleanupInvocation = 0,
             InitializationFailureStage = failureStage,
             ObservedAtUtc = DateTimeOffset.UtcNow,
             Resources = rows,
@@ -1086,9 +1121,14 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
         }), failures);
     }
 
-    private async Task WriteFailureCleanupEvidenceAsync()
+    private async Task WriteFailureCleanupEvidenceAsync(int invocation)
     {
-        if (!initializationFailed) return;
+        if (!initializationFailed)
+        {
+            using var publicationDeadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+            await ownerCorrelation.PublishAsync(invocation, "after-cleanup", publicationDeadline.Token);
+            return;
+        }
         var absentContainers = new List<string>();
         var absentVolumes = new List<string>();
         var failures = new List<Exception>();
@@ -1119,9 +1159,13 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
             }
         }
         catch (Exception observerSetupOrDisposalFailure) { failures.Add(observerSetupOrDisposalFailure); }
+        try { await ownerCorrelation.PublishAsync(invocation, "after-cleanup", deadline.Token); }
+        catch (Exception publicationFailure) { failures.Add(publicationFailure); }
         ProcurementFixtureDiagnosticFailures.PublishOrThrow(() => WriteFailureEvidence("after-cleanup", new
         {
             ResourceRunId = resourceRunId,
+            OwnerCorrelation = ownerCorrelation.Identity,
+            CleanupInvocation = invocation,
             InitializationFailureStage = failureStage,
             ObservedAtUtc = DateTimeOffset.UtcNow,
             ContainersObserved = observedContainerIds,
@@ -1135,16 +1179,16 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
             FullProviderCustody = observedContainerIds.Distinct(StringComparer.Ordinal).Count() == 2,
             ResourceContainmentQualified = false,
             DestructiveObserverActions = 0,
-        }), failures);
+        }, invocation), failures);
     }
 
-    private void WriteFailureEvidence(string phase, object evidence)
+    private void WriteFailureEvidence(string phase, object evidence, int invocation = 0)
     {
         var directory = Path.Combine(Environment.GetEnvironmentVariable("VSTestResultsDirectory") ?? "TestResults", "durable-fixture-failures");
         Directory.CreateDirectory(directory);
         var bytes = JsonSerializer.SerializeToUtf8Bytes(evidence);
         if (bytes.Length > 65536) throw new InvalidOperationException("Durable fixture diagnostic exceeds its byte limit.");
-        File.WriteAllBytes(Path.Combine(directory, resourceRunId + "-" + phase + ".json"), bytes);
+        File.WriteAllBytes(Path.Combine(directory, resourceRunId + "-" + phase + "-" + invocation + ".json"), bytes);
     }
 
 }

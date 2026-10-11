@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace Legacy.Maliev.ProcurementService.Tests.Controllers;
 
-public sealed class ProcurementOpenApiHttpContractTests(ProcurementRuntimeFixture fixture)
-    : IClassFixture<ProcurementRuntimeFixture>
+public sealed class ProcurementOpenApiHttpContractTests(OpenApiContractOwnedFixture fixture)
+    : IClassFixture<OpenApiContractOwnedFixture>
 {
     private async Task<JsonObject> DocumentAsync()
     {

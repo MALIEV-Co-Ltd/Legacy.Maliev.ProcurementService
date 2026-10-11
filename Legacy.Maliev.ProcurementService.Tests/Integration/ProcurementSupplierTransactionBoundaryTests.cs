@@ -17,8 +17,8 @@ namespace Legacy.Maliev.ProcurementService.Tests.Integration;
 
 // Caller-supplied retry-unit tests characterize storage faults beyond the currently
 // rejected production manual transaction. They are not hosted authority acceptance.
-public sealed class ProcurementSupplierTransactionBoundaryTests(ProcurementRuntimeFixture fixture)
-    : IClassFixture<ProcurementRuntimeFixture>, IAsyncLifetime
+public sealed class ProcurementSupplierTransactionBoundaryTests(SupplierTransactionOwnedFixture fixture)
+    : IClassFixture<SupplierTransactionOwnedFixture>, IAsyncLifetime
 {
     public Task InitializeAsync() => fixture.ResetAsync();
     public Task DisposeAsync() => Task.CompletedTask;
