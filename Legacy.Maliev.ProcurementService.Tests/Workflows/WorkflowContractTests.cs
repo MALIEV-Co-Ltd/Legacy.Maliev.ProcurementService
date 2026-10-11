@@ -20,6 +20,19 @@ public sealed class WorkflowContractTests
     public void BuildAndTest_SatisfiesStructuralContract()
     {
         WorkflowContractValidator.Validate(Workflow);
+        foreach (var (original, replacement) in new[]
+        {
+            ("--no-restore -warnaserror", "--no-restore"),
+            ("name: Set up SDK for mandatory focused workflow checks", "name: Omitted mandatory SDK"),
+            ("name: Build before mandatory focused workflow checks", "name: Execute mandatory focused workflow checks"),
+            ("name: Execute mandatory focused workflow checks", "name: Execute mandatory focused workflow checks\n        if: false"),
+            ("FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload", "FullyQualifiedName~ReviewedImagePreload"),
+            ("path: focused-workflow-results", "path: runner-results"),
+            ("name: Require every focused workflow execution\n        if: always()", "name: Require every focused workflow execution\n        if: success()"),
+            ("name: Preserve focused workflow evidence\n        if: always()", "name: Preserve focused workflow evidence\n        if: success()"),
+            ("name: Build before mandatory focused workflow checks", "name: Build before mandatory focused workflow checks\n        continue-on-error: true"),
+        })
+            AssertMutationRejected(original, replacement);
     }
 
     [Theory]
@@ -62,7 +75,7 @@ public sealed class WorkflowContractTests
     private static void ValidateReviewedPreload(string source, bool auth)
     {
         if (auth) ValidateAuthProgramJoin(source, historicalFixture: true);
-        else WorkflowContractValidator.Validate(source);
+        else WorkflowContractValidator.Validate(source, historicalFixture: true);
     }
 
     [Fact]
@@ -320,7 +333,7 @@ internal static partial class WorkflowContractValidator
     private const string CheckoutAction = "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1";
     private const string SharedValidationAction = "MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8";
 
-    public static void Validate(string workflow)
+    public static void Validate(string workflow, bool historicalFixture = false)
     {
         if (SecretExpression().IsMatch(workflow))
         {
@@ -360,9 +373,14 @@ internal static partial class WorkflowContractValidator
         }
 
         RequireScalarValue(validateJob, "name", "validate");
-        RejectDuplicatedValidationActionsAndCommands(jobs);
 
         var steps = RequireSequence(validateJob, "steps");
+        if (!historicalFixture)
+        {
+            ValidateFocusedWorkflowGroup(steps);
+            steps = new YamlSequenceNode(steps.Children.Where((_, index) => index is < 3 or > 7));
+        }
+        RejectDuplicatedValidationActionsAndCommands(steps);
         if (steps.Children.Count == 9)
         {
             RequireScalarValue(validateJob, "timeout-minutes", "30");
@@ -448,6 +466,57 @@ internal static partial class WorkflowContractValidator
                 ["solution"] = "Legacy.Maliev.ProcurementService.slnx",
                 ["use-local-maliev-dependencies"] = "true",
             });
+    }
+
+    private static void ValidateFocusedWorkflowGroup(YamlSequenceNode steps)
+    {
+        if (steps.Children.Count != 11)
+            throw new InvalidOperationException("Primary validation must retain the mandatory focused workflow group.");
+        ValidateStep(steps.Children[3], "actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68",
+            new Dictionary<string, string>(StringComparer.Ordinal) { ["dotnet-version"] = "10.0.x" });
+        RequireScalarValue(RequireMapping(steps.Children[3], "focused SDK"), "name", "Set up SDK for mandatory focused workflow checks");
+        var build = RequireMapping(steps.Children[4], "focused build");
+        RequireStepKeys(build, "name", "timeout-minutes", "env", "run");
+        RequireScalarValue(build, "name", "Build before mandatory focused workflow checks");
+        RequireScalarValue(build, "timeout-minutes", "5");
+        var buildEnv = RequireMapping(build, "env");
+        RequireStepKeys(buildEnv, "GITHUB_ACTIONS");
+        RequireScalarValue(buildEnv, "GITHUB_ACTIONS", "false");
+        RequireCommands(build, "dotnet restore Legacy.Maliev.ProcurementService.slnx\n"
+            + "dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror");
+        var test = RequireMapping(steps.Children[5], "focused tests");
+        RequireStepKeys(test, "name", "timeout-minutes", "env", "run");
+        RequireScalarValue(test, "name", "Execute mandatory focused workflow checks");
+        RequireScalarValue(test, "timeout-minutes", "2");
+        var testEnv = RequireMapping(test, "env");
+        RequireStepKeys(testEnv, "GITHUB_ACTIONS", "VSTestResultsDirectory");
+        RequireScalarValue(testEnv, "GITHUB_ACTIONS", "false");
+        RequireScalarValue(testEnv, "VSTestResultsDirectory", "${{ github.workspace }}/focused-workflow-results");
+        RequireScalarValue(test, "run", "dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore --filter \"FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload\"");
+        var gate = RequireMapping(steps.Children[6], "focused gate");
+        RequireStepKeys(gate, "name", "if", "run");
+        RequireScalarValue(gate, "name", "Require every focused workflow execution");
+        RequireScalarValue(gate, "if", "always()");
+        RequireCommands(gate, "python3 -B -m unittest discover -s scripts -p test_focused_workflow_results.py\n"
+            + "python3 -B scripts/verify-focused-workflow-results.py focused-workflow-results");
+        var evidence = RequireMapping(steps.Children[7], "focused custody");
+        RequireStepKeys(evidence, "name", "if", "uses", "with");
+        RequireScalarValue(evidence, "name", "Preserve focused workflow evidence");
+        RequireScalarValue(evidence, "if", "always()");
+        RequireScalarValue(evidence, "uses", "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+        var inputs = RequireMapping(evidence, "with");
+        RequireStepKeys(inputs, "name", "path", "if-no-files-found", "retention-days");
+        RequireScalarValue(inputs, "name", "procurement-focused-workflow-${{ github.sha }}");
+        RequireScalarValue(inputs, "path", "focused-workflow-results");
+        RequireScalarValue(inputs, "if-no-files-found", "warn");
+        RequireScalarValue(inputs, "retention-days", "7");
+    }
+
+    private static void RequireCommands(YamlMappingNode step, string commands)
+    {
+        var actual = RequireScalar(GetRequired(step, "run")).Replace("\r\n", "\n", StringComparison.Ordinal).TrimEnd('\n');
+        if (actual != commands)
+            throw new InvalidOperationException("Mandatory focused commands must remain exact and ordered.");
     }
 
     internal static void ValidateImagePreloadGroup(YamlNode preloadNode, YamlNode cleanupNode, YamlNode custodyNode)
@@ -549,33 +618,19 @@ internal static partial class WorkflowContractValidator
         }
     }
 
-    private static void RejectDuplicatedValidationActionsAndCommands(YamlMappingNode jobs)
+    private static void RejectDuplicatedValidationActionsAndCommands(YamlSequenceNode steps)
     {
-        foreach (var jobNode in jobs.Children.Values.OfType<YamlMappingNode>())
+        foreach (var stepNode in steps.Children.OfType<YamlMappingNode>())
         {
-            var stepsNode = GetOptional(jobNode, "steps");
-            if (stepsNode is not YamlSequenceNode steps)
+            if (GetOptional(stepNode, "uses") is YamlScalarNode usesNode)
             {
-                continue;
+                var action = usesNode.Value ?? string.Empty;
+                if (action.StartsWith("actions/setup-dotnet@", StringComparison.OrdinalIgnoreCase)
+                    || action.StartsWith("actions/cache@", StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidOperationException($"Caller duplicates shared action {action}.");
             }
-
-            foreach (var stepNode in steps.Children.OfType<YamlMappingNode>())
-            {
-                if (GetOptional(stepNode, "uses") is YamlScalarNode usesNode)
-                {
-                    var action = usesNode.Value ?? string.Empty;
-                    if (action.StartsWith("actions/setup-dotnet@", StringComparison.OrdinalIgnoreCase)
-                        || action.StartsWith("actions/cache@", StringComparison.OrdinalIgnoreCase))
-                    {
-                        throw new InvalidOperationException($"Caller duplicates shared action {action}.");
-                    }
-                }
-
-                if (GetOptional(stepNode, "run") is YamlScalarNode runNode)
-                {
-                    RejectDuplicatedDotNetCommand(runNode.Value ?? string.Empty);
-                }
-            }
+            if (GetOptional(stepNode, "run") is YamlScalarNode runNode)
+                RejectDuplicatedDotNetCommand(runNode.Value ?? string.Empty);
         }
     }
 

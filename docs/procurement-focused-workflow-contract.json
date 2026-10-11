@@ -1,0 +1,115 @@
+{
+  "expectedCases": 27,
+  "cases": [
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate(original: \"99049bab2c100ffdf6606bf11a2f50980c0cf3cf\", replacement: \"main\")",
+      "id": "9911dbdc-f7d2-5443-2e8c-ebb2451345f5"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate(original: \"b27fbef06a3aa58c1f4fc0e75d7c70b32be76266\", replacement: \"main\")",
+      "id": "64511fab-f62a-cc64-92cc-cfa95199378f"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate(original: \"c40fd246c17b738879c9345c6bcca44d96faf025\", replacement: \"main\")",
+      "id": "74010a7a-39e1-6a44-1576-3dd84832905a"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate(original: \"ecb05cbbd68717e415f69df2ac488c1d323b1da3\", replacement: \"7edcd961024868513fd5f373cab3dcb261197f77\")",
+      "id": "fb280a36-85e1-2106-c532-eac60e631826"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate(original: \"if: always()\", replacement: \"if: failure()\")",
+      "id": "1ccdcec0-bcc0-ea7a-95d8-d0cc5a9efdca"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate(original: \"python3 -B scripts/verify-procurement-auth-program\"\u00b7\u00b7\u00b7, replacement: \"python3 -c 'print(0)'\")",
+      "id": "51f262a8-6e80-1878-e034-e213868f4318"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ActualAuthProgramJoin_RequiresImmutableProducersAndAlwaysRetainedEvidence",
+      "id": "a4a92820-077a-e881-8920-b37e4a12f64c"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_PreservesValidationAndSeparateEvidence(auth: False)",
+      "id": "b97dcd18-17d9-afb8-dff4-d61131ea9b8a"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_PreservesValidationAndSeparateEvidence(auth: True)",
+      "id": "bb1f7091-8d8e-692f-3b7e-0c41e991574e"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: False, original: \"${{ runner.temp }}/procurement-postgres-preload.js\"\u00b7\u00b7\u00b7, replacement: \"${{ runner.temp }}/foreign.json\")",
+      "id": "dc233e40-963b-9e68-6c57-f8443187d442"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: False, original: \"name: Preserve image custody evidence\\n        if:\"\u00b7\u00b7\u00b7, replacement: \"name: Preserve image custody evidence\\n        if:\"\u00b7\u00b7\u00b7)",
+      "id": "19a38b38-50fd-c014-45b2-7336d80c88bb"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: False, original: \"name: Release owned image preload tags\\n        if\"\u00b7\u00b7\u00b7, replacement: \"name: Release owned image preload tags\\n        if\"\u00b7\u00b7\u00b7)",
+      "id": "552e9c1a-c363-50b6-fb63-3109acf7d333"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: False, original: \"preload_official_postgres.py cleanup\", replacement: \"preload_official_postgres.py cleanup --all\")",
+      "id": "db92a63e-fd7e-f8d2-42cb-4ae68c4860aa"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: False, original: \"python3 -B -O scripts/ci-postgres-preload/test_pre\"\u00b7\u00b7\u00b7, replacement: \"python3 -B scripts/ci-postgres-preload/test_preloa\"\u00b7\u00b7\u00b7)",
+      "id": "78d1b72a-b6ea-13ad-c1ab-ba0f1722d33b"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: False, original: \"retention-days: 7\", replacement: \"retention-days: 30\")",
+      "id": "94c1a4a5-73a1-641a-fe7e-58d2c2c10b9c"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: False, original: \"timeout-minutes: 2\", replacement: \"timeout-minutes: 3\")",
+      "id": "91a306f4-bd5f-6466-c393-cbca140e7147"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: False, original: \"timeout-minutes: 5\", replacement: \"timeout-minutes: 6\")",
+      "id": "e3ca0757-81e0-6272-2f11-38ed40e411c8"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: False, original: \"timeout-minutes: 5\\n        run:\", replacement: \"timeout-minutes: 5\\n        env:\\n          GITHUB\"\u00b7\u00b7\u00b7)",
+      "id": "7296d5d6-a504-414f-6c15-b9cb06151658"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: True, original: \"${{ runner.temp }}/procurement-postgres-preload.js\"\u00b7\u00b7\u00b7, replacement: \"${{ runner.temp }}/foreign.json\")",
+      "id": "b817ead0-26db-da0b-de9c-7f97673e0cc2"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: True, original: \"name: Preserve image custody evidence\\n        if:\"\u00b7\u00b7\u00b7, replacement: \"name: Preserve image custody evidence\\n        if:\"\u00b7\u00b7\u00b7)",
+      "id": "fa7f20d9-da7c-eecc-03f3-a96dd1ce292f"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: True, original: \"name: Release owned image preload tags\\n        if\"\u00b7\u00b7\u00b7, replacement: \"name: Release owned image preload tags\\n        if\"\u00b7\u00b7\u00b7)",
+      "id": "6678538f-6ef2-cefa-1cf5-341f63e7aef7"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: True, original: \"preload_official_postgres.py cleanup\", replacement: \"preload_official_postgres.py cleanup --all\")",
+      "id": "eeb5fafa-41b1-7543-c6f3-308cfb317e89"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: True, original: \"python3 -B -O scripts/ci-postgres-preload/test_pre\"\u00b7\u00b7\u00b7, replacement: \"python3 -B scripts/ci-postgres-preload/test_preloa\"\u00b7\u00b7\u00b7)",
+      "id": "b77c3882-551b-77a3-8d13-2a36bc08ae69"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: True, original: \"retention-days: 7\", replacement: \"retention-days: 30\")",
+      "id": "83114a3f-7e6b-6075-4e93-fcc1265c19f5"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: True, original: \"timeout-minutes: 2\", replacement: \"timeout-minutes: 3\")",
+      "id": "219d9566-ba17-1a34-3add-94aecb054c50"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: True, original: \"timeout-minutes: 5\", replacement: \"timeout-minutes: 6\")",
+      "id": "d3feb343-26c1-5398-c125-a45a457056a2"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(auth: True, original: \"timeout-minutes: 5\\n        run:\", replacement: \"timeout-minutes: 5\\n        env:\\n          GITHUB\"\u00b7\u00b7\u00b7)",
+      "id": "e57a4734-1435-58d2-f63b-ab782bcd8416"
+    }
+  ],
+  "sourceRosterHead": "ec9bfb6f0d3f2bd179fd7d19f1302c4565a975c1",
+  "productionEnrollmentProven": false
+}
