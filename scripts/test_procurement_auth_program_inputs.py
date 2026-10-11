@@ -113,6 +113,24 @@ class RuntimeInputs(unittest.TestCase):
         with self.assertRaises(ValueError):
             guard.require_historical_graph(manifest)
 
+    def test_current_graph_rejects_bucket_witness_custody_drift(self):
+        import copy
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        for field in ("path", "sha256", "procurement"):
+            with self.subTest(field=field):
+                mutated = copy.deepcopy(manifest)
+                mutated["latestAcceptedBucketGraph"][field] = "drift"
+                with self.assertRaises(ValueError):
+                    guard.require_historical_graph(mutated)
+
+    def test_current_graph_rejects_bucket_witness_input_count_drift(self):
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        manifest["latestAcceptedBucketGraph"]["inputCount"] = 65
+        with self.assertRaises(ValueError):
+            guard.require_historical_graph(manifest)
+
     def test_current_graph_rejects_external_pin_or_auth_identity_changes(self):
         import copy
         import json

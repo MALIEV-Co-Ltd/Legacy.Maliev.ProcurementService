@@ -9,7 +9,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-file-bucket.json"
+MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-purchase-order-address.json"
 HISTORICAL_PATH = "tools/ProcurementAuthProgram.Tests/public-graph.json"
 HISTORICAL_SHA256 = "205063c79697948343ba659b13757b68ef4814d1b62861484a1dd90c0b8e7d41"
 PREVIOUS_ACCEPTED_PATH = "tools/ProcurementAuthProgram.Tests/public-graph-child-replay.json"
@@ -90,6 +90,15 @@ def require_historical_graph(manifest):
     supplier_graph = json.loads(supplier_bytes)
     if supplier_custody["procurement"] != "574b3b6ccecb4e4df9c4e72c326d9fb7f9a918f5" or supplier_custody["inputCount"] != 65 or supplier_graph["intentionalSourceChanges"]["inputCount"] != 65:
         raise ValueError("Accepted supplier-address65 witness must remain exact")
+    bucket_custody = manifest["latestAcceptedBucketGraph"]
+    bucket_path = "tools/ProcurementAuthProgram.Tests/public-graph-file-bucket.json"
+    bucket_sha = "d5890949f9f397c16fc3ca225993946f9abf8efef866c20e82653210724884a8"
+    bucket_bytes = (ROOT / bucket_path).read_bytes()
+    if bucket_custody["path"] != bucket_path or bucket_custody["sha256"] != bucket_sha or hashlib.sha256(bucket_bytes).hexdigest() != bucket_sha:
+        raise ValueError("Accepted bucket66 graph custody must remain exact")
+    bucket_graph = json.loads(bucket_bytes)
+    if bucket_custody["procurement"] != "232211084ce15682391036fbbbe777c6c723e773" or bucket_custody["inputCount"] != 66 or bucket_graph["intentionalSourceChanges"]["inputCount"] != 66:
+        raise ValueError("Accepted bucket66 witness must remain exact")
     external = lambda graph: {entry["repository"]: entry["commit"] for entry in graph["references"] if entry["repository"] != "Legacy.Maliev.ProcurementService"}
     if external(manifest) != external(historical) or manifest["expectedCases"] != historical["expectedCases"] or manifest["expectedMethods"] != historical["expectedMethods"]:
         raise ValueError("External producer pins and actual Auth execution identities must remain unchanged")
