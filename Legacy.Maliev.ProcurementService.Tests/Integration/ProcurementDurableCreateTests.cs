@@ -863,6 +863,8 @@ public class ProcurementDurableCreateFixture : IAsyncLifetime
     private readonly ProcurementConnectionJournal connectionJournal;
     private ProcurementConnectionEvent[] connectionEvents = [];
     private bool connectionEventsOverflow;
+    private ProcurementReaderCommandEvent[] readerCommandEvents = [];
+    private string[] uncapturedReaderRoles = [];
     private string failureStage = "none";
     private Task? supplierStart;
     private Task? orderStart;
@@ -947,6 +949,8 @@ public class ProcurementDurableCreateFixture : IAsyncLifetime
         var connectionSnapshot = connectionJournal.Stop();
         connectionEvents = connectionSnapshot.Events;
         connectionEventsOverflow = connectionSnapshot.Overflow;
+        readerCommandEvents = connectionSnapshot.ReaderCommands;
+        uncapturedReaderRoles = connectionSnapshot.UncapturedReaderRoles;
         connectionObservationFailures.AddRange(connectionSnapshot.Failures);
         var primaryFailures = failures.ToArray();
         await ProcurementDurableFixtureFailureCompletion.CompleteAsync(failures, connectionObservationFailures,
@@ -1112,6 +1116,9 @@ public class ProcurementDurableCreateFixture : IAsyncLifetime
             ConnectionEndpoints = connectionEndpoints,
             ConnectionEvents = connectionEvents,
             ConnectionEventsOverflow = connectionEventsOverflow,
+            ReaderCommandEvents = readerCommandEvents,
+            SubsequentReaderCommandsUnavailableForRoles = uncapturedReaderRoles,
+            ReaderExecutedDoesNotProveStreamConsumed = true,
             BackendProcessIdIsContainerAttribution = false,
             PrimaryFailureTypes = primaryFailures.Select(error => error.GetType().FullName).ToArray(),
             ObservationFailureTypes = failures.Select(error => error.GetType().FullName).ToArray(),
@@ -1228,9 +1235,11 @@ public sealed class ProcurementDurableCreateFactory(string supplierConnection, s
             if (SetupConnectionJournal is { } journal)
             {
                 services.ConfigureDbContext<SupplierDbContext>(options => options.AddInterceptors(
-                    new ProcurementFixtureConnectionObserver(journal, "supplier", supplierConnection)));
+                    new ProcurementFixtureConnectionObserver(journal, "supplier", supplierConnection),
+                    new ProcurementFixtureFirstReaderObserver(journal, "supplier")));
                 services.ConfigureDbContext<PurchaseOrderDbContext>(options => options.AddInterceptors(
-                    new ProcurementFixtureConnectionObserver(journal, "purchase-order", orderConnection)));
+                    new ProcurementFixtureConnectionObserver(journal, "purchase-order", orderConnection),
+                    new ProcurementFixtureFirstReaderObserver(journal, "purchase-order")));
             }
         });
     }
