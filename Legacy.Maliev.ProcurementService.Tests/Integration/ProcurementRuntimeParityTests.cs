@@ -1,4 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Collections.Concurrent;
+using System.Runtime.ExceptionServices;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -260,22 +262,34 @@ public sealed class ProcurementRuntimeParityTests(ProcurementRuntimeFixture fixt
 
 public sealed class ProcurementRuntimeFixture : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer supplier = new PostgreSqlBuilder("postgres:18.1-bookworm").Build();
-    private readonly PostgreSqlContainer order = new PostgreSqlBuilder("postgres:18.1-bookworm").Build();
+    private readonly PostgreSqlContainer supplier;
+    private readonly PostgreSqlContainer order;
     private readonly RSA signingKey = RSA.Create(2048);
+    private readonly ProcurementFixtureLifetime lifetime = new();
+    public string ResourceRunId { get; } = Guid.NewGuid().ToString("N");
+    public int UnsettledOperationCount => lifetime.UnsettledOperations.Count;
+    public IReadOnlyList<Exception> ObservedOperationFailures => lifetime.ObservedFailures;
+
+    public ProcurementRuntimeFixture()
+    {
+        supplier = ProcurementFixtureContainerPolicy.Build(ResourceRunId, "supplier");
+        order = ProcurementFixtureContainerPolicy.Build(ResourceRunId, "purchase-order");
+    }
     public ProcurementRuntimeFactory Factory { get; private set; } = null!;
     public ProcurementFaultCache Cache { get; } = new();
     public FakeTimeProvider Clock { get; } = new(new DateTimeOffset(2026, 10, 1, 0, 0, 0, TimeSpan.Zero));
     public ProcurementRuntimeFactory CreateFactory(bool optIn) => new(supplier.GetConnectionString(), order.GetConnectionString(), signingKey, Cache, Clock, optIn);
 
-    public async Task InitializeAsync()
+    public Task InitializeAsync() => InitializeAsync(null);
+    internal Task InitializeAsync(Func<CancellationToken, Task>? afterProvidersStarted) => lifetime.InitializeAsync(async token =>
     {
-        await Task.WhenAll(supplier.StartAsync(), order.StartAsync());
+        await Task.WhenAll(supplier.StartAsync(token), order.StartAsync(token));
+        if (afterProvidersStarted is not null) await afterProvidersStarted(token);
         Factory = CreateFactory(false);
         await using var scope = Factory.Services.CreateAsyncScope();
-        await scope.ServiceProvider.GetRequiredService<SupplierDbContext>().Database.MigrateAsync();
-        await scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Database.MigrateAsync();
-    }
+        await scope.ServiceProvider.GetRequiredService<SupplierDbContext>().Database.MigrateAsync(token);
+        await scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Database.MigrateAsync(token);
+    }, DisposeAsync, TimeSpan.FromMinutes(2));
 
     public async Task ResetAsync()
     {
@@ -320,12 +334,109 @@ public sealed class ProcurementRuntimeFixture : IAsyncLifetime
             ClockSkew = TimeSpan.Zero,
         }, out _);
 
-    public async Task DisposeAsync()
+    public Task DisposeAsync() => lifetime.CleanupAsync(
+        () => Factory is null ? Task.CompletedTask : Factory.DisposeAsync().AsTask(),
+        () => supplier.DisposeAsync().AsTask(),
+        () => order.DisposeAsync().AsTask(),
+        () => { signingKey.Dispose(); return Task.CompletedTask; });
+}
+
+internal static class ProcurementFixtureContainerPolicy
+{
+    internal const long MemoryBytes = 1024L * 1024 * 1024;
+    internal const long NanoCpus = 750_000_000;
+    internal const string Owner = "procurement-runtime-fixture";
+
+    internal static PostgreSqlContainer Build(string run, string role) => new PostgreSqlBuilder("postgres:18.1-bookworm")
+        .WithDockerEndpoint(OperatingSystem.IsWindows() ? "npipe://./pipe/docker_engine" : OperatingSystem.IsLinux() ? "unix:///var/run/docker.sock" : throw new PlatformNotSupportedException("Owned Procurement fixtures require the local Docker endpoint."))
+        .WithLabel("maliev.codex.owner", Owner)
+        .WithLabel("maliev.codex.run", run)
+        .WithLabel("maliev.codex.parent-run", Guid.TryParse(Environment.GetEnvironmentVariable("MALIEV_TEST_RESOURCE_RUN_ID"), out var parent) ? parent.ToString("N") : run)
+        .WithLabel("maliev.codex.role", role)
+        .WithLabel("maliev.codex.expires-utc", DateTime.UtcNow.AddMinutes(32).ToString("O"))
+        .WithLabel("maliev.codex.persistent-data", "false")
+        .WithCreateParameterModifier(Apply)
+        .Build();
+
+    internal static void Apply(Docker.DotNet.Models.CreateContainerParameters parameters)
     {
-        if (Factory is not null) await Factory.DisposeAsync();
-        await supplier.DisposeAsync();
-        await order.DisposeAsync();
-        signingKey.Dispose();
+        // Preserve the pinned builder's existing PostgreSQL command and arguments.
+        parameters.Entrypoint = ["sh", "-c", "exec timeout --signal=INT --kill-after=10s 1800 docker-entrypoint.sh \"$@\"", "procurement-owned-fixture"];
+        parameters.HostConfig!.Memory = MemoryBytes;
+        parameters.HostConfig.MemorySwap = MemoryBytes;
+        parameters.HostConfig.NanoCPUs = NanoCpus;
+        foreach (var bindings in parameters.HostConfig.PortBindings.Values)
+            foreach (var binding in bindings) binding.HostIP = "127.0.0.1";
+    }
+}
+
+internal sealed class ProcurementFixtureLifetime(TimeProvider? timeProvider = null)
+{
+    private readonly TimeProvider clock = timeProvider ?? TimeProvider.System;
+    private readonly ConcurrentDictionary<Task, byte> operations = new();
+    private readonly ConcurrentDictionary<Exception, byte> observedFailures = new(ReferenceEqualityComparer.Instance);
+    internal IReadOnlyList<Task> UnsettledOperations => operations.Keys.ToArray();
+    internal IReadOnlyList<Exception> ObservedFailures => observedFailures.Keys.ToArray();
+    internal static readonly TimeSpan CleanupDeadline = TimeSpan.FromSeconds(30);
+
+    private void Record(Exception failure)
+    {
+        observedFailures.TryAdd(failure, 0);
+        if (failure is AggregateException aggregate)
+            foreach (var inner in aggregate.InnerExceptions) Record(inner);
+    }
+
+    private Task Observe(Task operation)
+    {
+        operations.TryAdd(operation, 0);
+        _ = operation.ContinueWith(completed =>
+        {
+            if (completed.Exception is not null)
+                foreach (var failure in completed.Exception.InnerExceptions) Record(failure);
+            operations.TryRemove(completed, out _);
+        }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+        return operation;
+    }
+
+    internal async Task InitializeAsync(Func<CancellationToken, Task> initialize, Func<Task> cleanup, TimeSpan deadline)
+    {
+        using var cancellation = new CancellationTokenSource(deadline, clock);
+        Task? initialization = null;
+        try
+        {
+            initialization = Observe(initialize(cancellation.Token));
+            await initialization.WaitAsync(cancellation.Token);
+        }
+        catch (Exception primary)
+        {
+            Record(primary);
+            var failures = new List<Exception> { primary };
+            try { cancellation.Cancel(); }
+            catch (Exception cancellationFailure) { Record(cancellationFailure); failures.Add(cancellationFailure); }
+            if (initialization is not null && !initialization.IsCompleted)
+            {
+                try { await initialization.WaitAsync(CleanupDeadline, clock); }
+                catch (OperationCanceledException) when (initialization.IsCanceled) { }
+                catch (Exception settlementFailure) { Record(settlementFailure); failures.Add(settlementFailure); }
+            }
+            try { await cleanup(); }
+            catch (AggregateException cleanupFailure) { Record(cleanupFailure); failures.AddRange(cleanupFailure.InnerExceptions); }
+            catch (Exception cleanupFailure) { Record(cleanupFailure); failures.Add(cleanupFailure); }
+            if (failures.Count == 1) ExceptionDispatchInfo.Capture(primary).Throw();
+            throw new AggregateException("Owned fixture initialization and cleanup failed.", failures);
+        }
+    }
+
+    internal async Task CleanupAsync(params Func<Task>[] releases)
+    {
+        var failures = new List<Exception>();
+        foreach (var release in releases)
+        {
+            try { await Observe(release()).WaitAsync(CleanupDeadline, clock); }
+            catch (Exception failure) { Record(failure); failures.Add(failure); }
+        }
+        if (failures.Count == 1) ExceptionDispatchInfo.Capture(failures[0]).Throw();
+        if (failures.Count > 1) throw new AggregateException("Owned fixture cleanup failed.", failures);
     }
 }
 
@@ -340,6 +451,7 @@ public sealed class ProcurementRuntimeFactory(string supplierConnection, string 
         builder.UseEnvironment("Production");
         builder.ConfigureServices(services =>
         {
+            services.Configure<HostOptions>(options => options.StartupTimeout = TimeSpan.FromSeconds(30));
             services.RemoveAll<IDistributedCache>();
             services.AddSingleton<IDistributedCache>(cache);
             services.RemoveAll<TimeProvider>();
