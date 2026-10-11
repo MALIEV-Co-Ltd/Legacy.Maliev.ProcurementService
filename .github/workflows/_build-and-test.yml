@@ -40,17 +40,14 @@ jobs:
           dotnet-version: 10.0.x
       - name: Build before mandatory focused workflow checks
         timeout-minutes: 5
-        env:
-          GITHUB_ACTIONS: 'false'
         run: |
-          dotnet restore Legacy.Maliev.ProcurementService.slnx
-          dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror
+          dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true
+          dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true
       - name: Execute mandatory focused workflow checks
         timeout-minutes: 2
         env:
-          GITHUB_ACTIONS: 'false'
           VSTestResultsDirectory: ${{ github.workspace }}/focused-workflow-results
-        run: dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore --filter "FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload"
+        run: dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload"
       - name: Require every focused workflow execution
         if: always()
         run: |

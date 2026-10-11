@@ -23,6 +23,7 @@ public sealed class WorkflowContractTests
         foreach (var (original, replacement) in new[]
         {
             ("--no-restore -warnaserror", "--no-restore"),
+            ("-p:UseLocalMalievDependencies=true", "-p:UseLocalMalievDependencies=false"),
             ("name: Set up SDK for mandatory focused workflow checks", "name: Omitted mandatory SDK"),
             ("name: Build before mandatory focused workflow checks", "name: Execute mandatory focused workflow checks"),
             ("name: Execute mandatory focused workflow checks", "name: Execute mandatory focused workflow checks\n        if: false"),
@@ -476,23 +477,19 @@ internal static partial class WorkflowContractValidator
             new Dictionary<string, string>(StringComparer.Ordinal) { ["dotnet-version"] = "10.0.x" });
         RequireScalarValue(RequireMapping(steps.Children[3], "focused SDK"), "name", "Set up SDK for mandatory focused workflow checks");
         var build = RequireMapping(steps.Children[4], "focused build");
-        RequireStepKeys(build, "name", "timeout-minutes", "env", "run");
+        RequireStepKeys(build, "name", "timeout-minutes", "run");
         RequireScalarValue(build, "name", "Build before mandatory focused workflow checks");
         RequireScalarValue(build, "timeout-minutes", "5");
-        var buildEnv = RequireMapping(build, "env");
-        RequireStepKeys(buildEnv, "GITHUB_ACTIONS");
-        RequireScalarValue(buildEnv, "GITHUB_ACTIONS", "false");
-        RequireCommands(build, "dotnet restore Legacy.Maliev.ProcurementService.slnx\n"
-            + "dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror");
+        RequireCommands(build, "dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true\n"
+            + "dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true");
         var test = RequireMapping(steps.Children[5], "focused tests");
         RequireStepKeys(test, "name", "timeout-minutes", "env", "run");
         RequireScalarValue(test, "name", "Execute mandatory focused workflow checks");
         RequireScalarValue(test, "timeout-minutes", "2");
         var testEnv = RequireMapping(test, "env");
-        RequireStepKeys(testEnv, "GITHUB_ACTIONS", "VSTestResultsDirectory");
-        RequireScalarValue(testEnv, "GITHUB_ACTIONS", "false");
+        RequireStepKeys(testEnv, "VSTestResultsDirectory");
         RequireScalarValue(testEnv, "VSTestResultsDirectory", "${{ github.workspace }}/focused-workflow-results");
-        RequireScalarValue(test, "run", "dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore --filter \"FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload\"");
+        RequireScalarValue(test, "run", "dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter \"FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload\"");
         var gate = RequireMapping(steps.Children[6], "focused gate");
         RequireStepKeys(gate, "name", "if", "run");
         RequireScalarValue(gate, "name", "Require every focused workflow execution");
