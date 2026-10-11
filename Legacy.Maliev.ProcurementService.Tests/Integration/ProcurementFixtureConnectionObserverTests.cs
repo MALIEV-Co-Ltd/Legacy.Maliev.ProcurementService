@@ -66,12 +66,20 @@ public sealed class ProcurementFixtureConnectionObserverTests
     [Fact]
     public void ClosedConnectionFailedEvent_DoesNotOpenOrReadBackendIdentityOrExposeSecrets()
     {
-        const string configured = "Host=127.0.0.1;Port=32123;Database=synthetic-private-db;Username=synthetic-private-user;Password=synthetic-secret";
+        var syntheticPassword = Guid.NewGuid().ToString("N");
+        var configured = new NpgsqlConnectionStringBuilder
+        {
+            Host = "127.0.0.1",
+            Port = 32123,
+            Database = "synthetic-private-db",
+            Username = "synthetic-private-user",
+            Password = syntheticPassword,
+        }.ConnectionString;
         using var connection = new NpgsqlConnection(configured);
         var journal = new ProcurementConnectionJournal();
         var observer = new ProcurementFixtureConnectionObserver(journal, "supplier", configured);
         var id = Guid.NewGuid();
-        observer.Capture(connection, "failed", id, true, true, new IOException("synthetic-secret"));
+        observer.Capture(connection, "failed", id, true, true, new IOException(syntheticPassword));
         var snapshot = journal.Stop();
         var row = Assert.Single(snapshot.Events);
         Assert.Equal(ConnectionState.Closed, connection.State);
@@ -85,7 +93,7 @@ public sealed class ProcurementFixtureConnectionObserverTests
         Assert.Equal(nameof(IOException), row.FailureType);
         Assert.Empty(snapshot.Failures);
         var json = JsonSerializer.Serialize(snapshot.Events);
-        Assert.DoesNotContain("synthetic-secret", json);
+        Assert.DoesNotContain(syntheticPassword, json);
         Assert.DoesNotContain("synthetic-private", json);
         Assert.DoesNotContain("127.0.0.1", json);
     }
