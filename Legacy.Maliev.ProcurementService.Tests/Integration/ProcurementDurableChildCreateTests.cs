@@ -61,7 +61,7 @@ public sealed class ProcurementDurableChildCreateTests(ProcurementDurableCreateF
         }
         if (scenario == "database-unavailable")
         {
-            await using var unavailable = App(true, orderConnection: "Host=127.0.0.1;Port=1;Database=child-refusal;Username=synthetic;Password=synthetic;Timeout=1;Command Timeout=1;Pooling=false");
+            await using var unavailable = App(true, orderConnection: "Host=127.0.0.1;Port=1;Database=child-refusal;Timeout=1;Command Timeout=1;Pooling=false");
             using var writer = Client(unavailable, "service:child-one", file);
             using var refusal = await PostAsync(writer, file, originalParent, key);
             Assert.Equal(HttpStatusCode.ServiceUnavailable, refusal.StatusCode);
