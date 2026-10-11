@@ -13,7 +13,7 @@ FIXTURE = 'Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntime
 MODEL = 'Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs'
 CONVERTER = 'Legacy.Maliev.ProcurementService.Application/Models/SupplierAddressScalarStringJsonConverter.cs'
 HARNESS_SHA256 = '8fe88e09de5368db558831e763da9c1ffaba44d4d58cf392afd2c505ade99a17'
-FIXTURE_PRODUCER = "89aafbae9b6e0b42811ccf5112e084e276125bbe"
+FIXTURE_PRODUCER = "d29186d08996c1f4f1e53a017eeefff2cd798d77"
 FIXTURE_BLOB = '006d1f0f51d09a0dfac35d40f75baa5d1dff44bd'
 FIXTURE_SHA256 = 'e92a338f8c20afb577d3d459b3e44bff04a8c0b29dd3da18cb51ba8c5e9654bc'
 HELPER = 'Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementFixtureStartupJournal.cs'
@@ -63,8 +63,8 @@ def require_previous_overlay(overlay, previous_bytes):
 
 
 OWNER_HELPER = 'Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementFixtureOwnerCorrelation.cs'
-OWNER_HELPER_BLOB = '42fed43b45e6aeb62f924f493ed72aa91b8dd18a'
-OWNER_HELPER_SHA256 = '4166f3832c64fb2bc46839f9a0f5228a551c899036c12302c4cd58d098420596'
+OWNER_HELPER_BLOB = 'f710b2a0f435eb2b6f648ee9cf2c15a5a0d57058'
+OWNER_HELPER_SHA256 = 'a2062e5e3ddd8d4541ceafae86287d600b68cca421236652e70a9d62d6609a28'
 PREVIOUS_JOURNAL_OVERLAY = 'docs/procurement-supplier-address-fixture-journal-overlay.json'
 PREVIOUS_JOURNAL_OVERLAY_SHA256 = '56e8b42df2a8a64c241dfd214f086f79ed7c71b5c2d8e18e71dbf491b857396a'
 
