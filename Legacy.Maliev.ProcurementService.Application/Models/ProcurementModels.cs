@@ -17,7 +17,7 @@ public sealed record UpsertSupplierRequest(
     [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Mobile,
     [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Fax);
 /// <summary>Supplier address create/update request.</summary>
-public sealed record UpsertSupplierAddressRequest(string? Building, string? Address1, string? Address2, string? City, string? State, string? PostalCode, int CountryId);
+public sealed record UpsertSupplierAddressRequest([property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? Building, [property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? Address1, [property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? Address2, [property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? City, [property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? State, [property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? PostalCode, int CountryId);
 
 /// <summary>Legacy purchase-order response.</summary>
 public sealed record PurchaseOrderResponse(

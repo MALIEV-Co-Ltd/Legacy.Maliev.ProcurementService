@@ -9,7 +9,8 @@ public sealed class WorkflowContractTests
 {
     private const string ReviewedProducerVersion = "b27fbef06a3aa58c1f4fc0e75d7c70b32be76266";
     private const string HistoricalProcurementVersion = "c40fd246c17b738879c9345c6bcca44d96faf025";
-    private const string CurrentProcurementVersion = "99049bab2c100ffdf6606bf11a2f50980c0cf3cf";
+    private const string PreviousProcurementVersion = "99049bab2c100ffdf6606bf11a2f50980c0cf3cf";
+    private const string CurrentProcurementVersion = "574b3b6ccecb4e4df9c4e72c326d9fb7f9a918f5";
     private static readonly string Workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "_build-and-test.yml"));
     private static readonly string ApiProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Api.csproj"));
@@ -241,8 +242,9 @@ public sealed class WorkflowContractTests
         var historical = original == HistoricalProcurementVersion;
         var source = historical ? ReadReviewedPreload(auth: true)
             : File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml"));
-        Assert.Contains(original, source, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(source.Replace(original, replacement, StringComparison.Ordinal), historicalFixture: historical));
+        var activePin = original == PreviousProcurementVersion ? CurrentProcurementVersion : original;
+        Assert.Contains(activePin, source, StringComparison.Ordinal);
+        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(source.Replace(activePin, replacement, StringComparison.Ordinal), historicalFixture: historical));
     }
 
     private static void ValidateAuthProgramJoin(string source, bool historicalFixture = false)
