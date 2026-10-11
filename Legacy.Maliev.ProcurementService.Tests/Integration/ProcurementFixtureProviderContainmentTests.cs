@@ -39,9 +39,14 @@ public sealed class ProcurementFixtureProviderContainmentTests
             Directory.CreateDirectory(directory);
             File.WriteAllText(Path.Combine(directory, "forced-expiry.json"), JsonSerializer.Serialize(new
             {
-                Scenario = "forced-expiry", ResourceRunId = run, ContainerId = id,
-                ExpiredBeforeCleanup = expired, ExitCode = exitCode, ElapsedSeconds = elapsed.TotalSeconds,
-                ContainerAbsent = absent, UnsettledOperations = lifetime.UnsettledOperations.Count,
+                Scenario = "forced-expiry",
+                ResourceRunId = run,
+                ContainerId = id,
+                ExpiredBeforeCleanup = expired,
+                ExitCode = exitCode,
+                ElapsedSeconds = elapsed.TotalSeconds,
+                ContainerAbsent = absent,
+                UnsettledOperations = lifetime.UnsettledOperations.Count,
                 ObservedOperationFailureTypes = lifetime.ObservedFailures.Select(error => error.GetType().FullName).ToArray(),
                 PersistentData = false,
             }));
