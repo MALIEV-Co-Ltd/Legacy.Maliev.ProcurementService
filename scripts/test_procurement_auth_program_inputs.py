@@ -87,6 +87,32 @@ class RuntimeInputs(unittest.TestCase):
         with self.assertRaises(KeyError):
             guard.require_source_change(self.reviewed, {})
 
+    def test_current_graph_preserves_exact_historical_custody(self):
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        guard.require_historical_graph(manifest)
+        manifest["historicalGraph"]["sha256"] = "0" * 64
+        with self.assertRaises(ValueError):
+            guard.require_historical_graph(manifest)
+
+    def test_current_graph_rejects_external_pin_or_auth_identity_changes(self):
+        import copy
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        for field in ("producer", "case-count", "method", "authority"):
+            with self.subTest(field=field):
+                mutated = copy.deepcopy(manifest)
+                if field == "producer":
+                    mutated["references"][0]["commit"] = "main"
+                elif field == "case-count":
+                    mutated["expectedCases"] += 1
+                elif field == "method":
+                    mutated["expectedMethods"][next(iter(mutated["expectedMethods"]))] += 1
+                else:
+                    mutated["productionEnrollmentProven"] = True
+                with self.assertRaises(ValueError):
+                    guard.require_historical_graph(mutated)
+
 
 if __name__ == "__main__":
     unittest.main()

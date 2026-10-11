@@ -449,8 +449,10 @@ public sealed class ProcurementDurableCreateTests(ProcurementDurableCreateFixtur
         await using var scope = fixture.Factory.Services.CreateAsyncScope();
         var database = Database(scope.ServiceProvider, purchaseOrder);
         var migrator = database.GetService<Microsoft.EntityFrameworkCore.Migrations.IMigrator>();
-        // Characterize the original receipt migration's Down boundary independently of later schema migrations.
-        await migrator.MigrateAsync(purchaseOrder ? "20261001013651_AddDurablePurchaseOrderCreateReceipts" : "20261001013648_AddDurableSupplierCreateReceipts");
+        // Invoke the exact original migration's Down operation generation; later immutable child migrations must not mask this refusal.
+        var rootMigrationId = purchaseOrder ? "20261001013651_AddDurablePurchaseOrderCreateReceipts" : "20261001013648_AddDurableSupplierCreateReceipts";
+        var assembly = database.GetService<Microsoft.EntityFrameworkCore.Migrations.IMigrationsAssembly>();
+        var rootMigration = assembly.CreateMigration(assembly.Migrations[rootMigrationId], database.Database.ProviderName!);
         try
         {
             await using var factory = fixture.CreateFactory(purchaseOrder);
@@ -458,7 +460,7 @@ public sealed class ProcurementDurableCreateTests(ProcurementDurableCreateFixtur
             using var created = await PostAsync(client, purchaseOrder, Payload(purchaseOrder, "Retained proof"));
             Assert.Equal(HttpStatusCode.Created, created.StatusCode);
             var before = (await database.Database.GetAppliedMigrationsAsync()).ToArray();
-            var failure = await Record.ExceptionAsync(() => migrator.MigrateAsync(purchaseOrder ? "20260721031258_FixTimestampColumnType" : "20260721031252_FixTimestampColumnType"));
+            var failure = Record.Exception(() => _ = rootMigration.DownOperations);
             Assert.IsType<InvalidOperationException>(failure);
             Assert.Equal(before, (await database.Database.GetAppliedMigrationsAsync()).ToArray());
             Assert.Equal(1, await ReceiptCountAsync(purchaseOrder));

@@ -34,6 +34,36 @@ jobs:
           ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
           path: .dependencies/Legacy.Maliev.CompatibilityContracts
           persist-credentials: false
+      - name: Set up SDK for mandatory focused workflow checks
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.x
+      - name: Build before mandatory focused workflow checks
+        timeout-minutes: 5
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true
+          dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true
+      - name: Execute mandatory focused workflow checks
+        timeout-minutes: 2
+        env:
+          VSTestResultsDirectory: ${{ github.workspace }}/focused-workflow-results
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload"
+      - name: Require every focused workflow execution
+        if: always()
+        run: |
+          python3 -B -m unittest discover -s scripts -p test_focused_workflow_results.py
+          python3 -B scripts/verify-focused-workflow-results.py focused-workflow-results
+      - name: Preserve focused workflow evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-focused-workflow-${{ github.sha }}
+          path: focused-workflow-results
+          if-no-files-found: warn
+          retention-days: 7
       - name: Validate .NET solution
         uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8
         with:

@@ -55,17 +55,23 @@ jobs:
           ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
           path: .joined-public/Legacy.Maliev.CompatibilityContracts
           persist-credentials: false
-      - name: Check out frozen child replay production witness
+      - name: Check out frozen source string production witness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService
-          ref: 99049bab2c100ffdf6606bf11a2f50980c0cf3cf
+          ref: c40fd246c17b738879c9345c6bcca44d96faf025
           path: .joined-public/Legacy.Maliev.ProcurementService
           persist-credentials: false
       - name: Verify immutable producer graph and actual runtime inputs
         run: python3 -B scripts/verify-procurement-auth-program.py inputs .joined-public
       - name: Require runtime input guard mutation controls
         run: python3 -B -m unittest discover -s scripts -p test_procurement_auth_program_inputs.py
+      - name: Preload exact official PostgreSQL images
+        timeout-minutes: 5
+        run: |
+          python3 -B scripts/ci-postgres-preload/test_preload_official_postgres.py
+          python3 -B -O scripts/ci-postgres-preload/test_preload_official_postgres.py
+          python3 -B scripts/ci-postgres-preload/preload_official_postgres.py
       - name: Validate normal Auth and Procurement join
         uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8
         with:
@@ -80,5 +86,17 @@ jobs:
         with:
           name: procurement-auth-program-${{ github.sha }}
           path: auth-program-results
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Release owned image preload tags
+        if: always()
+        timeout-minutes: 2
+        run: python3 -B scripts/ci-postgres-preload/preload_official_postgres.py cleanup
+      - name: Preserve image custody evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: postgres-preload-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/procurement-postgres-preload.json
           if-no-files-found: warn
           retention-days: 7

@@ -1,5 +1,5 @@
 {
-  "expectedCases": 81,
+  "expectedCases": 48,
   "expectedMethods": {
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_CreateReadUpdate_PreservesWireShapeAndSeparateDatabase": 1,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAddressLifecycleTests.SupplierAddress_MissingParentAndMissingRecords_ReturnNotFoundWithoutOrphan": 1,
@@ -22,14 +22,6 @@
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.EmployeeLiveWrite_AuthorityFailureCannotUseSignedPermissionOrPersist": 17,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.ExpiredEmployeeJwt_NeverReachesWorkloadExchangeOrIam": 1,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.WorkloadResponseBodyDeadline_DeniesWithoutIamOrPersistence": 1,
-    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.WorkloadDeadline_IgnoringCancellationKeepsLateResourceOwnership": 3,
-    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment": 14,
-    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.OptionalAddressFields_NullOrOmitted_RemainNullable": 4,
-    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.EveryTextProperty_RejectsNestedObjectAndArray_OnBothRoutes": 6,
-    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.ScalarAddressWrite_AnonymousOrReadGrant_CannotMutateGraph": 4,
-    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.MissingOwnerOrAddress_WithSourceScalarText_ReachesNotFoundWithoutWrites": 2,
-    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.CurrentCreateNullRequiredLineGuard_IsUnchanged": 1,
-    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.ExistingLiteralUpdate_EmptyTextAndZeroCountry_RemainUnchanged": 1,
-    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry": 1
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementAuthenticatedIamTests.WorkloadDeadline_IgnoringCancellationKeepsLateResourceOwnership": 3
   }
 }

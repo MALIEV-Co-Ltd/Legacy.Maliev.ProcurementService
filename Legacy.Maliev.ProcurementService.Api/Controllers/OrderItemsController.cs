@@ -9,16 +9,18 @@ namespace Legacy.Maliev.ProcurementService.Api.Controllers;
 
 /// <summary>Legacy purchase-order line-item routes.</summary>
 /// <param name="service">Procurement application service.</param>
+/// <param name="durable">Separately default-off atomic child receipt adapter.</param>
 [ApiController]
 [Route("purchaseorders/orderitems")]
 [Authorize]
-public sealed class OrderItemsController(IProcurementService service) : ControllerBase
+public sealed class OrderItemsController(IProcurementService service, DurableChildCreateEndpoint? durable = null) : ControllerBase
 {
     /// <summary>Creates an order item.</summary>
     [HttpPost]
     [RequirePermission(ProcurementPermissions.OrderItemsWrite, RequireLiveCheck = true)]
     public async Task<ActionResult> CreateOrderItemAsync(UpsertOrderItemRequest item, CancellationToken cancellationToken)
     {
+        if (durable?.Enabled == true && Request.Headers.ContainsKey("Idempotency-Key")) return await durable.ItemAsync(this, item, cancellationToken);
         var created = await service.CreateOrderItemAsync(item, cancellationToken); return CreatedAtRoute("GetOrderItem", new { orderItemId = created.Id }, created);
     }
     /// <summary>Deletes an order item.</summary>

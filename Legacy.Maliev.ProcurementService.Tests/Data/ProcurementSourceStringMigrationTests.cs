@@ -57,11 +57,13 @@ public sealed class ProcurementSourceStringMigrationTests : IAsyncLifetime
             await InsertAsync(context, "Address", "Address1", " ");
         string before = await RowsAsync(context, table);
         string? addressBefore = purchaseOrder ? null : await RowsAsync(context, "Address");
-        await context.Database.MigrateAsync();
+        // Exercise this original reversible string boundary without applying later immutable child receipts.
+        await context.Database.MigrateAsync(StringBoundary(purchaseOrder));
+        Assert.Equal(StringBoundary(purchaseOrder), (await context.Database.GetAppliedMigrationsAsync()).Last());
         Assert.Equal(purchaseOrder ? 19 : 13, await ConstraintsAsync(context));
         if (!purchaseOrder)
             Assert.Equal(0, await NullableSourcePropertiesAsync(context));
-        await context.Database.MigrateAsync();
+        await context.Database.MigrateAsync(StringBoundary(purchaseOrder));
         Assert.Equal(before, await RowsAsync(context, table));
         await context.Database.MigrateAsync(Previous(purchaseOrder));
         Assert.Equal(0, await ConstraintsAsync(context));
@@ -92,6 +94,10 @@ public sealed class ProcurementSourceStringMigrationTests : IAsyncLifetime
     private static string Previous(bool purchaseOrder) => purchaseOrder
         ? "20261001013651_AddDurablePurchaseOrderCreateReceipts"
         : "20261001013648_AddDurableSupplierCreateReceipts";
+
+    private static string StringBoundary(bool purchaseOrder) => purchaseOrder
+        ? "20261006210000_PreservePurchaseOrderSourceStringBoundaries"
+        : "20261006210000_PreserveSupplierSourceStringBoundaries";
 
     private static Task<int> InsertAsync(DbContext context, string table, string field, string? literal)
     {

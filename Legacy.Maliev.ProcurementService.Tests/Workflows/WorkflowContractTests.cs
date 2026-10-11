@@ -8,6 +8,8 @@ namespace Legacy.Maliev.ProcurementService.Tests.Workflows;
 public sealed class WorkflowContractTests
 {
     private const string ReviewedProducerVersion = "b27fbef06a3aa58c1f4fc0e75d7c70b32be76266";
+    private const string HistoricalProcurementVersion = "c40fd246c17b738879c9345c6bcca44d96faf025";
+    private const string CurrentProcurementVersion = "99049bab2c100ffdf6606bf11a2f50980c0cf3cf";
     private static readonly string Workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "_build-and-test.yml"));
     private static readonly string ApiProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Api.csproj"));
@@ -18,6 +20,64 @@ public sealed class WorkflowContractTests
     public void BuildAndTest_SatisfiesStructuralContract()
     {
         WorkflowContractValidator.Validate(Workflow);
+        foreach (var (original, replacement) in new[]
+        {
+            ("--no-restore -warnaserror", "--no-restore"),
+            ("-p:UseLocalMalievDependencies=true", "-p:UseLocalMalievDependencies=false"),
+            ("export GITHUB_ACTIONS=false", "export GITHUB_ACTIONS=true"),
+            ("name: Set up SDK for mandatory focused workflow checks", "name: Omitted mandatory SDK"),
+            ("name: Build before mandatory focused workflow checks", "name: Execute mandatory focused workflow checks"),
+            ("name: Execute mandatory focused workflow checks", "name: Execute mandatory focused workflow checks\n        if: false"),
+            ("FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload", "FullyQualifiedName~ReviewedImagePreload"),
+            ("path: focused-workflow-results", "path: runner-results"),
+            ("name: Require every focused workflow execution\n        if: always()", "name: Require every focused workflow execution\n        if: success()"),
+            ("name: Preserve focused workflow evidence\n        if: always()", "name: Preserve focused workflow evidence\n        if: success()"),
+            ("name: Build before mandatory focused workflow checks", "name: Build before mandatory focused workflow checks\n        continue-on-error: true"),
+        })
+            AssertMutationRejected(original, replacement);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ReviewedImagePreload_PreservesValidationAndSeparateEvidence(bool auth)
+    {
+        ValidateReviewedPreload(ReadReviewedPreload(auth), auth);
+    }
+
+    [Theory]
+    [InlineData(false, "timeout-minutes: 5", "timeout-minutes: 6")]
+    [InlineData(true, "timeout-minutes: 5", "timeout-minutes: 6")]
+    [InlineData(false, "timeout-minutes: 2", "timeout-minutes: 3")]
+    [InlineData(true, "timeout-minutes: 2", "timeout-minutes: 3")]
+    [InlineData(false, "python3 -B -O scripts/ci-postgres-preload/test_preload_official_postgres.py", "python3 -B scripts/ci-postgres-preload/test_preload_official_postgres.py")]
+    [InlineData(true, "python3 -B -O scripts/ci-postgres-preload/test_preload_official_postgres.py", "python3 -B scripts/ci-postgres-preload/test_preload_official_postgres.py")]
+    [InlineData(false, "preload_official_postgres.py cleanup", "preload_official_postgres.py cleanup --all")]
+    [InlineData(true, "preload_official_postgres.py cleanup", "preload_official_postgres.py cleanup --all")]
+    [InlineData(false, "name: Release owned image preload tags\n        if: always()", "name: Release owned image preload tags\n        if: success()")]
+    [InlineData(true, "name: Release owned image preload tags\n        if: always()", "name: Release owned image preload tags\n        if: success()")]
+    [InlineData(false, "name: Preserve image custody evidence\n        if: always()", "name: Preserve image custody evidence\n        if: success()")]
+    [InlineData(true, "name: Preserve image custody evidence\n        if: always()", "name: Preserve image custody evidence\n        if: success()")]
+    [InlineData(false, "${{ runner.temp }}/procurement-postgres-preload.json", "${{ runner.temp }}/foreign.json")]
+    [InlineData(true, "${{ runner.temp }}/procurement-postgres-preload.json", "${{ runner.temp }}/foreign.json")]
+    [InlineData(false, "retention-days: 7", "retention-days: 30")]
+    [InlineData(true, "retention-days: 7", "retention-days: 30")]
+    [InlineData(false, "timeout-minutes: 5\n        run:", "timeout-minutes: 5\n        env:\n          GITHUB_ACTIONS: 'false'\n        run:")]
+    [InlineData(true, "timeout-minutes: 5\n        run:", "timeout-minutes: 5\n        env:\n          GITHUB_ACTIONS: 'false'\n        run:")]
+    public void ReviewedImagePreload_RejectsControlCleanupAndCustodyDrift(bool auth, string original, string replacement)
+    {
+        var source = ReadReviewedPreload(auth);
+        Assert.Contains(original, source, StringComparison.Ordinal);
+        Assert.Throws<InvalidOperationException>(() => ValidateReviewedPreload(source.Replace(original, replacement, StringComparison.Ordinal), auth));
+    }
+
+    private static string ReadReviewedPreload(bool auth) => File.ReadAllText(FindRepositoryFile(
+        "Legacy.Maliev.ProcurementService.Tests", "Workflows", "Fixtures", auth ? "reviewed-preload-auth.yml" : "reviewed-preload-build.yml"));
+
+    private static void ValidateReviewedPreload(string source, bool auth)
+    {
+        if (auth) ValidateAuthProgramJoin(source, historicalFixture: true);
+        else WorkflowContractValidator.Validate(source, historicalFixture: true);
     }
 
     [Fact]
@@ -172,28 +232,42 @@ public sealed class WorkflowContractTests
     [Theory]
     [InlineData("b27fbef06a3aa58c1f4fc0e75d7c70b32be76266", "main")]
     [InlineData("ecb05cbbd68717e415f69df2ac488c1d323b1da3", "7edcd961024868513fd5f373cab3dcb261197f77")]
+    [InlineData("c40fd246c17b738879c9345c6bcca44d96faf025", "main")]
+    [InlineData("99049bab2c100ffdf6606bf11a2f50980c0cf3cf", "main")]
     [InlineData("if: always()", "if: failure()")]
     [InlineData("python3 -B scripts/verify-procurement-auth-program.py results auth-program-results", "python3 -c 'print(0)'")]
     public void ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate(string original, string replacement)
     {
-        var source = File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml"));
+        var historical = original == HistoricalProcurementVersion;
+        var source = historical ? ReadReviewedPreload(auth: true)
+            : File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml"));
         Assert.Contains(original, source, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(source.Replace(original, replacement, StringComparison.Ordinal)));
+        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(source.Replace(original, replacement, StringComparison.Ordinal), historicalFixture: historical));
     }
 
-    private static void ValidateAuthProgramJoin(string source)
+    private static void ValidateAuthProgramJoin(string source, bool historicalFixture = false)
     {
         var yaml = new YamlStream();
         yaml.Load(new StringReader(source));
         var root = (YamlMappingNode)yaml.Documents.Single().RootNode;
         var job = (YamlMappingNode)ReadNode((YamlMappingNode)ReadNode(root, "jobs"), "auth-program");
         var steps = ((YamlSequenceNode)ReadNode(job, "steps")).Children.Cast<YamlMappingNode>().ToArray();
+        if (steps.Length == 13)
+        {
+            if (ReadScalar(job, "timeout-minutes") != "30")
+                throw new InvalidOperationException("Image preload must retain the bounded job deadline.");
+            WorkflowContractValidator.ValidateImagePreloadGroup(steps[7], steps[11], steps[12]);
+        }
+        else if (steps.Length != 10)
+        {
+            throw new InvalidOperationException("Auth join must contain only its original steps or the reviewed image preload group.");
+        }
         var expected = new (string Repository, string Commit)[]
         {
             ("MALIEV-Co-Ltd/Legacy.Maliev.AuthService", ReviewedProducerVersion),
             ("MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults", "ecb05cbbd68717e415f69df2ac488c1d323b1da3"),
             ("MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts", "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7"),
-            ("MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService", "ba2c43302ed0cfda749df6a4cdfd9b5fc40f441d"),
+            ("MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService", historicalFixture ? HistoricalProcurementVersion : CurrentProcurementVersion),
         }.ToDictionary(entry => entry.Repository, entry => entry.Commit);
         var checkouts = steps.Where(step => step.Children.TryGetValue(new YamlScalarNode("with"), out var node)
             && node is YamlMappingNode settings && settings.Children.ContainsKey(new YamlScalarNode("repository"))).ToArray();
@@ -208,7 +282,11 @@ public sealed class WorkflowContractTests
         var results = steps.Single(step => step.Children.TryGetValue(new YamlScalarNode("run"), out var run)
             && ((YamlScalarNode)run).Value == "python3 -B scripts/verify-procurement-auth-program.py results auth-program-results");
         var artifact = steps.Single(step => step.Children.TryGetValue(new YamlScalarNode("uses"), out var uses)
-            && ((YamlScalarNode)uses).Value == "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+            && ((YamlScalarNode)uses).Value == "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+            && step.Children.TryGetValue(new YamlScalarNode("with"), out var settings)
+            && settings is YamlMappingNode inputs
+            && inputs.Children.TryGetValue(new YamlScalarNode("path"), out var path)
+            && path is YamlScalarNode { Value: "auth-program-results" });
         if (ReadScalar(results, "if") != "always()" || ReadScalar(artifact, "if") != "always()"
             || ReadScalar((YamlMappingNode)ReadNode(artifact, "with"), "path") != "auth-program-results")
             throw new InvalidOperationException("Joined executions and failure evidence must always be checked/retained.");
@@ -257,7 +335,7 @@ internal static partial class WorkflowContractValidator
     private const string CheckoutAction = "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1";
     private const string SharedValidationAction = "MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8";
 
-    public static void Validate(string workflow)
+    public static void Validate(string workflow, bool historicalFixture = false)
     {
         if (SecretExpression().IsMatch(workflow))
         {
@@ -297,9 +375,20 @@ internal static partial class WorkflowContractValidator
         }
 
         RequireScalarValue(validateJob, "name", "validate");
-        RejectDuplicatedValidationActionsAndCommands(jobs);
 
         var steps = RequireSequence(validateJob, "steps");
+        if (!historicalFixture)
+        {
+            ValidateFocusedWorkflowGroup(steps);
+            steps = new YamlSequenceNode(steps.Children.Where((_, index) => index is < 3 or > 7));
+        }
+        RejectDuplicatedValidationActionsAndCommands(steps);
+        if (steps.Children.Count == 9)
+        {
+            RequireScalarValue(validateJob, "timeout-minutes", "30");
+            ValidateImagePreloadGroup(steps.Children[3], steps.Children[7], steps.Children[8]);
+            steps = new YamlSequenceNode(steps.Children.Where((_, index) => index is not (3 or 7 or 8)));
+        }
         if (steps.Children.Count != 6)
         {
             throw new InvalidOperationException("Validate job must contain four validation and two evidence steps.");
@@ -381,6 +470,95 @@ internal static partial class WorkflowContractValidator
             });
     }
 
+    private static void ValidateFocusedWorkflowGroup(YamlSequenceNode steps)
+    {
+        if (steps.Children.Count != 11)
+            throw new InvalidOperationException("Primary validation must retain the mandatory focused workflow group.");
+        ValidateStep(steps.Children[3], "actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68",
+            new Dictionary<string, string>(StringComparer.Ordinal) { ["dotnet-version"] = "10.0.x" });
+        RequireScalarValue(RequireMapping(steps.Children[3], "focused SDK"), "name", "Set up SDK for mandatory focused workflow checks");
+        var build = RequireMapping(steps.Children[4], "focused build");
+        RequireStepKeys(build, "name", "timeout-minutes", "run");
+        RequireScalarValue(build, "name", "Build before mandatory focused workflow checks");
+        RequireScalarValue(build, "timeout-minutes", "5");
+        RequireCommands(build, "export GITHUB_ACTIONS=false\n"
+            + "dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true\n"
+            + "dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true");
+        var test = RequireMapping(steps.Children[5], "focused tests");
+        RequireStepKeys(test, "name", "timeout-minutes", "env", "run");
+        RequireScalarValue(test, "name", "Execute mandatory focused workflow checks");
+        RequireScalarValue(test, "timeout-minutes", "2");
+        var testEnv = RequireMapping(test, "env");
+        RequireStepKeys(testEnv, "VSTestResultsDirectory");
+        RequireScalarValue(testEnv, "VSTestResultsDirectory", "${{ github.workspace }}/focused-workflow-results");
+        RequireCommands(test, "export GITHUB_ACTIONS=false\n"
+            + "dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter \"FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload\"");
+        var gate = RequireMapping(steps.Children[6], "focused gate");
+        RequireStepKeys(gate, "name", "if", "run");
+        RequireScalarValue(gate, "name", "Require every focused workflow execution");
+        RequireScalarValue(gate, "if", "always()");
+        RequireCommands(gate, "python3 -B -m unittest discover -s scripts -p test_focused_workflow_results.py\n"
+            + "python3 -B scripts/verify-focused-workflow-results.py focused-workflow-results");
+        var evidence = RequireMapping(steps.Children[7], "focused custody");
+        RequireStepKeys(evidence, "name", "if", "uses", "with");
+        RequireScalarValue(evidence, "name", "Preserve focused workflow evidence");
+        RequireScalarValue(evidence, "if", "always()");
+        RequireScalarValue(evidence, "uses", "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+        var inputs = RequireMapping(evidence, "with");
+        RequireStepKeys(inputs, "name", "path", "if-no-files-found", "retention-days");
+        RequireScalarValue(inputs, "name", "procurement-focused-workflow-${{ github.sha }}");
+        RequireScalarValue(inputs, "path", "focused-workflow-results");
+        RequireScalarValue(inputs, "if-no-files-found", "warn");
+        RequireScalarValue(inputs, "retention-days", "7");
+    }
+
+    private static void RequireCommands(YamlMappingNode step, string commands)
+    {
+        var actual = RequireScalar(GetRequired(step, "run")).Replace("\r\n", "\n", StringComparison.Ordinal).TrimEnd('\n');
+        if (actual != commands)
+            throw new InvalidOperationException("Mandatory focused commands must remain exact and ordered.");
+    }
+
+    internal static void ValidateImagePreloadGroup(YamlNode preloadNode, YamlNode cleanupNode, YamlNode custodyNode)
+    {
+        var preload = RequireMapping(preloadNode, "reviewed image preload");
+        RequireStepKeys(preload, "name", "timeout-minutes", "run");
+        RequireScalarValue(preload, "name", "Preload exact official PostgreSQL images");
+        RequireScalarValue(preload, "timeout-minutes", "5");
+        const string commands = "python3 -B scripts/ci-postgres-preload/test_preload_official_postgres.py\n"
+            + "python3 -B -O scripts/ci-postgres-preload/test_preload_official_postgres.py\n"
+            + "python3 -B scripts/ci-postgres-preload/preload_official_postgres.py";
+        var actualCommands = RequireScalar(GetRequired(preload, "run")).Replace("\r\n", "\n", StringComparison.Ordinal).TrimEnd('\n');
+        if (actualCommands != commands)
+            throw new InvalidOperationException("Image preload must retain exactly the normal and optimized controls and reviewed command.");
+
+        var cleanup = RequireMapping(cleanupNode, "reviewed image cleanup");
+        RequireStepKeys(cleanup, "name", "if", "timeout-minutes", "run");
+        RequireScalarValue(cleanup, "name", "Release owned image preload tags");
+        RequireScalarValue(cleanup, "if", "always()");
+        RequireScalarValue(cleanup, "timeout-minutes", "2");
+        RequireScalarValue(cleanup, "run", "python3 -B scripts/ci-postgres-preload/preload_official_postgres.py cleanup");
+
+        var custody = RequireMapping(custodyNode, "reviewed image custody evidence");
+        RequireStepKeys(custody, "name", "if", "uses", "with");
+        RequireScalarValue(custody, "name", "Preserve image custody evidence");
+        RequireScalarValue(custody, "if", "always()");
+        RequireScalarValue(custody, "uses", "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+        var inputs = RequireMapping(custody, "with");
+        RequireStepKeys(inputs, "name", "path", "if-no-files-found", "retention-days");
+        RequireScalarValue(inputs, "name", "postgres-preload-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}");
+        RequireScalarValue(inputs, "path", "${{ runner.temp }}/procurement-postgres-preload.json");
+        RequireScalarValue(inputs, "if-no-files-found", "warn");
+        RequireScalarValue(inputs, "retention-days", "7");
+    }
+
+    private static void RequireStepKeys(YamlMappingNode step, params string[] expected)
+    {
+        var actual = step.Children.Keys.Select(RequireScalar).ToHashSet(StringComparer.Ordinal);
+        if (!actual.SetEquals(expected))
+            throw new InvalidOperationException("Reviewed image preload steps must retain only their exact declared properties.");
+    }
+
     private static IReadOnlyList<string> RequireExactReadOnlyPermissions(YamlMappingNode permissions, string scope)
     {
         if (permissions.Children.Count != 1)
@@ -440,33 +618,19 @@ internal static partial class WorkflowContractValidator
         }
     }
 
-    private static void RejectDuplicatedValidationActionsAndCommands(YamlMappingNode jobs)
+    private static void RejectDuplicatedValidationActionsAndCommands(YamlSequenceNode steps)
     {
-        foreach (var jobNode in jobs.Children.Values.OfType<YamlMappingNode>())
+        foreach (var stepNode in steps.Children.OfType<YamlMappingNode>())
         {
-            var stepsNode = GetOptional(jobNode, "steps");
-            if (stepsNode is not YamlSequenceNode steps)
+            if (GetOptional(stepNode, "uses") is YamlScalarNode usesNode)
             {
-                continue;
+                var action = usesNode.Value ?? string.Empty;
+                if (action.StartsWith("actions/setup-dotnet@", StringComparison.OrdinalIgnoreCase)
+                    || action.StartsWith("actions/cache@", StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidOperationException($"Caller duplicates shared action {action}.");
             }
-
-            foreach (var stepNode in steps.Children.OfType<YamlMappingNode>())
-            {
-                if (GetOptional(stepNode, "uses") is YamlScalarNode usesNode)
-                {
-                    var action = usesNode.Value ?? string.Empty;
-                    if (action.StartsWith("actions/setup-dotnet@", StringComparison.OrdinalIgnoreCase)
-                        || action.StartsWith("actions/cache@", StringComparison.OrdinalIgnoreCase))
-                    {
-                        throw new InvalidOperationException($"Caller duplicates shared action {action}.");
-                    }
-                }
-
-                if (GetOptional(stepNode, "run") is YamlScalarNode runNode)
-                {
-                    RejectDuplicatedDotNetCommand(runNode.Value ?? string.Empty);
-                }
-            }
+            if (GetOptional(stepNode, "run") is YamlScalarNode runNode)
+                RejectDuplicatedDotNetCommand(runNode.Value ?? string.Empty);
         }
     }
 
