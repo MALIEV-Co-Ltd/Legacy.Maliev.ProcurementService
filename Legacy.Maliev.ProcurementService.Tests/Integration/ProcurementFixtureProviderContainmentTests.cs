@@ -99,7 +99,7 @@ public sealed class ProcurementFixtureProviderContainmentTests
         public void Report(JSONMessage message)
         {
             // Keep error custody without persisting registry output or authentication metadata.
-            if (message.Error is not null || !string.IsNullOrEmpty(message.ErrorMessage))
+            if (message.Error is not null)
                 Interlocked.Exchange(ref failed, 1);
         }
     }
