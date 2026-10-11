@@ -17,12 +17,12 @@ def docker(*args, timeout=10):
     return subprocess.check_output(['docker', *args], timeout=timeout, text=True)
 
 
-def ids():
-    return set(docker('ps', '-a', '--no-trunc', '--format', '{{.ID}}').split())
+def ids(timeout=10):
+    return set(docker('ps', '-a', '--no-trunc', '--format', '{{.ID}}', timeout=timeout).split())
 
 
-def volumes():
-    return set(docker('volume', 'ls', '--format', '{{.Name}}').split())
+def volumes(timeout=10):
+    return set(docker('volume', 'ls', '--format', '{{.Name}}', timeout=timeout).split())
 
 
 def utc():
@@ -32,6 +32,55 @@ def utc():
 def require(value, message):
     if not value:
         raise ValueError(message)
+
+
+def observe_disposal(owned, postgres, receipt):
+    """Observe natural removal after disconnect; never remove or ignore owned IDs."""
+    observation={'timeoutSeconds':30, 'startedAtUtc':utc(), 'polls':[], 'errors':[], 'settled':False}
+    receipt['disposalObservation']=observation
+    deadline=time.monotonic()+30
+    owned_ids={r['id'] for r in owned}
+    volume_names={m['name'] for r in postgres for m in r['mounts']}
+    def budget():
+        remaining=deadline-time.monotonic()
+        if remaining<=0 and observation['polls']:
+            latest=observation['polls'][-1]
+            require(not latest.get('remainingContainerIds'), 'Owned helper/container remains after fixture disposal and bounded observation')
+            require(not latest.get('remainingVolumeNames'), 'Provider volume remains after fixture disposal and bounded observation')
+        require(remaining>0, 'Owned disposal observation deadline reached; preserve uncertain resources')
+        return min(10,remaining)
+    try:
+        while True:
+            budget()
+            poll={'observedAtUtc':utc(), 'remainingContainerMetadata':[], 'containerInventoryAvailable':False, 'volumeInventoryAvailable':False}
+            observation['polls'].append(poll)
+            current_ids=ids(timeout=budget());poll['containerIds']=sorted(current_ids);poll['containerInventoryAvailable']=True
+            poll['remainingContainerIds']=sorted(owned_ids & current_ids)
+            poll['remainingKnownMetadata']=[{key:resource.get(key) for key in ('id','name','created','image','imageId','labels')} for resource in owned if resource['id'] in current_ids]
+            current_volumes=volumes(timeout=budget());poll['volumeNames']=sorted(current_volumes);poll['volumeInventoryAvailable']=True
+            poll['remainingVolumeNames']=sorted(volume_names & current_volumes)
+            for resource in owned:
+                if resource['id'] not in current_ids:continue
+                try:metadata=json.loads(docker('inspect',resource['id'],timeout=budget()))[0]
+                except subprocess.CalledProcessError:
+                    # A removal race is not terminal proof; require a later inventory.
+                    poll.setdefault('inspectionRaces',[]).append(resource['id']);continue
+                labels={k:v for k,v in (metadata['Config'].get('Labels') or {}).items() if k.startswith('org.testcontainers')}
+                actual={'id':metadata['Id'], 'name':metadata.get('Name'), 'created':metadata['Created'],
+                        'image':metadata['Config']['Image'], 'imageId':metadata['Image'], 'labels':labels}
+                poll['remainingContainerMetadata'].append(actual)
+                require(actual['id']==resource['id'] and actual['created']==resource['created'] and actual['imageId']==resource['imageId'] and actual['image']==resource['image'] and labels==resource['labels'], 'Owned container identity changed; preserve uncertain resources')
+            if not poll['remainingContainerIds'] and not poll['remainingVolumeNames']:
+                observation.update(settled=True,settledAtUtc=utc());return
+            remaining=deadline-time.monotonic()
+            if remaining<=0 or len(observation['polls'])>=121:
+                require(not poll['remainingContainerIds'], 'Owned helper/container remains after fixture disposal and bounded observation')
+                require(not poll['remainingVolumeNames'], 'Provider volume remains after fixture disposal and bounded observation')
+            time.sleep(min(0.25,remaining))
+    except BaseException as error:
+        observation['errors'].append({'category':type(error).__name__,'message':str(error),'observedAtUtc':utc()})
+        raise
+    finally:observation['endedAtUtc']=utc()
 
 
 def observe(workspace, output, phase):
@@ -77,7 +126,7 @@ def observe(workspace, output, phase):
                         if image != 'postgres:18.1-bookworm' and not image.startswith('testcontainers/ryuk:'):
                             continue
                         labels = {k:v for k,v in (metadata['Config'].get('Labels') or {}).items() if k.startswith('org.testcontainers')}
-                        created[container_id] = {'id':metadata['Id'], 'created':metadata['Created'],
+                        created[container_id] = {'id':metadata['Id'], 'name':metadata.get('Name'), 'created':metadata['Created'],
                             'startedAt':metadata['State']['StartedAt'], 'image':image, 'imageId':metadata['Image'],
                             'labels':labels, 'ports':metadata['NetworkSettings']['Ports'],
                             'mounts':[{'type':m['Type'], 'name':m.get('Name'), 'destination':m['Destination'],
@@ -133,14 +182,14 @@ def observe(workspace, output, phase):
             require(resource['startedAt'] and not resource['startedAt'].startswith('0001-'), 'Provider start time not observed')
             require(all(m['type']=='volume' and m['name'] and not m['preexisting'] for m in resource['mounts']), 'Unexpected or preexisting persistent mount')
         require(len(session_ids)==1, 'Providers belong to different sessions')
-        current_ids, current_volumes = ids(), volumes()
         owned = [r for r in created.values() if r['labels'].get('org.testcontainers.session-id') in session_ids]
-        require(all(r['id'] not in current_ids for r in owned), 'Owned helper/container remains after fixture disposal')
-        require(all(m['name'] not in current_volumes for r in postgres for m in r['mounts']), 'Provider volume remains after fixture disposal')
-        events_raw = docker('events','--since',observed_at,'--until',receipt['endedAtUtc'],'--format','{{json .}}')
+        receipt['ownedSessionIds']=sorted(session_ids)
+        observe_disposal(owned,postgres,receipt)
+        receipt['providerSettledAtUtc']=utc()
+        events_raw = docker('events','--since',observed_at,'--until',receipt['providerSettledAtUtc'],'--format','{{json .}}')
         events = [json.loads(line) for line in events_raw.splitlines() if line.strip()]
         bound_events = []
-        for resource in postgres:
+        for resource in owned:
             matches = [e for e in events if e.get('Type')=='container' and e.get('Actor',{}).get('ID')==resource['id']]
             actions = [e.get('Action') for e in matches]
             require('start' in actions and 'die' in actions and 'destroy' in actions and actions.index('start')<actions.index('die')<actions.index('destroy'), 'Missing ordered provider lifecycle events')

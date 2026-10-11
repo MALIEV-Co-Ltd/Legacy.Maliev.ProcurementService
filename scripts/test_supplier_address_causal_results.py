@@ -11,6 +11,8 @@ spec = importlib.util.spec_from_file_location('causal', pathlib.Path(__file__).w
 guard = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(guard)
 MANIFEST = json.loads((pathlib.Path(__file__).parents[1] / 'docs' / 'procurement-supplier-address-causal-contract.json').read_text(encoding='utf-8'))
+ACTUAL_CONVERTER_MESSAGE = "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertSupplierAddressRequest. Path: $.Building | LineNumber: 0 | BytePositionInLine: 22.\n---- System.InvalidOperationException : Cannot get the value of a token type 'Number' as a string."
+ACTUAL_CONVERTER_STACK = 'at Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry() in /fixture/ProcurementSupplierAddressScalarStringTests.cs:line 213\n at System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(JsonTokenType tokenType)\n at System.Text.Json.Serialization.Converters.StringConverter.Read(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options)'
 
 
 class CausalEvidenceTests(unittest.TestCase):
@@ -38,12 +40,12 @@ class CausalEvidenceTests(unittest.TestCase):
             if row.get('outcome') == 'Failed':
                 error = ET.SubElement(ET.SubElement(row, 'Output'), 'ErrorInfo')
                 if case['method'].startswith('Converter_'):
-                    message = 'System.Text.Json.JsonException : The JSON value could not be converted to System.String.'
+                    message = ACTUAL_CONVERTER_MESSAGE
                 else:
                     status = 'NotFound' if case['method'].startswith('MissingOwnerOrAddress_') else ('NoContent' if 'update: True' in case['name'] else 'Created')
                     message = 'Assert.Equal() Failure\nExpected: '+status+'\nActual:   BadRequest'
                 ET.SubElement(error, 'Message').text = message
-                ET.SubElement(error, 'StackTrace').text = 'at Frozen.'+case['method']+'()'
+                ET.SubElement(error, 'StackTrace').text = ACTUAL_CONVERTER_STACK if case['method'].startswith('Converter_') else 'at Frozen.'+case['method']+'()'
         (self.root/'coverage.cobertura.xml').write_text('<coverage><packages><package><classes><class><lines><line number="1" hits="1" /></lines></class></classes></package></packages></coverage>')
         return doc
 
@@ -56,6 +58,25 @@ class CausalEvidenceTests(unittest.TestCase):
 
     def test_baseline_positive(self):
         self.assertEqual(13, self.run_guard(self.fixture('baseline'), 'baseline')['failed'])
+
+    def test_authentic_baseline_numeric_string_failure(self):
+        doc=self.fixture('baseline')
+        error=doc.find('.//ErrorInfo')
+        error.find('Message').text=ACTUAL_CONVERTER_MESSAGE
+        error.find('StackTrace').text=ACTUAL_CONVERTER_STACK
+        self.assertEqual(13,self.run_guard(doc,'baseline')['failed'])
+
+    def test_unrelated_converter_failures_refused(self):
+        for before,after in [('UpsertSupplierAddressRequest','UpsertPurchaseOrderRequest'),('$.Building','$.CountryId'),("'Number'","'StartObject'"),('System.InvalidOperationException','System.IO.IOException')]:
+            with self.subTest(before=before):
+                doc=self.fixture('baseline');doc.find('.//ErrorInfo/Message').text=ACTUAL_CONVERTER_MESSAGE.replace(before,after)
+                with self.assertRaises(ValueError):self.run_guard(doc,'baseline')
+
+    def test_unrelated_converter_stack_refused(self):
+        for before,after in [('line 213','line 212'),('StringConverter.Read(','ObjectConverter.Read('),('ThrowInvalidOperationException_ExpectedString(','Fixture.InitializeAsync(')]:
+            with self.subTest(before=before):
+                doc=self.fixture('baseline');doc.find('.//ErrorInfo/StackTrace').text=ACTUAL_CONVERTER_STACK.replace(before,after)
+                with self.assertRaises(ValueError):self.run_guard(doc,'baseline')
 
     def diagnostics(self, doc):
         infos = ET.SubElement(doc.find('ResultSummary'), 'RunInfos')

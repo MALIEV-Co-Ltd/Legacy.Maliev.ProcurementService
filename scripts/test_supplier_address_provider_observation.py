@@ -25,28 +25,39 @@ class ProviderObservationTests(unittest.TestCase):
         self.missing_log=False;self.missing_event=False;self.preexisting=False
         self.timeout=False;self.cleanup_failure=False;self.wait_failure=False;self.inspect_failure=False;self.inspect_count=0;self.custody_failure=False;self.killed=False
         self.initial_docker_failure=False;self.initial_volume_failure=False
+        self.clock=0;self.helper_delay=0;self.helper_never=False;self.volume_delay=0;self.late_identity_change=False
+        self.late_docker_failure=False;self.foreign_present=False;self.missing_helper_event=False
         self.metadata={key:{'Id':key,'Created':'2026-10-11T01:00:01Z','Image':'sha256:fixture',
             'Config':{'Image':'postgres:18.1-bookworm','Labels':{'org.testcontainers.session-id':'session'},'Env':['NEVER_PRINT=secret-canary']},
             'State':{'StartedAt':'2026-10-11T01:00:02Z'},'NetworkSettings':{'Ports':{'5432/tcp':[{'HostIp':'0.0.0.0','HostPort':'49100'}]}},
             'Mounts':[{'Type':'volume','Name':'owned-'+key[0],'Destination':'/var/lib/postgresql'}]} for key in self.container_ids}
+        self.helper_id='c'*64
+        self.metadata[self.helper_id]={'Id':self.helper_id,'Name':'/testcontainers-ryuk-session','Created':'2026-10-11T01:00:01Z','Image':'sha256:helper','Config':{'Image':'testcontainers/ryuk:0.14.0','Labels':{'org.testcontainers.session-id':'session'},'Env':['NEVER_PRINT=secret-canary']},'State':{'StartedAt':'2026-10-11T01:00:02Z'},'NetworkSettings':{'Ports':{}},'Mounts':[{'Type':'bind','Destination':'/var/run/docker.sock'}]}
 
     def docker(self,*args,**kwargs):
         if args[0]=='ps':
             self.ps_count+=1
             if self.initial_docker_failure and self.ps_count==1:raise OSError('synthetic initial Docker failure')
-            return '\n'.join(self.container_ids) if self.ps_count==2 or self.remaining and self.ps_count>2 else ''
+            if self.late_docker_failure and self.ps_count>2:raise OSError('synthetic final Docker inventory failure')
+            current=list(self.container_ids) if self.ps_count==2 or self.remaining and self.ps_count>2 else []
+            if self.helper_delay or self.helper_never:
+                if self.ps_count==2 or self.ps_count>2 and (self.helper_never or self.ps_count<=self.helper_delay):current.append(self.helper_id)
+            if self.foreign_present:current.append('d'*64)
+            return '\n'.join(current)
         if args[0]=='volume':
             self.volume_count+=1
             if self.initial_volume_failure and self.volume_count==1:raise OSError('synthetic initial volume failure')
-            return 'owned-a' if self.preexisting and self.volume_count==1 or self.volume_remaining and self.volume_count>1 else ''
+            return 'owned-a' if self.preexisting and self.volume_count==1 or self.volume_remaining and self.volume_count>1 or self.volume_count>1 and self.volume_count<=self.volume_delay else ''
         if args[0]=='inspect':
             self.inspect_count+=1
             if self.inspect_failure and self.inspect_count==2:raise OSError('synthetic second inspect failure')
             metadata=copy.deepcopy(self.metadata[args[1]])
             if self.session_mismatch and args[1]==self.container_ids[1]:metadata['Config']['Labels']['org.testcontainers.session-id']='other'
+            if self.late_identity_change and self.ps_count>2:metadata['Created']='2026-10-11T02:00:00Z'
             return json.dumps([metadata])
         if args[0]=='events':
-            return '\n'.join(json.dumps({'Type':'container','Actor':{'ID':key},'Action':action,'timeNano':index}) for key in self.container_ids for index,action in enumerate(('start','die','destroy')) if not self.missing_event or action!='destroy')
+            keys=self.container_ids+([self.helper_id] if self.helper_delay or self.helper_never else [])
+            return '\n'.join(json.dumps({'Type':'container','Actor':{'ID':key},'Action':action,'timeNano':index}) for key in keys for index,action in enumerate(('start','die','destroy')) if (not self.missing_event or action!='destroy') and (not self.missing_helper_event or key!=self.helper_id or action!='destroy'))
         raise AssertionError(args)
 
     def popen(self,*args,**kwargs):
@@ -83,7 +94,8 @@ class ProviderObservationTests(unittest.TestCase):
             def cleanup(self,failed=False):
                 if test.cleanup_failure:raise OSError('synthetic cleanup failure')
                 return {'verified':True,'forcedCleanup':False,'handlesClosed':True,'members':[]}
-        with patch.object(observer,'docker',self.docker),patch.object(observer.subprocess,'Popen',self.popen),patch.object(observer,'process_identity',return_value={'processId':123,'actualStartTimeUtc':'synthetic','executable':'synthetic'}),patch.object(observer,'OwnedSession',Session),patch.object(observer.time,'sleep'):
+        def sleep(seconds):self.clock+=seconds
+        with patch.object(observer,'docker',self.docker),patch.object(observer.subprocess,'Popen',self.popen),patch.object(observer,'process_identity',return_value={'processId':123,'actualStartTimeUtc':'synthetic','executable':'synthetic'}),patch.object(observer,'OwnedSession',Session),patch.object(observer.time,'sleep',side_effect=sleep),patch.object(observer.time,'monotonic',side_effect=lambda:self.clock):
             return observer.observe(self.root,self.output,'candidate')
 
     def test_positive_and_no_environment_capture(self):
@@ -91,6 +103,53 @@ class ProviderObservationTests(unittest.TestCase):
         raw=(self.output/'provider-observation.json').read_text()
         self.assertNotIn('secret-canary',raw)
         self.assertTrue(json.loads(raw)['normalFixtureDisposalProven'])
+
+    def test_owned_ryuk_natural_delayed_disposal_requires_observed_absence(self):
+        self.helper_delay=4
+        self.assertEqual(0,self.run_observer())
+        receipt=json.loads((self.output/'provider-observation.json').read_text())
+        polls=receipt['disposalObservation']['polls']
+        self.assertIn(self.helper_id,polls[0]['remainingContainerIds']);self.assertEqual([],polls[-1]['remainingContainerIds'])
+        self.assertTrue(receipt['disposalObservation']['settled']);self.assertTrue(receipt['normalFixtureDisposalProven']);self.assertGreater(self.clock,0.25)
+
+    def test_owned_ryuk_persistent_refused_with_exact_remaining_inventory(self):
+        self.helper_never=True
+        with self.assertRaises(ValueError):self.run_observer()
+        receipt=self.assert_refused_receipt('Owned helper/container remains',resources=3)
+        final=receipt['disposalObservation']['polls'][-1]
+        self.assertEqual([self.helper_id],final['remainingContainerIds']);self.assertEqual(self.helper_id,final['remainingContainerMetadata'][0]['id'])
+        self.assertFalse(receipt['disposalObservation']['settled']);self.assertLessEqual(self.clock,30.25)
+
+    def test_delayed_volume_disposal_still_requires_absence(self):
+        self.volume_delay=3
+        self.assertEqual(0,self.run_observer())
+        receipt=json.loads((self.output/'provider-observation.json').read_text())
+        self.assertEqual(['owned-a'],receipt['disposalObservation']['polls'][0]['remainingVolumeNames']);self.assertEqual([],receipt['disposalObservation']['polls'][-1]['remainingVolumeNames'])
+
+    def test_late_owned_identity_change_refused_and_recorded(self):
+        self.helper_never=True;self.late_identity_change=True
+        with self.assertRaises(ValueError):self.run_observer()
+        receipt=self.assert_refused_receipt('Owned container identity changed',resources=3)
+        self.assertTrue(receipt['disposalObservation']['errors']);self.assertEqual([self.helper_id],receipt['disposalObservation']['polls'][-1]['remainingContainerIds'])
+
+    def test_final_inventory_error_preserves_unavailable_state(self):
+        self.late_docker_failure=True
+        with self.assertRaises(OSError):self.run_observer()
+        receipt=self.assert_refused_receipt('synthetic final Docker inventory failure')
+        self.assertFalse(receipt['disposalObservation']['polls'][-1]['containerInventoryAvailable']);self.assertTrue(receipt['disposalObservation']['errors'])
+
+    def test_foreign_preexisting_resource_is_preserved_and_does_not_prove_owned_absence(self):
+        self.foreign_present=True
+        self.assertEqual(0,self.run_observer())
+        receipt=json.loads((self.output/'provider-observation.json').read_text())
+        final=receipt['disposalObservation']['polls'][-1]
+        self.assertIn('d'*64,final['containerIds']);self.assertEqual([],final['remainingContainerIds']);self.assertEqual(2,len(receipt['resources']))
+
+    def test_helper_lifecycle_event_missing_refused_even_after_absence(self):
+        self.helper_delay=3;self.missing_helper_event=True
+        with self.assertRaises(ValueError):self.run_observer()
+        receipt=self.assert_refused_receipt('Missing ordered provider lifecycle events',resources=3)
+        self.assertTrue(receipt['disposalObservation']['settled']);self.assertFalse(receipt['normalFixtureDisposalProven'])
 
     def assert_refused_receipt(self, cause, resources=2):
         receipt=json.loads((self.output/'provider-observation.json').read_text())
