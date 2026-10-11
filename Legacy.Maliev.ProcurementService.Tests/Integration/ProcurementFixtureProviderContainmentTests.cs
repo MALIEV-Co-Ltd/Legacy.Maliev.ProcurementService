@@ -13,7 +13,10 @@ public sealed class ProcurementFixtureProviderContainmentTests
         using var configuration = new DockerClientConfiguration(new Uri(OperatingSystem.IsWindows() ? "npipe://./pipe/docker_engine" : "unix:///var/run/docker.sock"));
         using var docker = configuration.CreateClient();
         var run = Guid.NewGuid().ToString("N");
+        var parentRun = Guid.TryParse(Environment.GetEnvironmentVariable("MALIEV_TEST_RESOURCE_RUN_ID"), out var parent) ? parent.ToString("N") : run;
         string? id = null;
+        string[] controlVolumes = [];
+        var volumesAbsent = new List<string>();
         var lifetime = new ProcurementFixtureLifetime();
         var expired = false;
         var absent = false;
@@ -31,7 +34,11 @@ public sealed class ProcurementFixtureProviderContainmentTests
             // Only this exact disposable control is removed, including on failed expiry.
             await docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters { Force = owned.State.Running, RemoveVolumes = true }, cleanupDeadline.Token);
             await RequireContainerAbsentAsync(docker, id, cleanupDeadline.Token);
-            foreach (var volume in volumes) await RequireVolumeAbsentAsync(docker, volume, cleanupDeadline.Token);
+            foreach (var volume in volumes)
+            {
+                await RequireVolumeAbsentAsync(docker, volume, cleanupDeadline.Token);
+                volumesAbsent.Add(volume);
+            }
             absent = true;
         }, () =>
         {
@@ -42,6 +49,10 @@ public sealed class ProcurementFixtureProviderContainmentTests
                 Scenario = "forced-expiry",
                 ResourceRunId = run,
                 ContainerId = id,
+                ParentRunId = parentRun,
+                Owner = ProcurementFixtureContainerPolicy.Owner,
+                Volumes = controlVolumes,
+                VolumesAbsent = volumesAbsent,
                 ExpiredBeforeCleanup = expired,
                 ExitCode = exitCode,
                 ElapsedSeconds = elapsed.TotalSeconds,
@@ -71,6 +82,7 @@ public sealed class ProcurementFixtureProviderContainmentTests
                 {
                     ["maliev.codex.owner"] = ProcurementFixtureContainerPolicy.Owner,
                     ["maliev.codex.run"] = run,
+                    ["maliev.codex.parent-run"] = parentRun,
                     ["maliev.codex.role"] = "forced-expiry-control",
                     ["maliev.codex.expires-utc"] = DateTimeOffset.UtcNow.AddSeconds(30).ToString("O"),
                     ["maliev.codex.persistent-data"] = "false",
@@ -82,6 +94,8 @@ public sealed class ProcurementFixtureProviderContainmentTests
             Assert.True(await docker.Containers.StartContainerAsync(id, new ContainerStartParameters(), token));
             var running = await docker.Containers.InspectContainerAsync(id, token);
             Assert.True(running.State.Running);
+            controlVolumes = running.Mounts.Where(mount => mount.Type == "volume").Select(mount => mount.Name).ToArray();
+            Assert.NotEmpty(controlVolumes);
             ContainerInspectResponse actual;
             do
             {

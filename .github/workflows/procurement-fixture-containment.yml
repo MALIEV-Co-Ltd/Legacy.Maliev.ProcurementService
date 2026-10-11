@@ -1,0 +1,70 @@
+name: Procurement fixture containment and independent cleanup
+
+on:
+  pull_request:
+    branches: [main, develop, staging]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  containment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
+      DOTNET_PROCESSOR_COUNT: '1'
+      DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER: '1'
+      MSBUILDDISABLENODEREUSE: '1'
+      UseSharedCompilation: 'false'
+    steps:
+      - name: Check out owned source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Check out accepted Defaults
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults
+          ref: ecb05cbbd68717e415f69df2ac488c1d323b1da3
+          path: .dependencies/Legacy.Maliev.ServiceDefaults
+          persist-credentials: false
+      - name: Check out CompatibilityContracts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts
+          ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
+          path: .dependencies/Legacy.Maliev.CompatibilityContracts
+          persist-credentials: false
+      - name: Set up SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.x
+      - name: Build before provider controls
+        timeout-minutes: 5
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true
+          dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true
+      - name: Observe focused native process and owned Docker session
+        timeout-minutes: 12
+        run: python3 -B scripts/observe-procurement-fixture-process.py containment-results
+      - name: Require strict privacy-safe receipts and parser controls
+        if: always()
+        run: |
+          python3 -B -m unittest discover -s scripts -p test_procurement_fixture_containment.py
+          python3 -B -O -m unittest discover -s scripts -p test_procurement_fixture_containment.py
+          python3 -B -m unittest discover -s scripts -p test_procurement_fixture_process_observer.py
+          python3 -B -O -m unittest discover -s scripts -p test_procurement_fixture_process_observer.py
+          python3 -B scripts/verify-procurement-fixture-containment.py containment-results
+      - name: Preserve original containment evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-containment-${{ github.sha }}
+          path: containment-results
+          if-no-files-found: warn
+          retention-days: 7

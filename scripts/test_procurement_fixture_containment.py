@@ -1,0 +1,278 @@
+"""Provider-free negative controls; these never qualify native resource cleanup."""
+import importlib.util
+import json
+import pathlib
+import tempfile
+import unittest
+import uuid
+import xml.etree.ElementTree as ET
+
+spec = importlib.util.spec_from_file_location("containment", pathlib.Path(__file__).with_name("verify-procurement-fixture-containment.py"))
+guard = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(guard)
+
+
+def receipt():
+    run, parent = "a" * 32, "b" * 32
+    rows = []
+    for index, role in enumerate(("supplier", "purchase-order")):
+        identity = str(index + 1) * 64
+        rows.append({"Id": identity, "Role": role, "Created": "2026-10-11", "StartedAt": "2026-10-11",
+                     "ProcessId": index + 1, "MemoryBytes": 1073741824, "MemorySwapBytes": 1073741824,
+                     "NanoCpus": 750000000, "Entrypoint": ["sh", "-c", 'exec timeout --signal=INT --kill-after=10s 1800 docker-entrypoint.sh "$@"', "procurement-owned-fixture"],
+                     "Command": ["-c", "fsync=off", "-c", "full_page_writes=off", "-c", "synchronous_commit=off"],
+                     "Labels": {"maliev.codex.owner": "procurement-runtime-fixture", "maliev.codex.run": run,
+                                "maliev.codex.parent-run": parent, "maliev.codex.role": role,
+                                "maliev.codex.expires-utc": "2026-10-11T09:32:00+00:00", "maliev.codex.persistent-data": "false",
+                                "org.testcontainers.session-id": "c" * 32},
+                     "HostIps": ["127.0.0.1"], "Volumes": [identity]})
+    return {"Scenario": "successful-lifecycle", "ResourceRunId": run, "Owner": "procurement-runtime-fixture",
+            "ObservedAtUtc": "2026-10-11T09:00:00+00:00", "CompletedAtUtc": "2026-10-11T09:01:00+00:00",
+            "Resources": rows, "ContainersAbsent": [row["Id"] for row in rows], "VolumesAbsent": [row["Volumes"][0] for row in rows],
+            "CleanupObserved": True, "UnsettledOperations": 0, "ObservedOperationFailureTypes": [],
+            "DestructiveObserverActions": 0, "PersistentData": False}
+
+
+class ReceiptControls(unittest.TestCase):
+    def test_valid_synthetic_schema_only(self):
+        guard.provider(receipt(), "successful-lifecycle", "b" * 32)
+
+    def test_expected_primary_is_retained_in_failure_scenario(self):
+        value = receipt(); value["Scenario"] = "partial-setup-failure"
+        value["ObservedOperationFailureTypes"] = ["System.IO.IOException"]
+        guard.provider(value, value["Scenario"], "b" * 32)
+
+    def test_unknown_fields_fail_at_every_schema_level(self):
+        for level in ("root", "resource", "labels"):
+            value = receipt()
+            target = value if level == "root" else value["Resources"][0] if level == "resource" else value["Resources"][0]["Labels"]
+            target["ConnectionString"] = "forbidden"
+            with self.subTest(level=level), self.assertRaises(ValueError):
+                guard.provider(value, "successful-lifecycle", "b" * 32)
+
+    def test_missing_resource_absence_fails(self):
+        for key in ("ContainersAbsent", "VolumesAbsent"):
+            value = receipt(); value[key].pop()
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                guard.provider(value, "successful-lifecycle", "b" * 32)
+
+    def test_limits_binding_and_command_drift_fail(self):
+        for field, replacement in (("MemoryBytes", 0), ("MemorySwapBytes", -1), ("NanoCpus", 0), ("HostIps", ["0.0.0.0"]), ("Entrypoint", []), ("Command", [])):
+            value = receipt(); value["Resources"][0][field] = replacement
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                guard.provider(value, "successful-lifecycle", "b" * 32)
+
+    def test_cleanup_failure_or_pending_handles_fail(self):
+        for key, replacement in (("CleanupObserved", False), ("UnsettledOperations", 1), ("ObservedOperationFailureTypes", ["System.TimeoutException"]), ("PersistentData", True), ("DestructiveObserverActions", 1)):
+            value = receipt(); value[key] = replacement
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                guard.provider(value, "successful-lifecycle", "b" * 32)
+
+    def test_wrong_parent_or_duplicate_identity_fails(self):
+        value = receipt(); value["Resources"][1]["Id"] = value["Resources"][0]["Id"]
+        with self.assertRaises(ValueError):
+            guard.provider(value, "successful-lifecycle", "b" * 32)
+
+
+class NativeRosterControls(unittest.TestCase):
+    def document(self):
+        root = ET.Element("TestRun")
+        counters = {key: "0" for key in "failed error timeout aborted inconclusive passedButRunAborted notRunnable notExecuted disconnected warning completed inProgress pending".split()}
+        counters.update(total="18", executed="18", passed="18")
+        ET.SubElement(ET.SubElement(root, "ResultSummary", outcome="Completed"), "Counters", counters)
+        definitions, entries, results = (ET.SubElement(root, key) for key in ("TestDefinitions", "TestEntries", "Results"))
+        workspace = pathlib.Path(__file__).resolve().parents[1]
+        manifest = json.loads((workspace / "docs/procurement-fixture-containment-cases.json").read_text())
+        for case in manifest["cases"]:
+            name, test_id = case["name"], case["id"]
+            qualified = name.split("(", 1)[0]
+            class_name, method = qualified.rsplit(".", 1)
+            execution = str(uuid.uuid5(uuid.NAMESPACE_DNS, name))
+            codebase = "/host/Legacy.Maliev.ProcurementService.Tests/bin/Release/net10.0/Legacy.Maliev.ProcurementService.Tests.dll"
+            definition = ET.SubElement(definitions, "UnitTest", id=test_id, name=name, storage=codebase.lower())
+            ET.SubElement(definition, "Execution", id=execution)
+            ET.SubElement(definition, "TestMethod", className=class_name, name=method, codeBase=codebase, adapterTypeName="executor://xunit/VsTestRunner3/netcore/")
+            ET.SubElement(entries, "TestEntry", testId=test_id, executionId=execution)
+            ET.SubElement(results, "UnitTestResult", testId=test_id, executionId=execution, testName=name, outcome="Passed")
+        return root
+
+    def validate(self, document):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            ET.ElementTree(document).write(root / "synthetic.trx")
+            guard.native_cases(root)
+
+    def test_counter_and_summary_parent_relocation_or_nesting_fails(self):
+        for mode in ("relocated-counters", "nested-counters", "nested-summary"):
+            document = self.document(); summary = document.find("./ResultSummary"); counters = summary.find("./Counters")
+            if mode == "relocated-counters": summary.remove(counters); document.append(counters)
+            elif mode == "nested-counters": summary.remove(counters); ET.SubElement(summary, "Contradiction").append(counters)
+            else: document.remove(summary); ET.SubElement(document, "Contradiction").append(summary)
+            with self.subTest(mode=mode), self.assertRaises(ValueError): self.validate(document)
+
+    def test_duplicate_or_nested_method_execution_and_row_parents_fail(self):
+        for mode in ("method", "execution", "nested-method", "nested-execution", "nested-entry", "nested-results"):
+            document = self.document(); definition = document.find("./TestDefinitions/UnitTest")
+            if mode in ("method", "nested-method"):
+                parent = definition if mode == "method" else ET.SubElement(definition, "Contradiction")
+                ET.SubElement(parent, "TestMethod", name="Foreign", className="Foreign", codeBase="/foreign.dll")
+            elif mode in ("execution", "nested-execution"):
+                parent = definition if mode == "execution" else ET.SubElement(definition, "Contradiction")
+                ET.SubElement(parent, "Execution", id=str(uuid.uuid4()))
+            elif mode == "nested-entry":
+                parent = document.find("./TestEntries"); row = parent.find("./TestEntry"); parent.remove(row); ET.SubElement(parent, "Contradiction").append(row)
+            else:
+                parent = document.find("./Results"); document.remove(parent); ET.SubElement(document, "Contradiction").append(parent)
+            with self.subTest(mode=mode), self.assertRaises(ValueError): self.validate(document)
+
+    def test_synthetic_authored_method_roster_and_joins_pass(self):
+        self.validate(self.document())
+
+    def test_missing_or_failed_execution_fails_despite_green_counters(self):
+        for mode in ("missing", "failed"):
+            document = self.document()
+            row = document.find("./Results/UnitTestResult")
+            if mode == "missing":
+                document.find("./Results").remove(row)
+            else:
+                row.set("outcome", "Failed")
+            with self.subTest(mode=mode), self.assertRaises(ValueError):
+                self.validate(document)
+
+    def test_wrong_method_or_broken_join_fails(self):
+        for mode in ("method", "join"):
+            document = self.document()
+            if mode == "method":
+                document.find("./TestDefinitions/UnitTest/TestMethod").set("name", "Unreviewed")
+            else:
+                document.find("./TestEntries/TestEntry").set("executionId", str(uuid.uuid4()))
+            with self.subTest(mode=mode), self.assertRaises(ValueError):
+                self.validate(document)
+
+    def test_duplicate_or_error_evidence_fails(self):
+        for mode in ("duplicate", "error"):
+            document = self.document()
+            if mode == "error":
+                ET.SubElement(document, "ErrorInfo")
+            else:
+                rows = document.findall("./Results/UnitTestResult")
+                rows[1].set("executionId", rows[0].get("executionId"))
+            with self.subTest(mode=mode), self.assertRaises(ValueError):
+                self.validate(document)
+
+    def test_summary_counter_runinfo_and_dll_custody_fail_closed(self):
+        for mode in ("missing-outcome", "adverse-outcome", "duplicate-summary", "duplicate-counters", "runinfo", "missing-counter", "foreign-dll", "storage", "adapter"):
+            document = self.document()
+            if mode == "missing-outcome":
+                del document.find("./ResultSummary").attrib["outcome"]
+            elif mode == "adverse-outcome":
+                document.find("./ResultSummary").set("outcome", "Failed")
+            elif mode == "duplicate-summary":
+                ET.SubElement(document, "ResultSummary", outcome="Failed")
+            elif mode == "duplicate-counters":
+                ET.SubElement(document, "Counters")
+            elif mode == "runinfo":
+                ET.SubElement(document, "RunInfo")
+            elif mode == "missing-counter":
+                del document.find("./ResultSummary/Counters").attrib["pending"]
+            elif mode == "foreign-dll":
+                document.find("./TestDefinitions/UnitTest/TestMethod").set("codeBase", "/foreign.dll")
+            elif mode == "storage":
+                document.find("./TestDefinitions/UnitTest").set("storage", "/foreign.dll")
+            else:
+                document.find("./TestDefinitions/UnitTest/TestMethod").set("adapterTypeName", "foreign")
+            with self.subTest(mode=mode), self.assertRaises(ValueError):
+                self.validate(document)
+        with self.assertRaises(ValueError):
+            guard.provider(receipt(), "successful-lifecycle", "d" * 32)
+
+    def test_timestamp_payload_and_expired_lease_fail(self):
+        for field in ("Created", "StartedAt"):
+            value = receipt(); value["Resources"][0][field] = "forbidden customer payload"
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                guard.provider(value, "successful-lifecycle", "b" * 32)
+        value = receipt(); value["Resources"][0]["Labels"]["maliev.codex.expires-utc"] = "2026-10-10T09:00:00+00:00"
+        with self.assertRaises(ValueError):
+            guard.provider(value, "successful-lifecycle", "b" * 32)
+
+
+class OuterWitnessControls(unittest.TestCase):
+    def files(self, root):
+        ET.ElementTree(NativeRosterControls().document()).write(root / "synthetic.trx")
+        directory = root / "fixture-containment"; directory.mkdir()
+        normal = receipt()
+        failed = receipt(); failed["Scenario"] = "partial-setup-failure"; failed["ResourceRunId"] = "d" * 32
+        failed["ObservedOperationFailureTypes"] = ["System.IO.IOException"]
+        for index, row in enumerate(failed["Resources"]):
+            row["Id"] = str(index + 3) * 64; row["Volumes"] = [row["Id"]]
+            row["Labels"]["maliev.codex.run"] = failed["ResourceRunId"]
+        failed["ContainersAbsent"] = [row["Id"] for row in failed["Resources"]]
+        failed["VolumesAbsent"] = list(failed["ContainersAbsent"])
+        for value in (normal, failed):
+            (directory / (value["Scenario"] + ".json")).write_text(json.dumps(value))
+        expiry = {"Scenario": "forced-expiry", "ResourceRunId": "e" * 32, "ContainerId": "5" * 64,
+                  "ParentRunId": "b" * 32, "Owner": "procurement-runtime-fixture", "Volumes": ["5" * 64],
+                  "VolumesAbsent": ["5" * 64], "ExpiredBeforeCleanup": True, "ExitCode": 137,
+                  "ElapsedSeconds": 3.0, "ContainerAbsent": True, "UnsettledOperations": 0,
+                  "ObservedOperationFailureTypes": [], "PersistentData": False}
+        (directory / "forced-expiry.json").write_text(json.dumps(expiry))
+        process = {"pid": 17, "startTicks": 123, "group": 17, "session": 17, "executable": "/usr/share/dotnet/dotnet"}
+        outer = {"schemaVersion": 1, "runId": "b" * 32, "startedAtUtc": "2026-10-11T09:00:00+00:00",
+                 "completedAtUtc": "2026-10-11T09:01:00+00:00", "testProcess": process, "launchProcess": dict(process, executable="/python3"), "expectedTestExecutable": process["executable"],
+                 "testExitCode": 0, "observedProcesses": [dict(process, executable="/python3"), process], "ownedContainers": [str(i) * 64 for i in range(1, 6)],
+                 "ownedVolumes": [str(i) * 64 for i in range(1, 6)], "sessions": ["c" * 32],
+                 "remaining": [], "errorTypes": [], "destructiveDockerActions": 0}
+        outer["observedResources"] = []
+        for value in (normal, failed):
+            for row in value["Resources"]:
+                outer["observedResources"].append({"id": row["Id"], "role": row["Role"], "resourceRunId": value["ResourceRunId"], "parentRunId": "b" * 32,
+                    "createdAt": "2026-10-11T09:00:00+00:00", "startedAt": "2026-10-11T09:00:01+00:00", "processId": 123,
+                    "memoryBytes": row["MemoryBytes"], "memorySwapBytes": row["MemorySwapBytes"], "nanoCpus": row["NanoCpus"],
+                    "expiresAt": "2026-10-11T09:32:00+00:00", "volumes": row["Volumes"], "hostIps": ["127.0.0.1"]})
+        outer["observedResources"].append({"id": "5" * 64, "role": "forced-expiry-control", "resourceRunId": "e" * 32, "parentRunId": "b" * 32,
+            "createdAt": "2026-10-11T09:00:00+00:00", "startedAt": "2026-10-11T09:00:01+00:00", "processId": 125,
+            "memoryBytes": 67108864, "memorySwapBytes": 67108864, "nanoCpus": 100000000,
+            "expiresAt": "2026-10-11T09:00:30+00:00", "volumes": ["5" * 64], "hostIps": []})
+        (root / "outer-process-cleanup.json").write_text(json.dumps(outer))
+        return outer, expiry
+
+    def test_observer_launch_native_transition_passes_real_receipt_parser(self):
+        import copy
+        spec = importlib.util.spec_from_file_location("process_observer", pathlib.Path(__file__).with_name("observe-procurement-fixture-process.py"))
+        observer = importlib.util.module_from_spec(spec); spec.loader.exec_module(observer)
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory); outer, _ = self.files(root)
+            outer.update(observer.process_custody(outer["launchProcess"], outer["expectedTestExecutable"], outer["observedProcesses"]))
+            (root / "outer-process-cleanup.json").write_text(json.dumps(outer))
+            guard.verify(root)
+            for field in ("pid", "startTicks", "group", "session", "executable"):
+                mutated = copy.deepcopy(outer)
+                mutated["testProcess"][field] = "/foreign" if field == "executable" else mutated["testProcess"][field] + 1
+                mutated["observedProcesses"][-1] = mutated["testProcess"]
+                (root / "outer-process-cleanup.json").write_text(json.dumps(mutated))
+                with self.subTest(field=field), self.assertRaises(ValueError): guard.verify(root)
+
+    def test_complete_synthetic_schema_passes_only_parser(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory); self.files(root)
+            self.assertFalse(guard.verify(root)["productionQualification"])
+
+    def test_failed_outer_process_unknown_fields_remaining_or_missing_session_fail(self):
+        for key, value in (("testExitCode", 1), ("ConnectionString", "forbidden"), ("remaining", ["process:17"]), ("sessions", []), ("errorTypes", ["TimeoutError"]), ("ownedContainers", ["1" * 64])):
+            with tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory); outer, _ = self.files(root)
+                outer[key] = value; (root / "outer-process-cleanup.json").write_text(json.dumps(outer))
+                with self.subTest(key=key), self.assertRaises(ValueError):
+                    guard.verify(root)
+
+    def test_expiry_before_cleanup_parent_volume_and_deadline_controls_fail(self):
+        for key, value in (("ExpiredBeforeCleanup", False), ("ExitCode", 0), ("ElapsedSeconds", 20), ("ParentRunId", "a" * 32), ("VolumesAbsent", []), ("PersistentData", True)):
+            with tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory); _, expiry = self.files(root)
+                expiry[key] = value; (root / "fixture-containment/forced-expiry.json").write_text(json.dumps(expiry))
+                with self.subTest(key=key), self.assertRaises(ValueError):
+                    guard.verify(root)
+
+
+if __name__ == "__main__":
+    unittest.main()

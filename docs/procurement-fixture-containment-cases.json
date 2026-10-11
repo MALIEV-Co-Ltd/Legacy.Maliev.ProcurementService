@@ -1,0 +1,81 @@
+{
+  "expectedCases": 18,
+  "cases": [
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.SetupFailure_PreservesPrimaryAndRunsCleanup",
+      "id": "757c22bb-83b4-4ccc-5e8c-fef62e4da710"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.CleanupFailure_StillAttemptsAllFourOwnedReleases(position: 3)",
+      "id": "cba2d1d8-dfb9-2651-9e40-865e3746b82a"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.ContainerPolicy_BoundsMemoryCpuLoopbackAndPreservesPostgresArguments",
+      "id": "e7575319-6e05-5b50-387a-ab1d50122d10"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.SetupAndCleanupFailures_RetainPrimaryAndBothCleanupErrors",
+      "id": "16a9a6e0-7815-a264-bfe0-9c4d632bd5a5"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.CancellationCallbackFailure_DoesNotLosePrimaryOrSkipCleanup",
+      "id": "0bc2b162-e302-4f4e-0504-30c4ca2d621d"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.CleanupTimeout_AttemptsNextReleaseAndRetainsUnfinishedHandleAndLateFault",
+      "id": "b3ea38cb-fb20-e27a-2654-90fb87f34d96"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.SynchronousSetupFailure_StillRunsCleanup",
+      "id": "b5c5edb6-639f-6e4c-5bc4-09f3022aac58"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.CleanupFailure_StillAttemptsAllFourOwnedReleases(position: 1)",
+      "id": "b5166aca-f1e6-f3ca-319a-bbea2f0cdb27"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureProviderContainmentTests.ForcedExpiry_StopsSignalIgnoringOwnedChild",
+      "id": "352b1352-8de3-430e-bc60-ba9e47bfa15d"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.SetupThatIgnoresCancellation_IsReportedUnsettledAfterBoundedCleanup",
+      "id": "38985280-e35c-2761-db24-130d1dd138ce"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureProviderContainmentTests.OwnedProviderBoundsAndNaturalCleanup_AreObserved(failAfterProvidersStart: True)",
+      "id": "9744229b-1d60-5571-84d5-73565c17972b"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.CleanupFailure_StillAttemptsAllFourOwnedReleases(position: 2)",
+      "id": "9b52beb6-ab35-8f55-0c05-f18c1d5bdd91"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.CleanupFailure_StillAttemptsAllFourOwnedReleases(position: 0)",
+      "id": "d64bfe63-a92d-9215-c4bd-5a18506472aa"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.InitializationDeadline_CancelsCooperatingWorkAndCleansUp",
+      "id": "bed29591-dbdf-f411-90dc-d258f29ddc92"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureProviderContainmentTests.OwnedProviderBoundsAndNaturalCleanup_AreObserved(failAfterProvidersStart: False)",
+      "id": "d93b5ccf-71e0-6e45-24a0-d54c327c2e33"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.SuccessfulCleanup_ReleasesAllAndLeavesNoPendingHandles",
+      "id": "bb78ba57-f928-af8d-0caa-d8c480275db6"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.SuccessfulSetup_DoesNotInvokeFailureCleanup",
+      "id": "e9636e26-b72f-2ddf-246c-fd0cc095c8a9"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.MultipleCleanupFailures_RetainEveryOriginalException",
+      "id": "c2651b07-4867-1709-a7fe-d7cdad4bb5d9"
+    }
+  ],
+  "sourceRun": 38128379833,
+  "sourceHead": "93828ce2bd3601060c5839b0470bcfe7e239fc0b",
+  "sourceTrxSha256": "823c4d0c525a565db4b1f06b5a484388717fe921267e2de3aec7f1e34fd7145b",
+  "status": "Execution identities only; all outcome acceptance is independently checked"
+}
