@@ -440,3 +440,37 @@ class ProvisionalDiscoveryControls(unittest.TestCase):
         self.assertIn('[Theory(Skip = "Pending reviewed finite-lifecycle integration and native admission")]', text)
         body = text.split("public async Task ImageSpecificControl_HasFiniteOwnerCleanup", 1)[1]
         self.assertLess(body.index("RequireImageAdmission();"), body.index("new DockerClientConfiguration"))
+
+
+class SharedSourceAdmissionWiringControls(unittest.TestCase):
+    def test_both_existing_build_paths_use_same_preallocation_source_guard(self):
+        root = pathlib.Path(__file__).resolve().parents[1]
+        for filename in ("_build-and-test.yml", "procurement-fixture-containment.yml"):
+            text = (root / ".github/workflows" / filename).read_text(encoding="utf-8")
+            self.assertIn("MALIEV_FINITE_OWNER_SOURCE_HEAD:", text)
+            mode = "qualified-full-only" if filename == "_build-and-test.yml" else "reviewed-source-only"
+            self.assertIn("MALIEV_FINITE_OWNER_DISCOVERY: '" + mode + "'", text)
+            self.assertLess(text.index("verify-procurement-fixture-containment.py --source-admission"), text.index("dotnet restore"))
+        source = (root / "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementImageExpiryProfileWitnessTests.cs").read_text(encoding="utf-8")
+        self.assertIn("pins.Length != 9", source)
+        self.assertIn("[Theory(Skip = ", source)
+
+from unittest.mock import patch
+
+
+class SourceAdmissionBehaviorControls(unittest.TestCase):
+    def test_focused_uses_existing_bootstrap_guard_only(self):
+        with patch.object(guard,'finite_bootstrap') as bootstrap, patch.object(guard,'finite_activation') as full:
+            guard.source_admission({'enabled':False},'reviewed-source-only')
+            bootstrap.assert_called_once_with({'enabled':False});full.assert_not_called()
+
+    def test_full_rejects_incomplete_identity_custody_without_bootstrap(self):
+        for ids in [[],[1,2,3,4]]:
+            with patch.object(guard,'finite_activation',return_value=ids), patch.object(guard,'finite_bootstrap') as bootstrap:
+                with self.assertRaisesRegex(ValueError,'reviewed exact23'):guard.source_admission({'enabled':False},'qualified-full-only')
+                bootstrap.assert_not_called()
+
+    def test_unknown_lane_never_enters_either_admission_guard(self):
+        with patch.object(guard,'finite_bootstrap') as bootstrap, patch.object(guard,'finite_activation') as full:
+            with self.assertRaisesRegex(ValueError,'Unknown'):guard.source_admission({},'foreign')
+            bootstrap.assert_not_called();full.assert_not_called()

@@ -50,6 +50,7 @@ jobs:
         timeout-minutes: 5
         run: |
           export GITHUB_ACTIONS=false
+          python3 -B scripts/verify-procurement-fixture-containment.py --source-admission
           dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true
           dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true
       - name: Observe focused native process and owned Docker session

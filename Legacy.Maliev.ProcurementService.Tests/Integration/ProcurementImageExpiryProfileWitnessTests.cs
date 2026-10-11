@@ -38,7 +38,7 @@ public sealed class ProcurementImageExpiryProfileWitnessTests
             || (bootstrap && Environment.GetEnvironmentVariable("MALIEV_FINITE_OWNER_DISCOVERY") != "reviewed-source-only"))
             throw new InvalidOperationException("Witness source admission is unbound.");
         var pins = binding.GetProperty("inputs").EnumerateArray().ToArray();
-        if (pins.Length != 8) throw new InvalidOperationException("Witness input roster differs.");
+        if (pins.Length != 9) throw new InvalidOperationException("Witness input roster differs.");
         foreach (var pin in pins)
         {
             var path = Path.GetFullPath(Path.Combine(root, pin.GetProperty("path").GetString()!));

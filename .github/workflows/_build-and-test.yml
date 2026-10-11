@@ -11,6 +11,8 @@ jobs:
     name: validate
     runs-on: ubuntu-latest
     env:
+      MALIEV_FINITE_OWNER_SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+      MALIEV_FINITE_OWNER_DISCOVERY: 'qualified-full-only'
       MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
       VSTestCollect: XPlat Code Coverage
       VSTestLogger: trx
@@ -20,6 +22,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+          fetch-depth: 3
       - name: Check out Legacy.Maliev.ServiceDefaults
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -42,6 +45,7 @@ jobs:
         timeout-minutes: 5
         run: |
           export GITHUB_ACTIONS=false
+          python3 -B scripts/verify-procurement-fixture-containment.py --source-admission
           dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true
           dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true
       - name: Execute mandatory focused workflow checks

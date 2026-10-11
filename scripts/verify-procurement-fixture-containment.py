@@ -406,7 +406,22 @@ def verify(root, discovery=False):
             "discoveredUnreviewedIdentities": discovered if discovery else []}
 
 
+def source_admission(extension, lane):
+    if lane == "reviewed-source-only":
+        finite_bootstrap(extension)
+    elif lane == "qualified-full-only":
+        if len(finite_activation(extension)) != 5:
+            raise ValueError("Ordinary full enrollment requires reviewed exact23 identity custody")
+    else:
+        raise ValueError("Unknown source admission lane")
+
+
 if __name__ == "__main__":
+    if sys.argv[1:] == ["--source-admission"]:
+        extension = json.loads((pathlib.Path(__file__).resolve().parents[1] / "docs/procurement-fixture-containment-cases.json").read_text())["finiteOwnerExtension"]
+        source_admission(extension, os.environ.get("MALIEV_FINITE_OWNER_DISCOVERY"))
+        print(json.dumps({"sourceAdmissionChecked": True, "nativeExecuted": False, "qualification": False}))
+        raise SystemExit(0)
     discovery = len(sys.argv) == 3 and sys.argv[2] == "--provisional-discovery"
     if len(sys.argv) > 2 and not discovery: raise ValueError("Unknown verification mode")
     root = pathlib.Path(sys.argv[1])
