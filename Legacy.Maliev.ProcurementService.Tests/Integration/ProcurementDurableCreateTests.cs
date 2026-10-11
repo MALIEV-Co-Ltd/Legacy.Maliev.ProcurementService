@@ -851,8 +851,29 @@ public sealed class ProcurementDurableCreateTests(ProcurementDurableCreateFixtur
 
 public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer supplier = new PostgreSqlBuilder("postgres:18.1-bookworm").Build();
-    private readonly PostgreSqlContainer order = new PostgreSqlBuilder("postgres:18.1-bookworm").Build();
+    private const string DiagnosticOwner = "procurement-durable-create-fixture";
+    private readonly string resourceRunId = Guid.NewGuid().ToString("N");
+    private readonly PostgreSqlContainer supplier;
+    private readonly PostgreSqlContainer order;
+    private readonly ProcurementFixtureLifetime cleanupLifetime = new();
+    private readonly List<string> observedContainerIds = [];
+    private readonly List<string> observedVolumeIds = [];
+    private string failureStage = "none";
+    private Task? supplierStart;
+    private Task? orderStart;
+    private bool initializationFailed;
+
+    public ProcurementDurableCreateFixture()
+    {
+        supplier = DiagnosticContainer("supplier");
+        order = DiagnosticContainer("purchase-order");
+    }
+
+    private PostgreSqlContainer DiagnosticContainer(string role) => new PostgreSqlBuilder("postgres:18.1-bookworm")
+        .WithLabel("maliev.codex.owner", DiagnosticOwner)
+        .WithLabel("maliev.codex.run", resourceRunId)
+        .WithLabel("maliev.codex.role", role)
+        .Build();
     private readonly RSA signingKey = RSA.Create(2048);
     public ProcurementDurableCreateFactory Factory { get; private set; } = null!;
     public ProcurementDurableCreateCache Cache { get; } = new();
@@ -861,11 +882,50 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await Task.WhenAll(supplier.StartAsync(), order.StartAsync());
-        Factory = CreateFactory(false);
-        await using var scope = Factory.Services.CreateAsyncScope();
-        await scope.ServiceProvider.GetRequiredService<SupplierDbContext>().Database.MigrateAsync();
-        await scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Database.MigrateAsync();
+        var failures = new List<Exception>();
+        AsyncServiceScope? scope = null;
+        Task? starts = null;
+        var stage = "provider-start";
+        try
+        {
+            supplierStart = supplier.StartAsync();
+            orderStart = order.StartAsync();
+            starts = Task.WhenAll(supplierStart, orderStart);
+            await starts;
+            stage = "host-create";
+            Factory = CreateFactory(false);
+            scope = Factory.Services.CreateAsyncScope();
+            stage = "supplier-migration";
+            await scope.Value.ServiceProvider.GetRequiredService<SupplierDbContext>().Database.MigrateAsync();
+            stage = "purchase-order-migration";
+            await scope.Value.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Database.MigrateAsync();
+        }
+        catch (Exception primary)
+        {
+            failureStage = stage;
+            failures.AddRange(stage == "provider-start" && starts?.Exception is not null ? starts.Exception.InnerExceptions : [primary]);
+        }
+        finally
+        {
+            if (scope is not null)
+            {
+                try { await scope.Value.DisposeAsync(); }
+                catch (Exception scopeFailure)
+                {
+                    if (failures.Count == 0) failureStage = "scope-disposal";
+                    failures.Add(scopeFailure);
+                }
+            }
+        }
+        if (failures.Count == 0) return;
+        initializationFailed = true;
+        try { await WriteFailureEvidenceAsync(failures); }
+        catch (AggregateException observationFailure) { failures.AddRange(observationFailure.InnerExceptions); }
+        catch (Exception observationFailure) { failures.Add(observationFailure); }
+        try { await DisposeAsync(); }
+        catch (AggregateException cleanupFailure) { failures.AddRange(cleanupFailure.InnerExceptions); }
+        catch (Exception cleanupFailure) { failures.Add(cleanupFailure); }
+        ProcurementFixtureDiagnosticFailures.PublishOrThrow(() => { }, failures);
     }
 
     public async Task ResetAsync()
@@ -896,13 +956,144 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
         return client;
     }
 
-    public async Task DisposeAsync()
+    public Task DisposeAsync() => cleanupLifetime.CleanupAsync(
+        () => Factory is null ? Task.CompletedTask : Factory.DisposeAsync().AsTask(),
+        () => supplier.DisposeAsync().AsTask(),
+        () => order.DisposeAsync().AsTask(),
+        () => { signingKey.Dispose(); return Task.CompletedTask; },
+        WriteFailureCleanupEvidenceAsync);
+
+    private static Docker.DotNet.DockerClientConfiguration ReadOnlyLocalDockerConfiguration()
     {
-        if (Factory is not null) await Factory.DisposeAsync();
-        await supplier.DisposeAsync();
-        await order.DisposeAsync();
-        signingKey.Dispose();
+        var endpoint = OperatingSystem.IsWindows() ? "npipe://./pipe/docker_engine" : "unix:///var/run/docker.sock";
+        var configured = Environment.GetEnvironmentVariable("DOCKER_HOST");
+        if (!string.IsNullOrEmpty(configured) && configured != endpoint)
+            throw new InvalidOperationException("Local read-only diagnostic endpoint custody is unavailable.");
+        return new Docker.DotNet.DockerClientConfiguration(new Uri(endpoint));
     }
+
+    private async Task WriteFailureEvidenceAsync(IReadOnlyCollection<Exception> primaryFailures)
+    {
+        var rows = new List<object>();
+        var failures = new List<Exception>();
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+        try
+        {
+            using var configuration = ReadOnlyLocalDockerConfiguration();
+            using var docker = configuration.CreateClient();
+            foreach (var (container, role, start) in new[] { (supplier, "supplier", supplierStart), (order, "purchase-order", orderStart) })
+            {
+                try
+                {
+                    var actual = await docker.Containers.InspectContainerAsync(container.Id, deadline.Token);
+                    if (actual.ID != container.Id || actual.Config.Labels["maliev.codex.owner"] != DiagnosticOwner || actual.Config.Labels["maliev.codex.run"] != resourceRunId || actual.Config.Labels["maliev.codex.role"] != role)
+                        throw new InvalidOperationException("Durable fixture observation ownership mismatch.");
+                    observedContainerIds.Add(actual.ID);
+                    var volumes = actual.Mounts.Where(mount => mount.Type == "volume").Select(mount => mount.Name).ToArray();
+                    observedVolumeIds.AddRange(volumes);
+                    rows.Add(new
+                    {
+                        Id = actual.ID,
+                        Role = role,
+                        StartTaskStatus = start?.Status.ToString() ?? "not-created",
+                        Created = actual.Created.ToString(),
+                        StartedAt = actual.State.StartedAt.ToString(),
+                        FinishedAt = actual.State.FinishedAt.ToString(),
+                        ProcessId = actual.State.Pid,
+                        actual.State.Running,
+                        actual.State.Status,
+                        actual.State.ExitCode,
+                        actual.State.OOMKilled,
+                        Labels = actual.Config.Labels.Where(pair => pair.Key is "maliev.codex.owner" or "maliev.codex.run" or "maliev.codex.role" or "org.testcontainers.session-id").ToDictionary(pair => pair.Key, pair => pair.Value),
+                        actual.HostConfig.Memory,
+                        actual.HostConfig.MemorySwap,
+                        actual.HostConfig.NanoCPUs,
+                        RequestedBindings = actual.HostConfig.PortBindings?.SelectMany(pair => (pair.Value ?? []).Select(binding => new { ContainerPort = pair.Key, binding.HostIP, binding.HostPort })).ToArray() ?? [],
+                        ActualBindings = actual.NetworkSettings.Ports?.SelectMany(pair => (pair.Value ?? []).Select(binding => new { ContainerPort = pair.Key, binding.HostIP, binding.HostPort })).ToArray() ?? [],
+                        Volumes = volumes,
+                    });
+                }
+                catch (Exception observationFailure)
+                {
+                    failures.Add(observationFailure);
+                    rows.Add(new { Role = role, StartTaskStatus = start?.Status.ToString() ?? "not-created", ObservationFailureType = observationFailure.GetType().FullName });
+                }
+            }
+        }
+        catch (Exception observerSetupOrDisposalFailure) { failures.Add(observerSetupOrDisposalFailure); }
+        ProcurementFixtureDiagnosticFailures.PublishOrThrow(() => WriteFailureEvidence("before-cleanup", new
+        {
+            ResourceRunId = resourceRunId,
+            InitializationFailureStage = failureStage,
+            ObservedAtUtc = DateTimeOffset.UtcNow,
+            Resources = rows,
+            PrimaryFailureTypes = primaryFailures.Select(error => error.GetType().FullName).ToArray(),
+            ObservationFailureTypes = failures.Select(error => error.GetType().FullName).ToArray(),
+            DestructiveObserverActions = 0,
+            Cause = "UNKNOWN: actual provider state observed; no transport, pool, or port cause inferred",
+            ResourceContainmentQualified = false,
+        }), failures);
+    }
+
+    private async Task WriteFailureCleanupEvidenceAsync()
+    {
+        if (!initializationFailed) return;
+        var absentContainers = new List<string>();
+        var absentVolumes = new List<string>();
+        var failures = new List<Exception>();
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+        try
+        {
+            using var configuration = ReadOnlyLocalDockerConfiguration();
+            using var docker = configuration.CreateClient();
+            foreach (var id in observedContainerIds.Distinct(StringComparer.Ordinal))
+            {
+                try
+                {
+                    await docker.Containers.InspectContainerAsync(id, deadline.Token);
+                    failures.Add(new InvalidOperationException("Observed durable container remains after cleanup."));
+                }
+                catch (Docker.DotNet.DockerApiException error) when (error.StatusCode == HttpStatusCode.NotFound) { absentContainers.Add(id); }
+                catch (Exception error) { failures.Add(error); }
+            }
+            foreach (var name in observedVolumeIds.Distinct(StringComparer.Ordinal))
+            {
+                try
+                {
+                    await docker.Volumes.InspectAsync(name, deadline.Token);
+                    failures.Add(new InvalidOperationException("Observed durable volume remains after cleanup."));
+                }
+                catch (Docker.DotNet.DockerApiException error) when (error.StatusCode == HttpStatusCode.NotFound) { absentVolumes.Add(name); }
+                catch (Exception error) { failures.Add(error); }
+            }
+        }
+        catch (Exception observerSetupOrDisposalFailure) { failures.Add(observerSetupOrDisposalFailure); }
+        ProcurementFixtureDiagnosticFailures.PublishOrThrow(() => WriteFailureEvidence("after-cleanup", new
+        {
+            ResourceRunId = resourceRunId,
+            InitializationFailureStage = failureStage,
+            ObservedAtUtc = DateTimeOffset.UtcNow,
+            ContainersObserved = observedContainerIds,
+            VolumesObserved = observedVolumeIds,
+            ContainersAbsent = absentContainers,
+            VolumesAbsent = absentVolumes,
+            PendingOperationsAtObservation = cleanupLifetime.UnsettledOperations.Count,
+            IncludesCurrentReadOnlyObserver = true,
+            CleanupFailureTypes = cleanupLifetime.ObservedFailures.Select(error => error.GetType().FullName).ToArray(),
+            ObservationFailureTypes = failures.Select(error => error.GetType().FullName).ToArray(),
+            FullProviderCustody = observedContainerIds.Distinct(StringComparer.Ordinal).Count() == 2,
+            ResourceContainmentQualified = false,
+            DestructiveObserverActions = 0,
+        }), failures);
+    }
+
+    private void WriteFailureEvidence(string phase, object evidence)
+    {
+        var directory = Path.Combine(Environment.GetEnvironmentVariable("VSTestResultsDirectory") ?? "TestResults", "durable-fixture-failures");
+        Directory.CreateDirectory(directory);
+        File.WriteAllText(Path.Combine(directory, resourceRunId + "-" + phase + ".json"), JsonSerializer.Serialize(evidence));
+    }
+
 }
 
 public sealed class ProcurementDurableCreateFactory(string supplierConnection, string orderConnection, RSA key, ProcurementDurableCreateCache cache, TimeProvider clock, bool optIn, bool durable) : WebApplicationFactory<Program>
