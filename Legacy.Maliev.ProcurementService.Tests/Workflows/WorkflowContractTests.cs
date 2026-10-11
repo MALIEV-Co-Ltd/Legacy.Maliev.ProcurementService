@@ -43,6 +43,15 @@ public sealed class WorkflowContractTests
     {
         foreach (var (original, replacement) in new[]
         {
+            ("FullyQualifiedName~ProcurementFixtureOwnerCorrelationTests", "FullyQualifiedName~OtherTests"),
+            ("name: Execute owner correlation regressions\n        timeout-minutes: 2", "name: Execute owner correlation regressions\n        timeout-minutes: 3"),
+            ("name: Execute owner correlation regressions\n        timeout-minutes: 2", "name: Execute owner correlation regressions\n        timeout-minutes: 2\n        if: false"),
+            ("name: Execute owner correlation regressions\n        timeout-minutes: 2", "name: Execute owner correlation regressions\n        timeout-minutes: 2\n        continue-on-error: true"),
+            ("name: Require every owner correlation execution\n        timeout-minutes: 1", "name: Require every owner correlation execution\n        timeout-minutes: 0"),
+            ("python3 -B scripts/verify-owner-correlation-results.py owner-correlation-results", "echo owner-gate-skipped"),
+            ("python3 -B -O -m unittest discover -s scripts -p test_owner_correlation_results.py", "echo owner-controls-skipped"),
+            ("name: Preserve owner correlation evidence\n        timeout-minutes: 1", "name: Preserve owner correlation evidence\n        timeout-minutes: 0"),
+            ("path: owner-correlation-results", "path: foreign-results"),
             ("FullyQualifiedName~ProcurementFixtureStartupJournalTests", "FullyQualifiedName~OtherTests"),
             ("name: Execute startup journal regressions\n        timeout-minutes: 2", "name: Execute startup journal regressions\n        timeout-minutes: 3"),
             ("name: Execute startup journal regressions\n        timeout-minutes: 2", "name: Execute startup journal regressions\n        timeout-minutes: 2\n        if: false"),
@@ -59,7 +68,7 @@ public sealed class WorkflowContractTests
             Assert.Contains(original, source, StringComparison.Ordinal);
             Assert.Throws<InvalidOperationException>(() => WorkflowContractValidator.Validate(source.Replace(original, replacement, StringComparison.Ordinal)));
         }
-        foreach (var mutation in new[] { "omit-test", "omit-gate", "omit-upload", "reorder", "extra" })
+        foreach (var mutation in new[] { "omit-test", "omit-gate", "omit-upload", "reorder", "extra", "omit-owner-test", "omit-owner-gate", "omit-owner-upload", "reorder-owner" })
         {
             var yaml = new YamlStream();
             yaml.Load(new StringReader(Workflow));
@@ -68,6 +77,8 @@ public sealed class WorkflowContractTests
             var job = (YamlMappingNode)jobs.Children[new YamlScalarNode("validate")];
             var steps = (YamlSequenceNode)job.Children[new YamlScalarNode("steps")];
             if (mutation == "reorder") (steps.Children[8], steps.Children[9]) = (steps.Children[9], steps.Children[8]);
+            else if (mutation == "reorder-owner") (steps.Children[11], steps.Children[12]) = (steps.Children[12], steps.Children[11]);
+            else if (mutation.StartsWith("omit-owner-", StringComparison.Ordinal)) steps.Children.RemoveAt(mutation == "omit-owner-test" ? 11 : mutation == "omit-owner-gate" ? 12 : 13);
             else if (mutation == "extra") steps.Children.Add(new YamlMappingNode(new YamlScalarNode("run"), new YamlScalarNode("echo extra")));
             else steps.Children.RemoveAt(mutation == "omit-test" ? 8 : mutation == "omit-gate" ? 9 : 10);
             using var writer = new StringWriter();
@@ -420,7 +431,7 @@ internal static partial class WorkflowContractValidator
         if (!historicalFixture)
         {
             ValidateFocusedWorkflowGroup(steps);
-            steps = new YamlSequenceNode(steps.Children.Where((_, index) => index is < 3 or > 10));
+            steps = new YamlSequenceNode(steps.Children.Where((_, index) => index is < 3 or > 13));
         }
         RejectDuplicatedValidationActionsAndCommands(steps);
         if (steps.Children.Count == 9)
@@ -512,7 +523,7 @@ internal static partial class WorkflowContractValidator
 
     private static void ValidateFocusedWorkflowGroup(YamlSequenceNode steps)
     {
-        if (steps.Children.Count != 14)
+        if (steps.Children.Count != 17)
             throw new InvalidOperationException("Primary validation must retain the mandatory focused workflow group.");
         ValidateStep(steps.Children[3], "actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68",
             new Dictionary<string, string>(StringComparer.Ordinal) { ["dotnet-version"] = "10.0.x" });
@@ -551,6 +562,7 @@ internal static partial class WorkflowContractValidator
         RequireScalarValue(inputs, "if-no-files-found", "warn");
         RequireScalarValue(inputs, "retention-days", "7");
         ValidateStartupJournalGroup(steps);
+        ValidateOwnerCorrelationGroup(steps);
     }
 
     private static void ValidateStartupJournalGroup(YamlSequenceNode steps)
@@ -580,6 +592,39 @@ internal static partial class WorkflowContractValidator
         RequireStepKeys(inputs, "name", "path", "if-no-files-found", "retention-days");
         RequireScalarValue(inputs, "name", "procurement-startup-journal-${{ github.sha }}");
         RequireScalarValue(inputs, "path", "startup-journal-results");
+        RequireScalarValue(inputs, "if-no-files-found", "warn");
+        RequireScalarValue(inputs, "retention-days", "7");
+    }
+
+    private static void ValidateOwnerCorrelationGroup(YamlSequenceNode steps)
+    {
+        var test = RequireMapping(steps.Children[11], "owner correlation tests");
+        RequireStepKeys(test, "name", "timeout-minutes", "env", "run");
+        RequireScalarValue(test, "name", "Execute owner correlation regressions");
+        RequireScalarValue(test, "timeout-minutes", "2");
+        var environment = RequireMapping(test, "env");
+        RequireStepKeys(environment, "VSTestResultsDirectory");
+        RequireScalarValue(environment, "VSTestResultsDirectory", "${{ github.workspace }}/owner-correlation-results");
+        RequireCommands(test, "export GITHUB_ACTIONS=false\n"
+            + "dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter \"FullyQualifiedName~ProcurementFixtureOwnerCorrelationTests\" --logger \"trx;LogFileName=owner-correlation.trx\" --results-directory owner-correlation-results");
+        var gate = RequireMapping(steps.Children[12], "owner correlation gate");
+        RequireStepKeys(gate, "name", "timeout-minutes", "if", "run");
+        RequireScalarValue(gate, "timeout-minutes", "1");
+        RequireScalarValue(gate, "name", "Require every owner correlation execution");
+        RequireScalarValue(gate, "if", "always()");
+        RequireCommands(gate, "python3 -B -m unittest discover -s scripts -p test_owner_correlation_results.py\n"
+            + "python3 -B -O -m unittest discover -s scripts -p test_owner_correlation_results.py\n"
+            + "python3 -B scripts/verify-owner-correlation-results.py owner-correlation-results");
+        var evidence = RequireMapping(steps.Children[13], "owner correlation custody");
+        RequireStepKeys(evidence, "name", "timeout-minutes", "if", "uses", "with");
+        RequireScalarValue(evidence, "timeout-minutes", "1");
+        RequireScalarValue(evidence, "name", "Preserve owner correlation evidence");
+        RequireScalarValue(evidence, "if", "always()");
+        RequireScalarValue(evidence, "uses", "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+        var inputs = RequireMapping(evidence, "with");
+        RequireStepKeys(inputs, "name", "path", "if-no-files-found", "retention-days");
+        RequireScalarValue(inputs, "name", "procurement-owner-correlation-${{ github.sha }}");
+        RequireScalarValue(inputs, "path", "owner-correlation-results");
         RequireScalarValue(inputs, "if-no-files-found", "warn");
         RequireScalarValue(inputs, "retention-days", "7");
     }

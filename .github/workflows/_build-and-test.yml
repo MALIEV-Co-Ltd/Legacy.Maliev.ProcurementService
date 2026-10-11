@@ -85,6 +85,29 @@ jobs:
           path: startup-journal-results
           if-no-files-found: warn
           retention-days: 7
+      - name: Execute owner correlation regressions
+        timeout-minutes: 2
+        env:
+          VSTestResultsDirectory: ${{ github.workspace }}/owner-correlation-results
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ProcurementFixtureOwnerCorrelationTests" --logger "trx;LogFileName=owner-correlation.trx" --results-directory owner-correlation-results
+      - name: Require every owner correlation execution
+        timeout-minutes: 1
+        if: always()
+        run: |
+          python3 -B -m unittest discover -s scripts -p test_owner_correlation_results.py
+          python3 -B -O -m unittest discover -s scripts -p test_owner_correlation_results.py
+          python3 -B scripts/verify-owner-correlation-results.py owner-correlation-results
+      - name: Preserve owner correlation evidence
+        timeout-minutes: 1
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-owner-correlation-${{ github.sha }}
+          path: owner-correlation-results
+          if-no-files-found: warn
+          retention-days: 7
       - name: Validate .NET solution
         uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8
         with:

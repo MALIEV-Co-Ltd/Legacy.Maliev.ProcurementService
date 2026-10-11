@@ -1,0 +1,30 @@
+{
+  "expectedCases": 23,
+  "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureOwnerCorrelationTests",
+  "methods": [
+    "WrapperConstructors_ValidateActualIdentityBeforeRsaAndContainerAllocation",
+    "UnknownOrMismatchedDescriptor_FailsBeforePublicationOrResourceAction",
+    "UnattributedDescriptor_CannotNameAnOwnedWrapper",
+    "SeparateFixtureInstances_HaveDistinctIdentityWithoutNativeExecutionClaim",
+    "CleanupInvocations_AreDistinctAndClockEventsMonotonic",
+    "OriginalSynchronousCleanupThrow_IsNotReplacedOrSkipped",
+    "OriginalCanceledCleanupToken_IsPreserved",
+    "SharedPendingPublication_RetainsActualTaskAndLateOriginalFailure",
+    "ReceiptLimit_DoesNotSkipActualCleanupRelease",
+    "EventOverflow_RemainsExplicitAndBounded",
+    "InvalidRunAndReceiptPhase_AreRejected",
+    "UnknownProviderRoleOrMismatchedId_DoesNotCreateAnOwnershipReceipt",
+    "UnknownEventMetadata_IsAnErrorWithoutPublishingItsText",
+    "DurableWrappers_ValidateBeforeAnyRsaOrProviderAllocation",
+    "AggregateCleanupFailure_RetainsEveryOriginalReference",
+    "PendingCleanup_DoesNotPublishASettledEventUntilActualTaskFinishes",
+    "CorrelationOnlyRefusal_PreservesBothOriginalIdVolumeScopesAndProgress",
+    "OriginalScopeFailure_IsNotSwallowedOrReplacedByCorrelation",
+    "MetadataError_WritesDiagnosticThenFaultsCachedTaskWithOriginalReference",
+    "EventOverflow_WritesDiagnosticThenFaultsActualPublicationTask",
+    "ObservationAndWriteErrors_AllOriginalReferencesSurviveActualPublication",
+    "PendingWrite_LateObservationAndWriteFaultRemainOnSameCachedTask",
+    "ActualDuplicateRoleAndSessionRefusals_KeepOwnedScopeAndCleanupCallbacks"
+  ],
+  "guidStatus": "Native GUIDs NOT RUN; preserve first actual joins without inventing IDs"
+}
