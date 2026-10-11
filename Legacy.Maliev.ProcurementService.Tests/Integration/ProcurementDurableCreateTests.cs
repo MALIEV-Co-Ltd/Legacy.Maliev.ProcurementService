@@ -860,6 +860,9 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
     private readonly List<string> observedVolumeIds = [];
     private readonly List<object> connectionEndpoints = [];
     private readonly List<Exception> connectionObservationFailures = [];
+    private readonly ProcurementConnectionJournal connectionJournal = new();
+    private ProcurementConnectionEvent[] connectionEvents = [];
+    private bool connectionEventsOverflow;
     private string failureStage = "none";
     private Task? supplierStart;
     private Task? orderStart;
@@ -896,6 +899,7 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
             await starts;
             stage = "host-create";
             Factory = CreateFactory(false);
+            Factory.SetupConnectionJournal = connectionJournal;
             scope = Factory.Services.CreateAsyncScope();
             stage = "supplier-migration";
             var supplierContext = scope.Value.ServiceProvider.GetRequiredService<SupplierDbContext>();
@@ -923,6 +927,10 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
                 }
             }
         }
+        var connectionSnapshot = connectionJournal.Stop();
+        connectionEvents = connectionSnapshot.Events;
+        connectionEventsOverflow = connectionSnapshot.Overflow;
+        connectionObservationFailures.AddRange(connectionSnapshot.Failures);
         var primaryFailures = failures.ToArray();
         await ProcurementDurableFixtureFailureCompletion.CompleteAsync(failures, connectionObservationFailures,
             observationOnly =>
@@ -1067,6 +1075,9 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
             ObservedAtUtc = DateTimeOffset.UtcNow,
             Resources = rows,
             ConnectionEndpoints = connectionEndpoints,
+            ConnectionEvents = connectionEvents,
+            ConnectionEventsOverflow = connectionEventsOverflow,
+            BackendProcessIdIsContainerAttribution = false,
             PrimaryFailureTypes = primaryFailures.Select(error => error.GetType().FullName).ToArray(),
             ObservationFailureTypes = failures.Select(error => error.GetType().FullName).ToArray(),
             DestructiveObserverActions = 0,
@@ -1131,7 +1142,9 @@ public sealed class ProcurementDurableCreateFixture : IAsyncLifetime
     {
         var directory = Path.Combine(Environment.GetEnvironmentVariable("VSTestResultsDirectory") ?? "TestResults", "durable-fixture-failures");
         Directory.CreateDirectory(directory);
-        File.WriteAllText(Path.Combine(directory, resourceRunId + "-" + phase + ".json"), JsonSerializer.Serialize(evidence));
+        var bytes = JsonSerializer.SerializeToUtf8Bytes(evidence);
+        if (bytes.Length > 65536) throw new InvalidOperationException("Durable fixture diagnostic exceeds its byte limit.");
+        File.WriteAllBytes(Path.Combine(directory, resourceRunId + "-" + phase + ".json"), bytes);
     }
 
 }
@@ -1157,6 +1170,8 @@ internal static class ProcurementDurableFixtureFailureCompletion
 
 public sealed class ProcurementDurableCreateFactory(string supplierConnection, string orderConnection, RSA key, ProcurementDurableCreateCache cache, TimeProvider clock, bool optIn, bool durable) : WebApplicationFactory<Program>
 {
+    internal ProcurementConnectionJournal? SetupConnectionJournal { get; set; }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Production");
@@ -1166,6 +1181,13 @@ public sealed class ProcurementDurableCreateFactory(string supplierConnection, s
             services.AddSingleton<IDistributedCache>(cache);
             services.RemoveAll<TimeProvider>();
             services.AddSingleton(clock);
+            if (SetupConnectionJournal is { } journal)
+            {
+                services.ConfigureDbContext<SupplierDbContext>(options => options.AddInterceptors(
+                    new ProcurementFixtureConnectionObserver(journal, "supplier", supplierConnection)));
+                services.ConfigureDbContext<PurchaseOrderDbContext>(options => options.AddInterceptors(
+                    new ProcurementFixtureConnectionObserver(journal, "purchase-order", orderConnection)));
+            }
         });
     }
 
