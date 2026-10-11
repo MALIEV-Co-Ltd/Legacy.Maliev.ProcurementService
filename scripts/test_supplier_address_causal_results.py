@@ -228,3 +228,40 @@ class CausalEvidenceTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class NumericStackProfileControls(unittest.TestCase):
+    def test_only_two_observed_profiles_are_reported_without_inventing_missing_frame(self):
+        self.assertEqual('observed-string-converter-read', guard.observed_numeric_string_stack_profile(ACTUAL_CONVERTER_STACK))
+        observed = ('at System.Text.Json.Serialization.JsonConverter`1.TryRead(\n'
+                    'at System.Text.Json.Serialization.JsonConverter`1.TryReadAsObject(\n'
+                    'at System.Text.Json.Serialization.Converters.LargeObjectWithParameterizedConstructorConverter`1.ReadAndCacheConstructorArgument(')
+        self.assertIn('unobserved', guard.observed_numeric_string_stack_profile(observed))
+        for line in observed.splitlines():
+            self.assertIsNone(guard.observed_numeric_string_stack_profile(observed.replace(line, '')))
+        self.assertIsNone(guard.observed_numeric_string_stack_profile('System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString('))
+
+    def test_message_case_and_owned_source_origin_guards_are_not_replaced_by_stack_profile(self):
+        source = pathlib.Path(__file__).with_name('verify-supplier-address-causal-results.py').read_text(encoding='utf-8')
+        self.assertIn("require(message == expected_message", source)
+        self.assertIn("ProcurementSupplierAddressScalarStringTests\\.cs:line 213", source)
+        self.assertIn("ThrowInvalidOperationException_ExpectedString(", source)
+        self.assertNotIn('inlining', guard.observed_numeric_string_stack_profile(ACTUAL_CONVERTER_STACK))
+
+
+class AlternateObservedSemanticControls(CausalEvidenceTests):
+    def alternate(self):
+        return ACTUAL_CONVERTER_STACK.replace('System.Text.Json.Serialization.Converters.StringConverter.Read(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options)', 'System.Text.Json.Serialization.JsonConverter`1.TryRead(\nSystem.Text.Json.Serialization.JsonConverter`1.TryReadAsObject(\nSystem.Text.Json.Serialization.Converters.LargeObjectWithParameterizedConstructorConverter`1.ReadAndCacheConstructorArgument(')
+
+    def test_alternate_observed_profile_requires_exact_semantics_and_origin(self):
+        doc=self.fixture('baseline');doc.find('.//ErrorInfo/StackTrace').text=self.alternate()
+        self.assertEqual(13,self.run_guard(doc,'baseline')['failed'])
+        for before,after in [('UpsertSupplierAddressRequest','ForeignRequest'),('$.Building','$.CountryId'),('BytePositionInLine: 22','BytePositionInLine: 21'),("'Number'","'String'"),('System.Text.Json.JsonException','System.Exception')]:
+            with self.subTest(before=before):
+                doc=self.fixture('baseline');doc.find('.//ErrorInfo/StackTrace').text=self.alternate()
+                doc.find('.//ErrorInfo/Message').text=ACTUAL_CONVERTER_MESSAGE.replace(before,after)
+                with self.assertRaises(ValueError):self.run_guard(doc,'baseline')
+        for before in ['line 213','Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry','ThrowInvalidOperationException_ExpectedString(', 'JsonConverter`1.TryRead(', 'JsonConverter`1.TryReadAsObject(', 'LargeObjectWithParameterizedConstructorConverter`1.ReadAndCacheConstructorArgument(']:
+            with self.subTest(frame=before):
+                doc=self.fixture('baseline');doc.find('.//ErrorInfo/StackTrace').text=self.alternate().replace(before,'Foreign')
+                with self.assertRaises(ValueError):self.run_guard(doc,'baseline')
