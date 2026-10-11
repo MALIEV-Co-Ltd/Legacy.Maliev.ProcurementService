@@ -24,6 +24,7 @@ public sealed class WorkflowContractTests
         {
             ("--no-restore -warnaserror", "--no-restore"),
             ("-p:UseLocalMalievDependencies=true", "-p:UseLocalMalievDependencies=false"),
+            ("export GITHUB_ACTIONS=false", "export GITHUB_ACTIONS=true"),
             ("name: Set up SDK for mandatory focused workflow checks", "name: Omitted mandatory SDK"),
             ("name: Build before mandatory focused workflow checks", "name: Execute mandatory focused workflow checks"),
             ("name: Execute mandatory focused workflow checks", "name: Execute mandatory focused workflow checks\n        if: false"),
@@ -480,7 +481,8 @@ internal static partial class WorkflowContractValidator
         RequireStepKeys(build, "name", "timeout-minutes", "run");
         RequireScalarValue(build, "name", "Build before mandatory focused workflow checks");
         RequireScalarValue(build, "timeout-minutes", "5");
-        RequireCommands(build, "dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true\n"
+        RequireCommands(build, "export GITHUB_ACTIONS=false\n"
+            + "dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true\n"
             + "dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true");
         var test = RequireMapping(steps.Children[5], "focused tests");
         RequireStepKeys(test, "name", "timeout-minutes", "env", "run");
@@ -489,7 +491,8 @@ internal static partial class WorkflowContractValidator
         var testEnv = RequireMapping(test, "env");
         RequireStepKeys(testEnv, "VSTestResultsDirectory");
         RequireScalarValue(testEnv, "VSTestResultsDirectory", "${{ github.workspace }}/focused-workflow-results");
-        RequireScalarValue(test, "run", "dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter \"FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload\"");
+        RequireCommands(test, "export GITHUB_ACTIONS=false\n"
+            + "dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter \"FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload\"");
         var gate = RequireMapping(steps.Children[6], "focused gate");
         RequireStepKeys(gate, "name", "if", "run");
         RequireScalarValue(gate, "name", "Require every focused workflow execution");
