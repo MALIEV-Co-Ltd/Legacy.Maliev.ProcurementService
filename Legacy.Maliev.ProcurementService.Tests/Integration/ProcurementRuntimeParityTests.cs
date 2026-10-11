@@ -266,6 +266,9 @@ public sealed class ProcurementRuntimeFixture : IAsyncLifetime
     private readonly PostgreSqlContainer order;
     private readonly RSA signingKey = RSA.Create(2048);
     private readonly ProcurementFixtureLifetime lifetime = new();
+    private readonly List<string> failedStartupContainerIds = [];
+    private readonly List<string> failedStartupVolumeIds = [];
+    private bool startupFailed;
     public string ResourceRunId { get; } = Guid.NewGuid().ToString("N");
     public int UnsettledOperationCount => lifetime.UnsettledOperations.Count;
     public IReadOnlyList<Exception> ObservedOperationFailures => lifetime.ObservedFailures;
@@ -283,7 +286,20 @@ public sealed class ProcurementRuntimeFixture : IAsyncLifetime
     public Task InitializeAsync() => InitializeAsync(null);
     internal Task InitializeAsync(Func<CancellationToken, Task>? afterProvidersStarted) => lifetime.InitializeAsync(async token =>
     {
-        await Task.WhenAll(supplier.StartAsync(token), order.StartAsync(token));
+        var supplierStart = supplier.StartAsync(token);
+        var orderStart = order.StartAsync(token);
+        var starts = Task.WhenAll(supplierStart, orderStart);
+        try { await starts; }
+        catch (Exception primary)
+        {
+            startupFailed = true;
+            var failures = starts.Exception?.InnerExceptions.ToList() ?? [primary];
+            try { await WriteFailedStartupEvidenceAsync(supplierStart, orderStart); }
+            catch (Exception observationFailure) { failures.Add(observationFailure); }
+            if (failures.Count > 1) throw new AggregateException(failures);
+            ExceptionDispatchInfo.Capture(primary).Throw();
+            throw;
+        }
         if (afterProvidersStarted is not null) await afterProvidersStarted(token);
         Factory = CreateFactory(false);
         await using var scope = Factory.Services.CreateAsyncScope();
@@ -338,8 +354,128 @@ public sealed class ProcurementRuntimeFixture : IAsyncLifetime
         () => Factory is null ? Task.CompletedTask : Factory.DisposeAsync().AsTask(),
         () => supplier.DisposeAsync().AsTask(),
         () => order.DisposeAsync().AsTask(),
-        () => { signingKey.Dispose(); return Task.CompletedTask; });
+        () => { signingKey.Dispose(); return Task.CompletedTask; },
+        WriteFailedStartupCleanupEvidenceAsync);
+
+    private async Task WriteFailedStartupEvidenceAsync(Task supplierStart, Task orderStart)
+    {
+        using var configuration = new Docker.DotNet.DockerClientConfiguration(new Uri(OperatingSystem.IsWindows() ? "npipe://./pipe/docker_engine" : "unix:///var/run/docker.sock"));
+        using var docker = configuration.CreateClient();
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+        var rows = new List<object>();
+        var observationFailures = new List<Exception>();
+        foreach (var (container, role, start) in new[] { (supplier, "supplier", supplierStart), (order, "purchase-order", orderStart) })
+        {
+            try
+            {
+                var actual = await docker.Containers.InspectContainerAsync(container.Id, deadline.Token);
+                if (actual.Config.Labels["maliev.codex.owner"] != ProcurementFixtureContainerPolicy.Owner || actual.Config.Labels["maliev.codex.run"] != ResourceRunId)
+                    throw new InvalidOperationException("Startup observer ownership mismatch.");
+                failedStartupContainerIds.Add(actual.ID);
+                var volumes = actual.Mounts.Where(mount => mount.Type == "volume").Select(mount => mount.Name).ToArray();
+                failedStartupVolumeIds.AddRange(volumes);
+                rows.Add(new
+                {
+                    Id = actual.ID,
+                    Role = role,
+                    StartTaskStatus = start.Status.ToString(),
+                    Created = actual.Created.ToString(),
+                    StartedAt = actual.State.StartedAt.ToString(),
+                    ProcessId = actual.State.Pid,
+                    actual.State.Running,
+                    Labels = actual.Config.Labels.Where(pair => pair.Key is "maliev.codex.owner" or "maliev.codex.run" or "maliev.codex.parent-run" or "maliev.codex.role" or "maliev.codex.expires-utc" or "maliev.codex.persistent-data" or "org.testcontainers.session-id").ToDictionary(pair => pair.Key, pair => pair.Value),
+                    actual.HostConfig.Memory,
+                    actual.HostConfig.MemorySwap,
+                    actual.HostConfig.NanoCPUs,
+                    RequestedBindings = actual.HostConfig.PortBindings?.SelectMany(pair => (pair.Value ?? []).Select(binding => new { ContainerPort = pair.Key, binding.HostIP, binding.HostPort })).ToArray() ?? [],
+                    ActualBindings = actual.NetworkSettings.Ports?.SelectMany(pair => (pair.Value ?? []).Select(binding => new { ContainerPort = pair.Key, binding.HostIP, binding.HostPort })).ToArray() ?? [],
+                    Volumes = volumes,
+                });
+            }
+            catch (Exception observationFailure)
+            {
+                observationFailures.Add(observationFailure);
+                rows.Add(new { Role = role, StartTaskStatus = start.Status.ToString(), ObservationFailureType = observationFailure.GetType().FullName });
+            }
+        }
+        ProcurementFixtureDiagnosticFailures.PublishOrThrow(() => WriteStartupEvidence("before-cleanup", new
+        {
+            ResourceRunId,
+            ObservedAtUtc = DateTimeOffset.UtcNow,
+            Resources = rows,
+            StartFailureTypes = new[] { supplierStart, orderStart }.SelectMany(start => start.Exception?.InnerExceptions.Select(error => error.GetType().FullName) ?? []),
+            UnsettledOperations = UnsettledOperationCount,
+            DestructiveObserverActions = 0,
+            PortAllocationCause = "UNKNOWN: requested and actual bindings observed without a listener attribution or retry",
+        }), observationFailures);
+    }
+
+    private async Task WriteFailedStartupCleanupEvidenceAsync()
+    {
+        if (!startupFailed) return;
+        using var configuration = new Docker.DotNet.DockerClientConfiguration(new Uri(OperatingSystem.IsWindows() ? "npipe://./pipe/docker_engine" : "unix:///var/run/docker.sock"));
+        using var docker = configuration.CreateClient();
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+        var containersAbsent = new List<string>();
+        var volumesAbsent = new List<string>();
+        var failures = new List<Exception>();
+        foreach (var id in failedStartupContainerIds.Distinct(StringComparer.Ordinal))
+        {
+            try
+            {
+                await docker.Containers.InspectContainerAsync(id, deadline.Token);
+                failures.Add(new InvalidOperationException("Observed startup container remains after cleanup."));
+            }
+            catch (Docker.DotNet.DockerApiException error) when (error.StatusCode == HttpStatusCode.NotFound) { containersAbsent.Add(id); }
+            catch (Exception error) { failures.Add(error); }
+        }
+        foreach (var name in failedStartupVolumeIds.Distinct(StringComparer.Ordinal))
+        {
+            try
+            {
+                await docker.Volumes.InspectAsync(name, deadline.Token);
+                failures.Add(new InvalidOperationException("Observed startup volume remains after cleanup."));
+            }
+            catch (Docker.DotNet.DockerApiException error) when (error.StatusCode == HttpStatusCode.NotFound) { volumesAbsent.Add(name); }
+            catch (Exception error) { failures.Add(error); }
+        }
+        ProcurementFixtureDiagnosticFailures.PublishOrThrow(() => WriteStartupEvidence("after-cleanup", new
+        {
+            ResourceRunId,
+            ObservedAtUtc = DateTimeOffset.UtcNow,
+            ContainersObserved = failedStartupContainerIds,
+            VolumesObserved = failedStartupVolumeIds,
+            ContainersAbsent = containersAbsent,
+            VolumesAbsent = volumesAbsent,
+            PendingOperationsAtObservation = UnsettledOperationCount,
+            IncludesCurrentReadOnlyObserver = true,
+            ObservedOperationFailureTypes = ObservedOperationFailures.Select(error => error.GetType().FullName).ToArray(),
+            CleanupObservationFailureTypes = failures.Select(error => error.GetType().FullName).ToArray(),
+            DestructiveObserverActions = 0,
+            FullStartupCustody = failedStartupContainerIds.Distinct(StringComparer.Ordinal).Count() == 2,
+        }), failures);
+    }
+
+    private void WriteStartupEvidence(string phase, object evidence)
+    {
+        var directory = Path.Combine(Environment.GetEnvironmentVariable("VSTestResultsDirectory") ?? "TestResults", "fixture-startup-failures");
+        Directory.CreateDirectory(directory);
+        File.WriteAllText(Path.Combine(directory, ResourceRunId + "-" + phase + ".json"), JsonSerializer.Serialize(evidence));
+    }
 }
+
+internal static class ProcurementFixtureDiagnosticFailures
+{
+    internal static void PublishOrThrow(Action publish, IReadOnlyCollection<Exception> observedFailures)
+    {
+        var failures = observedFailures.ToList();
+        try { publish(); }
+        catch (Exception publicationFailure) { failures.Add(publicationFailure); }
+        if (failures.Count == 1) ExceptionDispatchInfo.Capture(failures[0]).Throw();
+        if (failures.Count > 1) throw new AggregateException(failures);
+    }
+}
+
 
 internal static class ProcurementFixtureContainerPolicy
 {
