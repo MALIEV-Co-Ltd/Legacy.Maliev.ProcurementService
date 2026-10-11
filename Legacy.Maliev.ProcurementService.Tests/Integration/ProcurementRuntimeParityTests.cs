@@ -266,6 +266,8 @@ public sealed class ProcurementRuntimeFixture : IAsyncLifetime
     private readonly PostgreSqlContainer order;
     private readonly RSA signingKey = RSA.Create(2048);
     private readonly ProcurementFixtureLifetime lifetime = new();
+    private readonly ProcurementFixtureStartupJournal startupJournal = new();
+    private readonly ProcurementFixtureStartupPublicationOwner startupPublication = new();
     private readonly List<string> failedStartupContainerIds = [];
     private readonly List<string> failedStartupVolumeIds = [];
     private bool startupFailed;
@@ -277,6 +279,8 @@ public sealed class ProcurementRuntimeFixture : IAsyncLifetime
     {
         supplier = ProcurementFixtureContainerPolicy.Build(ResourceRunId, "supplier");
         order = ProcurementFixtureContainerPolicy.Build(ResourceRunId, "purchase-order");
+        ObserveStartup(supplier, "supplier");
+        ObserveStartup(order, "purchase-order");
     }
     public ProcurementRuntimeFactory Factory { get; private set; } = null!;
     public ProcurementFaultCache Cache { get; } = new();
@@ -286,14 +290,26 @@ public sealed class ProcurementRuntimeFixture : IAsyncLifetime
     public Task InitializeAsync() => InitializeAsync(null);
     internal Task InitializeAsync(Func<CancellationToken, Task>? afterProvidersStarted) => lifetime.InitializeAsync(async token =>
     {
-        var supplierStart = supplier.StartAsync(token);
-        var orderStart = order.StartAsync(token);
+        var supplierStart = startupJournal.StartAsync("supplier", () => supplier.StartAsync(token), token);
+        var orderStart = startupJournal.StartAsync("purchase-order", () => order.StartAsync(token), token);
         var starts = Task.WhenAll(supplierStart, orderStart);
-        try { await starts; }
+        var publicationAttempted = false;
+        try
+        {
+            await starts;
+            publicationAttempted = true;
+            await PublishStartupJournalAsync(token);
+        }
         catch (Exception primary)
         {
             startupFailed = true;
-            var failures = starts.Exception?.InnerExceptions.ToList() ?? [primary];
+            var failures = startupJournal.OriginalFailures.ToList();
+            if (failures.Count == 0) failures.Add(primary);
+            if (!publicationAttempted)
+            {
+                try { await PublishStartupJournalAsync(token); }
+                catch (Exception observationFailure) { failures.Add(observationFailure); }
+            }
             try { await WriteFailedStartupEvidenceAsync(supplierStart, orderStart); }
             catch (Exception observationFailure) { failures.Add(observationFailure); }
             if (failures.Count > 1) throw new AggregateException(failures);
@@ -306,6 +322,35 @@ public sealed class ProcurementRuntimeFixture : IAsyncLifetime
         await scope.ServiceProvider.GetRequiredService<SupplierDbContext>().Database.MigrateAsync(token);
         await scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Database.MigrateAsync(token);
     }, DisposeAsync, TimeSpan.FromMinutes(2));
+
+    private void ObserveStartup(PostgreSqlContainer container, string role)
+    {
+        // Pinned 4.10.0: Starting occurs AFTER Docker StartAsync and port-mapping readiness.
+        // Event handlers retain their own errors and never replace the provider startup callback.
+        container.Creating += (_, _) => startupJournal.Record(role, "provider-creating");
+        container.Created += (_, _) => startupJournal.Record(role, "provider-created-inspected", () => container.Id);
+        container.Starting += (_, _) => startupJournal.Record(role, "provider-port-mapping-ready", () => container.Id);
+        container.Started += (_, _) => startupJournal.Record(role, "provider-readiness-complete", () => container.Id);
+    }
+
+    private Task PublishStartupJournalAsync(CancellationToken token)
+    {
+        // Every caller observes the same retained task, including pending and failed publication.
+        return startupPublication.GetOrStart(() =>
+        {
+            var snapshot = startupJournal.Stop();
+            return ProcurementFixtureStartupPublication.PublishAsync(async cancellation =>
+            {
+                var parent = Guid.TryParse(Environment.GetEnvironmentVariable("MALIEV_TEST_RESOURCE_RUN_ID"), out var value)
+                    ? value.ToString("N") : ResourceRunId;
+                var bytes = ProcurementFixtureStartupJournal.Serialize(ResourceRunId, parent, snapshot.Events, snapshot.Overflow, snapshot.Failures);
+                // The runner owns and creates its results directory. Refuse missing storage rather
+                // than performing synchronous directory creation in the fixture cleanup path.
+                var directory = Environment.GetEnvironmentVariable("VSTestResultsDirectory") ?? "TestResults";
+                await File.WriteAllBytesAsync(Path.Combine(directory, "fixture-startup-journal-" + ResourceRunId + ".json"), bytes, cancellation);
+            }, snapshot.Failures, token);
+        });
+    }
 
     public async Task ResetAsync()
     {
@@ -350,12 +395,26 @@ public sealed class ProcurementRuntimeFixture : IAsyncLifetime
             ClockSkew = TimeSpan.Zero,
         }, out _);
 
-    public Task DisposeAsync() => lifetime.CleanupAsync(
-        () => Factory is null ? Task.CompletedTask : Factory.DisposeAsync().AsTask(),
-        () => supplier.DisposeAsync().AsTask(),
-        () => order.DisposeAsync().AsTask(),
-        () => { signingKey.Dispose(); return Task.CompletedTask; },
-        WriteFailedStartupCleanupEvidenceAsync);
+    public Task DisposeAsync()
+    {
+        startupJournal.Stop();
+        return lifetime.CleanupAsync(
+            DisposeFactoryAndPublishAsync,
+            () => supplier.DisposeAsync().AsTask(),
+            () => order.DisposeAsync().AsTask(),
+            () => { signingKey.Dispose(); return Task.CompletedTask; },
+            WriteFailedStartupCleanupEvidenceAsync);
+    }
+
+    private async Task DisposeFactoryAndPublishAsync()
+    {
+        // Reuse the existing first cleanup callback and its deadline. Publication failure
+        // cannot skip host disposal or any of the subsequent owned cleanup callbacks.
+        using var cancellation = new CancellationTokenSource(ProcurementFixtureLifetime.CleanupDeadline);
+        await ProcurementFixtureStartupPublication.CleanupAsync(
+            () => PublishStartupJournalAsync(cancellation.Token),
+            () => Factory is null ? Task.CompletedTask : Factory.DisposeAsync().AsTask());
+    }
 
     private async Task WriteFailedStartupEvidenceAsync(Task supplierStart, Task orderStart)
     {
@@ -369,7 +428,12 @@ public sealed class ProcurementRuntimeFixture : IAsyncLifetime
             try
             {
                 var actual = await docker.Containers.InspectContainerAsync(container.Id, deadline.Token);
-                if (actual.Config.Labels["maliev.codex.owner"] != ProcurementFixtureContainerPolicy.Owner || actual.Config.Labels["maliev.codex.run"] != ResourceRunId)
+                var expectedParent = Guid.TryParse(Environment.GetEnvironmentVariable("MALIEV_TEST_RESOURCE_RUN_ID"), out var parent)
+                    ? parent.ToString("N") : ResourceRunId;
+                if (actual.ID != container.Id || actual.Config.Labels["maliev.codex.owner"] != ProcurementFixtureContainerPolicy.Owner ||
+                    actual.Config.Labels["maliev.codex.run"] != ResourceRunId || actual.Config.Labels["maliev.codex.role"] != role ||
+                    actual.Config.Labels["maliev.codex.parent-run"] != expectedParent ||
+                    !Guid.TryParse(actual.Config.Labels["org.testcontainers.session-id"], out _))
                     throw new InvalidOperationException("Startup observer ownership mismatch.");
                 failedStartupContainerIds.Add(actual.ID);
                 var volumes = actual.Mounts.Where(mount => mount.Type == "volume").Select(mount => mount.Name).ToArray();

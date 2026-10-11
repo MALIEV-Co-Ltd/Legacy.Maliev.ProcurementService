@@ -1,0 +1,26 @@
+{
+  "expectedCases": 19,
+  "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureStartupJournalTests",
+  "methods": [
+    "SharedPendingPublication_SecondCleanupCallerObservesSameTaskAndLateOriginalFailure",
+    "SharedPublication_SuccessAndSynchronousFailureAreRetainedWithoutRestart",
+    "BlockedPublication_OriginalCleanupBudgetStillReleasesHostAndEveryOtherResource",
+    "PublicationRefusalAndHostFailure_RetainBothOriginalsFromActualCallbackSeam",
+    "PublicationAndHostCancellation_RetainBothOriginalTokensFromActualCallbackSeam",
+    "SynchronousFirstThrow_DoesNotPreventSecondInvocationAndRetainsOriginal",
+    "ConcurrentStarts_DoNotGateSecondInvocationOnFirstSettlement",
+    "BothAsynchronousFailures_RetainEveryOriginal",
+    "Cancellation_PreservesOriginalExceptionTokenAndCanceledTask",
+    "CallbackObservationFailure_IsRetainedWithoutThrowingIntoProvider",
+    "MixedFaultAndCancellation_RetainBothOriginalsAndTokenThroughEveryCleanup",
+    "TwoCanceledStarts_RetainBothOriginalsAndDistinctTokensThroughEveryCleanup",
+    "ConcurrentJournalWrites_HaveUniqueMonotonicSequenceAndDetachedSnapshots",
+    "OverflowFailsClosedAndStoppedJournalDoesNotReadLaterProviderState",
+    "UnknownRolePhaseAndPartialId_AreErrorsAndNeverInventMissingEvents",
+    "ReceiptAllowlist_ExcludesOriginalErrorMessageAndMarksApiTimingUnknown",
+    "ForgedReceiptMetadataAndUnboundedEvents_AreRejected",
+    "ObserverOnlyFailureAfterSuccessfulStarts_StillRunsEveryCleanup",
+    "PrimaryObserverPublicationAndAllCleanupErrors_RetainOriginalReferences"
+  ],
+  "guidStatus": "Native GUIDs NOT RUN; preserve first actual joins without inventing IDs"
+}

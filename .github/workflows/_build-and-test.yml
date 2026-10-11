@@ -64,6 +64,27 @@ jobs:
           path: focused-workflow-results
           if-no-files-found: warn
           retention-days: 7
+      - name: Execute startup journal regressions
+        timeout-minutes: 2
+        env:
+          VSTestResultsDirectory: ${{ github.workspace }}/startup-journal-results
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ProcurementFixtureStartupJournalTests" --logger "trx;LogFileName=startup-journal.trx" --results-directory startup-journal-results
+      - name: Require every startup journal execution
+        if: always()
+        run: |
+          python3 -B -m unittest discover -s scripts -p test_startup_journal_results.py
+          python3 -B -O -m unittest discover -s scripts -p test_startup_journal_results.py
+          python3 -B scripts/verify-startup-journal-results.py startup-journal-results
+      - name: Preserve startup journal evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-startup-journal-${{ github.sha }}
+          path: startup-journal-results
+          if-no-files-found: warn
+          retention-days: 7
       - name: Validate .NET solution
         uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8
         with:
