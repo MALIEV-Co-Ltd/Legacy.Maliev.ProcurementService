@@ -158,8 +158,23 @@ def provider(value, scenario, parent):
 def verify(root):
     native_cases(root)
     outer = json.loads((root / "outer-process-cleanup.json").read_text())
-    exact(outer, "schemaVersion runId startedAtUtc completedAtUtc launchProcess expectedTestExecutable testProcess testExitCode observedProcesses observedResources ownedContainers ownedVolumes sessions remaining errorTypes destructiveDockerActions")
+    exact(outer, "schemaVersion runId startedAtUtc completedAtUtc launchProcess expectedTestExecutable testProcess testExitCode observedProcesses observedResources ownedContainers ownedVolumes sessions remaining errorTypes commandFailures destructiveDockerActions")
     guid(outer["runId"])
+    if not isinstance(outer["commandFailures"], list): raise ValueError("Command failure custody must be a list")
+    for failure in outer["commandFailures"]:
+        exact(failure, "query containerId exitCode category stderrBytes stderrSha256 phase commandLaunchProcess durationMilliseconds childTerminalObserved streamsClosed handleClosed")
+        if failure["phase"] not in ("native-observation", "cleanup-observation", "not-started") or type(failure["durationMilliseconds"]) is not int or failure["durationMilliseconds"] < 0 or any(type(failure[key]) is not bool for key in ("childTerminalObserved", "streamsClosed", "handleClosed")):
+            raise ValueError("Invalid command phase or cleanup custody")
+        process = failure["commandLaunchProcess"]
+        exact(process, "pid startTicks group session executable")
+        if any(type(process[key]) is not int or process[key] <= 0 for key in ("pid", "startTicks", "group", "session")) or not isinstance(process["executable"], str) or not process["executable"].startswith("/"):
+            raise ValueError("Invalid command launch identity")
+        if failure["query"] not in ("inspect-container", "list-containers", "list-volumes", "unknown-query") or failure["category"] not in ("exact-container-not-found", "unclassified-command-failure"):
+            raise ValueError("Unknown command failure category")
+        if failure["containerId"] is not None and not re.fullmatch(r"[a-f0-9]{12,64}", failure["containerId"]): raise ValueError("Unsafe failure target")
+        if type(failure["exitCode"]) is not int or failure["exitCode"] == 0 or type(failure["stderrBytes"]) is not int or not 0 <= failure["stderrBytes"] <= 65536 or not re.fullmatch(r"[a-f0-9]{64}", failure["stderrSha256"]):
+            raise ValueError("Invalid bounded command failure custody")
+    if outer["commandFailures"]: raise ValueError("Any failed observation prevents qualification")
     if outer["schemaVersion"] != 1 or outer["testExitCode"] != 0 or outer["remaining"] or outer["errorTypes"] or outer["destructiveDockerActions"] != 0 or not outer["sessions"]:
         raise ValueError("Independent cleanup witness failed")
     if timestamp(outer["completedAtUtc"]) < timestamp(outer["startedAtUtc"]):

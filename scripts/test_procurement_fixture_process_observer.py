@@ -30,6 +30,45 @@ def flattened(error):
 class ObserverControls(unittest.TestCase):
     def setUp(self): observer.phase_deadline = observer.time.monotonic() + 30
 
+    def test_query_primary_and_both_stream_close_errors_are_retained(self):
+        child = MagicMock(pid=17); child.poll.return_value = 2; child.returncode = 2
+        stdout_failure, stderr_failure = IOError("stdout close"), OSError("stderr close")
+        child.stdout.close.side_effect = stdout_failure; child.stderr.close.side_effect = stderr_failure
+        with patch.object(observer, "spawn_gated", return_value=(child, FakeHandle(IDENTITY), IDENTITY)), patch.object(observer.os, "set_blocking"), patch.object(observer.os, "read", return_value=b""):
+            with self.assertRaises(BaseExceptionGroup) as caught: observer.docker("inspect", "a" * 64)
+            errors = flattened(caught.exception)
+            self.assertIsInstance(errors[0], observer.DockerObservationFailure)
+            self.assertIn(stdout_failure, errors); self.assertIn(stderr_failure, errors)
+            self.assertFalse(observer.command_failure_custody([caught.exception])[0]["streamsClosed"])
+
+    def test_stderr_byte_overflow_remains_failure_and_closes_both_streams(self):
+        child = MagicMock(pid=17); child.stdout.fileno.return_value = 51; child.stderr.fileno.return_value = 52
+        with patch.object(observer, "spawn_gated", return_value=(child, FakeHandle(IDENTITY), IDENTITY)), patch.object(observer.os, "set_blocking"), patch.object(observer.os, "read", side_effect=lambda fd, size: b"" if fd == 51 else b"x" * (observer.MAX_ERROR_BYTES + 1)):
+            with self.assertRaises(BaseExceptionGroup) as caught: observer.docker("inspect", "a" * 64)
+            self.assertTrue(any(isinstance(error, BufferError) for error in flattened(caught.exception)))
+            child.stdout.close.assert_called_once(); child.stderr.close.assert_called_once()
+
+    def test_exact_query_failure_custody_is_bounded_and_privacy_safe(self):
+        target = "a" * 64
+        known = observer.DockerObservationFailure(("inspect", target), 1, ("Error: No such object: " + target + "\n").encode())
+        self.assertEqual("exact-container-not-found", known.custody["category"])
+        self.assertEqual(target, known.custody["containerId"])
+        unknown = observer.DockerObservationFailure(("inspect", target), 2, b"private-customer-data")
+        self.assertNotIn("private-customer-data", str(unknown.custody))
+        self.assertEqual("unclassified-command-failure", unknown.custody["category"])
+        self.assertEqual([known.custody, unknown.custody], observer.command_failure_custody([BaseExceptionGroup("original", [known, unknown])]))
+
+    def test_failed_docker_query_captures_stderr_and_closes_both_streams(self):
+        child = MagicMock(pid=17); child.poll.return_value = 1; child.returncode = 1
+        child.stdout.fileno.return_value = 51; child.stderr.fileno.return_value = 52
+        target = "a" * 64; reads = {51: [b"", b""], 52: [("Error: No such object: " + target + "\n").encode(), b""]}
+        with patch.object(observer, "spawn_gated", return_value=(child, FakeHandle(IDENTITY), IDENTITY)), patch.object(observer.os, "set_blocking"), patch.object(observer.os, "read", side_effect=lambda fd, size: reads[fd].pop(0)):
+            with self.assertRaises(BaseExceptionGroup) as caught: observer.docker("inspect", target)
+            custody = observer.command_failure_custody([caught.exception])
+            self.assertEqual(1, len(custody)); self.assertEqual(target, custody[0]["containerId"]); self.assertEqual(1, custody[0]["exitCode"])
+            self.assertEqual(IDENTITY, custody[0]["commandLaunchProcess"]); self.assertTrue(custody[0]["childTerminalObserved"]); self.assertTrue(custody[0]["streamsClosed"]); self.assertTrue(custody[0]["handleClosed"])
+            child.stdout.close.assert_called_once(); child.stderr.close.assert_called_once()
+
     def test_almost_expired_real_gate_path_refuses_before_popen(self):
         observer.phase_deadline = observer.time.monotonic() + 0.01
         with patch.object(observer.subprocess, "Popen") as spawn, patch.object(observer.os, "pipe") as pipe, patch.object(observer, "preflight_pidfd") as preflight:
@@ -151,7 +190,7 @@ class ObserverControls(unittest.TestCase):
     def test_command_timeout_and_shared_budget_are_enforced(self):
         child = MagicMock(pid=17); child.wait.return_value = 0
         observer.phase_deadline = 100
-        ticks = iter([0, 0, 11, 11])
+        ticks = iter([0, 0, 0, 11, 11])
         with patch.object(observer.time, "monotonic", side_effect=lambda: next(ticks, 11)), patch.object(observer, "spawn_gated", return_value=(child, FakeHandle(IDENTITY), IDENTITY)), patch.object(observer, "preflight_pidfd"), patch.object(observer, "OwnedHandle", FakeHandle), patch.object(observer, "process_identity", return_value=IDENTITY), patch.object(observer.os, "set_blocking"):
             with self.assertRaises(BaseExceptionGroup) as caught: observer.docker("ps")
             self.assertTrue(any(isinstance(error, TimeoutError) for error in flattened(caught.exception)))

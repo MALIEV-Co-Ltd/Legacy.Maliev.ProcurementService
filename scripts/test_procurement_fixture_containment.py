@@ -221,7 +221,7 @@ class OuterWitnessControls(unittest.TestCase):
                  "completedAtUtc": "2026-10-11T09:01:00+00:00", "testProcess": process, "launchProcess": dict(process, executable="/python3"), "expectedTestExecutable": process["executable"],
                  "testExitCode": 0, "observedProcesses": [dict(process, executable="/python3"), process], "ownedContainers": [str(i) * 64 for i in range(1, 6)],
                  "ownedVolumes": [str(i) * 64 for i in range(1, 6)], "sessions": ["c" * 32],
-                 "remaining": [], "errorTypes": [], "destructiveDockerActions": 0}
+                 "remaining": [], "errorTypes": [], "commandFailures": [], "destructiveDockerActions": 0}
         outer["observedResources"] = []
         for value in (normal, failed):
             for row in value["Resources"]:
@@ -235,6 +235,16 @@ class OuterWitnessControls(unittest.TestCase):
             "expiresAt": "2026-10-11T09:00:30+00:00", "volumes": ["5" * 64], "hostIps": []})
         (root / "outer-process-cleanup.json").write_text(json.dumps(outer))
         return outer, expiry
+
+    def test_command_failure_custody_never_qualifies_or_allows_raw_stderr(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory); outer, _ = self.files(root)
+            failure = {"query": "inspect-container", "containerId": "a" * 64, "exitCode": 1, "category": "exact-container-not-found", "stderrBytes": 0, "stderrSha256": "a" * 64, "phase": "native-observation", "commandLaunchProcess": outer["launchProcess"], "durationMilliseconds": 1, "childTerminalObserved": True, "streamsClosed": True, "handleClosed": True}
+            for raw in (False, True):
+                outer["commandFailures"] = [dict(failure)]
+                if raw: outer["commandFailures"][0]["rawStderr"] = "private-data"
+                (root / "outer-process-cleanup.json").write_text(json.dumps(outer))
+                with self.subTest(raw=raw), self.assertRaises(ValueError): guard.verify(root)
 
     def test_observer_launch_native_transition_passes_real_receipt_parser(self):
         import copy

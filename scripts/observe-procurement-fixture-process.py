@@ -1,4 +1,6 @@
 """Linux hosted witness: observe only, never remove containers or foreign processes."""
+import hashlib
+import re
 import datetime
 import json
 import os
@@ -12,10 +14,12 @@ import time
 import uuid
 
 MAX_OUTPUT_BYTES = 1024 * 1024
+MAX_ERROR_BYTES = 65536
 MAX_PROC_BYTES = 4096
 MAX_PROCESSES = 4096
 MAX_RESOURCES = 64
 phase_deadline = 0.0
+phase_name = "not-started"
 
 
 def remaining_timeout(maximum):
@@ -134,30 +138,55 @@ def spawn_gated(command, acquisition_deadline=None, **kwargs):
     return child, handle, identity
 
 
+class DockerObservationFailure(RuntimeError):
+    def __init__(self, command, exit_code, error, launch=None):
+        target = command[1] if len(command) == 2 and command[0] == "inspect" and re.fullmatch(r"[a-f0-9]{12,64}", command[1]) else None
+        query = "inspect-container" if target else "list-containers" if command[0] == "ps" else "list-volumes" if command[:2] == ("volume", "ls") else "unknown-query"
+        missing = target is not None and re.fullmatch(rb"(?:Error response from daemon: |Error: )No such (?:object|container): " + target.encode() + rb"\s*", error) is not None
+        self.custody = {"query": query, "containerId": target, "exitCode": exit_code,
+                        "category": "exact-container-not-found" if missing else "unclassified-command-failure",
+                        "stderrBytes": len(error), "stderrSha256": hashlib.sha256(error).hexdigest(),
+                        "phase": phase_name, "commandLaunchProcess": launch, "durationMilliseconds": 0,
+                        "childTerminalObserved": False, "streamsClosed": False, "handleClosed": False}
+        super().__init__("Read-only Docker command failed; sanitized custody retained")
+
+
+def command_failure_custody(errors):
+    rows = []
+    def visit(error):
+        if isinstance(error, DockerObservationFailure): rows.append(dict(error.custody))
+        if isinstance(error, BaseExceptionGroup):
+            for child in error.exceptions: visit(child)
+    for error in errors: visit(error)
+    return rows
+
+
 def docker(*args):
+    command_started = time.monotonic()
     allocation = remaining_timeout(10)
     deadline = time.monotonic() + allocation - min(1, allocation / 2)
-    child, handle, identity = spawn_gated(["docker", "--host", "unix:///var/run/docker.sock", *args], acquisition_deadline=deadline, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-    failures, output = [], bytearray()
+    child, handle, identity = spawn_gated(["docker", "--host", "unix:///var/run/docker.sock", *args], acquisition_deadline=deadline, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    failures, output, error_output = [], bytearray(), bytearray()
+    terminal_observed, streams_closed, handle_closed = False, 0, False
     try:
-        os.set_blocking(child.stdout.fileno(), False)
+        streams = [(child.stdout, output, MAX_OUTPUT_BYTES), (child.stderr, error_output, MAX_ERROR_BYTES)]
+        completed = set()
+        for stream, _, _ in streams: os.set_blocking(stream.fileno(), False)
         while True:
             if time.monotonic() >= deadline:
                 raise TimeoutError("Docker observation command deadline exceeded")
-            try:
-                chunk = os.read(child.stdout.fileno(), 65536)
-            except BlockingIOError:
-                chunk = None
-            if chunk:
-                output.extend(chunk)
-                if len(output) > MAX_OUTPUT_BYTES:
-                    raise BufferError("Docker observation output exceeded byte limit")
-            elif chunk == b"" and child.poll() is not None:
-                break
-            else:
-                time.sleep(min(0.05, remaining_timeout(0.05)))
+            for index, (stream, content, limit) in enumerate(streams):
+                if index in completed: continue
+                try: chunk = os.read(stream.fileno(), min(65536, limit + 1 - len(content)))
+                except BlockingIOError: chunk = None
+                if chunk:
+                    content.extend(chunk)
+                    if len(content) > limit: raise BufferError("Docker observation output exceeded byte limit")
+                elif chunk == b"": completed.add(index)
+            if len(completed) == 2 and child.poll() is not None: break
+            time.sleep(min(0.05, remaining_timeout(0.05)))
         if child.returncode:
-            raise RuntimeError("Docker observation command failed")
+            raise DockerObservationFailure(args, child.returncode, bytes(error_output), dict(identity))
     except BaseException as error:
         failures.append(error)
     finally:
@@ -171,15 +200,22 @@ def docker(*args):
             failures.append(error)
         try:
             child.wait(timeout=remaining_timeout(1))
+            terminal_observed = True
         except BaseException as error:
             failures.append(error)
-        try:
-            child.stdout.close()
-        except BaseException as error:
-            failures.append(error)
-        if handle is not None:
-            try: handle.close()
+        for stream in (child.stdout, child.stderr):
+            try:
+                stream.close()
+                streams_closed += 1
             except BaseException as error: failures.append(error)
+        if handle is not None:
+            try:
+                handle.close()
+                handle_closed = True
+            except BaseException as error: failures.append(error)
+    for failure in failures:
+        if isinstance(failure, DockerObservationFailure):
+            failure.custody.update(durationMilliseconds=max(0, int((time.monotonic() - command_started) * 1000)), childTerminalObserved=terminal_observed, streamsClosed=streams_closed == 2, handleClosed=handle_closed)
     if failures:
         raise BaseExceptionGroup("Docker observer command and cleanup failures", failures)
     return output.decode("utf-8", errors="strict")
@@ -277,7 +313,7 @@ def record_process(processes, actual, launch, expected):
 
 
 def run(root):
-    global phase_deadline
+    global phase_deadline, phase_name
     if sys.platform != "linux":
         raise RuntimeError("Independent witness requires hosted Linux /proc")
     if not hasattr(os, "pidfd_open") or not hasattr(signal, "pidfd_send_signal"):
@@ -302,6 +338,7 @@ def run(root):
     expected_executable = None
     started = datetime.datetime.now(datetime.timezone.utc).isoformat()
     try:
+        phase_name = "native-observation"
         phase_deadline = time.monotonic() + 600
         log = (root / "native-test.log").open("w")
         executable = shutil.which(command[0])
@@ -326,6 +363,7 @@ def run(root):
         primary = error
         errors.append(error)
     finally:
+        phase_name = "cleanup-observation"
         phase_deadline = time.monotonic() + 20
         if identity is not None:
             try:
@@ -410,7 +448,7 @@ def run(root):
                    "observedProcesses": observed_processes, "ownedContainers": sorted(owned),
                    "observedResources": list(observations.values()),
                    "ownedVolumes": sorted(volumes), "sessions": sorted(sessions),
-                   "remaining": remaining, "errorTypes": [type(error).__name__ for error in errors], "destructiveDockerActions": 0}
+                   "remaining": remaining, "errorTypes": [type(error).__name__ for error in errors], "commandFailures": command_failure_custody(errors), "destructiveDockerActions": 0}
         try:
             (root / "outer-process-cleanup.json").write_text(json.dumps(receipt, indent=2) + "\n")
         except BaseException as error:
