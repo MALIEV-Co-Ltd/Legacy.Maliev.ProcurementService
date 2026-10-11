@@ -9,13 +9,16 @@ import sys
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-fixture-startup-diagnostics.json"
+MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-fixture-startup-journal.json"
 HISTORICAL_PATH = "tools/ProcurementAuthProgram.Tests/public-graph.json"
 HISTORICAL_SHA256 = "205063c79697948343ba659b13757b68ef4814d1b62861484a1dd90c0b8e7d41"
 PREVIOUS_ACCEPTED_PATH = "tools/ProcurementAuthProgram.Tests/public-graph-child-replay.json"
 PREVIOUS_ACCEPTED_SHA256 = "d4aab5b24027fb666b8571c67450c59cd6b188970b34818fa308b34e215edd1a"
 PROJECTS = tuple("Legacy.Maliev.ProcurementService." + part for part in ("Api", "Application", "Data", "Domain"))
 FIXTURE = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs"
+JOURNAL = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementFixtureStartupJournal.cs"
+JOURNAL_CONTROLS = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementFixtureStartupJournalTests.cs"
+FIXTURE_INPUTS = (FIXTURE, JOURNAL, JOURNAL_CONTROLS)
 PATTERNS = ("directory.build.*", "directory.packages.*", "global.json", "nuget.config", "*.slnx")
 
 
@@ -27,7 +30,7 @@ def tracked_inputs(repository):
             continue
         metadata, raw_path = record.split(b"\t", 1)
         path = raw_path.decode("utf-8")
-        if path == FIXTURE or any(path.startswith(project + "/") for project in PROJECTS) or (
+        if path in FIXTURE_INPUTS or any(path.startswith(project + "/") for project in PROJECTS) or (
             "/" not in path and any(fnmatch.fnmatchcase(path.lower(), pattern) for pattern in PATTERNS)
         ):
             selected[path] = metadata.decode("ascii")
@@ -35,7 +38,7 @@ def tracked_inputs(repository):
 
 
 def require_equal(current, reviewed):
-    if current != reviewed or FIXTURE not in reviewed or any(
+    if current != reviewed or any(path not in reviewed for path in FIXTURE_INPUTS) or any(
         not any(path.startswith(project + "/") for path in reviewed) for project in PROJECTS
     ):
         raise ValueError("Runtime/build/public fixture drift requires a separately reviewed graph")
@@ -111,6 +114,13 @@ def require_historical_graph(manifest):
     fixture_bytes = (ROOT / fixture_path).read_bytes()
     if fixture_custody != {"path": fixture_path, "sha256": fixture_sha, "procurement": "1e520e795ec534ac9512ccf1bdb272a34e5140e9", "inputCount": 67, "qualification": "Reviewed draft source only; native fixture containment not accepted"} or hashlib.sha256(fixture_bytes).hexdigest() != fixture_sha:
         raise ValueError("Reviewed fixture67 graph custody must remain exact without runtime qualification")
+    startup_path = "tools/ProcurementAuthProgram.Tests/public-graph-fixture-startup-diagnostics.json"
+    startup_sha = "f8c54c39bf4e81c0674001e47993faa0f0ab2d8e281d2170cc508ba6e50c1a24"
+    if (manifest["previousReviewedStartupDiagnosticGraph"] != {"path": startup_path, "sha256": startup_sha,
+            "procurement": "61746f2fe03fd71eb3f208bfbf861eef800b9599", "inputCount": 67,
+            "qualification": "Reviewed source custody only; predecessor native claims remain separate"}
+            or hashlib.sha256((ROOT / startup_path).read_bytes()).hexdigest() != startup_sha):
+        raise ValueError("Previous startup67 graph custody must remain immutable")
     external = lambda graph: {entry["repository"]: entry["commit"] for entry in graph["references"] if entry["repository"] != "Legacy.Maliev.ProcurementService"}
     if external(manifest) != external(historical) or manifest["expectedCases"] != historical["expectedCases"] or manifest["expectedMethods"] != historical["expectedMethods"]:
         raise ValueError("External producer pins and actual Auth execution identities must remain unchanged")

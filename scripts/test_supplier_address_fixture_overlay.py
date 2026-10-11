@@ -55,6 +55,31 @@ class FixtureOverlayControls(unittest.TestCase):
         with self.assertRaises(ValueError):
             guard.require_previous_overlay(overlay, committed.replace(b"\n", b"\r\n"))
 
+    def test_helper_exact_phase_and_drift_custody(self):
+        root = pathlib.Path(__file__).resolve().parents[1]
+        helper = guard.git(root, "show", "HEAD:" + guard.HELPER)
+        guard.require_helper_binding(helper, None, False)
+        guard.require_helper_binding(helper, helper, True)
+        for candidate, baseline, verify in [(helper + b"drift", None, False), (helper, helper, False),
+                                             (helper, None, True), (helper, helper + b"drift", True)]:
+            with self.subTest(verify=verify), self.assertRaises(ValueError):
+                guard.require_helper_binding(candidate, baseline, verify)
+
+    def test_immutable_startup_overlay_predecessor_and_eol(self):
+        import copy
+        import json
+        root = pathlib.Path(__file__).resolve().parents[1]
+        overlay = json.loads((root / "docs/procurement-supplier-address-fixture-journal-overlay.json").read_text(encoding="utf-8"))
+        raw = guard.git(root, "show", "HEAD:docs/procurement-supplier-address-fixture-startup-overlay.json")
+        guard.require_previous_startup_overlay(overlay, raw)
+        with self.assertRaises(ValueError):
+            guard.require_previous_startup_overlay(overlay, raw.replace(b"\n", b"\r\n"))
+        for field in overlay["previousReviewedStartupOverlay"]:
+            mutated = copy.deepcopy(overlay)
+            mutated["previousReviewedStartupOverlay"][field] = "drift"
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                guard.require_previous_startup_overlay(mutated, raw)
+
 
 if __name__ == "__main__":
     unittest.main()

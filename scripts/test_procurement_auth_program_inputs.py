@@ -30,7 +30,8 @@ class RuntimeInputs(unittest.TestCase):
         replacement.start()
         self.addCleanup(replacement.stop)
         self.reviewed = {project + "/Input.cs": "100644 blob reviewed" for project in guard.PROJECTS}
-        self.reviewed[guard.FIXTURE] = "100644 blob fixture"
+        for path in guard.FIXTURE_INPUTS:
+            self.reviewed[path] = "100644 blob fixture"
 
     def test_identical_reviewed_runtime_and_fixture_pass(self):
         guard.require_equal(dict(self.reviewed), self.reviewed)
@@ -58,6 +59,29 @@ class RuntimeInputs(unittest.TestCase):
         del reviewed[guard.FIXTURE]
         with self.assertRaises(ValueError):
             guard.require_equal(reviewed, reviewed)
+
+    def test_missing_journal_helper_or_controls_is_rejected_even_when_equal(self):
+        for path in (guard.JOURNAL, guard.JOURNAL_CONTROLS):
+            with self.subTest(path=path):
+                reviewed = dict(self.reviewed)
+                del reviewed[path]
+                with self.assertRaises(ValueError):
+                    guard.require_equal(reviewed, reviewed)
+
+    def test_previous_startup_graph_custody_and_eol_are_immutable(self):
+        import copy
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        for field in manifest["previousReviewedStartupDiagnosticGraph"]:
+            with self.subTest(field=field):
+                mutated = copy.deepcopy(manifest)
+                mutated["previousReviewedStartupDiagnosticGraph"][field] = "drift"
+                with self.assertRaises(ValueError):
+                    guard.require_historical_graph(mutated)
+        source = guard.ROOT / manifest["previousReviewedStartupDiagnosticGraph"]["path"]
+        source.write_bytes(source.read_bytes().replace(b"\n", b"\r\n"))
+        with self.assertRaises(ValueError):
+            guard.require_historical_graph(manifest)
 
 
     def test_frozen_literal_changes_keep_other_runtime_inputs(self):

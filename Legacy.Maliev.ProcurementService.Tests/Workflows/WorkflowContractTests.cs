@@ -10,7 +10,7 @@ public sealed class WorkflowContractTests
     private const string ReviewedProducerVersion = "b27fbef06a3aa58c1f4fc0e75d7c70b32be76266";
     private const string HistoricalProcurementVersion = "c40fd246c17b738879c9345c6bcca44d96faf025";
     private const string PreviousProcurementVersion = "99049bab2c100ffdf6606bf11a2f50980c0cf3cf";
-    private const string CurrentProcurementVersion = "61746f2fe03fd71eb3f208bfbf861eef800b9599";
+    private const string CurrentProcurementVersion = "24099f8e88ea14eebfa9a995dcd5f7569dad3dbf";
     private static readonly string Workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "_build-and-test.yml"));
     private static readonly string ApiProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Api.csproj"));
@@ -36,6 +36,44 @@ public sealed class WorkflowContractTests
             ("name: Build before mandatory focused workflow checks", "name: Build before mandatory focused workflow checks\n        continue-on-error: true"),
         })
             AssertMutationRejected(original, replacement);
+    }
+
+    [Fact]
+    public void StartupJournalWorkflow_RejectsOmissionOrderingAndValidationDrift()
+    {
+        foreach (var (original, replacement) in new[]
+        {
+            ("FullyQualifiedName~ProcurementFixtureStartupJournalTests", "FullyQualifiedName~OtherTests"),
+            ("name: Execute startup journal regressions\n        timeout-minutes: 2", "name: Execute startup journal regressions\n        timeout-minutes: 3"),
+            ("name: Execute startup journal regressions\n        timeout-minutes: 2", "name: Execute startup journal regressions\n        timeout-minutes: 2\n        if: false"),
+            ("name: Execute startup journal regressions\n        timeout-minutes: 2", "name: Execute startup journal regressions\n        timeout-minutes: 2\n        continue-on-error: true"),
+            ("python3 -B scripts/verify-startup-journal-results.py startup-journal-results", "python3 -B scripts/verify-startup-journal-results.py foreign-results"),
+            ("python3 -B -O -m unittest discover -s scripts -p test_startup_journal_results.py", "echo skipped"),
+            ("name: Require every startup journal execution\n        if: always()", "name: Require every startup journal execution\n        if: failure()"),
+            ("name: Preserve startup journal evidence\n        if: always()", "name: Preserve startup journal evidence\n        if: success()"),
+            ("name: procurement-startup-journal-${{ github.sha }}", "name: foreign-${{ github.sha }}"),
+            ("path: startup-journal-results", "path: foreign-results"),
+        })
+        {
+            var source = Workflow.Replace("\r\n", "\n", StringComparison.Ordinal);
+            Assert.Contains(original, source, StringComparison.Ordinal);
+            Assert.Throws<InvalidOperationException>(() => WorkflowContractValidator.Validate(source.Replace(original, replacement, StringComparison.Ordinal)));
+        }
+        foreach (var mutation in new[] { "omit-test", "omit-gate", "omit-upload", "reorder", "extra" })
+        {
+            var yaml = new YamlStream();
+            yaml.Load(new StringReader(Workflow));
+            var root = (YamlMappingNode)yaml.Documents[0].RootNode;
+            var jobs = (YamlMappingNode)root.Children[new YamlScalarNode("jobs")];
+            var job = (YamlMappingNode)jobs.Children[new YamlScalarNode("validate")];
+            var steps = (YamlSequenceNode)job.Children[new YamlScalarNode("steps")];
+            if (mutation == "reorder") (steps.Children[8], steps.Children[9]) = (steps.Children[9], steps.Children[8]);
+            else if (mutation == "extra") steps.Children.Add(new YamlMappingNode(new YamlScalarNode("run"), new YamlScalarNode("echo extra")));
+            else steps.Children.RemoveAt(mutation == "omit-test" ? 8 : mutation == "omit-gate" ? 9 : 10);
+            using var writer = new StringWriter();
+            yaml.Save(writer, assignAnchors: false);
+            Assert.Throws<InvalidOperationException>(() => WorkflowContractValidator.Validate(writer.ToString()));
+        }
     }
 
     [Theory]
@@ -382,7 +420,7 @@ internal static partial class WorkflowContractValidator
         if (!historicalFixture)
         {
             ValidateFocusedWorkflowGroup(steps);
-            steps = new YamlSequenceNode(steps.Children.Where((_, index) => index is < 3 or > 7));
+            steps = new YamlSequenceNode(steps.Children.Where((_, index) => index is < 3 or > 10));
         }
         RejectDuplicatedValidationActionsAndCommands(steps);
         if (steps.Children.Count == 9)
@@ -474,7 +512,7 @@ internal static partial class WorkflowContractValidator
 
     private static void ValidateFocusedWorkflowGroup(YamlSequenceNode steps)
     {
-        if (steps.Children.Count != 11)
+        if (steps.Children.Count != 14)
             throw new InvalidOperationException("Primary validation must retain the mandatory focused workflow group.");
         ValidateStep(steps.Children[3], "actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68",
             new Dictionary<string, string>(StringComparer.Ordinal) { ["dotnet-version"] = "10.0.x" });
@@ -510,6 +548,38 @@ internal static partial class WorkflowContractValidator
         RequireStepKeys(inputs, "name", "path", "if-no-files-found", "retention-days");
         RequireScalarValue(inputs, "name", "procurement-focused-workflow-${{ github.sha }}");
         RequireScalarValue(inputs, "path", "focused-workflow-results");
+        RequireScalarValue(inputs, "if-no-files-found", "warn");
+        RequireScalarValue(inputs, "retention-days", "7");
+        ValidateStartupJournalGroup(steps);
+    }
+
+    private static void ValidateStartupJournalGroup(YamlSequenceNode steps)
+    {
+        var test = RequireMapping(steps.Children[8], "startup journal tests");
+        RequireStepKeys(test, "name", "timeout-minutes", "env", "run");
+        RequireScalarValue(test, "name", "Execute startup journal regressions");
+        RequireScalarValue(test, "timeout-minutes", "2");
+        var environment = RequireMapping(test, "env");
+        RequireStepKeys(environment, "VSTestResultsDirectory");
+        RequireScalarValue(environment, "VSTestResultsDirectory", "${{ github.workspace }}/startup-journal-results");
+        RequireCommands(test, "export GITHUB_ACTIONS=false\n"
+            + "dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter \"FullyQualifiedName~ProcurementFixtureStartupJournalTests\" --logger \"trx;LogFileName=startup-journal.trx\" --results-directory startup-journal-results");
+        var gate = RequireMapping(steps.Children[9], "startup journal gate");
+        RequireStepKeys(gate, "name", "if", "run");
+        RequireScalarValue(gate, "name", "Require every startup journal execution");
+        RequireScalarValue(gate, "if", "always()");
+        RequireCommands(gate, "python3 -B -m unittest discover -s scripts -p test_startup_journal_results.py\n"
+            + "python3 -B -O -m unittest discover -s scripts -p test_startup_journal_results.py\n"
+            + "python3 -B scripts/verify-startup-journal-results.py startup-journal-results");
+        var evidence = RequireMapping(steps.Children[10], "startup journal custody");
+        RequireStepKeys(evidence, "name", "if", "uses", "with");
+        RequireScalarValue(evidence, "name", "Preserve startup journal evidence");
+        RequireScalarValue(evidence, "if", "always()");
+        RequireScalarValue(evidence, "uses", "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+        var inputs = RequireMapping(evidence, "with");
+        RequireStepKeys(inputs, "name", "path", "if-no-files-found", "retention-days");
+        RequireScalarValue(inputs, "name", "procurement-startup-journal-${{ github.sha }}");
+        RequireScalarValue(inputs, "path", "startup-journal-results");
         RequireScalarValue(inputs, "if-no-files-found", "warn");
         RequireScalarValue(inputs, "retention-days", "7");
     }

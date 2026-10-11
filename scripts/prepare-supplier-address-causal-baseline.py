@@ -12,9 +12,12 @@ FIXTURE = 'Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntime
 MODEL = 'Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs'
 CONVERTER = 'Legacy.Maliev.ProcurementService.Application/Models/SupplierAddressScalarStringJsonConverter.cs'
 HARNESS_SHA256 = '8fe88e09de5368db558831e763da9c1ffaba44d4d58cf392afd2c505ade99a17'
-FIXTURE_PRODUCER = '61746f2fe03fd71eb3f208bfbf861eef800b9599'
-FIXTURE_BLOB = 'e2c124b0f734b8bcfad370e776817ebfbdaf53e0'
-FIXTURE_SHA256 = '67d1149ca88ae88d392588309b347a8fe9503dd5c37ff4998c31261752e49538'
+FIXTURE_PRODUCER = '24099f8e88ea14eebfa9a995dcd5f7569dad3dbf'
+FIXTURE_BLOB = '012c4ba6c7ce26a3ad222ea6f0f9d7029af1f6ed'
+FIXTURE_SHA256 = '22d9724f0c60016d95e45628ff898541e43ad63223c97fc952d4df4e1ec5122d'
+HELPER = 'Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementFixtureStartupJournal.cs'
+HELPER_BLOB = '6f9ab7b766565ceba5522e53df39cd4008c38a7e'
+HELPER_SHA256 = '4642aba334a59cd3dfb0cc636c903d4ea3a9cae6a1e68951b387dde30faf7253'
 ORIGINAL_FIXTURE_SHA256 = '7a5823479455c30cac411b51cfed4ebbe247f2648e7d087167392e62be8efb20'
 
 
@@ -37,6 +40,21 @@ def require_harness_binding(harness):
     require(hashlib.sha256(harness).hexdigest()==HARNESS_SHA256,'Frozen harness source changed')
 
 
+def require_helper_binding(candidate, baseline, verify_only):
+    require(hashlib.sha256(candidate).hexdigest()==HELPER_SHA256, 'Reviewed helper bytes changed')
+    require(baseline == candidate if verify_only else baseline is None, 'Baseline helper differs from exact reviewed phase')
+
+
+def require_previous_startup_overlay(overlay, previous_bytes):
+    require(overlay['previousReviewedStartupOverlay']=={
+        'path':'docs/procurement-supplier-address-fixture-startup-overlay.json',
+        'sha256':'b70ce7d077a58961fa08b7035adc0687133629fae7466f88df15e60c08af72b5',
+        'producer':'61746f2fe03fd71eb3f208bfbf861eef800b9599',
+        'qualification':'Preserve original617 diagnostic overlay as immutable predecessor'} and
+        hashlib.sha256(previous_bytes).hexdigest()=='b70ce7d077a58961fa08b7035adc0687133629fae7466f88df15e60c08af72b5',
+        'Prior startup overlay custody changed')
+
+
 def require_previous_overlay(overlay, previous_bytes):
     previous_path = 'docs/procurement-supplier-address-fixture-overlay.json'
     previous_sha = '73ac06dfd1af3523cfe13a03ad88bee20c8b9a46c9bb051dba02002fa5ff87d2'
@@ -50,12 +68,18 @@ def prepare(baseline, manifest_path, verify_only=False):
     require(git(baseline,'rev-parse','HEAD').decode().strip()==BASE,'Baseline is not immutable accepted main')
     expected_tracked = {FIXTURE} if verify_only else set()
     require(set(git(baseline,'diff','--name-only').decode().splitlines()) == expected_tracked and not git(baseline,'diff','--cached','--name-only'),'Baseline production or unreviewed tracked files changed')
-    overlay = json.loads((candidate/'docs/procurement-supplier-address-fixture-startup-overlay.json').read_text(encoding='utf-8'))
+    overlay = json.loads((candidate/'docs/procurement-supplier-address-fixture-journal-overlay.json').read_text(encoding='utf-8'))
     require(overlay['reviewedFixtureProducer']==FIXTURE_PRODUCER and overlay['reviewedFixtureBlob']==FIXTURE_BLOB and overlay['reviewedFixtureSha256']==FIXTURE_SHA256 and overlay['originalBaseline']==BASE and overlay['originalBaselineFixtureSha256']==ORIGINAL_FIXTURE_SHA256 and overlay['fixturePath']==FIXTURE,'Fixture overlay manifest custody differs')
     require_previous_overlay(overlay, (candidate/'docs/procurement-supplier-address-fixture-overlay.json').read_bytes())
+    require_previous_startup_overlay(overlay, (candidate/'docs/procurement-supplier-address-fixture-startup-overlay.json').read_bytes())
+    require(overlay['helperOverlay']=={'path':HELPER,'producer':FIXTURE_PRODUCER,'gitBlob':HELPER_BLOB,'sha256':HELPER_SHA256,
+        'classification':'Additional test-only runtime journal/publication dependency; must be absent in untouched95d5 baseline; identical in both phases'}, 'Helper overlay metadata differs')
     original_fixture=git(baseline,'show',BASE+':'+FIXTURE)
     reviewed_fixture=(candidate/FIXTURE).read_bytes()
     require_fixture_binding(reviewed_fixture,(baseline/FIXTURE).read_bytes(),original_fixture,verify_only)
+    require(not git(baseline,'ls-tree',BASE,'--',HELPER), 'Helper already exists in immutable production baseline')
+    reviewed_helper=(candidate/HELPER).read_bytes()
+    require_helper_binding(reviewed_helper,(baseline/HELPER).read_bytes() if (baseline/HELPER).exists() else None,verify_only)
     require(not (baseline/CONVERTER).exists(),'Candidate converter leaked into baseline')
     harness=(candidate/TEST).read_bytes()
     require_harness_binding(harness)
@@ -68,16 +92,19 @@ def prepare(baseline, manifest_path, verify_only=False):
         require(not target.exists(),'Baseline harness already exists before overlay')
         target.write_bytes(harness)
         (baseline/FIXTURE).write_bytes(reviewed_fixture)
+        (baseline/HELPER).write_bytes(reviewed_helper)
     require(target.read_bytes()==harness,'Baseline and candidate harness differ')
     require((baseline/FIXTURE).read_bytes()==reviewed_fixture,'Baseline and candidate public fixtures differ after overlay')
+    require((baseline/HELPER).read_bytes()==reviewed_helper,'Baseline and candidate journal helpers differ after overlay')
     require(set(git(baseline,'diff','--name-only').decode().splitlines())=={FIXTURE},'Only reviewed test fixture tracked overlay is allowed')
-    require(set(git(baseline,'ls-files','--others','--exclude-standard').decode().splitlines())=={TEST},'Unexpected baseline overlay files')
+    require(set(git(baseline,'ls-files','--others','--exclude-standard').decode().splitlines())=={TEST,HELPER},'Unexpected baseline overlay files')
     output=candidate/'address-causal-results'
     output.mkdir(exist_ok=True)
     proof={'base':BASE,'baselineTree':git(baseline,'rev-parse','HEAD^{tree}').decode().strip(),
            'candidateCommit':git(candidate,'rev-parse','HEAD').decode().strip(),'harnessSha256':HARNESS_SHA256,
            'fixtureSha256':FIXTURE_SHA256,'onlyOverlay':TEST,'trackedTestFixtureOverlay':FIXTURE,
            'reviewedFixtureProducer':FIXTURE_PRODUCER,'reviewedFixtureBlob':FIXTURE_BLOB,
+           'additionalTestOnlyHelper':HELPER,'helperSha256':HELPER_SHA256,'helperBlob':HELPER_BLOB,
            'originalBaselineFixtureSha256':ORIGINAL_FIXTURE_SHA256,
            'verifiedAfterExecution':verify_only,'baselineNativeExecutionProven':False}
     (output/('source-binding-after.json' if verify_only else 'source-binding-before.json')).write_text(json.dumps(proof,indent=2)+'\n',encoding='utf-8')
