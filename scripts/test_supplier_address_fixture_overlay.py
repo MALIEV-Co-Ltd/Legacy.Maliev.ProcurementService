@@ -11,8 +11,11 @@ spec.loader.exec_module(guard)
 class FixtureOverlayControls(unittest.TestCase):
     def setUp(self):
         root = pathlib.Path(__file__).resolve().parents[1]
-        self.original = guard.git(root, "show", guard.BASE + ":" + guard.FIXTURE)
-        self.reviewed = guard.git(root, "show", guard.FIXTURE_PRODUCER + ":" + guard.FIXTURE)
+        baseline = root / ".address-baseline"
+        original_checkout = baseline if baseline.exists() else root
+        self.original = guard.git(original_checkout, "show", guard.BASE + ":" + guard.FIXTURE)
+        # A shallow candidate checkout contains HEAD; exact fixture SHA remains checked by the guard.
+        self.reviewed = guard.git(root, "show", "HEAD:" + guard.FIXTURE)
 
     def test_initial_exact_original_and_reviewed_overlay_pass(self):
         guard.require_fixture_binding(self.reviewed, self.original, self.original, False)
