@@ -59,7 +59,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService
-          ref: 99049bab2c100ffdf6606bf11a2f50980c0cf3cf
+          ref: 574b3b6ccecb4e4df9c4e72c326d9fb7f9a918f5
           path: .joined-public/Legacy.Maliev.ProcurementService
           persist-credentials: false
       - name: Verify immutable producer graph and actual runtime inputs

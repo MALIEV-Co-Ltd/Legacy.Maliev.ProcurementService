@@ -1,0 +1,99 @@
+name: Supplier address baseline and candidate33
+
+on:
+  pull_request:
+    branches: [main, develop, staging]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: procurement-address-causal-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  address-causal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
+      TreatWarningsAsErrors: 'true'
+      BuildInParallel: 'false'
+      DOTNET_PROCESSOR_COUNT: '1'
+      DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER: '1'
+      MSBUILDDISABLENODEREUSE: '1'
+      UseSharedCompilation: 'false'
+    steps:
+      - name: Check out candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Check out immutable baseline
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 95d5b212b64f56ba3dfdfe4abe05b18110fc248d
+          path: .address-baseline
+          persist-credentials: false
+      - name: Check out accepted Defaults
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults
+          ref: ecb05cbbd68717e415f69df2ac488c1d323b1da3
+          path: .dependencies/Legacy.Maliev.ServiceDefaults
+          persist-credentials: false
+      - name: Check out CompatibilityContracts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts
+          ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
+          path: .dependencies/Legacy.Maliev.CompatibilityContracts
+          persist-credentials: false
+      - name: Set up accepted SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.x
+      - name: Verify causal verifier controls
+        run: |
+          python3 -B -m unittest discover -s scripts -p test_supplier_address_causal_results.py
+          python3 -O -B -m unittest discover -s scripts -p test_supplier_address_causal_results.py
+          python3 -B -m unittest discover -s scripts -p test_supplier_address_provider_observation.py
+          python3 -O -B -m unittest discover -s scripts -p test_supplier_address_provider_observation.py
+      - name: Bind identical harness and unchanged baseline
+        run: python3 -B scripts/prepare-supplier-address-causal-baseline.py .address-baseline docs/procurement-supplier-address-causal-contract.json
+      - name: Build baseline before expected assertion failures
+        timeout-minutes: 5
+        working-directory: .address-baseline
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true
+          dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true
+      - name: Execute actual baseline33 and observe providers
+        timeout-minutes: 6
+        run: python3 -B scripts/observe-supplier-address-providers.py .address-baseline address-causal-results/baseline baseline
+      - name: Require genuine baseline13 assertion failures and20 passes
+        run: |
+          python3 -B scripts/verify-supplier-address-causal-results.py address-causal-results/baseline docs/procurement-supplier-address-causal-contract.json baseline "$(cat address-causal-results/baseline/test-exit-code.txt)"
+      - name: Build candidate before focused execution
+        timeout-minutes: 5
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true
+          dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true
+      - name: Execute actual candidate33 and observe providers
+        timeout-minutes: 6
+        run: python3 -B scripts/observe-supplier-address-providers.py . address-causal-results/candidate candidate
+      - name: Require all candidate33 executions and same harness
+        run: |
+          python3 -B scripts/verify-supplier-address-causal-results.py address-causal-results/candidate docs/procurement-supplier-address-causal-contract.json candidate "$(cat address-causal-results/candidate/test-exit-code.txt)"
+          python3 -B scripts/prepare-supplier-address-causal-baseline.py .address-baseline docs/procurement-supplier-address-causal-contract.json --verify-only
+      - name: Preserve raw causal and provider evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-supplier-address-causal-${{ github.sha }}
+          path: address-causal-results
+          if-no-files-found: warn
+          retention-days: 7

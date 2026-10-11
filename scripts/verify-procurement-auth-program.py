@@ -9,9 +9,11 @@ import sys
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-child-replay.json"
+MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-supplier-address.json"
 HISTORICAL_PATH = "tools/ProcurementAuthProgram.Tests/public-graph.json"
 HISTORICAL_SHA256 = "205063c79697948343ba659b13757b68ef4814d1b62861484a1dd90c0b8e7d41"
+PREVIOUS_ACCEPTED_PATH = "tools/ProcurementAuthProgram.Tests/public-graph-child-replay.json"
+PREVIOUS_ACCEPTED_SHA256 = "d4aab5b24027fb666b8571c67450c59cd6b188970b34818fa308b34e215edd1a"
 PROJECTS = tuple("Legacy.Maliev.ProcurementService." + part for part in ("Api", "Application", "Data", "Domain"))
 FIXTURE = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs"
 PATTERNS = ("directory.build.*", "directory.packages.*", "global.json", "nuget.config", "*.slnx")
@@ -72,6 +74,13 @@ def require_historical_graph(manifest):
     if custody["path"] != HISTORICAL_PATH or custody["sha256"] != HISTORICAL_SHA256 or hashlib.sha256(historical_bytes).hexdigest() != HISTORICAL_SHA256:
         raise ValueError("Historical frozen graph custody must remain exact")
     historical = json.loads(historical_bytes)
+    previous_bytes = (ROOT / PREVIOUS_ACCEPTED_PATH).read_bytes()
+    previous_custody = manifest["previousAcceptedGraph"]
+    if previous_custody["path"] != PREVIOUS_ACCEPTED_PATH or previous_custody["sha256"] != PREVIOUS_ACCEPTED_SHA256 or hashlib.sha256(previous_bytes).hexdigest() != PREVIOUS_ACCEPTED_SHA256:
+        raise ValueError("Accepted child64 graph custody must remain exact")
+    previous = json.loads(previous_bytes)
+    if previous_custody["inputCount"] != 64 or previous["intentionalSourceChanges"]["inputCount"] != 64 or previous_custody["procurement"] != "99049bab2c100ffdf6606bf11a2f50980c0cf3cf":
+        raise ValueError("Previous graph must retain the accepted child64 witness")
     external = lambda graph: {entry["repository"]: entry["commit"] for entry in graph["references"] if entry["repository"] != "Legacy.Maliev.ProcurementService"}
     if external(manifest) != external(historical) or manifest["expectedCases"] != historical["expectedCases"] or manifest["expectedMethods"] != historical["expectedMethods"]:
         raise ValueError("External producer pins and actual Auth execution identities must remain unchanged")
