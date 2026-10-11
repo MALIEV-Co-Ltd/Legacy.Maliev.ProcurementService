@@ -20,6 +20,8 @@ public sealed class SupplierAddressCausalWorkflowTests
             ("timeout-minutes: 30", "timeout-minutes: 0"),
             ("ref: ecb05cbbd68717e415f69df2ac488c1d323b1da3", "ref: main"),
             ("contents: read", "contents: write"),
+            ("python3 -B -m unittest discover -s scripts -p test_supplier_address_fixture_overlay.py", "echo fixture-controls"),
+            ("python3 -O -B -m unittest discover -s scripts -p test_supplier_address_fixture_overlay.py", "echo optimized-fixture-controls"),
             ("name: Execute actual baseline33 and observe providers", "name: Execute actual baseline33 and observe providers\n        if: false"),
             ("name: Build candidate before focused execution", "name: Build candidate before focused execution\n        continue-on-error: true"),
             ("python3 -B scripts/observe-supplier-address-providers.py .address-baseline address-causal-results/baseline baseline", "echo baseline"),
@@ -74,7 +76,9 @@ public sealed class SupplierAddressCausalWorkflowTests
         Require(Scalar(Map(steps[3], "with"), "ref") == "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7");
         Require(Scalar(steps[4], "uses") == "actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68");
         Require(Scalar(Map(steps[4], "with"), "dotnet-version") == "10.0.x");
-        Commands(steps[5], "python3 -B -m unittest discover -s scripts -p test_supplier_address_causal_results.py\n"
+        Commands(steps[5], "python3 -B -m unittest discover -s scripts -p test_supplier_address_fixture_overlay.py\n"
+            + "python3 -O -B -m unittest discover -s scripts -p test_supplier_address_fixture_overlay.py\n"
+            + "python3 -B -m unittest discover -s scripts -p test_supplier_address_causal_results.py\n"
             + "python3 -O -B -m unittest discover -s scripts -p test_supplier_address_causal_results.py\n"
             + "python3 -B -m unittest discover -s scripts -p test_supplier_address_provider_observation.py\n"
             + "python3 -O -B -m unittest discover -s scripts -p test_supplier_address_provider_observation.py");
