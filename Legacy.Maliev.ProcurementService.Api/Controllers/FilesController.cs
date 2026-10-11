@@ -9,10 +9,11 @@ namespace Legacy.Maliev.ProcurementService.Api.Controllers;
 
 /// <summary>Legacy purchase-order GCS metadata routes.</summary>
 /// <param name="service">Procurement application service.</param>
+/// <param name="durable">Separately default-off atomic child receipt adapter.</param>
 [ApiController]
 [Route("purchaseorders/files")]
 [Authorize]
-public sealed class FilesController(IProcurementService service) : ControllerBase
+public sealed class FilesController(IProcurementService service, DurableChildCreateEndpoint? durable = null) : ControllerBase
 {
     /// <summary>Creates purchase-order file metadata.</summary>
     /// <param name="purchaseOrderId">The purchase order that owns the metadata.</param>
@@ -29,7 +30,9 @@ public sealed class FilesController(IProcurementService service) : ControllerBas
     [RequirePermission(ProcurementPermissions.FilesWrite, ResourcePathTemplate = "/purchaseorders/{purchaseOrderId}", RequireLiveCheck = true)]
     public async Task<ActionResult> CreatePurchaseOrderFileEntryAsync(int purchaseOrderId, [FromQuery] string bucket, [FromQuery] string objectName, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(bucket) || string.IsNullOrWhiteSpace(objectName)) return BadRequest(); var file = await service.CreatePurchaseOrderFileAsync(purchaseOrderId, bucket, objectName, cancellationToken); return file is null ? NotFound() : CreatedAtRoute("GetPurchaseOrderFile", new { id = file.Id }, file);
+        if (string.IsNullOrWhiteSpace(bucket) || string.IsNullOrWhiteSpace(objectName)) return BadRequest();
+        if (durable?.Enabled == true && Request.Headers.ContainsKey("Idempotency-Key")) return await durable.FileAsync(this, purchaseOrderId, bucket, objectName, cancellationToken);
+        var file = await service.CreatePurchaseOrderFileAsync(purchaseOrderId, bucket, objectName, cancellationToken); return file is null ? NotFound() : CreatedAtRoute("GetPurchaseOrderFile", new { id = file.Id }, file);
     }
     /// <summary>Deletes purchase-order file metadata.</summary>
     [HttpDelete("{id:int}")]

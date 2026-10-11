@@ -55,11 +55,11 @@ jobs:
           ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
           path: .joined-public/Legacy.Maliev.CompatibilityContracts
           persist-credentials: false
-      - name: Check out frozen source string production witness
+      - name: Check out frozen child replay production witness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService
-          ref: c40fd246c17b738879c9345c6bcca44d96faf025
+          ref: 99049bab2c100ffdf6606bf11a2f50980c0cf3cf
           path: .joined-public/Legacy.Maliev.ProcurementService
           persist-credentials: false
       - name: Verify immutable producer graph and actual runtime inputs

@@ -9,7 +9,9 @@ import sys
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph.json"
+MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-child-replay.json"
+HISTORICAL_PATH = "tools/ProcurementAuthProgram.Tests/public-graph.json"
+HISTORICAL_SHA256 = "205063c79697948343ba659b13757b68ef4814d1b62861484a1dd90c0b8e7d41"
 PROJECTS = tuple("Legacy.Maliev.ProcurementService." + part for part in ("Api", "Application", "Data", "Domain"))
 FIXTURE = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs"
 PATTERNS = ("directory.build.*", "directory.packages.*", "global.json", "nuget.config", "*.slnx")
@@ -52,6 +54,7 @@ def require_source_change(reviewed, manifest):
 
 
 def inputs(root, manifest):
+    require_historical_graph(manifest)
     for entry in manifest["references"]:
         repository, expected = entry["repository"], entry["commit"]
         actual = subprocess.check_output(["git", "-C", str(root / repository), "rev-parse", "HEAD"], text=True).strip()
@@ -63,7 +66,21 @@ def inputs(root, manifest):
     print(json.dumps({"graphId": manifest["graphId"], "references": manifest["references"], "identicalRuntimeBuildFixtureInputs": len(reviewed)}))
 
 
+def require_historical_graph(manifest):
+    custody = manifest["historicalGraph"]
+    historical_bytes = (ROOT / HISTORICAL_PATH).read_bytes()
+    if custody["path"] != HISTORICAL_PATH or custody["sha256"] != HISTORICAL_SHA256 or hashlib.sha256(historical_bytes).hexdigest() != HISTORICAL_SHA256:
+        raise ValueError("Historical frozen graph custody must remain exact")
+    historical = json.loads(historical_bytes)
+    external = lambda graph: {entry["repository"]: entry["commit"] for entry in graph["references"] if entry["repository"] != "Legacy.Maliev.ProcurementService"}
+    if external(manifest) != external(historical) or manifest["expectedCases"] != historical["expectedCases"] or manifest["expectedMethods"] != historical["expectedMethods"]:
+        raise ValueError("External producer pins and actual Auth execution identities must remain unchanged")
+    if any(manifest[field] is not False for field in ("productionEnrollmentProven", "productionIamBridgeProven", "wholeInitialSourceParityClosed")):
+        raise ValueError("Source custody does not qualify production authority or whole-source closure")
+
+
 def results(root, manifest):
+    require_historical_graph(manifest)
     reports = list(root.rglob("*.trx"))
     if len(reports) != 1:
         raise ValueError("Require exactly one join TRX")
