@@ -623,6 +623,9 @@ internal sealed class ProcurementFixtureLifetime(TimeProvider? timeProvider = nu
             foreach (var inner in aggregate.InnerExceptions) Record(inner);
     }
 
+    // Register an actual owned task before any cancellable await wrapper is created.
+    internal void TrackOwnedTask(Task operation) => Observe(operation);
+
     private Task Observe(Task operation)
     {
         operations.TryAdd(operation, 0);

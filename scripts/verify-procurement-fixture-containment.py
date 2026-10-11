@@ -6,13 +6,110 @@ import pathlib
 import re
 import sys
 import uuid
+import subprocess
+import hashlib
+import os
+
+def finite_activation(extension):
+    if not extension["enabled"]: return []
+    if extension.get("reviewedProducer") is None or len(extension.get("cases",[])) != 5:
+        raise ValueError("Finite extension requires reviewed actual producer and native IDs")
+    current = subprocess.check_output(["git","-C",str(pathlib.Path(__file__).resolve().parents[1]),"rev-parse","HEAD"],timeout=10,text=True).strip()
+    declared=os.environ.get("MALIEV_FINITE_OWNER_SOURCE_HEAD")
+    if not isinstance(declared,str) or not re.fullmatch(r"[a-f0-9]{40}",declared): raise ValueError("Trusted original CI source head missing")
+    # Producer is the implementation commit; the subsequent reviewed binding commit may differ.
+    ancestry=subprocess.run(["git","-C",str(pathlib.Path(__file__).resolve().parents[1]),"merge-base","--is-ancestor",extension["reviewedProducer"],current],capture_output=True,timeout=10)
+    if ancestry.returncode: raise ValueError("Reviewed implementation producer ancestry unavailable")
+    binding=json.loads((pathlib.Path(__file__).resolve().parents[1]/"docs/procurement-finite-owner-source-binding.json").read_text())
+    if binding["reviewedProducer"] != extension["reviewedProducer"] or binding["releaseAllowed"] is not True: raise ValueError("Finite source binding not reviewed")
+    for pin in binding["inputs"]:
+        path=pathlib.Path(__file__).resolve().parents[1]/pin["path"]
+        if hashlib.sha256(path.read_bytes()).hexdigest()!=pin["sha256"]: raise ValueError("Finite source input drift")
+    # Original automatic CI API/artifact custody must independently bind declared source head
+    # and actual merge HEAD; matching a local environment field alone is not acceptance.
+    for case in extension["cases"]:
+        if str(uuid.UUID(case.get("id") or "")) != case["id"]: raise ValueError("Finite native ID unreviewed")
+    return extension["cases"]
+
+def finite_receipt(value, observation, outer):
+    required="Scenario Profile Image ImageId ImageDigests Launcher ResourceRunId ContainerId ParentRunId Owner ScopeCaptured Volumes VolumesAbsent Acquired Running StoppedBeforeCleanup LauncherExpiryCandidate OwnerWatchdogInvoked StoppedByOwner OwnerActions FiniteLifecycleOwnerCleanupObserved FiniteLifecycleQualified ExternalTerminationExcluded NaturalExpiryProven ExitCode ElapsedSeconds ContainerAbsent PublicationSnapshotPendingCount PayloadWrittenBeforePublicationCompletion ObservedOperationFailureTypes PersistentData"
+    exact(value,required)
+    if observation.get("acquisitionEligible") is not True or value["ScopeCaptured"] is not True:
+        raise ValueError("Refused or absent original custody is ineligible")
+    if value["FiniteLifecycleQualified"] is not False or value["NaturalExpiryProven"] is not False or value["ExternalTerminationExcluded"] is not False:
+        raise ValueError("Owner cannot self-qualify or claim natural causality")
+    if value["ContainerId"] != observation["id"] or value["ParentRunId"] != outer["runId"] or value["ResourceRunId"] != observation["resourceRunId"] or value["Owner"] != "procurement-runtime-fixture":
+        raise ValueError("Finite independent identity join differs")
+    lifecycle_fields="ObservedAtUtc ObservedTicks ContainerId ImageId CreatedAt StartedAt FinishedAt ProcessId Running OomKilled ExitCode MemoryBytes MemorySwapBytes NanoCpus Entrypoint Command Labels Mounts Bindings"
+    for phase in ["Acquired","Running"]:
+        exact(value[phase],lifecycle_fields)
+        row=value[phase]
+        if timestamp(row["ObservedAtUtc"])<timestamp(row["CreatedAt"]): raise ValueError("Finite observation before creation")
+        if phase=="Running" and (row["Running"] is not True or timestamp(row["ObservedAtUtc"])<timestamp(row["StartedAt"])): raise ValueError("Finite running observation before birth")
+    scope=observation["finiteOwnerProfileScope"]
+    exact(scope,"imageId entrypoint command mounts labels hostBindings")
+    profile=value["Profile"]
+    if profile not in ("bookworm","alpine") or value["Scenario"]!="expiry-profile-"+profile or value["Image"]!="postgres:18.1-"+profile:
+        raise ValueError("Unknown finite image profile")
+    launcher='exec timeout --signal=INT --kill-after=1s 2 "$@"' if profile=="bookworm" else 'exec /bin/busybox timeout -s INT -k 1 2 "$@"'
+    command=["sh","-c",'trap "" INT TERM; while :; do sleep 1; done']
+    if value["Launcher"]!=launcher or scope["entrypoint"]!=["sh","-c",launcher,"procurement-expiry-profile"] or scope["command"]!=command:
+        raise ValueError("Finite fixed launcher/workload differs")
+    ports=scope["hostBindings"]
+    if set(ports)!={"5432/tcp"} or len(ports["5432/tcp"])!=1:
+        raise ValueError("Finite single port missing")
+    port=ports["5432/tcp"][0]
+    if port["HostIp"]!="127.0.0.1" or not re.fullmatch(r"[0-9]{1,5}",port["HostPort"]) or not 1<=int(port["HostPort"])<=65535:
+        raise ValueError("Finite port differs")
+    if value["ImageId"] != scope["imageId"] or value["Running"]["Entrypoint"] != scope["entrypoint"] or value["Running"]["Command"] != scope["command"]:
+        raise ValueError("Finite image/command custody differs")
+    expected_mounts=sorted((m["Name"],m["Destination"],m["RW"]) for m in scope["mounts"])
+    for phase in ["Acquired","Running"]:
+        row=value[phase]
+        if row["MemoryBytes"]!=67108864 or row["MemorySwapBytes"]!=67108864 or row["NanoCpus"]!=100000000:
+            raise ValueError("Finite inspected caps differ")
+        if row["ContainerId"]!=value["ContainerId"] or row["ImageId"]!=value["ImageId"] or sorted((m["Name"],m["Destination"],m["ReadWrite"]) for m in row["Mounts"])!=expected_mounts:
+            raise ValueError("Original finite mounts or identity differ")
+        if row["CreatedAt"] != value["Acquired"]["CreatedAt"] or row["Labels"]!=value["Acquired"]["Labels"]:
+            raise ValueError("Immutable original labels/lease/birth differ")
+    if value["Running"]["StartedAt"] != observation["startedAt"] or value["Running"]["ProcessId"] != observation["processId"]:
+        raise ValueError("Finite observed running birth differs")
+    stopped=value["StoppedByOwner"] or value["StoppedBeforeCleanup"]
+    if stopped is not None:
+        exact(stopped,lifecycle_fields)
+        if timestamp(stopped["ObservedAtUtc"])<timestamp(stopped["FinishedAt"]): raise ValueError("Finite stopped observation before finish")
+        if stopped["ContainerId"]!=value["ContainerId"] or stopped["ImageId"]!=value["ImageId"] or stopped["Entrypoint"]!=scope["entrypoint"] or stopped["Command"]!=scope["command"]:
+            raise ValueError("Finite stopped identity/command drift")
+        if stopped["MemoryBytes"]!=67108864 or stopped["MemorySwapBytes"]!=67108864 or stopped["NanoCpus"]!=100000000:
+            raise ValueError("Finite stopped caps drift")
+    if stopped is None or stopped["Running"] is not False or stopped["CreatedAt"]!=value["Acquired"]["CreatedAt"] or stopped["Labels"]!=value["Acquired"]["Labels"] or stopped["StartedAt"]!=value["Running"]["StartedAt"]:
+        raise ValueError("Finite stopped birth or lease drift")
+    if timestamp(value["Running"]["ObservedAtUtc"])>=timestamp(stopped["FinishedAt"]): raise ValueError("Finite running observation after stop")
+    if sorted((m["Name"],m["Destination"],m["ReadWrite"]) for m in stopped["Mounts"])!=expected_mounts:
+        raise ValueError("Stopped immutable volume scope drift")
+    if value["Acquired"]["Labels"]!=scope["labels"]: raise ValueError("Independent labels/expiry join differs")
+    if value["ContainerAbsent"] is not True or value["FiniteLifecycleOwnerCleanupObserved"] is not True or set(value["Volumes"])!=set(value["VolumesAbsent"]) or set(value["Volumes"])!=set(observation["volumes"]):
+        raise ValueError("Finite original scope cleanup missing")
+    if type(value["PublicationSnapshotPendingCount"]) is not int or not 0<=value["PublicationSnapshotPendingCount"]<=1 or value["PayloadWrittenBeforePublicationCompletion"] is not True or value["ObservedOperationFailureTypes"] or value["PersistentData"] is not False:
+        raise ValueError("Finite publication unsettled/faulted")
+    # Passed native case awaits shared cleanup and asserts actual task settlement. Existing outer
+    # exact-process exit/empty census prove worker and resource absence; precompletion JSON does not.
+    if outer["testExitCode"]!=0 or outer["remaining"] or outer["errorTypes"]:
+        raise ValueError("No terminal native settlement/independent absence")
+    if value["OwnerActions"][-1:] != ["remove-requested:"+value["ContainerId"]]:
+        raise ValueError("Exact owner removal absent")
+    return {"finiteOwnerLifecycleQualified":True,"naturalExpiryProven":False,"providerAdmission":False}
+
 import xml.etree.ElementTree as ET
 
 
 def native_cases(root):
     manifest = json.loads((pathlib.Path(__file__).resolve().parents[1] / "docs/procurement-fixture-containment-cases.json").read_text())
-    reviewed = {(case["name"], case["id"]) for case in manifest["cases"]}
-    if manifest["expectedCases"] != 18 or len(manifest["cases"]) != 18 or len(reviewed) != 18:
+    extension=manifest.get("finiteOwnerExtension", {"enabled":False})
+    extra=finite_activation(extension)
+    total=18+len(extra)
+    reviewed = {(case["name"], case["id"]) for case in manifest["cases"]+extra}
+    if manifest["expectedCases"] != 18 or len(manifest["cases"]) != 18 or len(reviewed) != total:
         raise ValueError("Frozen focused execution roster must contain exactly 18 identities")
     lifetime = "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests."
     provider_class = "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureProviderContainmentTests."
@@ -32,6 +129,11 @@ def native_cases(root):
     }.items()}
     expected.update({provider_class + "ForcedExpiry_StopsSignalIgnoringOwnedChild": 1,
                      provider_class + "OwnedProviderBoundsAndNaturalCleanup_AreObserved": 2})
+    if extra:
+        expected["Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.ImageSpecificControl_HasFiniteOwnerCleanup"]=2
+        expected["Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_BlockedTaskRemainsOwnedAfterDeadline"]=1
+        expected["Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_PostTimeoutFaultRetainsOriginalReference"]=1
+        expected["Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_ExpiredTotalLeaseRefusesFalseSettlement"]=1
     reports = list(root.rglob("*.trx"))
     if len(reports) != 1:
         raise ValueError("Exactly one separate focused TRX required")
@@ -48,7 +150,7 @@ def native_cases(root):
     if len(direct_counters) != 1 or direct_counters[0] is not all_counters[0]:
         raise ValueError("Counters must be the sole direct child block of the completed summary")
     counters = direct_counters[0]
-    if counters is None or any(int(counters.get(key, "-1")) != 18 for key in ("total", "executed", "passed")):
+    if counters is None or any(int(counters.get(key, "-1")) != total for key in ("total", "executed", "passed")):
         raise ValueError("Exactly 18 passing focused executions required")
     nonpassing = "failed error timeout aborted inconclusive passedButRunAborted notRunnable notExecuted disconnected warning completed inProgress pending".split()
     if set(counters.attrib) != set(nonpassing) | {"total", "executed", "passed"}:
@@ -68,7 +170,7 @@ def native_cases(root):
     results = direct_rows("Results", "UnitTestResult")
     defs = {row.get("id"): row for row in definitions}
     joins = {row.get("testId"): row.get("executionId") for row in entries}
-    if any(len(rows) != 18 for rows in (definitions, entries, results, defs, joins)):
+    if any(len(rows) != total for rows in (definitions, entries, results, defs, joins)):
         raise ValueError("Focused definition/entry/result cardinality differs")
     actual, identities, executions, names = collections.Counter(), set(), set(), set()
     for row in results:
@@ -200,11 +302,12 @@ def verify(root):
         guid(session.replace("-", ""))
     resource_rows = {}
     for row in outer["observedResources"]:
-        exact(row, "id role creationKind testcontainersSessionId resourceRunId parentRunId createdAt startedAt processId memoryBytes memorySwapBytes nanoCpus expiresAt volumes hostIps")
+        profile=row["role"].startswith("expiry-profile-")
+        exact(row, "id role creationKind testcontainersSessionId resourceRunId parentRunId createdAt startedAt processId memoryBytes memorySwapBytes nanoCpus expiresAt volumes hostIps" + (" finiteOwnerProfileScope acquisitionEligible" if profile else ""))
         guid(row["resourceRunId"])
         if row["parentRunId"] != outer["runId"] or row["id"] in resource_rows or row["processId"] <= 0:
             raise ValueError("Independent running resource identity differs")
-        forced = row["role"] == "forced-expiry-control"
+        forced = row["role"] == "forced-expiry-control" or profile
         if forced:
             if row["creationKind"] != "docker-api-manual" or row["testcontainersSessionId"] is not None:
                 raise ValueError("Manual expiry source session applicability differs")
@@ -216,8 +319,8 @@ def verify(root):
                 raise ValueError("Provider session missing from independent terminal census")
         memory = 67108864 if forced else 1073741824
         cpu = 100000000 if forced else 750000000
-        binding_matches = row["hostIps"] == [] if forced else set(row["hostIps"]) == {"127.0.0.1"}
-        if row["role"] not in ("supplier", "purchase-order", "forced-expiry-control") or row["memoryBytes"] != memory or row["memorySwapBytes"] != memory or row["nanoCpus"] != cpu or not binding_matches:
+        binding_matches = row["hostIps"] == [] if forced and not profile else set(row["hostIps"]) == {"127.0.0.1"}
+        if row["role"] not in ("supplier", "purchase-order", "forced-expiry-control", "expiry-profile-bookworm", "expiry-profile-alpine") or row["memoryBytes"] != memory or row["memorySwapBytes"] != memory or row["nanoCpus"] != cpu or not binding_matches:
             raise ValueError("Independent actual role, limits, or loopback binding differ")
         if timestamp(row["startedAt"]) < timestamp(row["createdAt"]) or timestamp(row["expiresAt"]) <= timestamp(row["startedAt"]):
             raise ValueError("Independent provider timing or finite lease differs")
@@ -249,9 +352,18 @@ def verify(root):
     actual_expiry = resource_rows[expiry["ContainerId"]]
     if actual_expiry["resourceRunId"] != expiry["ResourceRunId"] or actual_expiry["role"] != "forced-expiry-control" or set(actual_expiry["volumes"]) != set(expiry["Volumes"]):
         raise ValueError("Independent expiry-control running identity differs")
-    if set(outer["ownedContainers"]) != observed_ids | {expiry["ContainerId"]} or set(outer["ownedVolumes"]) != observed_volumes | set(expiry["Volumes"]):
+    finite_ids, finite_volumes = set(), set()
+    extension=json.loads((pathlib.Path(__file__).resolve().parents[1]/"docs/procurement-fixture-containment-cases.json").read_text()).get("finiteOwnerExtension", {"enabled":False})
+    if extension["enabled"]:
+        for profile in ["bookworm","alpine"]:
+            value=json.loads((root/"fixture-containment"/("expiry-profile-"+profile+".json")).read_text())
+            if value["Profile"]!=profile or value["ContainerId"] in observed_ids|finite_ids|{expiry["ContainerId"]} or set(value["Volumes"]) & (observed_volumes|finite_volumes|set(expiry["Volumes"])):
+                raise ValueError("Finite profiles reused owned scope")
+            finite_receipt(value,resource_rows[value["ContainerId"]],outer)
+            finite_ids.add(value["ContainerId"]);finite_volumes.update(value["Volumes"])
+    if set(outer["ownedContainers"]) != observed_ids | {expiry["ContainerId"]} | finite_ids or set(outer["ownedVolumes"]) != observed_volumes | set(expiry["Volumes"]) | finite_volumes:
         raise ValueError("Unknown owned resources appeared outside the three reviewed scenarios")
-    return {"providerScenarios": 3, "independentCleanup": True, "focusedPassed": 18,
+    return {"providerScenarios": 3, "independentCleanup": True, "focusedPassed": 18+(5 if extension["enabled"] else 0), "finiteOwnerLifecycleProfiles":len(finite_ids),
             "fullSuiteAcceptance": False, "productionQualification": False}
 
 

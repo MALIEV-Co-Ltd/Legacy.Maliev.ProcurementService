@@ -1,0 +1,58 @@
+{
+  "reviewedProducer": null,
+  "releaseAllowed": false,
+  "expectedExistingAuthSelectedInputs": 80,
+  "productionBuildInputs": 66,
+  "productionBuildInputSha256": "115556e55d729910cad1792c7d91297b65a03336b6de74a2aeee5b62447b1443",
+  "inputs": [
+    {
+      "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementImageExpiryProfileWitnessTests.cs",
+      "sha256": "4e1de17e58aa0c34ee5ed39af7af05d4b599a6e5a8d7bf6b271d43b2c2456c3e",
+      "proposedGitBlob": "907a87dab500d766ed82e9a3a1745ff6af113c73"
+    },
+    {
+      "path": "scripts/observe-procurement-fixture-process.py",
+      "sha256": "19afb3ff47c197b02f8ee81d0503b016e39f22fc1e2a2418d496c1c0dc864601",
+      "proposedGitBlob": "87af07731db77590fc243ebf547445eb9b95c858"
+    },
+    {
+      "path": "scripts/verify-procurement-fixture-containment.py",
+      "sha256": "fe17f945c2b02fdf3424d8f8185f2a57561d82edacf7ceae2cbe6de5b759518d",
+      "proposedGitBlob": "e43dcd0a4b22630c1e718213106edf6d198e9360"
+    },
+    {
+      "path": "scripts/test_procurement_fixture_process_observer.py",
+      "sha256": "cf56832b3d7b39dd39b4596021b79ed1acd5cccfca3775696a49bc41850989e4",
+      "proposedGitBlob": "46a7ea9ddbbf1874b4e75ff017d2de203273e967"
+    },
+    {
+      "path": "scripts/test_procurement_fixture_containment.py",
+      "sha256": "05073b7dcb80defee58055daf63e5d0160f858450be4943ecbb83db047207b69",
+      "proposedGitBlob": "24e34b7b59e5cec91b324ffe145f333f12661c2c"
+    },
+    {
+      "path": "docs/procurement-fixture-containment-cases.json",
+      "sha256": "9d20d2e744a487d1bf5c40c74e1a4ed2fcbd6d826c5148d8196ffdefcfe9d704",
+      "proposedGitBlob": "184ab8f46f682f90f226325ce2be962dbbbcc029"
+    },
+    {
+      "path": ".github/workflows/procurement-fixture-containment.yml",
+      "sha256": "645c2d6cb484996d6807362a8ccb583b0e91526f35e55f87efb10e6dac7ec591",
+      "proposedGitBlob": "cfd4dd931f7bab8cdb43f9d4018d98a58d2e150b"
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs",
+      "sha256": "f6d8f287e32cf2837f8b25eb470e4a6ba2f66e27940af9f429a1e04f15ce439b",
+      "proposedGitBlob": "a4fda2edca34c7e8f918d8c43edd72438ed66f05"
+    }
+  ],
+  "nativeIds": null,
+  "activation": "Only after source review and actual producer/native GUID binding; original automatic exact-head API/artifact custody required",
+  "requiresAuthRuntimeMetadataRebind": true,
+  "runtimeMetadataOverride": {
+    "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs",
+    "originalGitBlob": "006d1f0f51d09a0dfac35d40f75baa5d1dff44bd",
+    "proposedGitBlob": "a4fda2edca34c7e8f918d8c43edd72438ed66f05",
+    "producer": null
+  }
+}

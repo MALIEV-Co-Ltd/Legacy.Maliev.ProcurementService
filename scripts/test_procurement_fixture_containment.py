@@ -316,5 +316,65 @@ class OuterWitnessControls(unittest.TestCase):
                     guard.verify(root)
 
 
+
+class FiniteReceiptControls(unittest.TestCase):
+    def data(self):
+        import copy
+        cid="a"*64;run="b"*32;parent="c"*32;image="sha256:"+"d"*64
+        labels={"maliev.codex.owner":"procurement-runtime-fixture","maliev.codex.run":run,"maliev.codex.parent-run":parent,"maliev.codex.role":"expiry-profile-bookworm","maliev.codex.persistent-data":"false","maliev.codex.expires-utc":"2026-10-12T00:00:30Z"}
+        row={"ObservedAtUtc":"2026-10-12T00:00:00Z","ObservedTicks":1,"ContainerId":cid,"ImageId":image,"CreatedAt":"2026-10-12T00:00:00Z","StartedAt":"2026-10-12T00:00:01Z","FinishedAt":"2026-10-12T00:00:04Z","ProcessId":17,"Running":False,"OomKilled":False,"ExitCode":137,"MemoryBytes":67108864,"MemorySwapBytes":67108864,"NanoCpus":100000000,"Entrypoint":["sh","-c",'exec timeout --signal=INT --kill-after=1s 2 "$@"',"procurement-expiry-profile"],"Command":["sh","-c",'trap "" INT TERM; while :; do sleep 1; done'],"Labels":labels,"Mounts":[{"Type":"volume","Name":"original","Destination":"/data","ReadWrite":True}],"Bindings":[]}
+        running=copy.deepcopy(row);running.update(Running=True,ObservedAtUtc="2026-10-12T00:00:02Z",ObservedTicks=2)
+        stopped=copy.deepcopy(row);stopped.update(ObservedAtUtc="2026-10-12T00:00:04Z",ObservedTicks=3,ProcessId=0)
+        value={"Scenario":"expiry-profile-bookworm","Profile":"bookworm","Image":"postgres:18.1-bookworm","ImageId":image,"ImageDigests":[],"Launcher":'exec timeout --signal=INT --kill-after=1s 2 "$@"' ,"ResourceRunId":run,"ContainerId":cid,"ParentRunId":parent,"Owner":"procurement-runtime-fixture","ScopeCaptured":True,"Volumes":["original"],"VolumesAbsent":["original"],"Acquired":row,"Running":running,"StoppedBeforeCleanup":stopped,"LauncherExpiryCandidate":False,"OwnerWatchdogInvoked":False,"StoppedByOwner":None,"OwnerActions":["remove-requested:"+cid],"FiniteLifecycleOwnerCleanupObserved":True,"FiniteLifecycleQualified":False,"ExternalTerminationExcluded":False,"NaturalExpiryProven":False,"ExitCode":137,"ElapsedSeconds":3,"ContainerAbsent":True,"PublicationSnapshotPendingCount":1,"PayloadWrittenBeforePublicationCompletion":True,"ObservedOperationFailureTypes":[],"PersistentData":False}
+        observation={"id":cid,"resourceRunId":run,"startedAt":running["StartedAt"],"processId":17,"volumes":["original"],"acquisitionEligible":True,"finiteOwnerProfileScope":{"imageId":image,"entrypoint":row["Entrypoint"],"command":row["Command"],"mounts":[{"Name":"original","Destination":"/data","RW":True}],"labels":labels,"hostBindings":{"5432/tcp":[{"HostIp":"127.0.0.1","HostPort":"32769"}]}}}
+        outer={"runId":parent,"testExitCode":0,"remaining":[],"errorTypes":[]}
+        return value,observation,outer
+    def test_synthetic_finite_schema_no_expiry_or_admission(self):
+        result=guard.finite_receipt(*self.data());self.assertTrue(result["finiteOwnerLifecycleQualified"]);self.assertFalse(result["naturalExpiryProven"]);self.assertFalse(result["providerAdmission"])
+    def test_refused_original_scope_is_ineligible(self):
+        value,observation,outer=self.data();observation["acquisitionEligible"]=False
+        with self.assertRaises(ValueError):guard.finite_receipt(value,observation,outer)
+    def test_final_birth_lease_and_mount_drift_fail(self):
+        for key,replacement in [("StartedAt","2026-10-12T00:00:02Z"),("CreatedAt","2026-10-12T00:00:01Z")]:
+            value,observation,outer=self.data();value["StoppedBeforeCleanup"][key]=replacement
+            with self.assertRaises(ValueError):guard.finite_receipt(value,observation,outer)
+        value,observation,outer=self.data();value["StoppedBeforeCleanup"]["Labels"]["maliev.codex.expires-utc"]="2026-10-12T00:00:31Z"
+        with self.assertRaises(ValueError):guard.finite_receipt(value,observation,outer)
+    def test_blocked_publication_or_absent_terminal_settlement_fails(self):
+        for key,replacement in [("PublicationSnapshotPendingCount",2),("ObservedOperationFailureTypes",["IOException"]),("ContainerAbsent",False)]:
+            value,observation,outer=self.data();value[key]=replacement
+            with self.assertRaises(ValueError):guard.finite_receipt(value,observation,outer)
+        value,observation,outer=self.data();outer["remaining"]=["process:17"]
+        with self.assertRaises(ValueError):guard.finite_receipt(value,observation,outer)
+    def test_stopped_observation_before_finish_fails(self):
+        value,observation,outer=self.data();value["StoppedBeforeCleanup"]["ObservedAtUtc"]="2026-10-12T00:00:03Z"
+        with self.assertRaises(ValueError):guard.finite_receipt(value,observation,outer)
+
+
+class ActualRecoveryTaskSourceControls(unittest.TestCase):
+    def test_actual_task_is_registered_before_cancellable_wrapper(self):
+        source=(pathlib.Path(__file__).resolve().parents[1]/"Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementImageExpiryProfileWitnessTests.cs").read_text()
+        self.assertLess(source.index("var recoveryRead = Task.Run"),source.index("lifetime.TrackOwnedTask(recoveryRead)"))
+        self.assertLess(source.index("lifetime.TrackOwnedTask(recoveryRead)"),source.index("await recoveryRead.WaitAsync(cleanupDeadline.Token)"))
+    def test_total_lease_cleanup_reserve_and_error_custody_are_authored(self):
+        source=(pathlib.Path(__file__).resolve().parents[1]/"Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementImageExpiryProfileWitnessTests.cs").read_text()
+        self.assertNotIn("realLease.Token",source)
+        self.assertEqual(2,source.count("new CancellationTokenSource(TimeSpan.FromSeconds(15))"))
+        self.assertEqual(2,source.count("new CancellationTokenSource(realBudget.RemainingCleanupTime())"))
+        self.assertEqual(2,source.count("RethrowSeamFailures(primaryFailure, cleanupFailure)"))
+        self.assertIn("RecoveryRead_ExpiredTotalLeaseRefusesFalseSettlement",source)
+        self.assertIn("TimeSpan.FromSeconds(20) - clock.GetElapsedTime(started)",source)
+        self.assertIn("Assert.Same(primary, aggregate.InnerExceptions[0])",source)
+        self.assertIn("Assert.Same(cleanup, aggregate.InnerExceptions[1])",source)
+    def test_runtime_seams_and_existing_lifetime_ledger_hook_are_authored(self):
+        root=pathlib.Path(__file__).resolve().parents[1]
+        source=(root/"Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementImageExpiryProfileWitnessTests.cs").read_text()
+        lifetime=(root/"Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs").read_text()
+        self.assertIn("internal void TrackOwnedTask(Task operation) => Observe(operation);",lifetime)
+        self.assertIn("RecoveryRead_BlockedTaskRemainsOwnedAfterDeadline",source)
+        self.assertIn("RecoveryRead_PostTimeoutFaultRetainsOriginalReference",source)
+        self.assertIn("Assert.Same(expected, actual)",source)
+        self.assertIn("Assert.Contains(actualRead, lifetime.UnsettledOperations)",source)
+
 if __name__ == "__main__":
     unittest.main()

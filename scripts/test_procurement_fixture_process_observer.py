@@ -440,4 +440,43 @@ class ResourceAcquisitionControls(unittest.TestCase):
         self.assertFalse(errors)
         self.assertEqual(["session-container:" + identity, "session-volume:late-volume"], remaining)
 
+
+class FiniteOriginalCustodyControls(unittest.TestCase):
+    def rows(self):
+        import copy
+        row={"Id":"a"*64,"Image":"sha256:"+"b"*64,"Created":"2026-10-12T00:00:00Z", "Config":{"Labels":{"maliev.codex.expires-utc":"2026-10-12T00:00:30Z"},"Entrypoint":["sh"],"Cmd":[]},"Mounts":[{"Name":"original"}],"State":{"StartedAt":"2026-10-12T00:00:01Z","Pid":17,"Running":True}}
+        return row,copy.deepcopy(row)
+    def profile_row(self):
+        fixture=ResourceAcquisitionControls();fixture.setUp();identity="d"*64;row=fixture.manual_resource(identity)
+        row["Image"]="sha256:"+"e"*64
+        row["Config"]["Labels"]["maliev.codex.role"]="expiry-profile-bookworm"
+        row["Config"]["Labels"]["maliev.codex.expires-utc"]="2026-10-11T09:00:30+00:00"
+        row["Config"].update(Entrypoint=["sh","-c",'exec timeout --signal=INT --kill-after=1s 2 "$@"',"procurement-expiry-profile"],Cmd=["sh","-c",'trap "" INT TERM; while :; do sleep 1; done'])
+        row["Mounts"][0].update(Destination="/data",RW=True)
+        row["NetworkSettings"]["Ports"]={"5432/tcp":[{"HostIp":"127.0.0.1","HostPort":"32769"}]}
+        return fixture,identity,row
+    def test_refused_binding_retains_original_scope_but_no_recovery(self):
+        fixture,identity,row=self.profile_row();row["NetworkSettings"]["Ports"]["5432/tcp"][0]["HostIp"]="0.0.0.0"
+        with patch.object(observer,"docker",side_effect=[identity,json.dumps([row])]),patch.object(observer,"publish_recovery_scope") as publish:
+            with self.assertRaises(BaseExceptionGroup):fixture.observe()
+            publish.assert_not_called()
+        self.assertIn(identity,fixture.rows);self.assertFalse(fixture.rows[identity]["acquisitionEligible"])
+        self.assertEqual("0.0.0.0",fixture.rows[identity]["finiteOwnerProfileScope"]["hostBindings"]["5432/tcp"][0]["HostIp"])
+    def test_only_valid_original_scope_handed_to_owner(self):
+        fixture,identity,row=self.profile_row()
+        with patch.object(observer,"docker",side_effect=[identity,json.dumps([row])]),patch.object(observer,"publish_recovery_scope") as publish:
+            fixture.observe();publish.assert_called_once()
+        self.assertTrue(fixture.rows[identity]["acquisitionEligible"])
+    def test_original_lease_label_drift_refused(self):
+        before,after=self.rows();after["Config"]["Labels"]["maliev.codex.expires-utc"]="2026-10-12T00:00:31Z"
+        with self.assertRaises(ValueError):observer.immutable_finite_scope(before,after)
+    def test_birth_drift_after_stop_refused(self):
+        before,after=self.rows();after["State"].update(Running=False,StartedAt="2026-10-12T00:00:02Z")
+        with self.assertRaises(ValueError):observer.immutable_finite_scope(before,after)
+    def test_natural_stop_race_requires_same_immutable_birth(self):
+        before,after=self.rows();after["State"].update(Running=False,Pid=0)
+        self.assertTrue(observer.immutable_finite_scope(before,after))
+        after["Created"]="2026-10-12T00:00:01Z"
+        with self.assertRaises(ValueError):observer.immutable_finite_scope(before,after)
+
 if __name__ == "__main__": unittest.main()

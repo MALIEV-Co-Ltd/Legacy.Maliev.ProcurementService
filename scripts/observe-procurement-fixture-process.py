@@ -274,6 +274,48 @@ def terminal_census(identity):
 OBSERVATION_CONTRACT = "one-running-snapshot-full-id-census-v2"
 
 
+
+recovery_root = None
+
+def immutable_finite_scope(original, current):
+    for key in ("Id", "Image", "Created"):
+        if original[key] != current[key]: raise ValueError("Immutable finite identity drift")
+    for key in ("Labels", "Entrypoint", "Cmd"):
+        if original["Config"][key] != current["Config"][key]: raise ValueError("Immutable labels/lease/command drift")
+    if original["Mounts"] != current["Mounts"]: raise ValueError("Original mount scope drift")
+    if original["State"]["StartedAt"] != current["State"]["StartedAt"]: raise ValueError("Repeated birth drift")
+    if current["State"]["Running"] and original["State"]["Pid"] != current["State"]["Pid"]: raise ValueError("Running PID drift")
+    return True
+
+def publish_recovery_scope(identity, run, row):
+    # Same Linux observer and phase deadline, no new process or Docker call.
+    if recovery_root is None: raise ValueError("Independent recovery destination unavailable")
+    labels = {k:v for k,v in row["Config"]["Labels"].items() if k.startswith("maliev.codex.")}
+    scope = {"ObservedAtUtc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "ObservedTicks":time.monotonic_ns(),"ContainerId":identity,"ImageId":row["Image"],
+        "CreatedAt":row["Created"],"StartedAt":row["State"]["StartedAt"],"FinishedAt":row["State"]["FinishedAt"],
+        "ProcessId":row["State"]["Pid"],"Running":row["State"]["Running"],"OomKilled":row["State"]["OOMKilled"],
+        "ExitCode":row["State"]["ExitCode"],"MemoryBytes":row["HostConfig"]["Memory"],
+        "MemorySwapBytes":row["HostConfig"]["MemorySwap"],"NanoCpus":row["HostConfig"]["NanoCpus"],
+        "Entrypoint":row["Config"]["Entrypoint"],"Command":row["Config"]["Cmd"],"Labels":labels,
+        "Mounts":[{"Type":m["Type"],"Name":m["Name"],"Destination":m["Destination"],"ReadWrite":m["RW"]} for m in row["Mounts"]],
+        "Bindings":[{"ContainerPort":port,"HostIp":b["HostIp"],"HostPort":b["HostPort"]} for port,bindings in row["NetworkSettings"]["Ports"].items() for b in (bindings or [])]}
+    payload=json.dumps({"SchemaVersion":1,"ObserverRunId":run,"ContainerId":identity,"AcquisitionEligible":True,"Scope":scope}).encode()
+    if len(payload)>65536: raise BufferError("Recovery metadata exceeds bound")
+    def expired(signum, frame): raise TimeoutError("Recovery publication exceeded shared phase deadline")
+    prior=signal.signal(signal.SIGALRM,expired)
+    signal.setitimer(signal.ITIMER_REAL,remaining_timeout(1))
+    try:
+        directory=recovery_root/"owner-recovery";directory.mkdir(exist_ok=True)
+        path=directory/(identity+".json")
+        # Complete bytes become readable only through atomic rename of exact private partial file.
+        temporary=directory/(identity+".partial")
+        with temporary.open("xb") as stream: stream.write(payload);stream.flush()
+        if path.exists(): raise ValueError("Immutable recovery handoff already exists")
+        temporary.rename(path)
+    finally:
+        signal.setitimer(signal.ITIMER_REAL,0);signal.signal(signal.SIGALRM,prior)
+
 def observe(run, owned, sessions, volumes, observations):
     ids = docker("ps", "-aq", "--no-trunc", "--filter", "label=maliev.codex.parent-run=" + run).split()
     if len(ids) > MAX_RESOURCES or len(set(ids)) != len(ids):
@@ -293,12 +335,13 @@ def observe(run, owned, sessions, volumes, observations):
             row = rows[0]
             labels = row["Config"]["Labels"]
             role = labels.get("maliev.codex.role")
-            if labels.get("maliev.codex.owner") != "procurement-runtime-fixture" or labels.get("maliev.codex.persistent-data") != "false" or labels.get("maliev.codex.parent-run") != run or role not in ("supplier", "purchase-order", "forced-expiry-control"):
+            if labels.get("maliev.codex.owner") != "procurement-runtime-fixture" or labels.get("maliev.codex.persistent-data") != "false" or labels.get("maliev.codex.parent-run") != run or role not in ("supplier", "purchase-order", "forced-expiry-control", "expiry-profile-bookworm", "expiry-profile-alpine"):
                 raise ValueError("Owned observation label mismatch")
             resource_run = labels.get("maliev.codex.run")
             session = labels.get("org.testcontainers.session-id")
             uuid.UUID(hex=resource_run)
-            forced = role == "forced-expiry-control"
+            profile_control = role in ("expiry-profile-bookworm", "expiry-profile-alpine")
+            forced = role == "forced-expiry-control" or profile_control
             if forced:
                 # This fixed producer creates the expiry control through Docker API, not Testcontainers.
                 if "org.testcontainers.session-id" in labels:
@@ -322,20 +365,55 @@ def observe(run, owned, sessions, volumes, observations):
                 raise BufferError("Owned resource metadata cardinality exceeded")
             if row["State"]["Running"]:
                 host_ips = [binding["HostIp"] for bindings in (row["NetworkSettings"]["Ports"] or {}).values() for binding in (bindings or [])]
-                if len(host_ips) > MAX_RESOURCES or (host_ips != [] if forced else set(host_ips) != {"127.0.0.1"}):
+                if profile_control:
+                    observations[identity] = {"id": identity, "role": role,
+                        "resourceRunId": resource_run, "parentRunId": run,
+                        "acquisitionEligible": False,
+                        "finiteOwnerProfileScope": {
+                            "imageId":row["Image"],"entrypoint":row["Config"]["Entrypoint"],
+                            "command":row["Config"]["Cmd"],"labels":{k:v for k,v in labels.items() if k.startswith("maliev.codex.")},
+                            "mounts":[{k:m[k] for k in ("Type","Name","Destination","RW")} for m in row["Mounts"]],
+                            "hostBindings":row["NetworkSettings"]["Ports"]}}
+                if len(host_ips) > MAX_RESOURCES or (host_ips != [] if forced and not profile_control else set(host_ips) != {"127.0.0.1"}):
                     raise ValueError("Independent acquisition binding differs")
                 created = datetime.datetime.fromisoformat(row["Created"].replace("Z", "+00:00"))
                 started = datetime.datetime.fromisoformat(row["State"]["StartedAt"].replace("Z", "+00:00"))
                 expires = datetime.datetime.fromisoformat(labels["maliev.codex.expires-utc"].replace("Z", "+00:00"))
                 if started < created or expires <= started or type(row["State"]["Pid"]) is not int or row["State"]["Pid"] <= 0:
                     raise ValueError("Independent acquisition birth or lease differs")
+                if profile_control:
+                    # Record immutable scope before optional profile/binding assertions.
+                    # Existing census owns IDs/volumes, and still never deletes resources.
+                    expected_launcher = ('exec timeout --signal=INT --kill-after=1s 2 "$@"'
+                        if role == "expiry-profile-bookworm" else 'exec /bin/busybox timeout -s INT -k 1 2 "$@"')
+                    require_profile = {"imageId": row["Image"], "entrypoint": row["Config"]["Entrypoint"],
+                        "command": row["Config"]["Cmd"], "mounts": [{k:m[k] for k in ("Type","Name","Destination","RW")} for m in row["Mounts"]],
+                        "labels": {k:v for k,v in labels.items() if k.startswith("maliev.codex.")}, "hostBindings": row["NetworkSettings"]["Ports"]}
+                    # Snapshot is retained even if an optional assertion below fails.
+                    observations[identity] = {"id": identity, "role": role,
+                        "resourceRunId": resource_run, "parentRunId": run,
+                        "createdAt": row["Created"], "startedAt": row["State"]["StartedAt"],
+                        "processId": row["State"]["Pid"], "acquisitionEligible": False, "finiteOwnerProfileScope": require_profile}
+                    if (not re.fullmatch(r"sha256:[a-f0-9]{64}", row["Image"]) or
+                        row["Config"]["Entrypoint"] != ["sh", "-c", expected_launcher, "procurement-expiry-profile"] or
+                        row["Config"]["Cmd"] != ["sh", "-c", 'trap "" INT TERM; while :; do sleep 1; done'] or
+                        any(mount["Type"] != "volume" for mount in row["Mounts"])):
+                        raise ValueError("Finite owner profile identity/launcher/mount differs")
+                    ports = row["NetworkSettings"]["Ports"]
+                    if set(ports) != {"5432/tcp"} or len(ports["5432/tcp"]) != 1:
+                        raise ValueError("Finite owner profile exact binding missing")
+                    binding = ports["5432/tcp"][0]
+                    if binding["HostIp"] != "127.0.0.1" or not re.fullmatch(r"[0-9]{1,5}", binding["HostPort"]) or not 1 <= int(binding["HostPort"]) <= 65535:
+                        raise ValueError("Finite owner profile binding differs")
+                    publish_recovery_scope(identity, run, row)
                 observations[identity] = {"id": identity, "role": role,
                     "creationKind": "docker-api-manual" if forced else "testcontainers", "testcontainersSessionId": session,
                     "resourceRunId": resource_run, "parentRunId": run,
                     "createdAt": row["Created"], "startedAt": row["State"]["StartedAt"],
                     "processId": row["State"]["Pid"], "memoryBytes": row["HostConfig"]["Memory"],
                     "memorySwapBytes": row["HostConfig"]["MemorySwap"], "nanoCpus": row["HostConfig"]["NanoCpus"],
-                    "expiresAt": labels["maliev.codex.expires-utc"], "volumes": row_volumes, "hostIps": host_ips}
+                    "expiresAt": labels["maliev.codex.expires-utc"], "volumes": row_volumes, "hostIps": host_ips,
+                    **({"finiteOwnerProfileScope": require_profile, "acquisitionEligible": True} if profile_control else {})}
         except BaseException as error:
             failures.append(error)
     if failures:
@@ -387,13 +465,14 @@ def record_process(processes, actual, launch, expected):
 
 
 def run(root):
-    global phase_deadline, phase_name
+    global phase_deadline, phase_name, recovery_root
     if sys.platform != "linux":
         raise RuntimeError("Independent witness requires hosted Linux /proc")
     if not hasattr(os, "pidfd_open") or not hasattr(signal, "pidfd_send_signal"):
         raise RuntimeError("Race-safe Linux pidfd ownership is required")
     preflight_pidfd()
     root.mkdir(parents=True, exist_ok=True)
+    recovery_root = root
     run_id = uuid.uuid4().hex
     env = dict(os.environ, MALIEV_TEST_RESOURCE_RUN_ID=run_id,
                VSTestResultsDirectory=str(root.resolve()), GITHUB_ACTIONS="false",
@@ -402,6 +481,14 @@ def run(root):
                "--configuration", "Release", "--no-build", "--no-restore", "-p:UseLocalMalievDependencies=true",
                "--filter", "FullyQualifiedName~ProcurementFixtureLifetimeTests|FullyQualifiedName~ProcurementFixtureProviderContainmentTests",
                "--logger", "trx", "--results-directory", str(root.resolve())]
+    extension = json.loads((pathlib.Path(__file__).resolve().parents[1]/"docs/procurement-fixture-containment-cases.json").read_text()).get("finiteOwnerExtension", {"enabled":False})
+    if extension["enabled"]:
+        import importlib.util
+        spec=importlib.util.spec_from_file_location("containment_verifier",pathlib.Path(__file__).with_name("verify-procurement-fixture-containment.py"))
+        verifier=importlib.util.module_from_spec(spec);spec.loader.exec_module(verifier)
+        verifier.finite_activation(extension)
+        at=command.index("--filter")+1
+        command[at]+="|FullyQualifiedName~ProcurementImageExpiryProfileWitnessTests"
     owned, sessions, volumes, processes, errors = set(), set(), set(), {}, []
     observations = {}
     handles = {}

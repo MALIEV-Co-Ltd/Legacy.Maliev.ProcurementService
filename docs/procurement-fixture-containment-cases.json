@@ -77,5 +77,37 @@
   "sourceRun": 38128379833,
   "sourceHead": "93828ce2bd3601060c5839b0470bcfe7e239fc0b",
   "sourceTrxSha256": "823c4d0c525a565db4b1f06b5a484388717fe921267e2de3aec7f1e34fd7145b",
-  "status": "Execution identities only; all outcome acceptance is independently checked"
+  "status": "Execution identities only; all outcome acceptance is independently checked",
+  "finiteOwnerExtension": {
+    "enabled": false,
+    "reviewedProducer": null,
+    "cases": [
+      {
+        "profile": "bookworm",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.ImageSpecificControl_HasFiniteOwnerCleanup(tag: \"18.1-bookworm\", profile: \"bookworm\")",
+        "id": null
+      },
+      {
+        "profile": "alpine",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.ImageSpecificControl_HasFiniteOwnerCleanup(tag: \"18.1-alpine\", profile: \"alpine\")",
+        "id": null
+      },
+      {
+        "kind": "runtime-seam",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_BlockedTaskRemainsOwnedAfterDeadline",
+        "id": null
+      },
+      {
+        "kind": "runtime-seam",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_PostTimeoutFaultRetainsOriginalReference",
+        "id": null
+      },
+      {
+        "kind": "runtime-seam",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_ExpiredTotalLeaseRefusesFalseSettlement",
+        "id": null
+      }
+    ],
+    "activationRequires": "Actual reviewed source producer, actual discovered GUIDs, explicit source admission; remove Skip and enable filter/strict extension together"
+  }
 }
