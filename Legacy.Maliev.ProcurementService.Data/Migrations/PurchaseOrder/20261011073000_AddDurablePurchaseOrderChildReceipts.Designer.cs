@@ -15,6 +15,7 @@ namespace Legacy.Maliev.ProcurementService.Data.Migrations.PurchaseOrder
     [Migration("20261011073000_AddDurablePurchaseOrderChildReceipts")]
     partial class AddDurablePurchaseOrderChildReceipts
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

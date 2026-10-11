@@ -196,7 +196,9 @@ using var created = await PostAsync(client, file, originalParent, scenario == "n
         {
             await using var scope = fixture.Factory.Services.CreateAsyncScope();
             var database = scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>();
-            if (scenario == "corrupt-digest") await database.Database.ExecuteSqlRawAsync($"UPDATE \"{Table(file)}\" SET \"ResponseDigest\"=decode(repeat('00',32),'hex')");
+            if (scenario == "corrupt-digest") await database.Database.ExecuteSqlRawAsync(file
+                ? "UPDATE \"PurchaseOrderFileCreateReceipt\" SET \"ResponseDigest\"=decode(repeat('00',32),'hex')"
+                : "UPDATE \"OrderItemCreateReceipt\" SET \"ResponseDigest\"=decode(repeat('00',32),'hex')");
             else
             {
                 var properties = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(body)!;
@@ -215,7 +217,9 @@ using var created = await PostAsync(client, file, originalParent, scenario == "n
                 {
                     Assert.NotEqual(body, invalid);
                     var corrupted = System.Text.Encoding.UTF8.GetBytes(invalid);
-                    await database.Database.ExecuteSqlRawAsync($"UPDATE \"{Table(file)}\" SET \"ResponseBody\"={{0}}, \"ResponseDigest\"={{1}}", corrupted, SHA256.HashData(corrupted));
+                    await database.Database.ExecuteSqlRawAsync(file
+                        ? "UPDATE \"PurchaseOrderFileCreateReceipt\" SET \"ResponseBody\"={0}, \"ResponseDigest\"={1}"
+                        : "UPDATE \"OrderItemCreateReceipt\" SET \"ResponseBody\"={0}, \"ResponseDigest\"={1}", corrupted, SHA256.HashData(corrupted));
                     using var shapeRefusal = await PostAsync(client, file, originalParent, key);
                     Assert.Equal(HttpStatusCode.ServiceUnavailable, shapeRefusal.StatusCode);
                     await CountsAsync(file, 1, 1);
@@ -327,7 +331,9 @@ private static async Task<HttpResponseMessage> PostAsync(HttpClient client, bool
         await using var scope = fixture.Factory.Services.CreateAsyncScope();
         var database = scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>();
         Assert.Equal(children, file ? await database.Files.CountAsync() : await database.OrderItems.CountAsync());
-        Assert.Equal(receipts, await database.Database.SqlQueryRaw<int>($"SELECT count(*)::int AS \"Value\" FROM \"{Table(file)}\"").SingleAsync());
+        Assert.Equal(receipts, await database.Database.SqlQueryRaw<int>(file
+            ? "SELECT count(*)::int AS \"Value\" FROM \"PurchaseOrderFileCreateReceipt\""
+            : "SELECT count(*)::int AS \"Value\" FROM \"OrderItemCreateReceipt\"").SingleAsync());
         Assert.Equal(0, file ? await database.OrderItems.CountAsync() : await database.Files.CountAsync());
         Assert.Empty(await scope.ServiceProvider.GetRequiredService<SupplierDbContext>().Suppliers.ToArrayAsync());
         Assert.Empty(await scope.ServiceProvider.GetRequiredService<SupplierDbContext>().Addresses.ToArrayAsync());
