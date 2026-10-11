@@ -5,7 +5,7 @@ namespace Legacy.Maliev.ProcurementService.Tests.Workflows;
 public sealed class SupplierAddressCausalWorkflowTests
 {
     private const string Baseline = "95d5b212b64f56ba3dfdfe4abe05b18110fc248d";
-    private const string FixtureProducer = "5da322779bb7b32b1f858ab6cba2bfafe0a4d9fd";
+    private const string FixtureProducer = "4a117fb68cebffc9e0acae9000750e8e45ec62cc";
     private static string Source => File.ReadAllText(FindWorkflow());
 
     [Fact]

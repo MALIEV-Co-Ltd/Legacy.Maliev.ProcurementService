@@ -15,7 +15,7 @@
     },
     {
       "repository": "Legacy.Maliev.ProcurementService",
-      "commit": "5da322779bb7b32b1f858ab6cba2bfafe0a4d9fd"
+      "commit": "4a117fb68cebffc9e0acae9000750e8e45ec62cc"
     }
   ],
   "defaultsAdoption": {
@@ -94,7 +94,7 @@
   "intentionalSourceChanges": {
     "previousProcurement": "24099f8e88ea14eebfa9a995dcd5f7569dad3dbf",
     "acceptedBase": "f84d493ea3cbfd9667d1a2e2a31fabebfc0bba93",
-    "reviewedProcurement": "5da322779bb7b32b1f858ab6cba2bfafe0a4d9fd",
+    "reviewedProcurement": "4a117fb68cebffc9e0acae9000750e8e45ec62cc",
     "inputCount": 80,
     "changedInputs": {
       "Legacy.Maliev.ProcurementService.Tests/Controllers/ProcurementOpenApiHttpContractTests.cs": {
@@ -119,7 +119,7 @@
       },
       "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableCreateTests.cs": {
         "previousMetadata": "100644 blob 33371e000bcffa8c5e047f893bf0cd11d96b525b",
-        "reviewedMetadata": "100644 blob b86a3e160e2b982e8a76cac99a68558399aea64d",
+        "reviewedMetadata": "100644 blob 281a7f13123f16a96cacd2d9465d909c0c07bae0",
         "classification": "Test-only owner correlation source/consumer/compile dependency; not native execution proof"
       },
       "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableOwnedFixtureWrappers.cs": {
@@ -151,10 +151,15 @@
         "previousMetadata": "100644 blob a5ecdb83358ec34bc0230feaf008446405f4daca",
         "reviewedMetadata": "100644 blob e180274800334e331a8f0ae4fed73bc10b84328a",
         "classification": "Test-only owner correlation source/consumer/compile dependency; not native execution proof"
+      },
+      "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementFixtureConnectionObserver.cs": {
+        "previousMetadata": "100644 blob 59843a80df60331827a6dda29e48db18fd49b2a8",
+        "reviewedMetadata": "100644 blob 2ec6c2d9b59bb8cf3b6035005489acba1589c4b2",
+        "classification": "Test-only owner correlation source/consumer/compile dependency; not native execution proof"
       }
     },
-    "unchangedInputCount": 69,
-    "unchangedInputSha256": "e09dedf99a42dee3fb8c8550709b1084553902f735b06ce8f02de7e482e99923",
+    "unchangedInputCount": 68,
+    "unchangedInputSha256": "9ef3d5d9e7cfd3c4885425d332d41c860b982c3d6454a3f5caeb144b3c27655f",
     "productionBuildInputCount": 66,
     "productionBuildInputSha256": "115556e55d729910cad1792c7d91297b65a03336b6de74a2aeee5b62447b1443",
     "scope": "Exact explicit owner correlation80 source graph; no production/runtime behavior change",
@@ -412,7 +417,7 @@
     "qualification": "Immutable predecessor source custody; native scope stays separate"
   },
   "ownerCorrelationSourceBinding": {
-    "reviewedProducer": "5da322779bb7b32b1f858ab6cba2bfafe0a4d9fd",
+    "reviewedProducer": "4a117fb68cebffc9e0acae9000750e8e45ec62cc",
     "inputMetadata": {
       "Directory.Build.props": "100644 blob b47c8d23651f11ea8366bb63f4520fb8de6c6df3",
       "Legacy.Maliev.ProcurementService.Api/Authorization/ProcurementIamComposition.cs": "100644 blob 1bad18d6797295124d84083ba7f5e93276124c1e",
@@ -487,13 +492,13 @@
       "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementSourceStringMigrationTests.cs": "100644 blob 3d6a4b8d2979c3daad819cf0e764fcdd26dd71f6",
       "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementChildLifecycleTests.cs": "100644 blob 1fb3433cb2bb99b38367da14e4c49e8f1cc004a6",
       "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableChildCreateTests.cs": "100644 blob c5c7911f988340e12921156496893ecacc0f1489",
-      "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableCreateTests.cs": "100644 blob b86a3e160e2b982e8a76cac99a68558399aea64d",
+      "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableCreateTests.cs": "100644 blob 281a7f13123f16a96cacd2d9465d909c0c07bae0",
       "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableOwnedFixtureWrappers.cs": "100644 blob 67346c8762a43d2008a18ae47064e0353a9997bc",
       "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementFixtureOwnerCorrelation.cs": "100644 blob f710b2a0f435eb2b6f648ee9cf2c15a5a0d57058",
       "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementFixtureOwnerCorrelationTests.cs": "100644 blob 432386cd0e1557860431bef87345c66fbe9ef41a",
       "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeOwnedFixtureWrappers.cs": "100644 blob 561e3c5eeb9ddf8cabc997b14a5aa4f36af2fcfe",
       "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierTransactionBoundaryTests.cs": "100644 blob e180274800334e331a8f0ae4fed73bc10b84328a",
-      "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementFixtureConnectionObserver.cs": "100644 blob 59843a80df60331827a6dda29e48db18fd49b2a8"
+      "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementFixtureConnectionObserver.cs": "100644 blob 2ec6c2d9b59bb8cf3b6035005489acba1589c4b2"
     },
     "releaseAllowed": true
   }

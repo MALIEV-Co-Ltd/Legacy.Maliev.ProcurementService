@@ -55,7 +55,7 @@ jobs:
         timeout-minutes: 2
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: 5da322779bb7b32b1f858ab6cba2bfafe0a4d9fd
+          ref: 4a117fb68cebffc9e0acae9000750e8e45ec62cc
           path: .dependencies/ProcurementFixtureProducer
           fetch-depth: 1
           persist-credentials: false
