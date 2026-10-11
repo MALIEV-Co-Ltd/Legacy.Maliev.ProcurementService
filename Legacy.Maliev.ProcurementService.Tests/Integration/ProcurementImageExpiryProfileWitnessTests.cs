@@ -138,7 +138,7 @@ public sealed class ProcurementImageExpiryProfileWitnessTests
             Assert.False(owned.State.Running);
             ownerActions.Add("remove-requested:" + id);
             await docker.Containers.RemoveContainerAsync(id, new ContainerRemoveParameters
-                { Force = false, RemoveVolumes = true }, cleanupDeadline.Token);
+            { Force = false, RemoveVolumes = true }, cleanupDeadline.Token);
             await RequireContainerAbsentAsync(docker, id, cleanupDeadline.Token);
             foreach (var volume in controlVolumes)
             {
@@ -159,13 +159,22 @@ public sealed class ProcurementImageExpiryProfileWitnessTests
             token.ThrowIfCancellationRequested();
             var bytes = JsonSerializer.SerializeToUtf8Bytes(new
             {
-                Scenario = role, Profile = profile, Image = "postgres:" + tag,
-                ImageId = imageId, ImageDigests = imageDigests, Launcher = launcher,
-                ResourceRunId = run, ContainerId = id, ParentRunId = parentRun,
+                Scenario = role,
+                Profile = profile,
+                Image = "postgres:" + tag,
+                ImageId = imageId,
+                ImageDigests = imageDigests,
+                Launcher = launcher,
+                ResourceRunId = run,
+                ContainerId = id,
+                ParentRunId = parentRun,
                 Owner = ProcurementFixtureContainerPolicy.Owner,
-                ScopeCaptured = scopeCaptured, Volumes = controlVolumes.ToArray(),
-                VolumesAbsent = volumesAbsent.ToArray(), Acquired = acquiredEvidence,
-                Running = runningEvidence, StoppedBeforeCleanup = stoppedEvidence,
+                ScopeCaptured = scopeCaptured,
+                Volumes = controlVolumes.ToArray(),
+                VolumesAbsent = volumesAbsent.ToArray(),
+                Acquired = acquiredEvidence,
+                Running = runningEvidence,
+                StoppedBeforeCleanup = stoppedEvidence,
                 LauncherExpiryCandidate = expiryCandidate,
                 OwnerWatchdogInvoked = ownerWatchdogInvoked,
                 StoppedByOwner = stoppedByOwnerEvidence,
@@ -173,9 +182,11 @@ public sealed class ProcurementImageExpiryProfileWitnessTests
                 FiniteLifecycleOwnerCleanupObserved = absent,
                 // Qualification belongs to the exact independently joined terminal receipt.
                 FiniteLifecycleQualified = false,
-                ExternalTerminationExcluded = false, NaturalExpiryProven = false,
+                ExternalTerminationExcluded = false,
+                NaturalExpiryProven = false,
                 // Independent observation must supply these facts; owner booleans cannot qualify.
-                ExitCode = exitCode, ElapsedSeconds = elapsed.TotalSeconds,
+                ExitCode = exitCode,
+                ElapsedSeconds = elapsed.TotalSeconds,
                 ContainerAbsent = absent,
                 PublicationSnapshotPendingCount = lifetime.UnsettledOperations.Count,
                 PayloadWrittenBeforePublicationCompletion = true,
@@ -217,7 +228,11 @@ public sealed class ProcurementImageExpiryProfileWitnessTests
                     ["maliev.codex.expires-utc"] = DateTimeOffset.UtcNow.AddSeconds(30).ToString("O"),
                     ["maliev.codex.persistent-data"] = "false",
                 },
-                HostConfig = new HostConfig { Memory = 64 * 1024 * 1024, MemorySwap = 64 * 1024 * 1024, NanoCPUs = 100_000_000,
+                HostConfig = new HostConfig
+                {
+                    Memory = 64 * 1024 * 1024,
+                    MemorySwap = 64 * 1024 * 1024,
+                    NanoCPUs = 100_000_000,
                     PortBindings = new Dictionary<string, IList<PortBinding>>
                     {
                         ["5432/tcp"] = new List<PortBinding> { new() { HostIP = "127.0.0.1", HostPort = "" } },

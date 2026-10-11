@@ -7,8 +7,8 @@
   "inputs": [
     {
       "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementImageExpiryProfileWitnessTests.cs",
-      "sha256": "4e1de17e58aa0c34ee5ed39af7af05d4b599a6e5a8d7bf6b271d43b2c2456c3e",
-      "proposedGitBlob": "907a87dab500d766ed82e9a3a1745ff6af113c73"
+      "sha256": "735bbf7d0453d6079d86c340f69ae087dda42ef21ca558707d537144e51db67a",
+      "proposedGitBlob": "e892b7a34e2abc0fc82a5f83850e4f9137f6571a"
     },
     {
       "path": "scripts/observe-procurement-fixture-process.py",
