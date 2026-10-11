@@ -265,6 +265,7 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
     public async Task<PurchaseOrderFileResponse?> CreateFileAsync(int purchaseOrderId, string bucket, string objectName, CancellationToken cancellationToken)
     {
         if (!await dbContext.PurchaseOrders.AnyAsync(value => value.Id == purchaseOrderId, cancellationToken)) return null;
+        PurchaseOrderFileSourceConstraints.ValidateBucket(bucket);
         var now = Now(); var entity = new PurchaseOrderFile { PurchaseOrderId = purchaseOrderId, Bucket = bucket, ObjectName = objectName, CreatedDate = now, ModifiedDate = now };
         dbContext.Files.Add(entity); await dbContext.SaveChangesAsync(cancellationToken); return ToResponse(entity);
     }
@@ -278,6 +279,7 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
     public async Task<bool> UpdateFileAsync(int id, UpsertPurchaseOrderFileRequest request, CancellationToken cancellationToken)
     {
         var entity = await dbContext.Files.FindAsync([id], cancellationToken); if (entity is null) return false;
+        PurchaseOrderFileSourceConstraints.ValidateBucket(request.Bucket);
         entity.PurchaseOrderId = request.PurchaseOrderId ?? entity.PurchaseOrderId; entity.Bucket = request.Bucket; entity.ObjectName = request.ObjectName; entity.ModifiedDate = Now(); await dbContext.SaveChangesAsync(cancellationToken); return true;
     }
 

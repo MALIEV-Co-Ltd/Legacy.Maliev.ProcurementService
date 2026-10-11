@@ -9,7 +9,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-supplier-address.json"
+MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-file-bucket.json"
 HISTORICAL_PATH = "tools/ProcurementAuthProgram.Tests/public-graph.json"
 HISTORICAL_SHA256 = "205063c79697948343ba659b13757b68ef4814d1b62861484a1dd90c0b8e7d41"
 PREVIOUS_ACCEPTED_PATH = "tools/ProcurementAuthProgram.Tests/public-graph-child-replay.json"
@@ -81,6 +81,15 @@ def require_historical_graph(manifest):
     previous = json.loads(previous_bytes)
     if previous_custody["inputCount"] != 64 or previous["intentionalSourceChanges"]["inputCount"] != 64 or previous_custody["procurement"] != "99049bab2c100ffdf6606bf11a2f50980c0cf3cf":
         raise ValueError("Previous graph must retain the accepted child64 witness")
+    supplier_custody = manifest["latestAcceptedSupplierGraph"]
+    supplier_path = "tools/ProcurementAuthProgram.Tests/public-graph-supplier-address.json"
+    supplier_sha = "15aefdb6d7d587b3ca9c6c9183f732dc85ab8df0974a8b6ab1f416f7adc73177"
+    supplier_bytes = (ROOT / supplier_path).read_bytes()
+    if supplier_custody["path"] != supplier_path or supplier_custody["sha256"] != supplier_sha or hashlib.sha256(supplier_bytes).hexdigest() != supplier_sha:
+        raise ValueError("Accepted supplier-address65 graph custody must remain exact")
+    supplier_graph = json.loads(supplier_bytes)
+    if supplier_custody["procurement"] != "574b3b6ccecb4e4df9c4e72c326d9fb7f9a918f5" or supplier_custody["inputCount"] != 65 or supplier_graph["intentionalSourceChanges"]["inputCount"] != 65:
+        raise ValueError("Accepted supplier-address65 witness must remain exact")
     external = lambda graph: {entry["repository"]: entry["commit"] for entry in graph["references"] if entry["repository"] != "Legacy.Maliev.ProcurementService"}
     if external(manifest) != external(historical) or manifest["expectedCases"] != historical["expectedCases"] or manifest["expectedMethods"] != historical["expectedMethods"]:
         raise ValueError("External producer pins and actual Auth execution identities must remain unchanged")
