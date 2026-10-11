@@ -45,5 +45,16 @@ class FixtureOverlayControls(unittest.TestCase):
             guard.require_harness_binding(harness + b"drift")
 
 
+    def test_committed_lf_overlay_passes_and_packet_crlf_is_rejected(self):
+        import json
+        root = pathlib.Path(__file__).resolve().parents[1]
+        overlay = json.loads((root / "docs/procurement-supplier-address-fixture-startup-overlay.json").read_text(encoding="utf-8"))
+        committed = guard.git(root, "show", "HEAD:docs/procurement-supplier-address-fixture-overlay.json")
+        self.assertNotIn(b"\r\n", committed)
+        guard.require_previous_overlay(overlay, committed)
+        with self.assertRaises(ValueError):
+            guard.require_previous_overlay(overlay, committed.replace(b"\n", b"\r\n"))
+
+
 if __name__ == "__main__":
     unittest.main()

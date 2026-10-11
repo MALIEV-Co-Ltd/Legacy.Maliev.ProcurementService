@@ -9,7 +9,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-fixture-containment.json"
+MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-fixture-startup-diagnostics.json"
 HISTORICAL_PATH = "tools/ProcurementAuthProgram.Tests/public-graph.json"
 HISTORICAL_SHA256 = "205063c79697948343ba659b13757b68ef4814d1b62861484a1dd90c0b8e7d41"
 PREVIOUS_ACCEPTED_PATH = "tools/ProcurementAuthProgram.Tests/public-graph-child-replay.json"
@@ -105,6 +105,12 @@ def require_historical_graph(manifest):
     scalar_bytes = (ROOT / scalar_path).read_bytes()
     if scalar_custody != {"path": scalar_path, "sha256": scalar_sha, "procurement": "430d2cabbdaa712e3536a119abe88f9167021358", "inputCount": 67} or hashlib.sha256(scalar_bytes).hexdigest() != scalar_sha:
         raise ValueError("Accepted purchase-order address67 graph custody must remain exact")
+    fixture_custody = manifest["previousReviewedFixtureGraph"]
+    fixture_path = "tools/ProcurementAuthProgram.Tests/public-graph-fixture-containment.json"
+    fixture_sha = "1dfc57fa5a10f49b16f224e6f04b0a1355c75996ae9f624fdaec5e27913b6d64"
+    fixture_bytes = (ROOT / fixture_path).read_bytes()
+    if fixture_custody != {"path": fixture_path, "sha256": fixture_sha, "procurement": "1e520e795ec534ac9512ccf1bdb272a34e5140e9", "inputCount": 67, "qualification": "Reviewed draft source only; native fixture containment not accepted"} or hashlib.sha256(fixture_bytes).hexdigest() != fixture_sha:
+        raise ValueError("Reviewed fixture67 graph custody must remain exact without runtime qualification")
     external = lambda graph: {entry["repository"]: entry["commit"] for entry in graph["references"] if entry["repository"] != "Legacy.Maliev.ProcurementService"}
     if external(manifest) != external(historical) or manifest["expectedCases"] != historical["expectedCases"] or manifest["expectedMethods"] != historical["expectedMethods"]:
         raise ValueError("External producer pins and actual Auth execution identities must remain unchanged")

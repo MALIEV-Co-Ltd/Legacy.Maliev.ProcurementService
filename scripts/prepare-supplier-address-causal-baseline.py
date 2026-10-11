@@ -12,9 +12,9 @@ FIXTURE = 'Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntime
 MODEL = 'Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs'
 CONVERTER = 'Legacy.Maliev.ProcurementService.Application/Models/SupplierAddressScalarStringJsonConverter.cs'
 HARNESS_SHA256 = '8fe88e09de5368db558831e763da9c1ffaba44d4d58cf392afd2c505ade99a17'
-FIXTURE_PRODUCER = '1e520e795ec534ac9512ccf1bdb272a34e5140e9'
-FIXTURE_BLOB = 'a17ef270d1a0225fda879aef990b2dab01e73dec'
-FIXTURE_SHA256 = 'b5a69c9200bad7dd57e577125e9c75935ce3540af87f1b3410b3f5f9453c33e6'
+FIXTURE_PRODUCER = '61746f2fe03fd71eb3f208bfbf861eef800b9599'
+FIXTURE_BLOB = 'e2c124b0f734b8bcfad370e776817ebfbdaf53e0'
+FIXTURE_SHA256 = '67d1149ca88ae88d392588309b347a8fe9503dd5c37ff4998c31261752e49538'
 ORIGINAL_FIXTURE_SHA256 = '7a5823479455c30cac411b51cfed4ebbe247f2648e7d087167392e62be8efb20'
 
 
@@ -37,6 +37,12 @@ def require_harness_binding(harness):
     require(hashlib.sha256(harness).hexdigest()==HARNESS_SHA256,'Frozen harness source changed')
 
 
+def require_previous_overlay(overlay, previous_bytes):
+    previous_path = 'docs/procurement-supplier-address-fixture-overlay.json'
+    previous_sha = '73ac06dfd1af3523cfe13a03ad88bee20c8b9a46c9bb051dba02002fa5ff87d2'
+    require(overlay['previousReviewedFixtureOverlay']=={'path':previous_path,'sha256':previous_sha,'producer':'1e520e795ec534ac9512ccf1bdb272a34e5140e9','fixtureSha256':'b5a69c9200bad7dd57e577125e9c75935ce3540af87f1b3410b3f5f9453c33e6','qualification':'Reviewed source only; not native fixture acceptance'} and hashlib.sha256(previous_bytes).hexdigest()==previous_sha,'Prior reviewed fixture overlay custody changed')
+
+
 def prepare(baseline, manifest_path, verify_only=False):
     candidate=pathlib.Path(__file__).resolve().parents[1]
     manifest=json.loads(manifest_path.read_text(encoding='utf-8'))
@@ -44,8 +50,9 @@ def prepare(baseline, manifest_path, verify_only=False):
     require(git(baseline,'rev-parse','HEAD').decode().strip()==BASE,'Baseline is not immutable accepted main')
     expected_tracked = {FIXTURE} if verify_only else set()
     require(set(git(baseline,'diff','--name-only').decode().splitlines()) == expected_tracked and not git(baseline,'diff','--cached','--name-only'),'Baseline production or unreviewed tracked files changed')
-    overlay = json.loads((candidate/'docs/procurement-supplier-address-fixture-overlay.json').read_text(encoding='utf-8'))
+    overlay = json.loads((candidate/'docs/procurement-supplier-address-fixture-startup-overlay.json').read_text(encoding='utf-8'))
     require(overlay['reviewedFixtureProducer']==FIXTURE_PRODUCER and overlay['reviewedFixtureBlob']==FIXTURE_BLOB and overlay['reviewedFixtureSha256']==FIXTURE_SHA256 and overlay['originalBaseline']==BASE and overlay['originalBaselineFixtureSha256']==ORIGINAL_FIXTURE_SHA256 and overlay['fixturePath']==FIXTURE,'Fixture overlay manifest custody differs')
+    require_previous_overlay(overlay, (candidate/'docs/procurement-supplier-address-fixture-overlay.json').read_bytes())
     original_fixture=git(baseline,'show',BASE+':'+FIXTURE)
     reviewed_fixture=(candidate/FIXTURE).read_bytes()
     require_fixture_binding(reviewed_fixture,(baseline/FIXTURE).read_bytes(),original_fixture,verify_only)
