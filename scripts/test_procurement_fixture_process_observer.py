@@ -1,5 +1,6 @@
 """Fake handles and subprocesses only; never launch native tests or Docker."""
 import importlib.util
+import json
 import errno
 import pathlib
 import signal
@@ -214,6 +215,50 @@ class ObserverControls(unittest.TestCase):
             actual = flattened(caught.exception)
             for error in (primary, poll_failure, write_failure): self.assertIn(error, actual)
 
+    def test_docker_failure_does_not_skip_final_late_child_census_or_handle_close(self):
+        late = dict(IDENTITY, pid=18, startTicks=124)
+        docker_failure = observer.DockerObservationFailure(("inspect", "a" * 64), 1, b"bounded unknown")
+        root_handle = FakeHandle(IDENTITY); late_handle = FakeHandle(late)
+        root_handle.close = MagicMock(); late_handle.close = MagicMock()
+        child = MagicMock(pid=17); child.poll.return_value = 0; child.wait.return_value = 0
+        deadlines = []
+        def resource_census(*args):
+            deadlines.append(observer.phase_deadline)
+            return ["uncertain-container-census"], [docker_failure]
+        def final_census(identity):
+            deadlines.append(observer.phase_deadline)
+            return [] if len(deadlines) == 1 else [late]
+        with tempfile.TemporaryDirectory() as directory, patch.object(observer.sys, "platform", "linux"), patch.object(observer.shutil, "which", return_value="/dotnet"), patch.object(observer.os.path, "realpath", side_effect=lambda path, **kwargs: str(path)), patch.object(observer.os, "pidfd_open", create=True), patch.object(observer.signal, "pidfd_send_signal", create=True), patch.object(observer, "spawn_gated", return_value=(child, root_handle, IDENTITY)), patch.object(observer, "preflight_pidfd"), patch.object(observer, "OwnedHandle", return_value=late_handle), patch.object(observer, "terminal_census", side_effect=final_census) as census, patch.object(observer, "resource_census", side_effect=resource_census):
+            with self.assertRaises(BaseExceptionGroup) as caught: observer.run(pathlib.Path(directory))
+            self.assertIn(docker_failure, flattened(caught.exception))
+            self.assertEqual(2, census.call_count)
+            self.assertTrue(all(deadline == deadlines[0] for deadline in deadlines))
+            root_handle.close.assert_called_once(); late_handle.close.assert_called_once()
+            receipt = json.loads((pathlib.Path(directory) / "outer-process-cleanup.json").read_text())
+            self.assertIn(late, receipt["observedProcesses"])
+            self.assertIn("process:18", receipt["remaining"])
+            self.assertEqual([docker_failure.custody], receipt["commandFailures"])
+            self.assertTrue(receipt["errorTypes"])
+
+    def test_exhausted_shared_deadline_refuses_process_census_without_new_lease(self):
+        observer.phase_deadline = observer.time.monotonic() - 1
+        deadline = observer.phase_deadline
+        with patch.object(observer, "process_identity") as read, patch.object(observer.pathlib.Path, "iterdir") as listing:
+            with self.assertRaises(TimeoutError): observer.terminal_census(IDENTITY)
+        read.assert_not_called(); listing.assert_not_called()
+        self.assertEqual(deadline, observer.phase_deadline)
+
+    def test_final_census_deadline_failure_retains_docker_error_and_explicit_uncertainty(self):
+        original = OSError("Synthetic Docker census failure")
+        terminal_failure = TimeoutError("Synthetic exhausted cleanup budget")
+        child = MagicMock(pid=17); child.poll.return_value = 0; child.wait.return_value = 0
+        with tempfile.TemporaryDirectory() as directory, patch.object(observer.sys, "platform", "linux"), patch.object(observer.shutil, "which", return_value="/dotnet"), patch.object(observer.os.path, "realpath", side_effect=lambda path, **kwargs: str(path)), patch.object(observer.os, "pidfd_open", create=True), patch.object(observer.signal, "pidfd_send_signal", create=True), patch.object(observer, "spawn_gated", return_value=(child, FakeHandle(IDENTITY), IDENTITY)), patch.object(observer, "preflight_pidfd"), patch.object(observer, "terminal_census", side_effect=[[], terminal_failure]) as census, patch.object(observer, "resource_census", return_value=([], [original])):
+            with self.assertRaises(BaseExceptionGroup) as caught: observer.run(pathlib.Path(directory))
+            self.assertIn(original, flattened(caught.exception)); self.assertIn(terminal_failure, flattened(caught.exception))
+            self.assertEqual(2, census.call_count)
+            receipt = json.loads((pathlib.Path(directory) / "outer-process-cleanup.json").read_text())
+            self.assertIn("uncertain-process-census", receipt["remaining"])
+
     def test_late_terminal_child_never_qualifies_cleanup(self):
         late = dict(IDENTITY, pid=18, startTicks=124)
         child = MagicMock(pid=17); child.poll.return_value = 0; child.wait.return_value = 0
@@ -221,5 +266,121 @@ class ObserverControls(unittest.TestCase):
             with self.assertRaises(BaseExceptionGroup) as caught: observer.run(pathlib.Path(directory))
             self.assertTrue(any("Late owned descendant" in str(error) for error in flattened(caught.exception)))
 
+
+
+
+class ResourceAcquisitionControls(unittest.TestCase):
+    def setUp(self):
+        observer.phase_deadline = observer.time.monotonic() + 30
+        self.run = "b" * 32
+        self.owned, self.sessions, self.volumes, self.rows = set(), set(), set(), {}
+
+    def resource(self, identity, running=True):
+        return {"Id": identity, "Config": {"Labels": {
+            "maliev.codex.owner": "procurement-runtime-fixture", "maliev.codex.persistent-data": "false",
+            "maliev.codex.parent-run": self.run, "maliev.codex.role": "supplier",
+            "maliev.codex.run": "a" * 32, "org.testcontainers.session-id": "c" * 32,
+            "maliev.codex.expires-utc": "2026-10-11T09:32:00+00:00"}},
+            "Mounts": [{"Type": "volume", "Name": identity}], "Created": "2026-10-11T09:00:00+00:00",
+            "State": {"Running": running, "StartedAt": "2026-10-11T09:00:01+00:00", "Pid": 123},
+            "HostConfig": {"Memory": 1073741824, "MemorySwap": 1073741824, "NanoCpus": 750000000},
+            "NetworkSettings": {"Ports": {"5432/tcp": [{"HostIp": "127.0.0.1"}]}}}
+
+    def observe(self):
+        observer.observe(self.run, self.owned, self.sessions, self.volumes, self.rows)
+
+    def test_known_acquired_removed_resource_is_not_reinspected(self):
+        identity = "a" * 64
+        with patch.object(observer, "docker", side_effect=[identity, json.dumps([self.resource(identity)]), identity, ""] ) as query:
+            self.observe(); self.observe(); self.observe()
+        self.assertEqual(1, sum(call.args[0] == "inspect" for call in query.call_args_list))
+        self.assertEqual({identity}, self.owned)
+        self.assertEqual(123, self.rows[identity]["processId"])
+        self.assertTrue(all("--no-trunc" in call.args for call in query.call_args_list if call.args[0] == "ps"))
+
+    def test_unknown_removed_resource_fails_without_tombstone_acceptance(self):
+        identity = "a" * 64
+        original = observer.DockerObservationFailure(("inspect", identity), 1, ("Error: No such object: " + identity).encode())
+        with patch.object(observer, "docker", side_effect=[identity, original]):
+            with self.assertRaises(BaseExceptionGroup) as caught: self.observe()
+        self.assertIn(original, flattened(caught.exception))
+        self.assertEqual([original.custody], observer.command_failure_custody([caught.exception]))
+        self.assertFalse(self.rows)
+
+    def test_new_full_id_with_same_short_prefix_is_independently_acquired(self):
+        first, second = "a" * 64, "a" * 12 + "b" * 52
+        with patch.object(observer, "docker", side_effect=[first, json.dumps([self.resource(first)]),
+                first + " " + second, json.dumps([self.resource(second)])]) as query:
+            self.observe(); self.observe()
+        self.assertEqual({first, second}, self.owned)
+        self.assertEqual([first, second], [call.args[1] for call in query.call_args_list if call.args[0] == "inspect"])
+
+    def test_short_duplicate_or_inspect_identity_collision_fails(self):
+        identity = "a" * 64
+        for listing, inspection in [(identity[:12], None), (identity + " " + identity, None),
+                (identity, json.dumps([self.resource("b" * 64)]))]:
+            with self.subTest(listing=listing), patch.object(observer, "docker", side_effect=[listing, inspection]):
+                with self.assertRaises((ValueError, BufferError, BaseExceptionGroup)): self.observe()
+        self.assertFalse(self.rows)
+
+    def test_created_resource_is_reinspected_until_running_snapshot_exists(self):
+        identity = "a" * 64
+        with patch.object(observer, "docker", side_effect=[identity, json.dumps([self.resource(identity, False)]),
+                identity, json.dumps([self.resource(identity)])]) as query:
+            self.observe(); self.assertFalse(self.rows); self.observe()
+        self.assertEqual(2, sum(call.args[0] == "inspect" for call in query.call_args_list))
+
+    def test_wrong_ownership_labels_birth_and_limits_fail_acquisition(self):
+        identity = "a" * 64
+        for field in ["owner", "parent", "role", "birth", "limits"]:
+            row = self.resource(identity)
+            if field == "owner": row["Config"]["Labels"]["maliev.codex.owner"] = "foreign"
+            elif field == "parent": row["Config"]["Labels"]["maliev.codex.parent-run"] = "d" * 32
+            elif field == "role": row["Config"]["Labels"]["maliev.codex.role"] = "foreign"
+            elif field == "birth": row["State"]["StartedAt"] = "2026-10-10T09:00:00+00:00"
+            else: row["HostConfig"]["Memory"] = 0
+            with self.subTest(field=field), patch.object(observer, "docker", side_effect=[identity, json.dumps([row])]):
+                with self.assertRaises(BaseExceptionGroup): self.observe()
+        self.assertFalse(self.rows)
+
+    def test_multiple_acquisition_errors_preserve_all_and_capture_other_resource(self):
+        first, second, third = "a" * 64, "b" * 64, "c" * 64
+        one = observer.DockerObservationFailure(("inspect", first), 1, b"bounded unknown")
+        two = observer.DockerObservationFailure(("inspect", second), 1, b"bounded unknown")
+        with patch.object(observer, "docker", side_effect=[" ".join([first, second, third]), one, two, json.dumps([self.resource(third)])]):
+            with self.assertRaises(BaseExceptionGroup) as caught: self.observe()
+        self.assertEqual([one, two], flattened(caught.exception))
+        self.assertEqual([one.custody, two.custody], observer.command_failure_custody([caught.exception]))
+        self.assertIn(third, self.rows)
+
+    def test_acquisition_timeout_preserves_shared_deadline_and_continues_other_resource(self):
+        first, second = "a" * 64, "b" * 64
+        deadline = observer.phase_deadline
+        original = TimeoutError("Synthetic shared deadline")
+        with patch.object(observer, "docker", side_effect=[first + " " + second, original, json.dumps([self.resource(second)])]):
+            with self.assertRaises(BaseExceptionGroup) as caught: self.observe()
+        self.assertIn(original, flattened(caught.exception))
+        self.assertEqual(deadline, observer.phase_deadline)
+        self.assertIn(second, self.rows)
+
+    def test_terminal_census_attempts_other_queries_and_retains_every_error(self):
+        self.sessions.add("c" * 32)
+        one, two, three = OSError("acquisition"), TimeoutError("session query"), OSError("global query")
+        with patch.object(observer, "observe", side_effect=one), patch.object(observer, "docker",
+                side_effect=[two, "late-volume", three, "late-volume"]) as query:
+            self.volumes.add("late-volume")
+            remaining, errors = observer.resource_census(self.run, self.owned, self.sessions, self.volumes, self.rows)
+        self.assertEqual([one, two, three], errors)
+        self.assertEqual(4, query.call_count)
+        self.assertIn("session-volume:late-volume", remaining)
+        self.assertIn("volume:late-volume", remaining)
+        self.assertIn("uncertain-container-census", remaining)
+
+    def test_late_session_container_and_volume_still_prevent_terminal_absence(self):
+        identity = "a" * 64; self.sessions.add("c" * 32)
+        with patch.object(observer, "observe"), patch.object(observer, "docker", side_effect=[identity, "late-volume", "", ""]):
+            remaining, errors = observer.resource_census(self.run, self.owned, self.sessions, self.volumes, self.rows)
+        self.assertFalse(errors)
+        self.assertEqual(["session-container:" + identity, "session-volume:late-volume"], remaining)
 
 if __name__ == "__main__": unittest.main()

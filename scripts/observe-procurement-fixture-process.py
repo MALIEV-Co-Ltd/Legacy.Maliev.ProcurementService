@@ -240,12 +240,14 @@ def process_identity(pid, executable=True):
 
 
 def terminal_census(identity):
+    remaining_timeout(1)
     leader = process_identity(identity["pid"])
     if leader is not None and any(leader[key] != identity[key] for key in ("pid", "startTicks", "group", "session")) and leader["group"] == identity["group"] and leader["session"] == identity["session"]:
         raise RuntimeError("Owned session leader identity reused; census uncertain")
     rows = []
     count = 0
     for entry in pathlib.Path("/proc").iterdir():
+        remaining_timeout(1)
         if not entry.name.isdecimal():
             continue
         count += 1
@@ -269,33 +271,96 @@ def terminal_census(identity):
     return rows
 
 
+OBSERVATION_CONTRACT = "one-running-snapshot-full-id-census-v1"
+
+
 def observe(run, owned, sessions, volumes, observations):
-    ids = docker("ps", "-aq", "--filter", "label=maliev.codex.parent-run=" + run).split()
-    if len(ids) > MAX_RESOURCES:
-        raise BufferError("Owned container census exceeded cardinality bound")
+    ids = docker("ps", "-aq", "--no-trunc", "--filter", "label=maliev.codex.parent-run=" + run).split()
+    if len(ids) > MAX_RESOURCES or len(set(ids)) != len(ids):
+        raise BufferError("Owned container census exceeded bound or duplicated identity")
+    failures = []
     for identity in ids:
-        row = json.loads(docker("inspect", identity))[0]
-        labels = row["Config"]["Labels"]
-        if labels.get("maliev.codex.owner") != "procurement-runtime-fixture" or labels.get("maliev.codex.persistent-data") != "false":
-            raise ValueError("Owned observation label mismatch")
-        owned.add(row["Id"])
-        session = labels.get("org.testcontainers.session-id")
-        if session:
-            sessions.add(session)
-        for mount in row["Mounts"]:
-            if mount["Type"] == "volume":
-                volumes.add(mount["Name"])
-        if len(owned) > MAX_RESOURCES or len(sessions) > MAX_RESOURCES or len(volumes) > MAX_RESOURCES or len(row["Mounts"]) > MAX_RESOURCES:
-            raise BufferError("Owned resource metadata cardinality exceeded")
-        if row["State"]["Running"]:
-            observations[row["Id"]] = {"id": row["Id"], "role": labels.get("maliev.codex.role"),
-                "resourceRunId": labels.get("maliev.codex.run"), "parentRunId": run,
-                "createdAt": row["Created"], "startedAt": row["State"]["StartedAt"],
-                "processId": row["State"]["Pid"], "memoryBytes": row["HostConfig"]["Memory"],
-                "memorySwapBytes": row["HostConfig"]["MemorySwap"], "nanoCpus": row["HostConfig"]["NanoCpus"],
-                "expiresAt": labels.get("maliev.codex.expires-utc"),
-                "volumes": [mount["Name"] for mount in row["Mounts"] if mount["Type"] == "volume"],
-                "hostIps": [binding["HostIp"] for bindings in (row["NetworkSettings"]["Ports"] or {}).values() for binding in (bindings or [])]}
+        try:
+            if not re.fullmatch(r"[a-f0-9]{64}", identity):
+                raise ValueError("Container census requires full immutable identities")
+            # Only a previously acquired RUNNING snapshot permits skipping inspection.
+            # This contract never claims continuous caps/label/birth monitoring.
+            if identity in observations:
+                continue
+            rows = json.loads(docker("inspect", identity))
+            if len(rows) != 1 or rows[0]["Id"] != identity:
+                raise ValueError("Acquisition identity differs from full-ID census")
+            row = rows[0]
+            labels = row["Config"]["Labels"]
+            role = labels.get("maliev.codex.role")
+            if labels.get("maliev.codex.owner") != "procurement-runtime-fixture" or labels.get("maliev.codex.persistent-data") != "false" or labels.get("maliev.codex.parent-run") != run or role not in ("supplier", "purchase-order", "forced-expiry-control"):
+                raise ValueError("Owned observation label mismatch")
+            resource_run = labels.get("maliev.codex.run")
+            session = labels.get("org.testcontainers.session-id")
+            uuid.UUID(hex=resource_run)
+            uuid.UUID(hex=session)
+            forced = role == "forced-expiry-control"
+            memory = 67108864 if forced else 1073741824
+            cpu = 100000000 if forced else 750000000
+            if row["HostConfig"]["Memory"] != memory or row["HostConfig"]["MemorySwap"] != memory or row["HostConfig"]["NanoCpus"] != cpu:
+                raise ValueError("Independent acquisition limits differ")
+            if len(row["Mounts"]) > MAX_RESOURCES:
+                raise BufferError("Owned mount cardinality exceeded")
+            row_volumes = [mount["Name"] for mount in row["Mounts"] if mount["Type"] == "volume"]
+            if not row_volumes or any(not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_.-]*", name) for name in row_volumes):
+                raise ValueError("Independent volume acquisition missing or unsafe")
+            owned.add(identity); sessions.add(session); volumes.update(row_volumes)
+            if len(owned) > MAX_RESOURCES or len(sessions) > MAX_RESOURCES or len(volumes) > MAX_RESOURCES:
+                raise BufferError("Owned resource metadata cardinality exceeded")
+            if row["State"]["Running"]:
+                host_ips = [binding["HostIp"] for bindings in (row["NetworkSettings"]["Ports"] or {}).values() for binding in (bindings or [])]
+                if len(host_ips) > MAX_RESOURCES or (host_ips != [] if forced else set(host_ips) != {"127.0.0.1"}):
+                    raise ValueError("Independent acquisition binding differs")
+                created = datetime.datetime.fromisoformat(row["Created"].replace("Z", "+00:00"))
+                started = datetime.datetime.fromisoformat(row["State"]["StartedAt"].replace("Z", "+00:00"))
+                expires = datetime.datetime.fromisoformat(labels["maliev.codex.expires-utc"].replace("Z", "+00:00"))
+                if started < created or expires <= started or type(row["State"]["Pid"]) is not int or row["State"]["Pid"] <= 0:
+                    raise ValueError("Independent acquisition birth or lease differs")
+                observations[identity] = {"id": identity, "role": role,
+                    "resourceRunId": resource_run, "parentRunId": run,
+                    "createdAt": row["Created"], "startedAt": row["State"]["StartedAt"],
+                    "processId": row["State"]["Pid"], "memoryBytes": row["HostConfig"]["Memory"],
+                    "memorySwapBytes": row["HostConfig"]["MemorySwap"], "nanoCpus": row["HostConfig"]["NanoCpus"],
+                    "expiresAt": labels["maliev.codex.expires-utc"], "volumes": row_volumes, "hostIps": host_ips}
+        except BaseException as error:
+            failures.append(error)
+    if failures:
+        raise BaseExceptionGroup("Independent resource acquisition failures", failures)
+
+
+def resource_census(run, owned, sessions, volumes, observations):
+    remaining, failures = [], []
+    try: observe(run, owned, sessions, volumes, observations)
+    except BaseException as error: failures.append(error)
+    for session in sorted(sessions):
+        for kind, command in (
+            ("session-container", ("ps", "-aq", "--no-trunc", "--filter", "label=org.testcontainers.session-id=" + session)),
+            ("session-volume", ("volume", "ls", "-q", "--filter", "label=org.testcontainers.session-id=" + session))):
+            try:
+                values = docker(*command).split()
+                if len(values) > MAX_RESOURCES:
+                    raise BufferError("Session census cardinality exceeded")
+                if kind == "session-container" and any(not re.fullmatch(r"[a-f0-9]{64}", value) for value in values):
+                    raise ValueError("Session census requires full container identities")
+                remaining.extend(kind + ":" + value for value in values)
+            except BaseException as error:
+                failures.append(error); remaining.append("uncertain-" + kind + "-census")
+    for kind, known, command in (("container", owned, ("ps", "-aq", "--no-trunc")), ("volume", volumes, ("volume", "ls", "-q"))):
+        try:
+            values = set(docker(*command).split())
+            if len(values) > MAX_PROCESSES:
+                raise BufferError("Terminal Docker census cardinality exceeded")
+            if kind == "container" and any(not re.fullmatch(r"[a-f0-9]{64}", value) for value in values):
+                raise ValueError("Terminal census requires full container identities")
+            remaining.extend(kind + ":" + value for value in sorted(known & values))
+        except BaseException as error:
+            failures.append(error); remaining.append("uncertain-" + kind + "-census")
+    return remaining, failures
 
 
 def process_custody(launch, expected, observed):
@@ -396,30 +461,33 @@ def run(root):
                 errors.append(error)
         try:
             # This independent observer never deletes a resource; failed cleanup stays visible.
-            natural_resource_deadline = time.monotonic() + 20
+            natural_resource_deadline = phase_deadline
             while True:
                 remaining = []
-                observe(run_id, owned, sessions, volumes, observations)
-                for session in sessions:
-                    ids = docker("ps", "-aq", "--filter", "label=org.testcontainers.session-id=" + session).split()
-                    remaining.extend("session-container:" + value for value in ids)
-                    remaining.extend("session-volume:" + value for value in docker("volume", "ls", "-q", "--filter", "label=org.testcontainers.session-id=" + session).split())
-                all_ids = set(docker("ps", "-aq", "--no-trunc").split())
-                all_volumes = set(docker("volume", "ls", "-q").split())
-                if len(all_ids) > MAX_PROCESSES or len(all_volumes) > MAX_PROCESSES:
-                    raise BufferError("Terminal Docker census cardinality exceeded")
-                remaining.extend("container:" + value for value in sorted(owned & all_ids))
-                remaining.extend("volume:" + value for value in sorted(volumes & all_volumes))
+                remaining, census_failures = resource_census(run_id, owned, sessions, volumes, observations)
+                if census_failures:
+                    raise BaseExceptionGroup("Independent terminal resource census failures", census_failures)
                 if not remaining or time.monotonic() >= natural_resource_deadline:
                     break
                 time.sleep(0.2)
-            if identity is not None:
-                for actual in terminal_census(identity):
-                    remaining.append("process:" + str(actual["pid"]))
-                    if actual["pid"] not in handles:
-                        errors.append(RuntimeError("Unobserved terminal descendant prevents qualification"))
         except BaseException as error:
             errors.append(error)
+        # Final process observation is independent of every Docker acquisition/census failure.
+        # It shares the existing deadline and never grants a new cleanup interval.
+        if identity is not None:
+            try:
+                for actual in terminal_census(identity):
+                    remaining.append("process:" + str(actual["pid"]))
+                    try:
+                        if actual["pid"] not in handles:
+                            errors.append(RuntimeError("Unobserved terminal descendant prevents qualification"))
+                            handles[actual["pid"]] = OwnedHandle(actual)
+                        record_process(processes, actual, identity, expected_executable)
+                    except BaseException as error:
+                        errors.append(error)
+            except BaseException as error:
+                remaining.append("uncertain-process-census")
+                errors.append(error)
         exit_code = None
         if child is not None:
             try:
@@ -442,7 +510,7 @@ def run(root):
         custody = {"launchProcess": identity, "expectedTestExecutable": expected_executable, "testProcess": None}
         try: custody = process_custody(identity, expected_executable, observed_processes)
         except BaseException as error: errors.append(error)
-        receipt = {"schemaVersion": 1, "runId": run_id, "startedAtUtc": started,
+        receipt = {"schemaVersion": 2, "observationContract": OBSERVATION_CONTRACT, "runId": run_id, "startedAtUtc": started,
                    "completedAtUtc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                    **custody, "testExitCode": exit_code,
                    "observedProcesses": observed_processes, "ownedContainers": sorted(owned),

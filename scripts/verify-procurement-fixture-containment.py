@@ -158,7 +158,7 @@ def provider(value, scenario, parent):
 def verify(root):
     native_cases(root)
     outer = json.loads((root / "outer-process-cleanup.json").read_text())
-    exact(outer, "schemaVersion runId startedAtUtc completedAtUtc launchProcess expectedTestExecutable testProcess testExitCode observedProcesses observedResources ownedContainers ownedVolumes sessions remaining errorTypes commandFailures destructiveDockerActions")
+    exact(outer, "schemaVersion observationContract runId startedAtUtc completedAtUtc launchProcess expectedTestExecutable testProcess testExitCode observedProcesses observedResources ownedContainers ownedVolumes sessions remaining errorTypes commandFailures destructiveDockerActions")
     guid(outer["runId"])
     if not isinstance(outer["commandFailures"], list): raise ValueError("Command failure custody must be a list")
     for failure in outer["commandFailures"]:
@@ -175,7 +175,7 @@ def verify(root):
         if type(failure["exitCode"]) is not int or failure["exitCode"] == 0 or type(failure["stderrBytes"]) is not int or not 0 <= failure["stderrBytes"] <= 65536 or not re.fullmatch(r"[a-f0-9]{64}", failure["stderrSha256"]):
             raise ValueError("Invalid bounded command failure custody")
     if outer["commandFailures"]: raise ValueError("Any failed observation prevents qualification")
-    if outer["schemaVersion"] != 1 or outer["testExitCode"] != 0 or outer["remaining"] or outer["errorTypes"] or outer["destructiveDockerActions"] != 0 or not outer["sessions"]:
+    if outer["schemaVersion"] != 2 or outer["observationContract"] != "one-running-snapshot-full-id-census-v1" or outer["testExitCode"] != 0 or outer["remaining"] or outer["errorTypes"] or outer["destructiveDockerActions"] != 0 or not outer["sessions"]:
         raise ValueError("Independent cleanup witness failed")
     if timestamp(outer["completedAtUtc"]) < timestamp(outer["startedAtUtc"]):
         raise ValueError("Outer timing differs")

@@ -217,7 +217,7 @@ class OuterWitnessControls(unittest.TestCase):
                   "ObservedOperationFailureTypes": [], "PersistentData": False}
         (directory / "forced-expiry.json").write_text(json.dumps(expiry))
         process = {"pid": 17, "startTicks": 123, "group": 17, "session": 17, "executable": "/usr/share/dotnet/dotnet"}
-        outer = {"schemaVersion": 1, "runId": "b" * 32, "startedAtUtc": "2026-10-11T09:00:00+00:00",
+        outer = {"schemaVersion": 2, "observationContract": "one-running-snapshot-full-id-census-v1", "runId": "b" * 32, "startedAtUtc": "2026-10-11T09:00:00+00:00",
                  "completedAtUtc": "2026-10-11T09:01:00+00:00", "testProcess": process, "launchProcess": dict(process, executable="/python3"), "expectedTestExecutable": process["executable"],
                  "testExitCode": 0, "observedProcesses": [dict(process, executable="/python3"), process], "ownedContainers": [str(i) * 64 for i in range(1, 6)],
                  "ownedVolumes": [str(i) * 64 for i in range(1, 6)], "sessions": ["c" * 32],
@@ -235,6 +235,19 @@ class OuterWitnessControls(unittest.TestCase):
             "expiresAt": "2026-10-11T09:00:30+00:00", "volumes": ["5" * 64], "hostIps": []})
         (root / "outer-process-cleanup.json").write_text(json.dumps(outer))
         return outer, expiry
+
+    def test_snapshot_contract_missing_fifth_resource_birth_or_late_resources_fail(self):
+        for mode in ("missing-fifth", "wrong-birth", "wrong-parent", "late-session", "late-volume", "old-contract"):
+            with tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory); outer, _ = self.files(root)
+                if mode == "missing-fifth": outer["observedResources"].pop()
+                elif mode == "wrong-birth": outer["observedResources"][0]["startedAt"] = "2026-10-10T09:00:00+00:00"
+                elif mode == "wrong-parent": outer["observedResources"][0]["parentRunId"] = "a" * 32
+                elif mode == "late-session": outer["remaining"] = ["session-container:" + "9" * 64]
+                elif mode == "late-volume": outer["remaining"] = ["session-volume:late-volume"]
+                else: outer["observationContract"] = "continuous-caps-unproven"
+                (root / "outer-process-cleanup.json").write_text(json.dumps(outer))
+                with self.subTest(mode=mode), self.assertRaises(ValueError): guard.verify(root)
 
     def test_command_failure_custody_never_qualifies_or_allows_raw_stderr(self):
         with tempfile.TemporaryDirectory() as directory:
