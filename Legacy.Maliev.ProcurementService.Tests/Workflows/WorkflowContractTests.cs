@@ -8,6 +8,8 @@ namespace Legacy.Maliev.ProcurementService.Tests.Workflows;
 public sealed class WorkflowContractTests
 {
     private const string ReviewedProducerVersion = "b27fbef06a3aa58c1f4fc0e75d7c70b32be76266";
+    private const string HistoricalProcurementVersion = "c40fd246c17b738879c9345c6bcca44d96faf025";
+    private const string CurrentProcurementVersion = "99049bab2c100ffdf6606bf11a2f50980c0cf3cf";
     private static readonly string Workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "_build-and-test.yml"));
     private static readonly string ApiProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Api.csproj"));
@@ -59,7 +61,7 @@ public sealed class WorkflowContractTests
 
     private static void ValidateReviewedPreload(string source, bool auth)
     {
-        if (auth) ValidateAuthProgramJoin(source);
+        if (auth) ValidateAuthProgramJoin(source, historicalFixture: true);
         else WorkflowContractValidator.Validate(source);
     }
 
@@ -216,16 +218,19 @@ public sealed class WorkflowContractTests
     [InlineData("b27fbef06a3aa58c1f4fc0e75d7c70b32be76266", "main")]
     [InlineData("ecb05cbbd68717e415f69df2ac488c1d323b1da3", "7edcd961024868513fd5f373cab3dcb261197f77")]
     [InlineData("c40fd246c17b738879c9345c6bcca44d96faf025", "main")]
+    [InlineData("99049bab2c100ffdf6606bf11a2f50980c0cf3cf", "main")]
     [InlineData("if: always()", "if: failure()")]
     [InlineData("python3 -B scripts/verify-procurement-auth-program.py results auth-program-results", "python3 -c 'print(0)'")]
     public void ActualAuthProgramJoin_RejectsMutableProducerOrMissingAcceptanceGate(string original, string replacement)
     {
-        var source = File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml"));
+        var historical = original == HistoricalProcurementVersion;
+        var source = historical ? ReadReviewedPreload(auth: true)
+            : File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml"));
         Assert.Contains(original, source, StringComparison.Ordinal);
-        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(source.Replace(original, replacement, StringComparison.Ordinal)));
+        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(source.Replace(original, replacement, StringComparison.Ordinal), historicalFixture: historical));
     }
 
-    private static void ValidateAuthProgramJoin(string source)
+    private static void ValidateAuthProgramJoin(string source, bool historicalFixture = false)
     {
         var yaml = new YamlStream();
         yaml.Load(new StringReader(source));
@@ -247,7 +252,7 @@ public sealed class WorkflowContractTests
             ("MALIEV-Co-Ltd/Legacy.Maliev.AuthService", ReviewedProducerVersion),
             ("MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults", "ecb05cbbd68717e415f69df2ac488c1d323b1da3"),
             ("MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts", "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7"),
-            ("MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService", "c40fd246c17b738879c9345c6bcca44d96faf025"),
+            ("MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService", historicalFixture ? HistoricalProcurementVersion : CurrentProcurementVersion),
         }.ToDictionary(entry => entry.Repository, entry => entry.Commit);
         var checkouts = steps.Where(step => step.Children.TryGetValue(new YamlScalarNode("with"), out var node)
             && node is YamlMappingNode settings && settings.Children.ContainsKey(new YamlScalarNode("repository"))).ToArray();
