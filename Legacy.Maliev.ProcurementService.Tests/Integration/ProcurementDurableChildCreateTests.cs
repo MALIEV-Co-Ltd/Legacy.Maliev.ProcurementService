@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Legacy.Maliev.ProcurementService.Tests.Integration;
 
@@ -62,6 +63,14 @@ public sealed class ProcurementDurableChildCreateTests(ProcurementDurableCreateF
         if (scenario == "database-unavailable")
         {
             await using var unavailable = App(true, orderConnection: "Host=127.0.0.1;Port=1;Database=child-refusal;Timeout=1;Command Timeout=1;Pooling=false");
+            await using (var refusalScope = unavailable.Services.CreateAsyncScope())
+            {
+                var refusalDatabase = refusalScope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>();
+                var actualConnection = new Npgsql.NpgsqlConnectionStringBuilder(refusalDatabase.Database.GetDbConnection().ConnectionString);
+                Assert.Equal("127.0.0.1", actualConnection.Host);
+                Assert.Equal(1, actualConnection.Port);
+                Assert.Equal("child-refusal", actualConnection.Database);
+            }
             using var writer = Client(unavailable, "service:child-one", file);
             using var refusal = await PostAsync(writer, file, originalParent, key);
             Assert.Equal(HttpStatusCode.ServiceUnavailable, refusal.StatusCode);
@@ -73,6 +82,10 @@ public sealed class ProcurementDurableChildCreateTests(ProcurementDurableCreateF
         }
         if (scenario is "rollback" or "lost-ack" or "rollback-uncertain")
         {
+            await using (var retryScope = app.Services.CreateAsyncScope())
+            {
+                Assert.True(retryScope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Database.CreateExecutionStrategy().RetriesOnFailure);
+            }
             var acknowledgement = new LostChildAcknowledgement();
             var receiptFault = new ChildReceiptSaveFault();
             var rollbackFault = scenario == "rollback-uncertain" ? new ChildRollbackFault() : null;
@@ -103,6 +116,10 @@ public sealed class ProcurementDurableChildCreateTests(ProcurementDurableCreateF
         }
         if (scenario is "concurrent" or "concurrent-conflict")
         {
+            await using (var retryScope = app.Services.CreateAsyncScope())
+            {
+                Assert.True(retryScope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Database.CreateExecutionStrategy().RetriesOnFailure);
+            }
             var barrier = new ReceiptBarrier();
             await using var firstApp = App(true, barrier);
             await using var secondApp = App(true, barrier);
@@ -133,7 +150,7 @@ public sealed class ProcurementDurableChildCreateTests(ProcurementDurableCreateF
             }
             return;
         }
-using var created = await PostAsync(client, file, originalParent, scenario == "no-header" ? null : key);
+        using var created = await PostAsync(client, file, originalParent, scenario == "no-header" ? null : key);
         Assert.Equal(HttpStatusCode.Created, created.StatusCode);
         Assert.Equal("application/json", created.Content.Headers.ContentType!.MediaType);
         var body = await created.Content.ReadAsStringAsync();
@@ -289,21 +306,28 @@ using var created = await PostAsync(client, file, originalParent, scenario == "n
         Assert.Equal(migrations, (await database.Database.GetAppliedMigrationsAsync()).ToArray());
         await CountsAsync(file, 1, 1);
     }
-private WebApplicationFactory<Program> App(bool enabled, IInterceptor? fault = null, string? orderConnection = null, IInterceptor? secondFault = null) => fixture.CreateFactory(true).WithWebHostBuilder(builder =>
-    {
-        builder.ConfigureAppConfiguration((_, config) =>
+    private WebApplicationFactory<Program> App(bool enabled, IInterceptor? fault = null, string? orderConnection = null, IInterceptor? secondFault = null) => fixture.CreateFactory(true).WithWebHostBuilder(builder =>
         {
-            var settings = new Dictionary<string, string?> { ["Procurement:DurableChildCreates:Enabled"] = enabled.ToString() };
-            if (orderConnection is not null) settings["ConnectionStrings:PurchaseOrderDbContext"] = orderConnection;
-            config.AddInMemoryCollection(settings);
+            builder.ConfigureAppConfiguration((_, config) =>
+            {
+                var settings = new Dictionary<string, string?> { ["Procurement:DurableChildCreates:Enabled"] = enabled.ToString() };
+                if (orderConnection is not null) settings["ConnectionStrings:PurchaseOrderDbContext"] = orderConnection;
+                config.AddInMemoryCollection(settings);
+            });
+            if (orderConnection is not null) builder.ConfigureServices(services =>
+            {
+                // Defaults captures the host connection before this derived factory's late app configuration.
+                // Override only this refusal host's actual options; no provider connection is opened here.
+                services.RemoveAll<DbContextOptions<PurchaseOrderDbContext>>();
+                services.AddScoped(_ => new DbContextOptionsBuilder<PurchaseOrderDbContext>().UseNpgsql(orderConnection).Options);
+            });
+            if (fault is not null) builder.ConfigureServices(services => services.AddDbContext<PurchaseOrderDbContext>(options =>
+            {
+                options.AddInterceptors(fault);
+                if (secondFault is not null) options.AddInterceptors(secondFault);
+            }));
         });
-        if (fault is not null) builder.ConfigureServices(services => services.AddDbContext<PurchaseOrderDbContext>(options =>
-        {
-            options.AddInterceptors(fault);
-            if (secondFault is not null) options.AddInterceptors(secondFault);
-        }));
-    });
-        private HttpClient Client(WebApplicationFactory<Program> app, string actor, bool file)
+    private HttpClient Client(WebApplicationFactory<Program> app, string actor, bool file)
     {
         var client = fixture.ClientAs(app, actor,
             file ? ProcurementPermissions.FilesWrite : ProcurementPermissions.OrderItemsWrite,
@@ -311,7 +335,7 @@ private WebApplicationFactory<Program> App(bool enabled, IInterceptor? fault = n
         client.Timeout = TimeSpan.FromSeconds(30);
         return client;
     }
-private static async Task<HttpResponseMessage> PostAsync(HttpClient client, bool file, int? parent, string? key, string text = "original", bool multiple = false)
+    private static async Task<HttpResponseMessage> PostAsync(HttpClient client, bool file, int? parent, string? key, string text = "original", bool multiple = false)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, file ? $"/purchaseorders/{parent}/files?bucket=owned-fixture&objectName={Uri.EscapeDataString(text)}" : "/purchaseorders/orderitems");
         if (!file) request.Content = JsonContent.Create(new UpsertOrderItemRequest(parent, text, null, 3, 12.34m));
@@ -357,7 +381,7 @@ private static async Task<HttpResponseMessage> PostAsync(HttpClient client, bool
             FileReceipts = await orders.Database.SqlQueryRaw<string>("SELECT row_to_json(t)::text AS \"Value\" FROM \"PurchaseOrderFileCreateReceipt\" t ORDER BY \"IssuerDigest\", \"SubjectDigest\", \"KeyDigest\"").ToArrayAsync()
         });
     }
-private sealed class ReceiptBarrier : SaveChangesInterceptor
+    private sealed class ReceiptBarrier : SaveChangesInterceptor
     {
         public TaskCompletionSource Entered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public TaskCompletionSource Release { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -367,7 +391,7 @@ private sealed class ReceiptBarrier : SaveChangesInterceptor
         public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData data, InterceptionResult<int> result, CancellationToken token = default)
         {
             if (data.Context!.ChangeTracker.Entries().Any(value => value.Metadata.ClrType.Name.EndsWith("ChildReceiptRecord", StringComparison.Ordinal)))
-                        {
+            {
                 Entered.TrySetResult();
                 var position = Interlocked.Increment(ref enteredCount);
                 if (position == 2) BothEntered.TrySetResult();
@@ -376,7 +400,7 @@ private sealed class ReceiptBarrier : SaveChangesInterceptor
             return result;
         }
     }
-        private sealed class ChildReceiptSaveFault : SaveChangesInterceptor
+    private sealed class ChildReceiptSaveFault : SaveChangesInterceptor
     {
         public bool Reached { get; private set; }
         public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData data, InterceptionResult<int> result, CancellationToken token = default)

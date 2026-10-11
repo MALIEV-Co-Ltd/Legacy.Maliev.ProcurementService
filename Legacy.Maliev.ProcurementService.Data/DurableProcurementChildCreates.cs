@@ -97,10 +97,15 @@ public sealed class DurableProcurementChildCreates(PurchaseOrderDbContext orders
             using var probeToken = CancellationTokenSource.CreateLinkedTokenSource(token, deadline.Token);
             try
             {
-                await using var context = Fresh();
-                if (!await ReceiptReadiness.IsReadyAsync(context, table, operation, probeToken.Token)) return Unavailable();
-                await using var transaction = await context.Database.BeginTransactionAsync(IsolationLevel.RepeatableRead, probeToken.Token);
-                return await ProbeAsync<TReceipt>(context, binding, originalParent, file, probeToken.Token) ?? Unavailable();
+                await using var strategyContext = Fresh();
+                // Retry-enabled EF providers require the read-only snapshot transaction inside their strategy too.
+                return await strategyContext.Database.CreateExecutionStrategy().ExecuteAsync(async probeCancellation =>
+                {
+                    await using var context = Fresh();
+                    if (!await ReceiptReadiness.IsReadyAsync(context, table, operation, probeCancellation)) return Unavailable();
+                    await using var transaction = await context.Database.BeginTransactionAsync(IsolationLevel.RepeatableRead, probeCancellation);
+                    return await ProbeAsync<TReceipt>(context, binding, originalParent, file, probeCancellation) ?? Unavailable();
+                }, probeToken.Token);
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested) { throw; }
             catch { return Unavailable(); }
