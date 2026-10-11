@@ -98,8 +98,12 @@ public sealed class ProcurementFixtureLifetimeTests
         var cleaned = false;
         var initialization = lifetime.InitializeAsync(async token =>
         {
-            using var registration = token.Register(() => canceled.TrySetResult());
-            await Task.Delay(Timeout.InfiniteTimeSpan, token);
+            try { await Task.Delay(Timeout.InfiniteTimeSpan, token); }
+            catch (OperationCanceledException error) when (token.IsCancellationRequested && error.CancellationToken == token)
+            {
+                canceled.TrySetResult();
+                throw;
+            }
         }, () => { cleaned = true; return Task.CompletedTask; }, TimeSpan.FromMinutes(2));
         await clock.TimerCreated.Task;
         clock.Advance(TimeSpan.FromMinutes(2));
@@ -107,6 +111,18 @@ public sealed class ProcurementFixtureLifetimeTests
         Assert.True(canceled.Task.IsCompletedSuccessfully);
         Assert.True(cleaned);
         Assert.Empty(lifetime.UnsettledOperations);
+
+        // Disposing a registration before dispatch suppresses its callback while the awaited
+        // operation still observes cancellation. That callback is not the work-settlement oracle.
+        using var replay = new CancellationTokenSource();
+        var callbackReached = false;
+        var registration = replay.Token.Register(() => callbackReached = true);
+        var delay = Task.Delay(Timeout.InfiniteTimeSpan, replay.Token);
+        registration.Dispose();
+        replay.Cancel();
+        var replayFailure = await Assert.ThrowsAnyAsync<OperationCanceledException>(() => delay);
+        Assert.Equal(replay.Token, replayFailure.CancellationToken);
+        Assert.False(callbackReached);
     }
 
     [Fact]
