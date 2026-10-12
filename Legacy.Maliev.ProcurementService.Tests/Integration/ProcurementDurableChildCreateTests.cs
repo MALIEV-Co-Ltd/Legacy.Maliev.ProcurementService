@@ -18,8 +18,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Legacy.Maliev.ProcurementService.Tests.Integration;
 
-public sealed class ProcurementDurableChildCreateTests(ProcurementDurableCreateFixture fixture)
-    : IClassFixture<ProcurementDurableCreateFixture>, IAsyncLifetime
+public sealed class ProcurementDurableChildCreateTests(DurableChildCreateOwnedFixture fixture)
+    : IClassFixture<DurableChildCreateOwnedFixture>, IAsyncLifetime
 {
     private static readonly string[] Scenarios = ["default-off", "no-header", "replay", "cache-loss", "payload-conflict", "parent-conflict", "actor", "multiple-key", "blank-key", "long-key", "canonical", "updated-body", "corrupt-digest", "corrupt-parent", "missing-table", "wrong-operation", "database-unavailable", "rollback", "concurrent", "concurrent-conflict", "lost-ack", "rollback-uncertain", "deleted-child", "permission"];
     public static IEnumerable<object[]> Cases()

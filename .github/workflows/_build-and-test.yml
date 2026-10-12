@@ -11,6 +11,8 @@ jobs:
     name: validate
     runs-on: ubuntu-latest
     env:
+      MALIEV_FINITE_OWNER_SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+      MALIEV_FINITE_OWNER_DISCOVERY: 'qualified-full-only'
       MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
       VSTestCollect: XPlat Code Coverage
       VSTestLogger: trx
@@ -20,6 +22,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+          fetch-depth: 0
       - name: Check out Legacy.Maliev.ServiceDefaults
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -42,6 +45,7 @@ jobs:
         timeout-minutes: 5
         run: |
           export GITHUB_ACTIONS=false
+          python3 -B scripts/verify-procurement-fixture-containment.py --source-admission
           dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true
           dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true
       - name: Execute mandatory focused workflow checks
@@ -62,6 +66,98 @@ jobs:
         with:
           name: procurement-focused-workflow-${{ github.sha }}
           path: focused-workflow-results
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Execute startup journal regressions
+        timeout-minutes: 2
+        env:
+          VSTestResultsDirectory: ${{ github.workspace }}/startup-journal-results
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ProcurementFixtureStartupJournalTests" --logger "trx;LogFileName=startup-journal.trx" --results-directory startup-journal-results
+      - name: Require every startup journal execution
+        if: always()
+        run: |
+          python3 -B -m unittest discover -s scripts -p test_startup_journal_results.py
+          python3 -B -O -m unittest discover -s scripts -p test_startup_journal_results.py
+          python3 -B scripts/verify-startup-journal-results.py startup-journal-results
+      - name: Preserve startup journal evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-startup-journal-${{ github.sha }}
+          path: startup-journal-results
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Execute owner correlation regressions
+        timeout-minutes: 2
+        env:
+          VSTestResultsDirectory: ${{ github.workspace }}/owner-correlation-results
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ProcurementFixtureOwnerCorrelationTests" --logger "trx;LogFileName=owner-correlation.trx" --results-directory owner-correlation-results
+      - name: Require every owner correlation execution
+        timeout-minutes: 1
+        if: always()
+        run: |
+          python3 -B -m unittest discover -s scripts -p test_owner_correlation_results.py
+          python3 -B -O -m unittest discover -s scripts -p test_owner_correlation_results.py
+          python3 -B scripts/verify-owner-correlation-results.py owner-correlation-results
+      - name: Preserve owner correlation evidence
+        timeout-minutes: 1
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-owner-correlation-${{ github.sha }}
+          path: owner-correlation-results
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Require diagnostic focused source enrollment
+        timeout-minutes: 1
+        run: |
+          python3 -B scripts/verify-diagnostic-focused-results.py --source-contract
+          python3 -B -m unittest discover -s scripts -p test_diagnostic_focused_results.py
+          python3 -B -O -m unittest discover -s scripts -p test_diagnostic_focused_results.py
+      - name: Execute diagnostic focused regressions
+        timeout-minutes: 2
+        env:
+          VSTestResultsDirectory: ${{ github.workspace }}/diagnostic-focused-results
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ProcurementDurableDiagnosticPolicyTests" --logger "trx;LogFileName=diagnostic-focused.trx" --results-directory diagnostic-focused-results
+      - name: Require every diagnostic focused execution
+        timeout-minutes: 1
+        if: always()
+        run: |
+          python3 -B scripts/verify-diagnostic-focused-results.py diagnostic-focused-results diagnostic
+      - name: Preserve diagnostic focused evidence
+        timeout-minutes: 1
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-diagnostic-focused-${{ github.sha }}
+          path: diagnostic-focused-results
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Execute durable focused regressions
+        timeout-minutes: 5
+        env:
+          VSTestResultsDirectory: ${{ github.workspace }}/durable-focused-results
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ProcurementDurableCreateTests|FullyQualifiedName~ProcurementDurableChildCreateTests" --logger "trx;LogFileName=durable-focused.trx" --results-directory durable-focused-results
+      - name: Require every durable focused execution
+        timeout-minutes: 1
+        if: always()
+        run: |
+          python3 -B scripts/verify-diagnostic-focused-results.py durable-focused-results durable
+      - name: Preserve durable focused evidence
+        timeout-minutes: 1
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-durable-focused-${{ github.sha }}
+          path: durable-focused-results
           if-no-files-found: warn
           retention-days: 7
       - name: Validate .NET solution

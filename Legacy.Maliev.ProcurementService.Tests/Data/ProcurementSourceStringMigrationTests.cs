@@ -1,4 +1,5 @@
 using Legacy.Maliev.ProcurementService.Data;
+using Legacy.Maliev.ProcurementService.Tests.Integration;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Testcontainers.PostgreSql;
@@ -7,15 +8,58 @@ namespace Legacy.Maliev.ProcurementService.Tests.Data;
 
 public sealed class ProcurementSourceStringMigrationTests : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer postgres = new PostgreSqlBuilder("postgres:18.1-alpine").Build();
+    private PostgreSqlContainer postgres = null!;
+    private readonly ProcurementFixtureOwnerCorrelation ownerCorrelation;
+
+    public ProcurementSourceStringMigrationTests()
+    {
+        ProcurementFixtureOwnerCorrelation.Validate(ProcurementFixtureConsumer.SourceStrings, GetType().FullName!);
+        ownerCorrelation = new(ProcurementFixtureConsumer.SourceStrings, GetType().FullName!, Guid.NewGuid().ToString("N"));
+    }
 
     public async Task InitializeAsync()
     {
         using var timeout = new CancellationTokenSource(TimeSpan.FromMinutes(2));
-        await postgres.StartAsync(timeout.Token);
+        var failures = new List<Exception>();
+        ownerCorrelation.Record(0, "initialize-invoked");
+        try
+        {
+            postgres = new PostgreSqlBuilder("postgres:18.1-alpine").Build();
+            await postgres.StartAsync(timeout.Token);
+        }
+        catch (Exception original) { failures.Add(original); }
+        try
+        {
+            if (postgres is not null && postgres.Id.Length == 64)
+            {
+                using var configuration = new Docker.DotNet.DockerClientConfiguration(new Uri(OperatingSystem.IsWindows() ? "npipe://./pipe/docker_engine" : "unix:///var/run/docker.sock"));
+                using var docker = configuration.CreateClient();
+                var actual = await docker.Containers.InspectContainerAsync(postgres.Id, timeout.Token);
+                ownerCorrelation.CaptureInspection("source-string-postgres", postgres.Id, actual, null, false);
+            }
+            await ownerCorrelation.PublishAsync(0, "setup", timeout.Token);
+        }
+        catch (Exception observationFailure) { failures.Add(observationFailure); }
+        if (failures.Count != 0)
+        {
+            try { await DisposeAsync(); }
+            catch (Exception cleanupFailure) { failures.Add(cleanupFailure); }
+        }
+        if (failures.Count == 1) System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failures[0]).Throw();
+        if (failures.Count > 1) throw new AggregateException(failures);
     }
 
-    public async Task DisposeAsync() => await postgres.DisposeAsync();
+    public async Task DisposeAsync()
+    {
+        var invocation = ownerCorrelation.BeginCleanup();
+        var failures = new List<Exception>();
+        try { await ownerCorrelation.ObserveCleanupAsync(invocation, "source-string-postgres", () => postgres is null ? Task.CompletedTask : postgres.DisposeAsync().AsTask()); }
+        catch (Exception original) { failures.Add(original); }
+        try { await ownerCorrelation.PublishAsync(invocation, "after-cleanup", CancellationToken.None); }
+        catch (Exception observationFailure) { failures.Add(observationFailure); }
+        if (failures.Count == 1) System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failures[0]).Throw();
+        if (failures.Count > 1) throw new AggregateException(failures);
+    }
 
     [Theory]
     [InlineData(false, "Name", "null")]

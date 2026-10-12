@@ -9,8 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Legacy.Maliev.ProcurementService.Tests.Integration;
 
-public sealed class ProcurementChildLifecycleTests(ProcurementRuntimeFixture fixture)
-    : IClassFixture<ProcurementRuntimeFixture>, IAsyncLifetime
+public sealed class ProcurementChildLifecycleTests(ChildLifecycleOwnedFixture fixture)
+    : IClassFixture<ChildLifecycleOwnedFixture>, IAsyncLifetime
 {
     public Task InitializeAsync() => fixture.ResetAsync();
     public Task DisposeAsync() => Task.CompletedTask;

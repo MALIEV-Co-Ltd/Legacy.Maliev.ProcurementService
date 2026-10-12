@@ -27,6 +27,17 @@ def one(node, path, message):
     return nodes[0]
 
 
+def observed_numeric_string_stack_profile(stack):
+    # Only observed paths; this reports evidence, not an inlining/runtime cause.
+    if 'System.Text.Json.Serialization.Converters.StringConverter.Read(' in stack:
+        return 'observed-string-converter-read'
+    observed = ('System.Text.Json.Serialization.JsonConverter`1.TryRead(',
+                'System.Text.Json.Serialization.JsonConverter`1.TryReadAsObject(',
+                'System.Text.Json.Serialization.Converters.LargeObjectWithParameterizedConstructorConverter`1.ReadAndCacheConstructorArgument(')
+    if all(frame in stack for frame in observed):
+        return 'observed-generic-parameterized-read; StringConverter.Read unobserved'
+    return None
+
 def verify(root, manifest, phase, exit_code):
     require(phase in ('baseline', 'candidate'), 'Unknown phase')
     require(exit_code == (1 if phase == 'baseline' else 0), 'Unexpected test process exit')
@@ -91,7 +102,7 @@ def verify(root, manifest, phase, exit_code):
             if case['method'] == 'Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry':
                 expected_message = "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertSupplierAddressRequest. Path: $.Building | LineNumber: 0 | BytePositionInLine: 22.\n---- System.InvalidOperationException : Cannot get the value of a token type 'Number' as a string."
                 require(message == expected_message, 'Expected frozen Building numeric-to-string deserialization failure')
-                require(re.search(re.escape('ProcurementSupplierAddressScalarStringTests.' + case['method'] + '()') + r' in .+ProcurementSupplierAddressScalarStringTests\.cs:line 213\b', stack) and 'System.Text.Json.Serialization.Converters.StringConverter.Read(' in stack and 'System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(' in stack, 'Expected frozen numeric string converter failure origin')
+                require(re.search(re.escape('ProcurementSupplierAddressScalarStringTests.' + case['method'] + '()') + r' in .+ProcurementSupplierAddressScalarStringTests\.cs:line 213\b', stack) and observed_numeric_string_stack_profile(stack) is not None and 'System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(' in stack, 'Expected frozen numeric string converter failure origin')
             else:
                 expected_status = 'NotFound' if case['method'].startswith('MissingOwnerOrAddress_') else ('NoContent' if 'update: True' in case['name'] else 'Created')
                 require('Assert.Equal() Failure' in message and re.search(r'Expected:\s+' + expected_status + r'\b', message) and re.search(r'Actual:\s+BadRequest\b', message), 'Expected pre-business binding status assertion failure')

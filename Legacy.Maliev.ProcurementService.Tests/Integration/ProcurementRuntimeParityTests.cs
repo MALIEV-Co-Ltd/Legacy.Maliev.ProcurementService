@@ -1,4 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Collections.Concurrent;
+using System.Runtime.ExceptionServices;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -258,23 +260,114 @@ public sealed class ProcurementRuntimeParityTests(ProcurementRuntimeFixture fixt
     }
 }
 
-public sealed class ProcurementRuntimeFixture : IAsyncLifetime
+public class ProcurementRuntimeFixture : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer supplier = new PostgreSqlBuilder("postgres:18.1-bookworm").Build();
-    private readonly PostgreSqlContainer order = new PostgreSqlBuilder("postgres:18.1-bookworm").Build();
-    private readonly RSA signingKey = RSA.Create(2048);
+    private PostgreSqlContainer supplier = null!;
+    private PostgreSqlContainer order = null!;
+    private RSA signingKey = null!;
+    private readonly ProcurementFixtureOwnerCorrelation ownerCorrelation;
+    private readonly ProcurementFixtureLifetime lifetime;
+    private readonly ProcurementFixtureStartupJournal startupJournal;
+    private readonly ProcurementFixtureStartupPublicationOwner startupPublication;
+    private readonly List<string> failedStartupContainerIds;
+    private readonly List<string> failedStartupVolumeIds;
+    private bool startupFailed;
+    public string ResourceRunId { get; }
+    public int UnsettledOperationCount => lifetime.UnsettledOperations.Count;
+    public IReadOnlyList<Exception> ObservedOperationFailures => lifetime.ObservedFailures;
+
+    public ProcurementRuntimeFixture() : this(ProcurementFixtureConsumer.UnattributedRuntime) { }
+
+    private protected ProcurementRuntimeFixture(ProcurementFixtureConsumer consumer)
+    {
+        // No RSA/container allocation can occur before this validates the actual wrapper type.
+        ProcurementFixtureOwnerCorrelation.Validate(consumer, GetType().FullName!);
+        ResourceRunId = Guid.NewGuid().ToString("N");
+        ownerCorrelation = new(consumer, GetType().FullName!, ResourceRunId);
+        lifetime = new();
+        startupJournal = new();
+        startupPublication = new();
+        failedStartupContainerIds = [];
+        failedStartupVolumeIds = [];
+        Cache = new();
+        Clock = new(new DateTimeOffset(2026, 10, 1, 0, 0, 0, TimeSpan.Zero));
+    }
     public ProcurementRuntimeFactory Factory { get; private set; } = null!;
-    public ProcurementFaultCache Cache { get; } = new();
-    public FakeTimeProvider Clock { get; } = new(new DateTimeOffset(2026, 10, 1, 0, 0, 0, TimeSpan.Zero));
+    public ProcurementFaultCache Cache { get; }
+    public FakeTimeProvider Clock { get; }
     public ProcurementRuntimeFactory CreateFactory(bool optIn) => new(supplier.GetConnectionString(), order.GetConnectionString(), signingKey, Cache, Clock, optIn);
 
-    public async Task InitializeAsync()
+    public Task InitializeAsync() => InitializeAsync(null);
+    internal Task InitializeAsync(Func<CancellationToken, Task>? afterProvidersStarted) => lifetime.InitializeAsync(async token =>
     {
-        await Task.WhenAll(supplier.StartAsync(), order.StartAsync());
+        // Allocation now belongs to the existing tracked initialization/failure cleanup guard.
+        signingKey = RSA.Create(2048);
+        supplier = ProcurementFixtureContainerPolicy.Build(ResourceRunId, "supplier");
+        order = ProcurementFixtureContainerPolicy.Build(ResourceRunId, "purchase-order");
+        ObserveStartup(supplier, "supplier");
+        ObserveStartup(order, "purchase-order");
+        ownerCorrelation.Record(0, "initialize-invoked");
+        var supplierStart = startupJournal.StartAsync("supplier", () => supplier.StartAsync(token), token);
+        var orderStart = startupJournal.StartAsync("purchase-order", () => order.StartAsync(token), token);
+        var starts = Task.WhenAll(supplierStart, orderStart);
+        var publicationAttempted = false;
+        try
+        {
+            await starts;
+            publicationAttempted = true;
+            await PublishStartupJournalAsync(token);
+        }
+        catch (Exception primary)
+        {
+            startupFailed = true;
+            var failures = startupJournal.OriginalFailures.ToList();
+            if (failures.Count == 0) failures.Add(primary);
+            if (!publicationAttempted)
+            {
+                try { await PublishStartupJournalAsync(token); }
+                catch (Exception observationFailure) { failures.Add(observationFailure); }
+            }
+            try { await WriteFailedStartupEvidenceAsync(supplierStart, orderStart); }
+            catch (Exception observationFailure) { failures.Add(observationFailure); }
+            if (failures.Count > 1) throw new AggregateException(failures);
+            ExceptionDispatchInfo.Capture(primary).Throw();
+            throw;
+        }
+        if (afterProvidersStarted is not null) await afterProvidersStarted(token);
         Factory = CreateFactory(false);
         await using var scope = Factory.Services.CreateAsyncScope();
-        await scope.ServiceProvider.GetRequiredService<SupplierDbContext>().Database.MigrateAsync();
-        await scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Database.MigrateAsync();
+        await scope.ServiceProvider.GetRequiredService<SupplierDbContext>().Database.MigrateAsync(token);
+        await scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().Database.MigrateAsync(token);
+    }, DisposeAsync, TimeSpan.FromMinutes(2));
+
+    private void ObserveStartup(PostgreSqlContainer container, string role)
+    {
+        // Pinned 4.10.0: Starting occurs AFTER Docker StartAsync and port-mapping readiness.
+        // Event handlers retain their own errors and never replace the provider startup callback.
+        container.Creating += (_, _) => startupJournal.Record(role, "provider-creating");
+        container.Created += (_, _) => startupJournal.Record(role, "provider-created-inspected", () => container.Id);
+        container.Starting += (_, _) => startupJournal.Record(role, "provider-port-mapping-ready", () => container.Id);
+        container.Started += (_, _) => startupJournal.Record(role, "provider-readiness-complete", () => container.Id);
+    }
+
+    private Task PublishStartupJournalAsync(CancellationToken token)
+    {
+        // Every caller observes the same retained task, including pending and failed publication.
+        return startupPublication.GetOrStart(() =>
+        {
+            var snapshot = startupJournal.Stop();
+            return ProcurementFixtureStartupPublication.PublishAsync(async cancellation =>
+            {
+                var parent = Guid.TryParse(Environment.GetEnvironmentVariable("MALIEV_TEST_RESOURCE_RUN_ID"), out var value)
+                    ? value.ToString("N") : ResourceRunId;
+                var bytes = ProcurementFixtureStartupJournal.Serialize(ResourceRunId, parent, snapshot.Events, snapshot.Overflow, snapshot.Failures);
+                // The runner owns and creates its results directory. Refuse missing storage rather
+                // than performing synchronous directory creation in the fixture cleanup path.
+                var directory = Environment.GetEnvironmentVariable("VSTestResultsDirectory") ?? "TestResults";
+                await File.WriteAllBytesAsync(Path.Combine(directory, "fixture-startup-journal-" + ResourceRunId + ".json"), bytes, cancellation);
+                await ownerCorrelation.PublishAsync(0, "setup", cancellation);
+            }, snapshot.Failures, token);
+        });
     }
 
     public async Task ResetAsync()
@@ -320,12 +413,270 @@ public sealed class ProcurementRuntimeFixture : IAsyncLifetime
             ClockSkew = TimeSpan.Zero,
         }, out _);
 
-    public async Task DisposeAsync()
+    public Task DisposeAsync()
     {
-        if (Factory is not null) await Factory.DisposeAsync();
-        await supplier.DisposeAsync();
-        await order.DisposeAsync();
-        signingKey.Dispose();
+        startupJournal.Stop();
+        var invocation = ownerCorrelation.BeginCleanup();
+        return lifetime.CleanupAsync(
+            () => ownerCorrelation.ObserveCleanupAsync(invocation, "host", DisposeFactoryAndPublishAsync),
+            () => ownerCorrelation.ObserveCleanupAsync(invocation, "supplier", () => supplier is null ? Task.CompletedTask : supplier.DisposeAsync().AsTask()),
+            () => ownerCorrelation.ObserveCleanupAsync(invocation, "purchase-order", () => order is null ? Task.CompletedTask : order.DisposeAsync().AsTask()),
+            () => ownerCorrelation.ObserveCleanupAsync(invocation, "rsa", () => { signingKey?.Dispose(); return Task.CompletedTask; }),
+            () => ownerCorrelation.ObserveCleanupAsync(invocation, "observer", () => WriteFailedStartupCleanupEvidenceAsync(invocation)));
+    }
+
+    private async Task DisposeFactoryAndPublishAsync()
+    {
+        // Reuse the existing first cleanup callback and its deadline. Publication failure
+        // cannot skip host disposal or any of the subsequent owned cleanup callbacks.
+        using var cancellation = new CancellationTokenSource(ProcurementFixtureLifetime.CleanupDeadline);
+        await ProcurementFixtureStartupPublication.CleanupAsync(
+            () => PublishStartupJournalAsync(cancellation.Token),
+            () => Factory is null ? Task.CompletedTask : Factory.DisposeAsync().AsTask());
+    }
+
+    private async Task WriteFailedStartupEvidenceAsync(Task supplierStart, Task orderStart)
+    {
+        using var configuration = new Docker.DotNet.DockerClientConfiguration(new Uri(OperatingSystem.IsWindows() ? "npipe://./pipe/docker_engine" : "unix:///var/run/docker.sock"));
+        using var docker = configuration.CreateClient();
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+        var rows = new List<object>();
+        var observationFailures = new List<Exception>();
+        foreach (var (container, role, start) in new[] { (supplier, "supplier", supplierStart), (order, "purchase-order", orderStart) })
+        {
+            try
+            {
+                var actual = await docker.Containers.InspectContainerAsync(container.Id, deadline.Token);
+                var expectedParent = Guid.TryParse(Environment.GetEnvironmentVariable("MALIEV_TEST_RESOURCE_RUN_ID"), out var parent)
+                    ? parent.ToString("N") : ResourceRunId;
+                if (actual.ID != container.Id || actual.Config.Labels["maliev.codex.owner"] != ProcurementFixtureContainerPolicy.Owner ||
+                    actual.Config.Labels["maliev.codex.run"] != ResourceRunId || actual.Config.Labels["maliev.codex.role"] != role ||
+                    actual.Config.Labels["maliev.codex.parent-run"] != expectedParent ||
+                    !Guid.TryParse(actual.Config.Labels["org.testcontainers.session-id"], out _))
+                    throw new InvalidOperationException("Startup observer ownership mismatch.");
+                string[] volumes = [];
+                ProcurementFixtureOwnerCorrelation.PreserveOwnedScope(
+                    () =>
+                    {
+                        failedStartupContainerIds.Add(actual.ID);
+                        volumes = actual.Mounts.Where(mount => mount.Type == "volume").Select(mount => mount.Name).ToArray();
+                        failedStartupVolumeIds.AddRange(volumes);
+                    },
+                    () => ownerCorrelation.CaptureInspection(role, container.Id, actual, ProcurementFixtureContainerPolicy.Owner, true),
+                    observationFailures);
+                rows.Add(new
+                {
+                    Id = actual.ID,
+                    Role = role,
+                    StartTaskStatus = start.Status.ToString(),
+                    Created = actual.Created.ToString(),
+                    StartedAt = actual.State.StartedAt.ToString(),
+                    ProcessId = actual.State.Pid,
+                    actual.State.Running,
+                    Labels = actual.Config.Labels.Where(pair => pair.Key is "maliev.codex.owner" or "maliev.codex.run" or "maliev.codex.parent-run" or "maliev.codex.role" or "maliev.codex.expires-utc" or "maliev.codex.persistent-data" or "org.testcontainers.session-id").ToDictionary(pair => pair.Key, pair => pair.Value),
+                    actual.HostConfig.Memory,
+                    actual.HostConfig.MemorySwap,
+                    actual.HostConfig.NanoCPUs,
+                    RequestedBindings = actual.HostConfig.PortBindings?.SelectMany(pair => (pair.Value ?? []).Select(binding => new { ContainerPort = pair.Key, binding.HostIP, binding.HostPort })).ToArray() ?? [],
+                    ActualBindings = actual.NetworkSettings.Ports?.SelectMany(pair => (pair.Value ?? []).Select(binding => new { ContainerPort = pair.Key, binding.HostIP, binding.HostPort })).ToArray() ?? [],
+                    Volumes = volumes,
+                });
+            }
+            catch (Exception observationFailure)
+            {
+                observationFailures.Add(observationFailure);
+                rows.Add(new { Role = role, StartTaskStatus = start.Status.ToString(), ObservationFailureType = observationFailure.GetType().FullName });
+            }
+        }
+        ProcurementFixtureDiagnosticFailures.PublishOrThrow(() => WriteStartupEvidence("before-cleanup", new
+        {
+            ResourceRunId,
+            OwnerCorrelation = ownerCorrelation.Identity,
+            CleanupInvocation = 0,
+            ObservedAtUtc = DateTimeOffset.UtcNow,
+            Resources = rows,
+            StartFailureTypes = new[] { supplierStart, orderStart }.SelectMany(start => start.Exception?.InnerExceptions.Select(error => error.GetType().FullName) ?? []),
+            UnsettledOperations = UnsettledOperationCount,
+            DestructiveObserverActions = 0,
+            PortAllocationCause = "UNKNOWN: requested and actual bindings observed without a listener attribution or retry",
+        }), observationFailures);
+    }
+
+    private async Task WriteFailedStartupCleanupEvidenceAsync(int invocation)
+    {
+        if (!startupFailed)
+        {
+            using var publicationDeadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+            await ownerCorrelation.PublishAsync(invocation, "after-cleanup", publicationDeadline.Token);
+            return;
+        }
+        using var configuration = new Docker.DotNet.DockerClientConfiguration(new Uri(OperatingSystem.IsWindows() ? "npipe://./pipe/docker_engine" : "unix:///var/run/docker.sock"));
+        using var docker = configuration.CreateClient();
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+        var containersAbsent = new List<string>();
+        var volumesAbsent = new List<string>();
+        var failures = new List<Exception>();
+        foreach (var id in failedStartupContainerIds.Distinct(StringComparer.Ordinal))
+        {
+            try
+            {
+                await docker.Containers.InspectContainerAsync(id, deadline.Token);
+                failures.Add(new InvalidOperationException("Observed startup container remains after cleanup."));
+            }
+            catch (Docker.DotNet.DockerApiException error) when (error.StatusCode == HttpStatusCode.NotFound) { containersAbsent.Add(id); }
+            catch (Exception error) { failures.Add(error); }
+        }
+        foreach (var name in failedStartupVolumeIds.Distinct(StringComparer.Ordinal))
+        {
+            try
+            {
+                await docker.Volumes.InspectAsync(name, deadline.Token);
+                failures.Add(new InvalidOperationException("Observed startup volume remains after cleanup."));
+            }
+            catch (Docker.DotNet.DockerApiException error) when (error.StatusCode == HttpStatusCode.NotFound) { volumesAbsent.Add(name); }
+            catch (Exception error) { failures.Add(error); }
+        }
+        try { await ownerCorrelation.PublishAsync(invocation, "after-cleanup", deadline.Token); }
+        catch (Exception publicationFailure) { failures.Add(publicationFailure); }
+        ProcurementFixtureDiagnosticFailures.PublishOrThrow(() => WriteStartupEvidence("after-cleanup", new
+        {
+            ResourceRunId,
+            OwnerCorrelation = ownerCorrelation.Identity,
+            CleanupInvocation = invocation,
+            ObservedAtUtc = DateTimeOffset.UtcNow,
+            ContainersObserved = failedStartupContainerIds,
+            VolumesObserved = failedStartupVolumeIds,
+            ContainersAbsent = containersAbsent,
+            VolumesAbsent = volumesAbsent,
+            PendingOperationsAtObservation = UnsettledOperationCount,
+            IncludesCurrentReadOnlyObserver = true,
+            ObservedOperationFailureTypes = ObservedOperationFailures.Select(error => error.GetType().FullName).ToArray(),
+            CleanupObservationFailureTypes = failures.Select(error => error.GetType().FullName).ToArray(),
+            DestructiveObserverActions = 0,
+            FullStartupCustody = failedStartupContainerIds.Distinct(StringComparer.Ordinal).Count() == 2,
+        }, invocation), failures);
+    }
+
+    private void WriteStartupEvidence(string phase, object evidence, int invocation = 0)
+    {
+        var directory = Path.Combine(Environment.GetEnvironmentVariable("VSTestResultsDirectory") ?? "TestResults", "fixture-startup-failures");
+        Directory.CreateDirectory(directory);
+        File.WriteAllText(Path.Combine(directory, ResourceRunId + "-" + phase + "-" + invocation + ".json"), JsonSerializer.Serialize(evidence));
+    }
+}
+
+internal static class ProcurementFixtureDiagnosticFailures
+{
+    internal static void PublishOrThrow(Action publish, IReadOnlyCollection<Exception> observedFailures)
+    {
+        var failures = observedFailures.ToList();
+        try { publish(); }
+        catch (Exception publicationFailure) { failures.Add(publicationFailure); }
+        if (failures.Count == 1) ExceptionDispatchInfo.Capture(failures[0]).Throw();
+        if (failures.Count > 1) throw new AggregateException(failures);
+    }
+}
+
+
+internal static class ProcurementFixtureContainerPolicy
+{
+    internal const long MemoryBytes = 1024L * 1024 * 1024;
+    internal const long NanoCpus = 750_000_000;
+    internal const string Owner = "procurement-runtime-fixture";
+
+    internal static PostgreSqlContainer Build(string run, string role) => new PostgreSqlBuilder("postgres:18.1-bookworm")
+        .WithDockerEndpoint(OperatingSystem.IsWindows() ? "npipe://./pipe/docker_engine" : OperatingSystem.IsLinux() ? "unix:///var/run/docker.sock" : throw new PlatformNotSupportedException("Owned Procurement fixtures require the local Docker endpoint."))
+        .WithLabel("maliev.codex.owner", Owner)
+        .WithLabel("maliev.codex.run", run)
+        .WithLabel("maliev.codex.parent-run", Guid.TryParse(Environment.GetEnvironmentVariable("MALIEV_TEST_RESOURCE_RUN_ID"), out var parent) ? parent.ToString("N") : run)
+        .WithLabel("maliev.codex.role", role)
+        .WithLabel("maliev.codex.expires-utc", DateTime.UtcNow.AddMinutes(32).ToString("O"))
+        .WithLabel("maliev.codex.persistent-data", "false")
+        .WithCreateParameterModifier(Apply)
+        .Build();
+
+    internal static void Apply(Docker.DotNet.Models.CreateContainerParameters parameters)
+    {
+        // Preserve the pinned builder's existing PostgreSQL command and arguments.
+        parameters.Entrypoint = ["sh", "-c", "exec timeout --signal=INT --kill-after=10s 1800 docker-entrypoint.sh \"$@\"", "procurement-owned-fixture"];
+        parameters.HostConfig!.Memory = MemoryBytes;
+        parameters.HostConfig.MemorySwap = MemoryBytes;
+        parameters.HostConfig.NanoCPUs = NanoCpus;
+        foreach (var bindings in parameters.HostConfig.PortBindings.Values)
+            foreach (var binding in bindings) binding.HostIP = "127.0.0.1";
+    }
+}
+
+internal sealed class ProcurementFixtureLifetime(TimeProvider? timeProvider = null)
+{
+    private readonly TimeProvider clock = timeProvider ?? TimeProvider.System;
+    private readonly ConcurrentDictionary<Task, byte> operations = new();
+    private readonly ConcurrentDictionary<Exception, byte> observedFailures = new(ReferenceEqualityComparer.Instance);
+    internal IReadOnlyList<Task> UnsettledOperations => operations.Keys.ToArray();
+    internal IReadOnlyList<Exception> ObservedFailures => observedFailures.Keys.ToArray();
+    internal static readonly TimeSpan CleanupDeadline = TimeSpan.FromSeconds(30);
+
+    private void Record(Exception failure)
+    {
+        observedFailures.TryAdd(failure, 0);
+        if (failure is AggregateException aggregate)
+            foreach (var inner in aggregate.InnerExceptions) Record(inner);
+    }
+
+    // Register an actual owned task before any cancellable await wrapper is created.
+    internal void TrackOwnedTask(Task operation) => Observe(operation);
+
+    private Task Observe(Task operation)
+    {
+        operations.TryAdd(operation, 0);
+        _ = operation.ContinueWith(completed =>
+        {
+            if (completed.Exception is not null)
+                foreach (var failure in completed.Exception.InnerExceptions) Record(failure);
+            operations.TryRemove(completed, out _);
+        }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+        return operation;
+    }
+
+    internal async Task InitializeAsync(Func<CancellationToken, Task> initialize, Func<Task> cleanup, TimeSpan deadline)
+    {
+        using var cancellation = new CancellationTokenSource(deadline, clock);
+        Task? initialization = null;
+        try
+        {
+            initialization = Observe(initialize(cancellation.Token));
+            await initialization.WaitAsync(cancellation.Token);
+        }
+        catch (Exception primary)
+        {
+            Record(primary);
+            var failures = new List<Exception> { primary };
+            try { cancellation.Cancel(); }
+            catch (Exception cancellationFailure) { Record(cancellationFailure); failures.Add(cancellationFailure); }
+            if (initialization is not null && !initialization.IsCompleted)
+            {
+                try { await initialization.WaitAsync(CleanupDeadline, clock); }
+                catch (OperationCanceledException) when (initialization.IsCanceled) { }
+                catch (Exception settlementFailure) { Record(settlementFailure); failures.Add(settlementFailure); }
+            }
+            try { await cleanup(); }
+            catch (AggregateException cleanupFailure) { Record(cleanupFailure); failures.AddRange(cleanupFailure.InnerExceptions); }
+            catch (Exception cleanupFailure) { Record(cleanupFailure); failures.Add(cleanupFailure); }
+            if (failures.Count == 1) ExceptionDispatchInfo.Capture(primary).Throw();
+            throw new AggregateException("Owned fixture initialization and cleanup failed.", failures);
+        }
+    }
+
+    internal async Task CleanupAsync(params Func<Task>[] releases)
+    {
+        var failures = new List<Exception>();
+        foreach (var release in releases)
+        {
+            try { await Observe(release()).WaitAsync(CleanupDeadline, clock); }
+            catch (Exception failure) { Record(failure); failures.Add(failure); }
+        }
+        if (failures.Count == 1) ExceptionDispatchInfo.Capture(failures[0]).Throw();
+        if (failures.Count > 1) throw new AggregateException("Owned fixture cleanup failed.", failures);
     }
 }
 
@@ -340,6 +691,7 @@ public sealed class ProcurementRuntimeFactory(string supplierConnection, string 
         builder.UseEnvironment("Production");
         builder.ConfigureServices(services =>
         {
+            services.Configure<HostOptions>(options => options.StartupTimeout = TimeSpan.FromSeconds(30));
             services.RemoveAll<IDistributedCache>();
             services.AddSingleton<IDistributedCache>(cache);
             services.RemoveAll<TimeProvider>();

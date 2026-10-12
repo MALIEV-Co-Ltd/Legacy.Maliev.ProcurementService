@@ -1,0 +1,153 @@
+"""Fake TRX acceptance controls; these are not native journal executions."""
+import copy
+import importlib.util
+import json
+import pathlib
+import tempfile
+import unittest
+import uuid
+import xml.etree.ElementTree as ET
+
+spec = importlib.util.spec_from_file_location("startup", pathlib.Path(__file__).with_name("verify-diagnostic-focused-results.py"))
+startup = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(startup)
+
+
+class DiagnosticFocusedResultsTests(unittest.TestCase):
+    cohort = "diagnostic"
+
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = pathlib.Path(directory.name)
+        self.manifest = json.loads(pathlib.Path("docs/procurement-diagnostic-focused-contract.json").read_text(encoding="utf-8"))
+        self.document = ET.Element("TestRun")
+        summary = ET.SubElement(self.document, "ResultSummary", outcome="Completed")
+        counters = {key: "0" for key in ("failed", "error", "timeout", "aborted", "inconclusive", "passedButRunAborted",
+                    "notRunnable", "notExecuted", "disconnected", "warning", "completed", "inProgress", "pending")}
+        ET.SubElement(summary, "Counters", total=str(self.manifest["cohortCounts"][self.cohort]), executed=str(self.manifest["cohortCounts"][self.cohort]), passed=str(self.manifest["cohortCounts"][self.cohort]), **counters)
+        definitions = ET.SubElement(self.document, "TestDefinitions")
+        entries = ET.SubElement(self.document, "TestEntries")
+        results = ET.SubElement(self.document, "Results")
+        for row in self.manifest["cases"]:
+            if row["cohort"] != self.cohort: continue
+            method = row["method"]
+            test_id, execution = str(uuid.uuid4()), str(uuid.uuid4())
+            name = row["name"]
+            definition = ET.SubElement(definitions, "UnitTest", id=test_id, name=name)
+            ET.SubElement(definition, "Execution", id=execution)
+            ET.SubElement(definition, "TestMethod", className=row["className"], name=method,
+                          codeBase="/owned/bin/Release/net10.0/Legacy.Maliev.ProcurementService.Tests.dll")
+            ET.SubElement(entries, "TestEntry", testId=test_id, executionId=execution)
+            ET.SubElement(results, "UnitTestResult", testId=test_id, executionId=execution, testName=name, outcome="Passed")
+
+    def check(self):
+        ET.ElementTree(self.document).write(self.root / "startup.trx")
+        return startup.verify(self.root, self.manifest, self.cohort)
+
+    def test_exact_roster(self):
+        self.assertEqual(self.manifest["cohortCounts"][self.cohort], self.check()["passed"])
+
+    def test_missing_duplicate_extra_and_typed_roster(self):
+        original = copy.deepcopy(self.manifest)
+        mutations = [lambda m: m["cases"].pop(), lambda m: m["cases"].append(m["cases"][0]),
+                     lambda m: m["cohortCounts"].update(diagnostic=True),
+                     lambda m: m["sourceHashes"].update(foreign="0" * 64)]
+        for mutate in mutations:
+            self.manifest = copy.deepcopy(original)
+            mutate(self.manifest)
+            with self.assertRaises(ValueError): self.check()
+
+    def test_result_and_join_drift(self):
+        original = copy.deepcopy(self.document)
+        changes = [("./Results/UnitTestResult", "outcome", "NotExecuted"),
+                   ("./Results/UnitTestResult", "testName", "foreign"),
+                   ("./Results/UnitTestResult", "testId", str(uuid.uuid4())),
+                   ("./TestEntries/TestEntry", "executionId", str(uuid.uuid4())),
+                   ("./TestDefinitions/UnitTest/Execution", "id", str(uuid.uuid4())),
+                   ("./TestDefinitions/UnitTest/TestMethod", "name", "foreign"),
+                   ("./TestDefinitions/UnitTest/TestMethod", "className", "foreign"),
+                   ("./TestDefinitions/UnitTest/TestMethod", "codeBase", "/Debug/net10.0/Legacy.Maliev.ProcurementService.Tests.dll")]
+        for path, key, value in changes:
+            with self.subTest(path=path, key=key):
+                self.document = copy.deepcopy(original)
+                self.document.find(path).set(key, value)
+                with self.assertRaises(ValueError): self.check()
+
+    def test_every_counter(self):
+        original = copy.deepcopy(self.document)
+        for key in original.find("./ResultSummary/Counters").attrib:
+            with self.subTest(key=key):
+                self.document = copy.deepcopy(original)
+                self.document.find("./ResultSummary/Counters").set(key, "1")
+                with self.assertRaises(ValueError): self.check()
+
+    def test_summary_run_info_error_and_cardinality(self):
+        original = copy.deepcopy(self.document)
+        for tag in ["ErrorInfo", "RunInfo", "ResultSummary"]:
+            with self.subTest(tag=tag):
+                self.document = copy.deepcopy(original)
+                ET.SubElement(self.document, tag)
+                with self.assertRaises(ValueError): self.check()
+        for tag in ["Results", "TestDefinitions", "TestEntries"]:
+            with self.subTest(tag=tag):
+                self.document = copy.deepcopy(original)
+                parent = self.document.find(tag)
+                parent.remove(parent[0])
+                with self.assertRaises(ValueError): self.check()
+
+    def test_noncanonical_and_duplicate_guid(self):
+        original = copy.deepcopy(self.document)
+        for value in ["", "invalid", str(uuid.uuid4()).upper()]:
+            with self.subTest(value=value):
+                self.document = copy.deepcopy(original)
+                self.document.find("./Results/UnitTestResult").set("testId", value)
+                with self.assertRaises(ValueError): self.check()
+        self.document = copy.deepcopy(original)
+        self.document.find("Results")[1].set("executionId", self.document.find("Results")[0].get("executionId"))
+        with self.assertRaises(ValueError): self.check()
+
+    def test_requires_one_report(self):
+        self.check()
+        (self.root / "extra.trx").write_bytes((self.root / "startup.trx").read_bytes())
+        with self.assertRaises(ValueError): self.check()
+
+    def test_rejects_foreign_root_nested_failure_and_duplicate_structures(self):
+        original = copy.deepcopy(self.document)
+        for tag in ["ResultSummary", "Counters", "TestDefinitions", "TestEntries", "Results",
+                    "UnitTest", "TestEntry", "UnitTestResult", "TestMethod", "Execution", "TestRun"]:
+            with self.subTest(nested=tag):
+                self.document = copy.deepcopy(original)
+                wrapper = ET.SubElement(self.document, "Wrapper")
+                ET.SubElement(wrapper, tag, outcome="Failed")
+                with self.assertRaises(ValueError): self.check()
+        for tag in ["TestDefinitions", "TestEntries", "Results"]:
+            with self.subTest(duplicate=tag):
+                self.document = copy.deepcopy(original)
+                ET.SubElement(self.document, tag)
+                with self.assertRaises(ValueError): self.check()
+        for tag in ["TestMethod", "Execution"]:
+            with self.subTest(definition=tag):
+                self.document = copy.deepcopy(original)
+                definition = self.document.find("./TestDefinitions/UnitTest")
+                wrapper = ET.SubElement(definition, "Wrapper")
+                wrapper.append(copy.deepcopy(definition.find(tag)))
+                with self.assertRaises(ValueError): self.check()
+        self.document = copy.deepcopy(original)
+        self.document.tag = "ForeignRoot"
+        with self.assertRaises(ValueError): self.check()
+        self.document = copy.deepcopy(original)
+        wrapper = ET.SubElement(self.document, "Wrapper")
+        summary = ET.SubElement(wrapper, "ResultSummary", outcome="Failed")
+        ET.SubElement(summary, "Counters", failed="1")
+        results = ET.SubElement(wrapper, "Results")
+        ET.SubElement(results, "UnitTestResult", outcome="Failed")
+        with self.assertRaises(ValueError): self.check()
+
+
+class DurableFocusedResultsTests(DiagnosticFocusedResultsTests):
+    cohort = "durable"
+
+
+if __name__ == "__main__":
+    unittest.main()

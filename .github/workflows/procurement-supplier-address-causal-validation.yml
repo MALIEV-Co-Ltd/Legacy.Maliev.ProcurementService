@@ -51,12 +51,22 @@ jobs:
           ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
           path: .dependencies/Legacy.Maliev.CompatibilityContracts
           persist-credentials: false
+      - name: Check out immutable fixture producer
+        timeout-minutes: 2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 4a117fb68cebffc9e0acae9000750e8e45ec62cc
+          path: .dependencies/ProcurementFixtureProducer
+          fetch-depth: 1
+          persist-credentials: false
       - name: Set up accepted SDK
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
         with:
           dotnet-version: 10.0.x
       - name: Verify causal verifier controls
         run: |
+          python3 -B -m unittest discover -s scripts -p test_supplier_address_fixture_overlay.py
+          python3 -O -B -m unittest discover -s scripts -p test_supplier_address_fixture_overlay.py
           python3 -B -m unittest discover -s scripts -p test_supplier_address_causal_results.py
           python3 -O -B -m unittest discover -s scripts -p test_supplier_address_causal_results.py
           python3 -B -m unittest discover -s scripts -p test_supplier_address_provider_observation.py
