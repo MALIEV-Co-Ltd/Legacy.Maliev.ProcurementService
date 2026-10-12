@@ -484,20 +484,39 @@ class SourceAdmissionBehaviorControls(unittest.TestCase):
             bootstrap.assert_not_called();full.assert_not_called()
 
 
-class PositivePostimageUnboundAdmissionControls(unittest.TestCase):
-    def test_actual_proposed_null_binding_refuses_focused_and_full_without_git_or_native(self):
+
+class PositivePostimageAdmissionControls(unittest.TestCase):
+    def test_isolated_null_fixture_refuses_focused_and_full_without_git_or_native(self):
         import os
         root=pathlib.Path(__file__).resolve().parents[1]
         binding=json.loads((root/'docs/procurement-finite-owner-source-binding.json').read_text())
         extension=json.loads((root/'docs/procurement-fixture-containment-cases.json').read_text())['finiteOwnerExtension']
-        self.assertIsNone(binding['bootstrapReviewedProducer'])
-        self.assertIsNone(binding['bootstrapSourceAdmission'])
-        self.assertIsNone(binding['reviewedProducer'])
-        self.assertIsNone(binding['nativeIds'])
-        self.assertIs(binding['releaseAllowed'],False)
-        self.assertIs(extension['enabled'],False)
+        # This negative is independent of the repository's current bootstrap admission.
+        binding['bootstrapReviewedProducer']=None
+        binding['bootstrapSourceAdmission']=None
+        with tempfile.TemporaryDirectory() as directory:
+            isolated=pathlib.Path(directory);(isolated/'docs').mkdir();(isolated/'scripts').mkdir()
+            (isolated/'docs/procurement-finite-owner-source-binding.json').write_text(json.dumps(binding))
+            with patch.object(guard,'__file__',str(isolated/'scripts/verify-procurement-fixture-containment.py')), patch.dict(os.environ,{'MALIEV_FINITE_OWNER_DISCOVERY':'reviewed-source-only'},clear=False), patch.object(guard.subprocess,'run') as run, patch.object(guard.subprocess,'check_output') as output:
+                with self.assertRaisesRegex(ValueError,'Real source producer'):guard.source_admission(extension,'reviewed-source-only')
+                with self.assertRaisesRegex(ValueError,'reviewed exact23'):guard.source_admission(extension,'qualified-full-only')
+                run.assert_not_called();output.assert_not_called()
+
+    def test_actual_binding_requires_real_producer_custody_and_keeps_full_inactive(self):
+        import os
+        root=pathlib.Path(__file__).resolve().parents[1]
+        binding=json.loads((root/'docs/procurement-finite-owner-source-binding.json').read_text())
+        extension=json.loads((root/'docs/procurement-fixture-containment-cases.json').read_text())['finiteOwnerExtension']
+        self.assertIsNone(binding['reviewedProducer']);self.assertIsNone(binding['nativeIds'])
+        self.assertIs(binding['releaseAllowed'],False);self.assertIs(extension['enabled'],False)
         self.assertTrue(all(case['id'] is None for case in extension['cases']))
-        with patch.dict(os.environ,{'MALIEV_FINITE_OWNER_DISCOVERY':'reviewed-source-only'},clear=False), patch.object(guard.subprocess,'run') as run, patch.object(guard.subprocess,'check_output') as output:
-            with self.assertRaisesRegex(ValueError,'Real source producer'):guard.source_admission(extension,'reviewed-source-only')
-            with self.assertRaisesRegex(ValueError,'reviewed exact23'):guard.source_admission(extension,'qualified-full-only')
-            run.assert_not_called();output.assert_not_called()
+        with self.assertRaisesRegex(ValueError,'reviewed exact23'):guard.source_admission(extension,'qualified-full-only')
+        # The actual admitted document must pass the real guard: SHA/blob + producer Git
+        # bytes/ancestry + original declared source + focused-only restrictions.
+        if binding['bootstrapSourceAdmission'] is True:
+            self.assertEqual('reviewed-source-only',os.environ.get('MALIEV_FINITE_OWNER_DISCOVERY'))
+            guard.source_admission(extension,'reviewed-source-only')
+        else:
+            self.assertIsNone(binding['bootstrapSourceAdmission']);self.assertIsNone(binding['bootstrapReviewedProducer'])
+            with patch.dict(os.environ,{'MALIEV_FINITE_OWNER_DISCOVERY':'reviewed-source-only'},clear=False):
+                with self.assertRaisesRegex(ValueError,'Real source producer'):guard.source_admission(extension,'reviewed-source-only')
