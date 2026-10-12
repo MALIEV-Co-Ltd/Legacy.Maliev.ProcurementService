@@ -60,6 +60,6 @@
     "proposedGitBlob": "a4fda2edca34c7e8f918d8c43edd72438ed66f05",
     "producer": null
   },
-  "bootstrapReviewedProducer": null,
-  "bootstrapSourceAdmission": null
+  "bootstrapReviewedProducer": "9e4ccda2f78261681ac5b3b996d5d1f37c471e24",
+  "bootstrapSourceAdmission": true
 }
