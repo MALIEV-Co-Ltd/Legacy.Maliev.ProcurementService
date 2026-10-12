@@ -435,9 +435,16 @@ class ProvisionalDiscoveryControls(unittest.TestCase):
                 with self.subTest(mode=mode), self.assertRaises((ValueError, FileNotFoundError)):
                     guard.verify(root, True)
 
-    def test_positive_image_theory_remains_skipped_and_admission_precedes_docker_client(self):
+    def test_positive_image_theory_is_enabled_and_admission_precedes_docker_client(self):
         text = (pathlib.Path(__file__).resolve().parents[1] / "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementImageExpiryProfileWitnessTests.cs").read_text(encoding="utf-8")
-        self.assertIn('[Theory(Skip = "Pending reviewed finite-lifecycle integration and native admission")]', text)
+        attributes = text.split("public async Task ImageSpecificControl_HasFiniteOwnerCleanup", 1)[0].rsplit("    [Theory]", 1)
+        self.assertEqual(2, len(attributes))
+        self.assertNotIn("Skip", attributes[1])
+        self.assertIn('[InlineData("18.1-bookworm", "bookworm")]', attributes[1])
+        self.assertIn('[InlineData("18.1-alpine", "alpine")]', attributes[1])
+        self.assertIn('producer.ValueKind != JsonValueKind.String', text)
+        self.assertIn('(!bootstrap && binding.GetProperty("releaseAllowed").ValueKind != JsonValueKind.True)', text)
+        self.assertIn('throw new InvalidOperationException("Witness source admission is unbound.");', text)
         body = text.split("public async Task ImageSpecificControl_HasFiniteOwnerCleanup", 1)[1]
         self.assertLess(body.index("RequireImageAdmission();"), body.index("new DockerClientConfiguration"))
 
@@ -453,7 +460,8 @@ class SharedSourceAdmissionWiringControls(unittest.TestCase):
             self.assertLess(text.index("verify-procurement-fixture-containment.py --source-admission"), text.index("dotnet restore"))
         source = (root / "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementImageExpiryProfileWitnessTests.cs").read_text(encoding="utf-8")
         self.assertIn("pins.Length != 9", source)
-        self.assertIn("[Theory(Skip = ", source)
+        self.assertIn("[Theory]", source)
+        self.assertNotIn("[Theory(Skip = ", source)
 
 from unittest.mock import patch
 
@@ -474,3 +482,22 @@ class SourceAdmissionBehaviorControls(unittest.TestCase):
         with patch.object(guard,'finite_bootstrap') as bootstrap, patch.object(guard,'finite_activation') as full:
             with self.assertRaisesRegex(ValueError,'Unknown'):guard.source_admission({},'foreign')
             bootstrap.assert_not_called();full.assert_not_called()
+
+
+class PositivePostimageUnboundAdmissionControls(unittest.TestCase):
+    def test_actual_proposed_null_binding_refuses_focused_and_full_without_git_or_native(self):
+        import os
+        root=pathlib.Path(__file__).resolve().parents[1]
+        binding=json.loads((root/'docs/procurement-finite-owner-source-binding.json').read_text())
+        extension=json.loads((root/'docs/procurement-fixture-containment-cases.json').read_text())['finiteOwnerExtension']
+        self.assertIsNone(binding['bootstrapReviewedProducer'])
+        self.assertIsNone(binding['bootstrapSourceAdmission'])
+        self.assertIsNone(binding['reviewedProducer'])
+        self.assertIsNone(binding['nativeIds'])
+        self.assertIs(binding['releaseAllowed'],False)
+        self.assertIs(extension['enabled'],False)
+        self.assertTrue(all(case['id'] is None for case in extension['cases']))
+        with patch.dict(os.environ,{'MALIEV_FINITE_OWNER_DISCOVERY':'reviewed-source-only'},clear=False), patch.object(guard.subprocess,'run') as run, patch.object(guard.subprocess,'check_output') as output:
+            with self.assertRaisesRegex(ValueError,'Real source producer'):guard.source_admission(extension,'reviewed-source-only')
+            with self.assertRaisesRegex(ValueError,'reviewed exact23'):guard.source_admission(extension,'qualified-full-only')
+            run.assert_not_called();output.assert_not_called()

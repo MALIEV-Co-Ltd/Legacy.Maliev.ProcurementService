@@ -7,8 +7,8 @@
   "inputs": [
     {
       "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementImageExpiryProfileWitnessTests.cs",
-      "sha256": "0c461e116406060739049f3fef0ed077fdb55292c9a98f59ae435c772400aa52",
-      "proposedGitBlob": "972b4ad3a10130277bc5f8566c03df362038b5b0"
+      "sha256": "4dea9be8851f9e4cd55ec6be95495893b0df8f26001988fd8ae13e2b2fde8d5a",
+      "proposedGitBlob": "3e1e5fef337c471c6354baa3d877fdfd9258f911"
     },
     {
       "path": "scripts/observe-procurement-fixture-process.py",
@@ -27,8 +27,8 @@
     },
     {
       "path": "scripts/test_procurement_fixture_containment.py",
-      "sha256": "62feb115515e64e74eaade28eac06d9e6c4f2b1fe19ba7a4ceb1ff87dc34b725",
-      "proposedGitBlob": "05207385a30c12624d4039d96763e64e9422b5f2"
+      "sha256": "bf354aafbfbf1282d5d599722362bd4c80b43d6de75e4e58529e43744fb90c88",
+      "proposedGitBlob": "e9259552968c78f5bda2eecfd9be161f8fdb4bc8"
     },
     {
       "path": "docs/procurement-fixture-containment-cases.json",

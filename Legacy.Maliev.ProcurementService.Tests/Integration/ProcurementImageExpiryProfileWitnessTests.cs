@@ -50,7 +50,7 @@ public sealed class ProcurementImageExpiryProfileWitnessTests
         }
     }
 
-    [Theory(Skip = "Pending reviewed finite-lifecycle integration and native admission")]
+    [Theory]
     [InlineData("18.1-bookworm", "bookworm")]
     [InlineData("18.1-alpine", "alpine")]
     public async Task ImageSpecificControl_HasFiniteOwnerCleanup(string tag, string profile)
