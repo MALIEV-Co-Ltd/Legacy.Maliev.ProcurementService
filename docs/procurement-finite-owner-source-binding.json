@@ -1,5 +1,5 @@
 {
-  "reviewedProducer": "fc78a7f495ab73880241ecc8cb5f379e3691792e",
+  "reviewedProducer": "e7c67db956eae91c6b5eefecae2d66969227e262",
   "releaseAllowed": true,
   "expectedExistingAuthSelectedInputs": 82,
   "productionBuildInputs": 66,
@@ -32,8 +32,8 @@
     },
     {
       "path": "docs/procurement-fixture-containment-cases.json",
-      "sha256": "76cf1070584223e9efcf6a15049ca162c0af813ea77b2d96a24158d2211d0579",
-      "proposedGitBlob": "1c34a4146ee693c75893c35a80015535d81609eb",
+      "sha256": "5163c80b72d7e9bfb6f23cee2c533b5ce46ad1fd2f7b9eaff719125c5d47841f",
+      "proposedGitBlob": "719bad4d67da07059b2c001afdaf0ad7efb58bfb",
       "implementationSha256": "9754d962c8ead7ffc8d2118497897ce4c124bcf48f4d2ef8449ab21606d34f76",
       "implementationGitBlob": "cb92d95e2bdff7f5fc0364286494803c5da22eb9",
       "admissionMetadataFields": [
@@ -54,8 +54,8 @@
     },
     {
       "path": ".github/workflows/_build-and-test.yml",
-      "sha256": "634b6b084376e71fae0cb4d6009990e905b5d6d2bbe4dfa83e527fafb715d5ad",
-      "proposedGitBlob": "f45e36e1bbaa3657ea514dd12c50fb8f46049de6"
+      "sha256": "32a67a3d8b22601f20d32e0725c8f43903f548e9419cf5b63c481c57145e74dd",
+      "proposedGitBlob": "9ba4df14cea4e6a9905ee4bc165837490da21b7a"
     }
   ],
   "nativeIds": [
