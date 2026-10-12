@@ -10,26 +10,100 @@ import subprocess
 import hashlib
 import os
 
+CASES_PATH = "docs/procurement-fixture-containment-cases.json"
+IMPLEMENTATION_INPUT_PATHS = ('Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementImageExpiryProfileWitnessTests.cs', 'scripts/observe-procurement-fixture-process.py', 'scripts/verify-procurement-fixture-containment.py', 'scripts/test_procurement_fixture_process_observer.py', 'scripts/test_procurement_fixture_containment.py', 'docs/procurement-fixture-containment-cases.json', '.github/workflows/procurement-fixture-containment.yml', 'Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs', '.github/workflows/_build-and-test.yml')
+ADMISSION_METADATA_FIELDS = ("enabled", "reviewedProducer", "discoveryOnly")
+FROZEN_EXISTING18_SHA256 = 'd5fa8718f9518d71a1f6847624dcdf9bcd81bdbfc2ea83a8c4e567ec63bed250'
+REVIEWED_NATIVE_CUSTODY = {'scope': 'finite-owned-lifecycle-and-independent-cleanup-only', 'sourceHead': '7d9e6f07afb717ba3343c0d57e6a9e3eb5e3f00e', 'sourceProducer': '9e4ccda2f78261681ac5b3b996d5d1f37c471e24', 'testedMerge': '37992f20b8e65df75b994a89f6a6c65c093090a5', 'testedTree': '485807cb82be0f925468d0066fff14a9b7046e5f', 'originalRun': 38195540660, 'originalAttempt': 1, 'artifactId': 11723172400, 'artifactSha256': '9855d3309adcd6b30ebed46cc2778074d75860f8690ffd7114bb529ad490e33e', 'trxSha256': '25422c53d03814bac7616bde66ab74a970a9847596b3bffb649a9648965ece39', 'all23': [{'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.SynchronousSetupFailure_StillRunsCleanup', 'id': 'b5c5edb6-639f-6e4c-5bc4-09f3022aac58'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.ContainerPolicy_BoundsMemoryCpuLoopbackAndPreservesPostgresArguments', 'id': 'e7575319-6e05-5b50-387a-ab1d50122d10'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_ExpiredTotalLeaseRefusesFalseSettlement', 'id': '76fe65cf-25c5-85f1-7427-41ffcb8ad51c'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.CleanupFailure_StillAttemptsAllFourOwnedReleases(position: 1)', 'id': 'b5166aca-f1e6-f3ca-319a-bbea2f0cdb27'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.CancellationCallbackFailure_DoesNotLosePrimaryOrSkipCleanup', 'id': '0bc2b162-e302-4f4e-0504-30c4ca2d621d'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.CleanupTimeout_AttemptsNextReleaseAndRetainsUnfinishedHandleAndLateFault', 'id': 'b3ea38cb-fb20-e27a-2654-90fb87f34d96'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.CleanupFailure_StillAttemptsAllFourOwnedReleases(position: 0)', 'id': 'd64bfe63-a92d-9215-c4bd-5a18506472aa'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.SetupThatIgnoresCancellation_IsReportedUnsettledAfterBoundedCleanup', 'id': '38985280-e35c-2761-db24-130d1dd138ce'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.CleanupFailure_StillAttemptsAllFourOwnedReleases(position: 2)', 'id': '9b52beb6-ab35-8f55-0c05-f18c1d5bdd91'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureProviderContainmentTests.OwnedProviderBoundsAndNaturalCleanup_AreObserved(failAfterProvidersStart: True)', 'id': '9744229b-1d60-5571-84d5-73565c17972b'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.SetupAndCleanupFailures_RetainPrimaryAndBothCleanupErrors', 'id': '16a9a6e0-7815-a264-bfe0-9c4d632bd5a5'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.MultipleCleanupFailures_RetainEveryOriginalException', 'id': 'c2651b07-4867-1709-a7fe-d7cdad4bb5d9'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.ImageSpecificControl_HasFiniteOwnerCleanup(tag: "18.1-alpine", profile: "alpine")', 'id': '3d01ad46-f675-d805-e767-5b10966f7ce7'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureProviderContainmentTests.ForcedExpiry_StopsSignalIgnoringOwnedChild', 'id': '352b1352-8de3-430e-bc60-ba9e47bfa15d'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureProviderContainmentTests.OwnedProviderBoundsAndNaturalCleanup_AreObserved(failAfterProvidersStart: False)', 'id': 'd93b5ccf-71e0-6e45-24a0-d54c327c2e33'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.InitializationDeadline_CancelsCooperatingWorkAndCleansUp', 'id': 'bed29591-dbdf-f411-90dc-d258f29ddc92'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_BlockedTaskRemainsOwnedAfterDeadline', 'id': 'a5b54671-a741-4f4d-26aa-2dbeae08df6a'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_PostTimeoutFaultRetainsOriginalReference', 'id': 'ba4f6f90-aa05-9741-c804-7c1d32aa6469'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.CleanupFailure_StillAttemptsAllFourOwnedReleases(position: 3)', 'id': 'cba2d1d8-dfb9-2651-9e40-865e3746b82a'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.SuccessfulCleanup_ReleasesAllAndLeavesNoPendingHandles', 'id': 'bb78ba57-f928-af8d-0caa-d8c480275db6'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.ImageSpecificControl_HasFiniteOwnerCleanup(tag: "18.1-bookworm", profile: "bookworm")', 'id': '727ec019-ad58-8993-2904-8b57653e219a'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.SuccessfulSetup_DoesNotInvokeFailureCleanup', 'id': 'e9636e26-b72f-2ddf-246c-fd0cc095c8a9'}, {'name': 'Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementFixtureLifetimeTests.SetupFailure_PreservesPrimaryAndRunsCleanup', 'id': '757c22bb-83b4-4ccc-5e8c-fef62e4da710'}], 'profiles': [{'profile': 'bookworm', 'launcherExpiryCandidate': True, 'ownerWatchdogInvoked': False, 'elapsedSeconds': 3.4751535, 'exitCode': 137, 'finiteLifecycleQualified': False, 'naturalExpiryProven': False, 'externalTerminationExcluded': False}, {'profile': 'alpine', 'launcherExpiryCandidate': False, 'ownerWatchdogInvoked': True, 'elapsedSeconds': 15.2517368, 'exitCode': -1, 'finiteLifecycleQualified': False, 'naturalExpiryProven': False, 'externalTerminationExcluded': False}]}
+
+
+def canonical_json(value):
+    # JSON serialization preserves bool/int/float distinctions that Python equality loses.
+    # No NaN/Infinity acceptance, no coercion, and deterministic object ordering.
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+
+def require_source_ancestry(producer, declared, source_root):
+    # Implementation producer must precede declared source, and source must precede
+    # checkout HEAD. This is local source admission, not an external API-head proof.
+    for ancestor, descendant in ((producer, declared), (declared, "HEAD")):
+        result = subprocess.run(["git", "-C", str(source_root), "merge-base", "--is-ancestor", ancestor, descendant], capture_output=True, timeout=10)
+        if result.returncode: raise ValueError("Producer/source/checkout ancestry chain unavailable")
+
+
+def read_manifest():
+    return json.loads((pathlib.Path(__file__).resolve().parents[1] / CASES_PATH).read_text())
+
+
+def implementation_manifest(manifest):
+    value = json.loads(json.dumps(manifest))
+    value["finiteOwnerExtension"].update(enabled=False, reviewedProducer=None, discoveryOnly=True)
+    return value
+
+
+def validate_final_metadata(manifest, binding):
+    extension = manifest["finiteOwnerExtension"]
+    if hashlib.sha256(json.dumps(manifest["cases"], sort_keys=True, separators=(",", ":")).encode()).hexdigest() != FROZEN_EXISTING18_SHA256:
+        raise ValueError("Original eighteen identity custody differs")
+    if extension.get("enabled") is not True or extension.get("discoveryOnly") is not False:
+        raise ValueError("Explicit final enrollment required")
+    producer = extension.get("reviewedProducer")
+    if not isinstance(producer, str) or not re.fullmatch(r"[a-f0-9]{40}", producer) or binding.get("reviewedProducer") != producer or binding.get("releaseAllowed") is not True:
+        raise ValueError("Final source producer and release are unreviewed")
+    if binding.get("bootstrapReviewedProducer") is not None or binding.get("bootstrapSourceAdmission") is not None:
+        raise ValueError("Final enrollment cannot retain bootstrap authority")
+    if canonical_json(binding.get("nativeEnrollmentCustody")) != canonical_json(REVIEWED_NATIVE_CUSTODY):
+        raise ValueError("Exact original native qualification custody differs")
+    expected = {row["name"]:row["id"] for row in REVIEWED_NATIVE_CUSTODY["all23"]}
+    rows = manifest["cases"] + extension.get("cases", [])
+    if len(rows) != 23 or len({row["name"] for row in rows}) != 23 or {row["name"]:row.get("id") for row in rows} != expected:
+        raise ValueError("Exact original twenty-three name/GUID joins required")
+    extra = [{"name":row["name"],"id":row["id"]} for row in extension["cases"]]
+    if binding.get("nativeIds") != extra:
+        raise ValueError("Final binding and five native IDs differ")
+    return extension["cases"]
+
+
+def validate_implementation_pin(pin, current, original, blob):
+    if hashlib.sha256(current).hexdigest() != pin["sha256"]:
+        raise ValueError("Finite source input drift")
+    if pin["path"] == CASES_PATH:
+        if pin.get("admissionMetadataFields") != list(ADMISSION_METADATA_FIELDS):
+            raise ValueError("Admission metadata exception differs")
+        if canonical_json(implementation_manifest(json.loads(current))) != canonical_json(json.loads(original)):
+            raise ValueError("Immutable roster changed outside three admission fields")
+        expected_sha, expected_blob = pin["implementationSha256"], pin["implementationGitBlob"]
+    else:
+        if any(key in pin for key in ("admissionMetadataFields", "implementationSha256", "implementationGitBlob")):
+            raise ValueError("Implementation input cannot claim admission metadata exception")
+        expected_sha, expected_blob = pin["sha256"], pin["proposedGitBlob"]
+    if hashlib.sha256(original).hexdigest() != expected_sha or blob != expected_blob:
+        raise ValueError("Actual reviewed producer Git bytes differ")
+
+
 def finite_activation(extension):
     if not extension["enabled"]: return []
-    if extension.get("reviewedProducer") is None or len(extension.get("cases",[])) != 5:
-        raise ValueError("Finite extension requires reviewed actual producer and native IDs")
-    current = subprocess.check_output(["git","-C",str(pathlib.Path(__file__).resolve().parents[1]),"rev-parse","HEAD"],timeout=10,text=True).strip()
-    declared=os.environ.get("MALIEV_FINITE_OWNER_SOURCE_HEAD")
-    if not isinstance(declared,str) or not re.fullmatch(r"[a-f0-9]{40}",declared): raise ValueError("Trusted original CI source head missing")
-    # Producer is the implementation commit; the subsequent reviewed binding commit may differ.
-    ancestry=subprocess.run(["git","-C",str(pathlib.Path(__file__).resolve().parents[1]),"merge-base","--is-ancestor",extension["reviewedProducer"],current],capture_output=True,timeout=10)
-    if ancestry.returncode: raise ValueError("Reviewed implementation producer ancestry unavailable")
-    binding=json.loads((pathlib.Path(__file__).resolve().parents[1]/"docs/procurement-finite-owner-source-binding.json").read_text())
-    if binding["reviewedProducer"] != extension["reviewedProducer"] or binding["releaseAllowed"] is not True: raise ValueError("Finite source binding not reviewed")
+    source_root = pathlib.Path(__file__).resolve().parents[1]
+    manifest = read_manifest()
+    if canonical_json(extension) != canonical_json(manifest["finiteOwnerExtension"]):
+        raise ValueError("Final extension differs from actual manifest")
+    binding = json.loads((source_root / "docs/procurement-finite-owner-source-binding.json").read_text())
+    extra = validate_final_metadata(manifest, binding)
+    producer = extension["reviewedProducer"]
+    declared = os.environ.get("MALIEV_FINITE_OWNER_SOURCE_HEAD")
+    if not isinstance(declared, str) or not re.fullmatch(r"[a-f0-9]{40}", declared):
+        raise ValueError("Trusted original CI source head missing")
+    require_source_ancestry(producer, declared, source_root)
+    if len(binding["inputs"]) != 9 or {pin["path"] for pin in binding["inputs"]} != set(IMPLEMENTATION_INPUT_PATHS):
+        raise ValueError("Exact nine implementation inputs required")
     for pin in binding["inputs"]:
-        path=pathlib.Path(__file__).resolve().parents[1]/pin["path"]
-        if hashlib.sha256(path.read_bytes()).hexdigest()!=pin["sha256"]: raise ValueError("Finite source input drift")
-    # Original automatic CI API/artifact custody must independently bind declared source head
-    # and actual merge HEAD; matching a local environment field alone is not acceptance.
-    for case in extension["cases"]:
-        if str(uuid.UUID(case.get("id") or "")) != case["id"]: raise ValueError("Finite native ID unreviewed")
-    return extension["cases"]
+        path = (source_root / pin["path"]).resolve()
+        if not path.is_relative_to(source_root.resolve()): raise ValueError("Implementation source path outside reviewed root")
+        original = subprocess.check_output(["git", "-C", str(source_root), "show", producer + ":" + pin["path"]], timeout=10)
+        blob = subprocess.check_output(["git", "-C", str(source_root), "rev-parse", producer + ":" + pin["path"]], timeout=10, text=True).strip()
+        validate_implementation_pin(pin, path.read_bytes(), original, blob)
+    return extra
+
 
 def finite_bootstrap(extension):
     if extension.get("discoveryOnly") is not True or extension["enabled"]:
@@ -133,7 +207,7 @@ import xml.etree.ElementTree as ET
 
 
 def native_cases(root, discovery=False):
-    manifest = json.loads((pathlib.Path(__file__).resolve().parents[1] / "docs/procurement-fixture-containment-cases.json").read_text())
+    manifest = read_manifest()
     extension=manifest.get("finiteOwnerExtension", {"enabled":False})
     extra=finite_bootstrap(extension) if discovery else finite_activation(extension)
     total=18+len(extra)
@@ -390,7 +464,7 @@ def verify(root, discovery=False):
     if actual_expiry["resourceRunId"] != expiry["ResourceRunId"] or actual_expiry["role"] != "forced-expiry-control" or set(actual_expiry["volumes"]) != set(expiry["Volumes"]):
         raise ValueError("Independent expiry-control running identity differs")
     finite_ids, finite_volumes = set(), set()
-    extension=json.loads((pathlib.Path(__file__).resolve().parents[1]/"docs/procurement-fixture-containment-cases.json").read_text()).get("finiteOwnerExtension", {"enabled":False})
+    extension=read_manifest().get("finiteOwnerExtension", {"enabled":False})
     if extension["enabled"] or discovery:
         for profile in ["bookworm","alpine"]:
             value=json.loads((root/"fixture-containment"/("expiry-profile-"+profile+".json")).read_text())
@@ -408,7 +482,10 @@ def verify(root, discovery=False):
 
 def source_admission(extension, lane):
     if lane == "reviewed-source-only":
-        finite_bootstrap(extension)
+        if extension["enabled"]:
+            finite_activation(extension)
+        else:
+            finite_bootstrap(extension)
     elif lane == "qualified-full-only":
         if len(finite_activation(extension)) != 5:
             raise ValueError("Ordinary full enrollment requires reviewed exact23 identity custody")
@@ -418,12 +495,15 @@ def source_admission(extension, lane):
 
 if __name__ == "__main__":
     if sys.argv[1:] == ["--source-admission"]:
-        extension = json.loads((pathlib.Path(__file__).resolve().parents[1] / "docs/procurement-fixture-containment-cases.json").read_text())["finiteOwnerExtension"]
+        extension = read_manifest()["finiteOwnerExtension"]
         source_admission(extension, os.environ.get("MALIEV_FINITE_OWNER_DISCOVERY"))
         print(json.dumps({"sourceAdmissionChecked": True, "nativeExecuted": False, "qualification": False}))
         raise SystemExit(0)
+    enrolled_mode = len(sys.argv) == 3 and sys.argv[2] == "--reviewed-enrollment-or-provisional"
     discovery = len(sys.argv) == 3 and sys.argv[2] == "--provisional-discovery"
-    if len(sys.argv) > 2 and not discovery: raise ValueError("Unknown verification mode")
+    if len(sys.argv) > 2 and not (discovery or enrolled_mode): raise ValueError("Unknown verification mode")
+    if enrolled_mode:
+        discovery = not read_manifest()["finiteOwnerExtension"]["enabled"]
     root = pathlib.Path(sys.argv[1])
     result = verify(root, discovery)
     if discovery:
@@ -431,5 +511,5 @@ if __name__ == "__main__":
         if len(payload) > 65536: raise ValueError("Provisional discovery payload exceeds bound")
         with (root / "provisional-discovery.json").open("xb") as stream: stream.write(payload)
         print(json.dumps(result))
-        raise SystemExit(2)  # Explicit provisional evidence, never a green acceptance gate.
+        raise SystemExit(2)  # Provisional discovery never becomes acceptance.
     print(json.dumps(result))

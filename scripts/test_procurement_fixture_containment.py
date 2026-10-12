@@ -1,5 +1,6 @@
 """Provider-free negative controls; these never qualify native resource cleanup."""
 import importlib.util
+import hashlib
 import json
 import pathlib
 import tempfile
@@ -31,6 +32,15 @@ def receipt():
             "Resources": rows, "ContainersAbsent": [row["Id"] for row in rows], "VolumesAbsent": [row["Volumes"][0] for row in rows],
             "CleanupObserved": True, "UnsettledOperations": 0, "ObservedOperationFailureTypes": [],
             "DestructiveObserverActions": 0, "PersistentData": False}
+
+
+
+
+def inactive_manifest():
+    value=json.loads((pathlib.Path(__file__).resolve().parents[1]/'docs/procurement-fixture-containment-cases.json').read_text())
+    value['finiteOwnerExtension'].update(enabled=False,reviewedProducer=None,discoveryOnly=True)
+    for case in value['finiteOwnerExtension']['cases']:case['id']=None
+    return value
 
 
 class ReceiptControls(unittest.TestCase):
@@ -75,6 +85,10 @@ class ReceiptControls(unittest.TestCase):
 
 
 class NativeRosterControls(unittest.TestCase):
+    def setUp(self):
+        isolation=patch.object(guard,"read_manifest",side_effect=inactive_manifest)
+        isolation.start();self.addCleanup(isolation.stop)
+
     def document(self):
         root = ET.Element("TestRun")
         counters = {key: "0" for key in "failed error timeout aborted inconclusive passedButRunAborted notRunnable notExecuted disconnected warning completed inProgress pending".split()}
@@ -197,6 +211,10 @@ class NativeRosterControls(unittest.TestCase):
 
 
 class OuterWitnessControls(unittest.TestCase):
+    def setUp(self):
+        isolation=patch.object(guard,"read_manifest",side_effect=inactive_manifest)
+        isolation.start();self.addCleanup(isolation.stop)
+
     def files(self, root):
         ET.ElementTree(NativeRosterControls().document()).write(root / "synthetic.trx")
         directory = root / "fixture-containment"; directory.mkdir()
@@ -381,8 +399,12 @@ if __name__ == "__main__":
 
 
 class ProvisionalDiscoveryControls(unittest.TestCase):
+    def setUp(self):
+        isolation=patch.object(guard,"read_manifest",side_effect=inactive_manifest)
+        isolation.start();self.addCleanup(isolation.stop)
+
     def test_null_source_admission_cannot_start_native_discovery(self):
-        extension = json.loads((pathlib.Path(__file__).resolve().parents[1] / "docs/procurement-fixture-containment-cases.json").read_text())["finiteOwnerExtension"]
+        extension = inactive_manifest()["finiteOwnerExtension"]
         import os
         root=pathlib.Path(__file__).resolve().parents[1]
         binding=json.loads((root/'docs/procurement-finite-owner-source-binding.json').read_text())
@@ -397,7 +419,7 @@ class ProvisionalDiscoveryControls(unittest.TestCase):
 
     def test_unreviewed_discovery_keeps_original_eighteen_guid_pins(self):
         from unittest.mock import patch
-        extension = json.loads((pathlib.Path(__file__).resolve().parents[1] / "docs/procurement-fixture-containment-cases.json").read_text())["finiteOwnerExtension"]
+        extension = inactive_manifest()["finiteOwnerExtension"]
         document = NativeRosterControls().document()
         document.set("id", str(uuid.uuid4()))
         for case in extension["cases"]:
@@ -500,7 +522,7 @@ class PositivePostimageAdmissionControls(unittest.TestCase):
         import os
         root=pathlib.Path(__file__).resolve().parents[1]
         binding=json.loads((root/'docs/procurement-finite-owner-source-binding.json').read_text())
-        extension=json.loads((root/'docs/procurement-fixture-containment-cases.json').read_text())['finiteOwnerExtension']
+        extension=inactive_manifest()['finiteOwnerExtension']
         # This negative is independent of the repository's current bootstrap admission.
         binding['bootstrapReviewedProducer']=None
         binding['bootstrapSourceAdmission']=None
@@ -512,21 +534,115 @@ class PositivePostimageAdmissionControls(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,'reviewed exact23'):guard.source_admission(extension,'qualified-full-only')
                 run.assert_not_called();output.assert_not_called()
 
-    def test_actual_binding_requires_real_producer_custody_and_keeps_full_inactive(self):
+    def test_actual_binding_is_state_aware_without_self_qualifying_lifecycle(self):
         import os
         root=pathlib.Path(__file__).resolve().parents[1]
         binding=json.loads((root/'docs/procurement-finite-owner-source-binding.json').read_text())
-        extension=json.loads((root/'docs/procurement-fixture-containment-cases.json').read_text())['finiteOwnerExtension']
-        self.assertIsNone(binding['reviewedProducer']);self.assertIsNone(binding['nativeIds'])
-        self.assertIs(binding['releaseAllowed'],False);self.assertIs(extension['enabled'],False)
-        self.assertTrue(all(case['id'] is None for case in extension['cases']))
-        with self.assertRaisesRegex(ValueError,'reviewed exact23'):guard.source_admission(extension,'qualified-full-only')
-        # The actual admitted document must pass the real guard: SHA/blob + producer Git
-        # bytes/ancestry + original declared source + focused-only restrictions.
-        if binding['bootstrapSourceAdmission'] is True:
-            self.assertEqual('reviewed-source-only',os.environ.get('MALIEV_FINITE_OWNER_DISCOVERY'))
+        extension=guard.read_manifest()['finiteOwnerExtension']
+        if binding['releaseAllowed'] is True:
+            guard.validate_final_metadata(guard.read_manifest(),binding)
+            guard.source_admission(extension,'qualified-full-only')
             guard.source_admission(extension,'reviewed-source-only')
         else:
-            self.assertIsNone(binding['bootstrapSourceAdmission']);self.assertIsNone(binding['bootstrapReviewedProducer'])
-            with patch.dict(os.environ,{'MALIEV_FINITE_OWNER_DISCOVERY':'reviewed-source-only'},clear=False):
-                with self.assertRaisesRegex(ValueError,'Real source producer'):guard.source_admission(extension,'reviewed-source-only')
+            self.assertIsNone(binding['reviewedProducer']);self.assertIsNone(binding['nativeIds'])
+            self.assertIs(extension['enabled'],False)
+            with self.assertRaisesRegex(ValueError,'reviewed exact23'):guard.source_admission(extension,'qualified-full-only')
+            if binding['bootstrapSourceAdmission'] is True:
+                self.assertEqual('reviewed-source-only',os.environ.get('MALIEV_FINITE_OWNER_DISCOVERY'))
+                guard.source_admission(extension,'reviewed-source-only')
+            else:
+                self.assertIsNone(binding['bootstrapSourceAdmission']);self.assertIsNone(binding['bootstrapReviewedProducer'])
+                with self.assertRaises(ValueError):guard.source_admission(extension,'reviewed-source-only')
+
+
+class FinalEnrollmentMetadataControls(unittest.TestCase):
+    def fixture(self):
+        import copy
+        manifest=copy.deepcopy(guard.read_manifest())
+        root=pathlib.Path(__file__).resolve().parents[1]
+        binding=json.loads((root/'docs/procurement-finite-owner-source-binding.json').read_text())
+        # Pure metadata fixture only; this is not a fabricated actual source producer.
+        producer=guard.REVIEWED_NATIVE_CUSTODY['sourceProducer']
+        manifest['finiteOwnerExtension'].update(enabled=True,reviewedProducer=producer,discoveryOnly=False)
+        binding.update(reviewedProducer=producer,releaseAllowed=True,bootstrapReviewedProducer=None,bootstrapSourceAdmission=None,nativeIds=[{'name':c['name'],'id':c['id']} for c in manifest['finiteOwnerExtension']['cases']])
+        return manifest,binding
+
+    def test_exact_original23_metadata_scope_retains_watchdog_without_expiry_claim(self):
+        manifest,binding=self.fixture();self.assertEqual(5,len(guard.validate_final_metadata(manifest,binding)))
+        profiles=binding['nativeEnrollmentCustody']['profiles']
+        alpine=next(p for p in profiles if p['profile']=='alpine')
+        self.assertTrue(alpine['ownerWatchdogInvoked']);self.assertFalse(alpine['launcherExpiryCandidate'])
+        self.assertTrue(all(not p['finiteLifecycleQualified'] and not p['naturalExpiryProven'] and not p['externalTerminationExcluded'] for p in profiles))
+
+    def test_wrong_native_identity_origin_scope_or_claim_never_admits(self):
+        import copy
+        for mutation in ['old-id','new-id','name-permutation','missing','duplicate','run','trx','natural','scope','release','producer','bootstrap','native-binding']:
+            manifest,binding=self.fixture()
+            if mutation=='old-id':manifest['cases'][0]['id']=str(uuid.uuid4())
+            elif mutation=='new-id':manifest['finiteOwnerExtension']['cases'][0]['id']=str(uuid.uuid4())
+            elif mutation=='name-permutation':manifest['finiteOwnerExtension']['cases'][0]['name'],manifest['finiteOwnerExtension']['cases'][1]['name']=manifest['finiteOwnerExtension']['cases'][1]['name'],manifest['finiteOwnerExtension']['cases'][0]['name']
+            elif mutation=='missing':manifest['finiteOwnerExtension']['cases'].pop()
+            elif mutation=='duplicate':manifest['finiteOwnerExtension']['cases'][-1]=copy.deepcopy(manifest['finiteOwnerExtension']['cases'][0])
+            elif mutation=='run':binding['nativeEnrollmentCustody']['originalRun']+=1
+            elif mutation=='trx':binding['nativeEnrollmentCustody']['trxSha256']='0'*64
+            elif mutation=='natural':binding['nativeEnrollmentCustody']['profiles'][0]['naturalExpiryProven']=True
+            elif mutation=='scope':binding['nativeEnrollmentCustody']['scope']='launcher-expiry-success'
+            elif mutation=='release':binding['releaseAllowed']=False
+            elif mutation=='producer':binding['reviewedProducer']=None
+            elif mutation=='bootstrap':binding['bootstrapSourceAdmission']=True
+            else:binding['nativeIds'][0]['id']=str(uuid.uuid4())
+            with self.subTest(mutation=mutation),self.assertRaises(ValueError):guard.validate_final_metadata(manifest,binding)
+
+    def test_metadata_exception_is_only_three_admission_fields_and_exact_source_bytes(self):
+        manifest,binding=self.fixture();original=json.dumps(guard.implementation_manifest(manifest),indent=2).encode();current=json.dumps(manifest,indent=2).encode()
+        blob=hashlib.sha1(b'blob '+str(len(original)).encode()+b'\0'+original).hexdigest()
+        pin={'path':guard.CASES_PATH,'sha256':hashlib.sha256(current).hexdigest(),'implementationSha256':hashlib.sha256(original).hexdigest(),'implementationGitBlob':blob,'admissionMetadataFields':list(guard.ADMISSION_METADATA_FIELDS)}
+        guard.validate_implementation_pin(pin,current,original,blob)
+        changed=json.loads(current);changed['finiteOwnerExtension']['cases'][0]['id']=str(uuid.uuid4());changed=json.dumps(changed).encode();pin['sha256']=hashlib.sha256(changed).hexdigest()
+        with self.assertRaisesRegex(ValueError,'Immutable roster'):guard.validate_implementation_pin(pin,changed,original,blob)
+        with self.assertRaises(ValueError):guard.validate_implementation_pin(dict(pin,path='scripts/unrelated.py'),changed,original,blob)
+
+    def test_final_focused_and_full_share_same_real_admission_guard(self):
+        with patch.object(guard,'finite_activation',return_value=[1,2,3,4,5]) as final,patch.object(guard,'finite_bootstrap') as bootstrap:
+            guard.source_admission({'enabled':True},'reviewed-source-only');guard.source_admission({'enabled':True},'qualified-full-only')
+            self.assertEqual(2,final.call_count);bootstrap.assert_not_called()
+
+
+class TypeExactCustodyControls(FinalEnrollmentMetadataControls):
+    def test_implementation_manifest_rejects_numeric_type_collisions_outside_three_fields(self):
+        for key,value in [('expectedCases',18.0),('sourceRun',38128379833.0)]:
+            manifest,binding=self.fixture()
+            original=json.dumps(guard.implementation_manifest(manifest),indent=2).encode()
+            manifest[key]=value;current=json.dumps(manifest,indent=2).encode()
+            pin={'path':guard.CASES_PATH,'sha256':hashlib.sha256(current).hexdigest(),'implementationSha256':hashlib.sha256(original).hexdigest(),'implementationGitBlob':hashlib.sha1(b'blob '+str(len(original)).encode()+b'\0'+original).hexdigest(),'admissionMetadataFields':list(guard.ADMISSION_METADATA_FIELDS)}
+            with self.subTest(key=key),self.assertRaisesRegex(ValueError,'Immutable roster'):
+                guard.validate_implementation_pin(pin,current,original,pin['implementationGitBlob'])
+        manifest,binding=self.fixture();source=guard.implementation_manifest(manifest)
+        source['finiteOwnerExtension']['cases'][0]['reviewFlag']=True
+        original=json.dumps(source).encode();current=json.loads(original);current['finiteOwnerExtension']['cases'][0]['reviewFlag']=1;current=json.dumps(current).encode()
+        pin={'path':guard.CASES_PATH,'sha256':hashlib.sha256(current).hexdigest(),'implementationSha256':hashlib.sha256(original).hexdigest(),'implementationGitBlob':hashlib.sha1(b'blob '+str(len(original)).encode()+b'\0'+original).hexdigest(),'admissionMetadataFields':list(guard.ADMISSION_METADATA_FIELDS)}
+        with self.assertRaisesRegex(ValueError,'Immutable roster'):guard.validate_implementation_pin(pin,current,original,pin['implementationGitBlob'])
+
+    def test_frozen_custody_rejects_boolean_integer_and_integer_float_collisions(self):
+        for key,value in [('ownerWatchdogInvoked',1),('naturalExpiryProven',0),('finiteLifecycleQualified',0),('externalTerminationExcluded',0)]:
+            manifest,binding=self.fixture();profile=next(p for p in binding['nativeEnrollmentCustody']['profiles'] if p['profile']=='alpine');profile[key]=value
+            with self.subTest(key=key),self.assertRaisesRegex(ValueError,'qualification custody'):guard.validate_final_metadata(manifest,binding)
+        for key,value in [('originalAttempt',1.0),('originalRun',38195540660.0)]:
+            manifest,binding=self.fixture();binding['nativeEnrollmentCustody'][key]=value
+            with self.subTest(key=key),self.assertRaisesRegex(ValueError,'qualification custody'):guard.validate_final_metadata(manifest,binding)
+
+    def test_canonical_json_rejects_nonfinite_values_and_keeps_json_types(self):
+        self.assertNotEqual(guard.canonical_json(True),guard.canonical_json(1))
+        self.assertNotEqual(guard.canonical_json(18),guard.canonical_json(18.0))
+        for value in [float('nan'),float('inf'),float('-inf')]:
+            with self.assertRaises(ValueError):guard.canonical_json({'value':value})
+
+    def test_declared_source_chain_has_explicit_producer_to_source_to_checkout_edges(self):
+        from types import SimpleNamespace
+        producer='a'*40;declared='b'*40
+        with patch.object(guard.subprocess,'run',return_value=SimpleNamespace(returncode=0)) as run:
+            guard.require_source_ancestry(producer,declared,pathlib.Path('/fixture'))
+            self.assertEqual([(producer,declared),(declared,'HEAD')],[tuple(call.args[0][-2:]) for call in run.call_args_list])
+        for codes in [[1],[0,1]]:
+            with patch.object(guard.subprocess,'run',side_effect=[SimpleNamespace(returncode=code) for code in codes]),self.assertRaisesRegex(ValueError,'ancestry chain'):
+                guard.require_source_ancestry(producer,declared,pathlib.Path('/fixture'))

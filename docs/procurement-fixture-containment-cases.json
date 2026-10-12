@@ -85,27 +85,27 @@
       {
         "profile": "bookworm",
         "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.ImageSpecificControl_HasFiniteOwnerCleanup(tag: \"18.1-bookworm\", profile: \"bookworm\")",
-        "id": null
+        "id": "727ec019-ad58-8993-2904-8b57653e219a"
       },
       {
         "profile": "alpine",
         "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.ImageSpecificControl_HasFiniteOwnerCleanup(tag: \"18.1-alpine\", profile: \"alpine\")",
-        "id": null
+        "id": "3d01ad46-f675-d805-e767-5b10966f7ce7"
       },
       {
         "kind": "runtime-seam",
         "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_BlockedTaskRemainsOwnedAfterDeadline",
-        "id": null
+        "id": "a5b54671-a741-4f4d-26aa-2dbeae08df6a"
       },
       {
         "kind": "runtime-seam",
         "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_PostTimeoutFaultRetainsOriginalReference",
-        "id": null
+        "id": "ba4f6f90-aa05-9741-c804-7c1d32aa6469"
       },
       {
         "kind": "runtime-seam",
         "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_ExpiredTotalLeaseRefusesFalseSettlement",
-        "id": null
+        "id": "76fe65cf-25c5-85f1-7427-41ffcb8ad51c"
       }
     ],
     "activationRequires": "Actual reviewed source producer, actual discovered GUIDs, explicit source admission; remove Skip and enable filter/strict extension together",

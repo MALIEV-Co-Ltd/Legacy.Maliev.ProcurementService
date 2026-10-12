@@ -63,7 +63,7 @@ jobs:
           python3 -B -O -m unittest discover -s scripts -p test_procurement_fixture_containment.py
           python3 -B -m unittest discover -s scripts -p test_procurement_fixture_process_observer.py
           python3 -B -O -m unittest discover -s scripts -p test_procurement_fixture_process_observer.py
-          python3 -B scripts/verify-procurement-fixture-containment.py containment-results --provisional-discovery
+          python3 -B scripts/verify-procurement-fixture-containment.py containment-results --reviewed-enrollment-or-provisional
       - name: Preserve original containment evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
