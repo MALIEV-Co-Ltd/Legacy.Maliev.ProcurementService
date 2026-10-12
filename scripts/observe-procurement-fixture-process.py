@@ -17,6 +17,37 @@ MAX_OUTPUT_BYTES = 1024 * 1024
 MAX_ERROR_BYTES = 65536
 MAX_PROC_BYTES = 4096
 MAX_PROCESSES = 4096
+# Commerce standing native admission floor; fixed, no environment override.
+MIN_NATIVE_AVAILABLE_KIB = 3145728
+MAX_MEMINFO_BYTES = 4096
+
+
+def require_native_memory():
+    if sys.platform != "linux":
+        raise RuntimeError("Native memory admission requires Linux /proc/meminfo")
+    try:
+        with open("/proc/meminfo", "rb") as stream:
+            raw = stream.read(MAX_MEMINFO_BYTES + 1)
+    except OSError as error:
+        raise RuntimeError("Native available memory is unavailable") from error
+    if len(raw) > MAX_MEMINFO_BYTES:
+        raise RuntimeError("Native memory admission exceeds bounded input")
+    rows = [line for line in raw.splitlines() if line.startswith(b"MemAvailable:")]
+    if len(rows) != 1:
+        raise RuntimeError("Native available memory is missing or ambiguous")
+    match = re.fullmatch(rb"MemAvailable:[ \t]+([0-9]{1,16})[ \t]+kB[ \t]*", rows[0])
+    if match is None:
+        raise RuntimeError("Native available memory is malformed")
+    available = int(match.group(1))
+    if available < MIN_NATIVE_AVAILABLE_KIB:
+        raise RuntimeError("Native available memory is below Commerce 3145728 KiB floor")
+    receipt = {"source": "/proc/meminfo:MemAvailable", "availableKiB": available,
+               "minimumKiB": MIN_NATIVE_AVAILABLE_KIB,
+               "observedAtUtc": datetime.datetime.now(datetime.timezone.utc).isoformat()}
+    print(json.dumps({"nativeMemoryAdmission": receipt}), flush=True)
+    return receipt
+
+
 def native_extension():
     return json.loads((pathlib.Path(__file__).resolve().parents[1]/"docs/procurement-fixture-containment-cases.json").read_text()).get("finiteOwnerExtension", {"enabled":False})
 
@@ -475,6 +506,7 @@ def run(root):
     global phase_deadline, phase_name, recovery_root
     if sys.platform != "linux":
         raise RuntimeError("Independent witness requires hosted Linux /proc")
+    require_native_memory()  # Fresh read before pidfd helper, provider roles or Docker allocation.
     if not hasattr(os, "pidfd_open") or not hasattr(signal, "pidfd_send_signal"):
         raise RuntimeError("Race-safe Linux pidfd ownership is required")
     preflight_pidfd()

@@ -32,6 +32,9 @@ def flattened(error):
 class ObserverControls(unittest.TestCase):
     def setUp(self):
         observer.phase_deadline = observer.time.monotonic() + 30
+        # These existing fake-host lifecycle tests exercise cleanup, not host admission.
+        memory = patch.object(observer, "require_native_memory")
+        memory.start(); self.addCleanup(memory.stop)
         # Existing fake-host cleanup tests intentionally exercise the frozen old18 lane.
         declaration = patch.object(observer, "native_extension", return_value={"enabled": False})
         declaration.start(); self.addCleanup(declaration.stop)
@@ -494,3 +497,49 @@ class FiniteOriginalCustodyControls(unittest.TestCase):
         with self.assertRaises(ValueError):observer.immutable_finite_scope(before,after)
 
 if __name__ == "__main__": unittest.main()
+
+
+class NativeMemoryAdmissionControls(unittest.TestCase):
+    def reading(self, raw):
+        from unittest.mock import mock_open
+        with patch.object(observer.sys,'platform','linux'),patch('builtins.open',mock_open(read_data=raw)) as opened,patch('builtins.print'):
+            receipt=observer.require_native_memory()
+            opened.assert_called_once_with('/proc/meminfo','rb')
+            opened().read.assert_called_once_with(4097)
+            opened().__exit__.assert_called_once()
+            return receipt
+
+    def test_exact_3gib_floor_and_higher_admit_without_override(self):
+        for available in [3145728,3145729,4194304]:
+            receipt=self.reading(('MemTotal: 9999999 kB\nMemAvailable: '+str(available)+' kB\n').encode())
+            self.assertEqual(available,receipt['availableKiB']);self.assertEqual(3145728,receipt['minimumKiB'])
+
+    def test_missing_duplicate_wrong_units_negative_or_malformed_refused(self):
+        for raw in [b'',b'MemFree: 9999999 kB',b'MemAvailable: 9999999 kB\nMemAvailable: 9999999 kB',b'MemAvailable: 4 GiB',b'MemAvailable: -1 kB',b'MemAvailable: 3.5 kB',b'MemAvailable: 9999999 kB extra',b'MemAvailable: unavailable kB',b'MemAvailable: 99999999999999999 kB']:
+            with self.subTest(raw=raw),self.assertRaises(RuntimeError):self.reading(raw)
+
+    def test_below_floor_and_oversized_source_refused(self):
+        for raw in [b'MemAvailable: 3145727 kB',b'MemAvailable: 0 kB',b'MemAvailable: 9999999 kB\n'+b'x'*4096]:
+            with self.subTest(raw=raw[:40]),self.assertRaises(RuntimeError):self.reading(raw)
+
+    def test_unavailable_and_unsupported_fail_closed_without_subprocess(self):
+        with patch.object(observer.sys,'platform','win32'),patch('builtins.open') as opened,patch.object(observer.subprocess,'Popen') as child:
+            with self.assertRaises(RuntimeError):observer.require_native_memory()
+            opened.assert_not_called();child.assert_not_called()
+        with patch.object(observer.sys,'platform','linux'),patch('builtins.open',side_effect=OSError('unavailable')),patch.object(observer.subprocess,'Popen') as child:
+            with self.assertRaises(RuntimeError):observer.require_native_memory()
+            child.assert_not_called()
+
+    def test_fresh_second_read_cannot_reuse_prior_high_memory(self):
+        from unittest.mock import mock_open
+        handle=mock_open();handle.return_value.read.side_effect=[b'MemAvailable: 4194304 kB',b'MemAvailable: 3145727 kB']
+        with patch.object(observer.sys,'platform','linux'),patch('builtins.open',handle),patch('builtins.print'):
+            observer.require_native_memory()
+            with self.assertRaises(RuntimeError):observer.require_native_memory()
+            self.assertEqual(2,handle.call_count)
+
+    def test_low_memory_entry_refuses_before_helpers_roles_or_docker(self):
+        from unittest.mock import mock_open
+        with patch.object(observer.sys,'platform','linux'),patch('builtins.open',mock_open(read_data=b'MemAvailable: 3145727 kB')),patch.object(observer,'preflight_pidfd') as helper,patch.object(observer,'native_extension') as roles,patch.object(observer,'spawn_gated') as native,patch.object(observer,'docker') as docker,patch.object(observer.pathlib.Path,'mkdir') as mkdir:
+            with self.assertRaisesRegex(RuntimeError,'3145728'):observer.run(pathlib.Path('never-created'))
+            helper.assert_not_called();roles.assert_not_called();native.assert_not_called();docker.assert_not_called();mkdir.assert_not_called()

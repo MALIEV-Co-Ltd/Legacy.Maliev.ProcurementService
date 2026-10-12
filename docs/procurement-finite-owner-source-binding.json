@@ -12,8 +12,8 @@
     },
     {
       "path": "scripts/observe-procurement-fixture-process.py",
-      "sha256": "e66878771f4811499170cd75257c151f69368e72f4a929c647355620c63c2a8e",
-      "proposedGitBlob": "33326f8a6cb04e480707b7da9b0496a25fafe2fb"
+      "sha256": "01fa90590cb074fef83aa4ad1e6df3a7cbc534d53a9bf2afe54cf886ac00d5af",
+      "proposedGitBlob": "6346322dda9ac4c0a5647278c8d96c8ca36f7e2d"
     },
     {
       "path": "scripts/verify-procurement-fixture-containment.py",
@@ -22,8 +22,8 @@
     },
     {
       "path": "scripts/test_procurement_fixture_process_observer.py",
-      "sha256": "f6cd81067152837acbef9051e62e5c5cfd25594275fa0317a8ee6a93e9e397b4",
-      "proposedGitBlob": "6def4cbc54318a798f25707250807f632d26e8b7"
+      "sha256": "01baa74ec5ca8b06263e348528422f0086ad663c367eafe39534817cfb9205fe",
+      "proposedGitBlob": "5c5ca8ff9c14ff8ae0f938bc238ac525d5a33407"
     },
     {
       "path": "scripts/test_procurement_fixture_containment.py",
@@ -60,6 +60,6 @@
     "proposedGitBlob": "a4fda2edca34c7e8f918d8c43edd72438ed66f05",
     "producer": null
   },
-  "bootstrapReviewedProducer": "21b98ba0178daee2eec4a890ef3b2eada49616cb",
-  "bootstrapSourceAdmission": true
+  "bootstrapReviewedProducer": null,
+  "bootstrapSourceAdmission": null
 }
