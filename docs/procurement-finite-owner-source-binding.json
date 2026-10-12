@@ -1,5 +1,5 @@
 {
-  "reviewedProducer": "e7c67db956eae91c6b5eefecae2d66969227e262",
+  "reviewedProducer": "7dc13204317176a3f8a970443af99c563ca14b37",
   "releaseAllowed": true,
   "expectedExistingAuthSelectedInputs": 82,
   "productionBuildInputs": 66,
@@ -32,8 +32,8 @@
     },
     {
       "path": "docs/procurement-fixture-containment-cases.json",
-      "sha256": "5163c80b72d7e9bfb6f23cee2c533b5ce46ad1fd2f7b9eaff719125c5d47841f",
-      "proposedGitBlob": "719bad4d67da07059b2c001afdaf0ad7efb58bfb",
+      "sha256": "e41fcd4a3254a033df0ec94cf0f05dc345f8369381f9f4183124d3fafcca7f95",
+      "proposedGitBlob": "86ac5a36b3a12c6b488c256eedb8a9d6869e3104",
       "implementationSha256": "9754d962c8ead7ffc8d2118497897ce4c124bcf48f4d2ef8449ab21606d34f76",
       "implementationGitBlob": "cb92d95e2bdff7f5fc0364286494803c5da22eb9",
       "admissionMetadataFields": [
