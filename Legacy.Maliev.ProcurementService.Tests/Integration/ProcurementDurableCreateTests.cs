@@ -1119,7 +1119,7 @@ public class ProcurementDurableCreateFixture : IAsyncLifetime
                         {
                             Role = role,
                             Observation = await ProcurementDurableServerLogObserver.CaptureAsync(docker.Containers,
-                                actual.ID, actual.Config.Tty, ownerCorrelation.Identity.ClockOriginUtc, deadline.Token),
+                                actual.ID, ownerCorrelation.Identity.ClockOriginUtc, deadline.Token),
                         });
                         rows.Add(new
                         {

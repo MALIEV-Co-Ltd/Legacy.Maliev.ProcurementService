@@ -147,10 +147,10 @@ public sealed class ProcurementDurableDiagnosticPolicyTests
     {
         var raw = new DisposedStream(Encoding.UTF8.GetBytes(new string('x', 20000)));
         var containers = new Mock<IContainerOperations>(MockBehavior.Strict);
-        containers.Setup(value => value.GetContainerLogsAsync("owned-id", false,
-            It.Is<ContainerLogsParameters>(parameters => parameters.Follow == false && parameters.Tail == "64"), It.IsAny<CancellationToken>()))
+        containers.Setup(value => value.GetContainerLogsAsync("owned-id",
+            It.Is<ContainerLogsParameters>(parameters => parameters.Follow == false && parameters.Tail == "64" && parameters.ShowStdout == true && parameters.ShowStderr == true && parameters.Timestamps == false && !string.IsNullOrEmpty(parameters.Since) && !string.IsNullOrEmpty(parameters.Until)), It.Is<CancellationToken>(token => token.CanBeCanceled)))
             .ReturnsAsync(new MultiplexedStream(raw, false));
-        var result = await ProcurementDurableServerLogObserver.CaptureAsync(containers.Object, "owned-id", false, DateTimeOffset.UtcNow, CancellationToken.None);
+        var result = await ProcurementDurableServerLogObserver.CaptureAsync(containers.Object, "owned-id", DateTimeOffset.UtcNow, CancellationToken.None);
         Assert.True(result.Available);
         Assert.True(result.Truncated);
         Assert.Equal(16384, result.BytesRead);
@@ -165,9 +165,9 @@ public sealed class ProcurementDurableDiagnosticPolicyTests
     {
         var raw = new DisposedStream([0xff, 0xfe, (byte)'\n']);
         var containers = new Mock<IContainerOperations>();
-        containers.Setup(value => value.GetContainerLogsAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<ContainerLogsParameters>(), It.IsAny<CancellationToken>()))
+        containers.Setup(value => value.GetContainerLogsAsync(It.IsAny<string>(), It.IsAny<ContainerLogsParameters>(), It.Is<CancellationToken>(token => token.CanBeCanceled)))
             .ReturnsAsync(new MultiplexedStream(raw, false));
-        var result = await ProcurementDurableServerLogObserver.CaptureAsync(containers.Object, "owned-id", false, DateTimeOffset.UtcNow, CancellationToken.None);
+        var result = await ProcurementDurableServerLogObserver.CaptureAsync(containers.Object, "owned-id", DateTimeOffset.UtcNow, CancellationToken.None);
         Assert.False(result.Available);
         Assert.Equal(typeof(DecoderFallbackException).FullName, result.FailureType);
         Assert.True(raw.Disposed);

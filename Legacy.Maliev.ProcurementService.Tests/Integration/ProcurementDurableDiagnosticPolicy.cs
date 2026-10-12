@@ -139,7 +139,7 @@ internal static class ProcurementDurableServerLogObserver
 
     // Caller must first verify exact inspected ID/owner/run/role. No SQL or connection probes.
     internal static async Task<ProcurementServerLogObservation> CaptureAsync(IContainerOperations containers,
-        string id, bool tty, DateTimeOffset since, CancellationToken outer)
+        string id, DateTimeOffset since, CancellationToken outer)
     {
         using var deadline = CancellationTokenSource.CreateLinkedTokenSource(outer);
         deadline.CancelAfter(TimeSpan.FromSeconds(2));
@@ -149,7 +149,7 @@ internal static class ProcurementDurableServerLogObserver
         var count = 0;
         try
         {
-            using var stream = await containers.GetContainerLogsAsync(id, tty, new ContainerLogsParameters
+            using var stream = await containers.GetContainerLogsAsync(id, new ContainerLogsParameters
             {
                 ShowStdout = true, ShowStderr = true, Follow = false, Timestamps = false, Tail = "64",
                 Since = since.ToUnixTimeSeconds().ToString(System.Globalization.CultureInfo.InvariantCulture),

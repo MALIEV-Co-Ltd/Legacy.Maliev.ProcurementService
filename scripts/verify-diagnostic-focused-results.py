@@ -7,7 +7,7 @@ import uuid
 import xml.etree.ElementTree as ET
 
 
-CONTRACT_SHA256 = 'f26a279bc845760253b6a483b459a608443c2113775dea54877529a77ac46603'
+CONTRACT_SHA256 = 'ff7371169aa0716d415cf656e6d405934dda7b62ff53023d3a5696f193ebfcd7'
 
 def guid(value):
     if str(uuid.UUID(value or "")) != value:

@@ -1,9 +1,10 @@
 {
   "schemaVersion": 1,
   "sourceHashes": {
-    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableDiagnosticPolicyTests.cs": "156d9d36d249461db32b7ab0fe66547c5796164d437e3f62da1f19ad5216471a",
-    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableCreateTests.cs": "768e884b496bdbc1ed626e09297b5935b6b765264cf54d459079eaaf37200c4b",
-    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableChildCreateTests.cs": "1d4e514668ff124fedeccf9e8090819be212af1b3eb2481afbbd7c05812c9118"
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableDiagnosticPolicyTests.cs": "290d85c8de14b625aa8d1c538abe569e10f5b35c923a0afadcd1141c9196616f",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableCreateTests.cs": "77cd68ad55301e1d64a5bfc08d30c0215d64061450f51c020b00fd3290767afb",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableChildCreateTests.cs": "1d4e514668ff124fedeccf9e8090819be212af1b3eb2481afbbd7c05812c9118",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableDiagnosticPolicy.cs": "5acef7ea076abc2adc7290f2f30cd29d1f05eb708456c420edcd3463f175fc81"
   },
   "cohortCounts": {
     "diagnostic": 15,
