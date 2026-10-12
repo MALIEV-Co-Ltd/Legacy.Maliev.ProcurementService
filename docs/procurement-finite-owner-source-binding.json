@@ -1,85 +1,11 @@
 {
-  "reviewedProducer": "149e49c65834db63ac0e811f01320b6eca25f422",
-  "releaseAllowed": true,
+  "reviewedProducer": null,
+  "releaseAllowed": false,
   "expectedExistingAuthSelectedInputs": 80,
   "productionBuildInputs": 66,
   "productionBuildInputSha256": "115556e55d729910cad1792c7d91297b65a03336b6de74a2aeee5b62447b1443",
-  "inputs": [
-    {
-      "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementImageExpiryProfileWitnessTests.cs",
-      "sha256": "4dea9be8851f9e4cd55ec6be95495893b0df8f26001988fd8ae13e2b2fde8d5a",
-      "proposedGitBlob": "3e1e5fef337c471c6354baa3d877fdfd9258f911"
-    },
-    {
-      "path": "scripts/observe-procurement-fixture-process.py",
-      "sha256": "01fa90590cb074fef83aa4ad1e6df3a7cbc534d53a9bf2afe54cf886ac00d5af",
-      "proposedGitBlob": "6346322dda9ac4c0a5647278c8d96c8ca36f7e2d"
-    },
-    {
-      "path": "scripts/verify-procurement-fixture-containment.py",
-      "sha256": "af31aede016a8dcb2af7dc668ae02381cd29b7ec46203a6a4d36c00fd2e6529e",
-      "proposedGitBlob": "e02ee869126eb009b33b7439ac62ff629020aec9"
-    },
-    {
-      "path": "scripts/test_procurement_fixture_process_observer.py",
-      "sha256": "01baa74ec5ca8b06263e348528422f0086ad663c367eafe39534817cfb9205fe",
-      "proposedGitBlob": "5c5ca8ff9c14ff8ae0f938bc238ac525d5a33407"
-    },
-    {
-      "path": "scripts/test_procurement_fixture_containment.py",
-      "sha256": "ac2c05e3b1a6f9a4cf143ac4457f6203fc8c623a2e5ab8c3c6871968d77a97f7",
-      "proposedGitBlob": "63f9a264b6e700d32aefaefee50dd6838905c83d"
-    },
-    {
-      "path": "docs/procurement-fixture-containment-cases.json",
-      "sha256": "f183b38a83210a6996ad6e9007ee8383455a3af86e079429aca50aa684f18a48",
-      "proposedGitBlob": "5e0897e37ae8ca4b368c3907b235ec63583162c9",
-      "implementationSha256": "9754d962c8ead7ffc8d2118497897ce4c124bcf48f4d2ef8449ab21606d34f76",
-      "implementationGitBlob": "cb92d95e2bdff7f5fc0364286494803c5da22eb9",
-      "admissionMetadataFields": [
-        "enabled",
-        "reviewedProducer",
-        "discoveryOnly"
-      ]
-    },
-    {
-      "path": ".github/workflows/procurement-fixture-containment.yml",
-      "sha256": "1f234551826b1ac641d72e08deb3e467d60cbdc14581483791f2160589ddba19",
-      "proposedGitBlob": "e80d6c5b7132f26633f62c9a57058335716302d0"
-    },
-    {
-      "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs",
-      "sha256": "f6d8f287e32cf2837f8b25eb470e4a6ba2f66e27940af9f429a1e04f15ce439b",
-      "proposedGitBlob": "a4fda2edca34c7e8f918d8c43edd72438ed66f05"
-    },
-    {
-      "path": ".github/workflows/_build-and-test.yml",
-      "sha256": "8f7f47a21a59674e8550169df62ec8124c4aae081048737b215a5106c70c6609",
-      "proposedGitBlob": "35938c37b6cf6489f898062c1a910b89623ac0c2"
-    }
-  ],
-  "nativeIds": [
-    {
-      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.ImageSpecificControl_HasFiniteOwnerCleanup(tag: \"18.1-bookworm\", profile: \"bookworm\")",
-      "id": "727ec019-ad58-8993-2904-8b57653e219a"
-    },
-    {
-      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.ImageSpecificControl_HasFiniteOwnerCleanup(tag: \"18.1-alpine\", profile: \"alpine\")",
-      "id": "3d01ad46-f675-d805-e767-5b10966f7ce7"
-    },
-    {
-      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_BlockedTaskRemainsOwnedAfterDeadline",
-      "id": "a5b54671-a741-4f4d-26aa-2dbeae08df6a"
-    },
-    {
-      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_PostTimeoutFaultRetainsOriginalReference",
-      "id": "ba4f6f90-aa05-9741-c804-7c1d32aa6469"
-    },
-    {
-      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_ExpiredTotalLeaseRefusesFalseSettlement",
-      "id": "76fe65cf-25c5-85f1-7427-41ffcb8ad51c"
-    }
-  ],
+  "inputs": [],
+  "nativeIds": null,
   "activation": "Only after source review and actual producer/native GUID binding; original automatic exact-head API/artifact custody required",
   "requiresAuthRuntimeMetadataRebind": true,
   "runtimeMetadataOverride": {

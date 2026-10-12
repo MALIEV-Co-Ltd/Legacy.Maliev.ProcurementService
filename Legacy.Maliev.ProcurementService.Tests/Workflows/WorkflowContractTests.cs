@@ -26,6 +26,18 @@ public sealed class WorkflowContractTests
             ("--no-restore -warnaserror", "--no-restore"),
             ("-p:UseLocalMalievDependencies=true", "-p:UseLocalMalievDependencies=false"),
             ("export GITHUB_ACTIONS=false", "export GITHUB_ACTIONS=true"),
+            ("      MALIEV_FINITE_OWNER_SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}\n", ""),
+            ("      MALIEV_FINITE_OWNER_SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}", "      MALIEV_FINITE_OWNER_SOURCE_HEAD: ${{ github.sha }}"),
+            ("      MALIEV_FINITE_OWNER_DISCOVERY: 'qualified-full-only'\n", ""),
+            ("      MALIEV_FINITE_OWNER_DISCOVERY: 'qualified-full-only'", "      MALIEV_FINITE_OWNER_DISCOVERY: 'reviewed-source-only'"),
+            ("          fetch-depth: 0\n", ""),
+            ("          fetch-depth: 0", "          fetch-depth: 2"),
+            ("          fetch-depth: 0", "          fetch-depth: 3"),
+            ("      MALIEV_FINITE_OWNER_DISCOVERY: 'qualified-full-only'", "      MALIEV_FINITE_OWNER_DISCOVERY: 'qualified-full-only'\n      UNREVIEWED_OWNER_OPTION: true"),
+            ("          fetch-depth: 0", "          fetch-depth: 0\n          unreviewed-input: true"),
+            ("python3 -B scripts/verify-procurement-fixture-containment.py --source-admission", "echo source-admission-omitted"),
+            ("python3 -B scripts/verify-procurement-fixture-containment.py --source-admission", "python3 -B scripts/verify-procurement-fixture-containment.py --provisional-discovery"),
+            ("python3 -B scripts/verify-procurement-fixture-containment.py --source-admission\n          dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true", "dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true\n          python3 -B scripts/verify-procurement-fixture-containment.py --source-admission"),
             ("name: Set up SDK for mandatory focused workflow checks", "name: Omitted mandatory SDK"),
             ("name: Build before mandatory focused workflow checks", "name: Execute mandatory focused workflow checks"),
             ("name: Execute mandatory focused workflow checks", "name: Execute mandatory focused workflow checks\n        if: false"),
@@ -36,6 +48,27 @@ public sealed class WorkflowContractTests
             ("name: Build before mandatory focused workflow checks", "name: Build before mandatory focused workflow checks\n        continue-on-error: true"),
         })
             AssertMutationRejected(original, replacement);
+    }
+
+    [Fact]
+    public void ContainmentSourceCheckout_RequiresFullHistoryAndSanitizedCredentials()
+    {
+        var workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-fixture-containment.yml"))
+            .Replace("\r\n", "\n", StringComparison.Ordinal);
+        WorkflowContractValidator.ValidateContainmentSourceCheckout(workflow);
+        foreach (var (original, replacement) in new[]
+        {
+            ("          fetch-depth: 0\n", ""),
+            ("          fetch-depth: 0", "          fetch-depth: 3"),
+            ("          fetch-depth: 0", "          fetch-depth: 2"),
+            ("          fetch-depth: 0", "          fetch-depth: 0\n          unreviewed-input: true"),
+            ("          persist-credentials: false", "          persist-credentials: true"),
+        })
+        {
+            Assert.Contains(original, workflow, StringComparison.Ordinal);
+            Assert.Throws<InvalidOperationException>(() => WorkflowContractValidator.ValidateContainmentSourceCheckout(
+                workflow.Replace(original, replacement, StringComparison.Ordinal)));
+        }
     }
 
     [Fact]
@@ -245,8 +278,8 @@ public sealed class WorkflowContractTests
     public void BuildAndTest_RejectsSecretExpressionInJobEnvironment(string expression)
     {
         AssertMutationRejected(
-            "    env:\n      MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies",
-            $"    env:\n      MalievWorkspaceRoot: ${{{{ github.workspace }}}}/.dependencies\n      REVIEW_TOKEN: {expression}");
+            "      MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies",
+            $"      MalievWorkspaceRoot: ${{{{ github.workspace }}}}/.dependencies\n      REVIEW_TOKEN: {expression}");
     }
 
     [Fact]
@@ -386,6 +419,22 @@ internal static partial class WorkflowContractValidator
     private const string CheckoutAction = "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1";
     private const string SharedValidationAction = "MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8";
 
+    internal static void ValidateContainmentSourceCheckout(string workflow)
+    {
+        var yaml = new YamlStream();
+        yaml.Load(new StringReader(workflow));
+        var root = RequireMapping(yaml.Documents.Single().RootNode, "containment workflow");
+        var jobs = RequireMapping(root, "jobs");
+        var job = RequireMapping(jobs, "containment");
+        var steps = RequireSequence(job, "steps");
+        RequireScalarValue(RequireMapping(steps.Children[0], "owned source checkout"), "name", "Check out owned source");
+        ValidateStep(steps.Children[0], CheckoutAction, new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["persist-credentials"] = "false",
+            ["fetch-depth"] = "0",
+        });
+    }
+
     public static void Validate(string workflow, bool historicalFixture = false)
     {
         if (SecretExpression().IsMatch(workflow))
@@ -446,9 +495,15 @@ internal static partial class WorkflowContractValidator
         }
 
         var environment = RequireMapping(validateJob, "env");
-        if (environment.Children.Count != 4)
+        if (environment.Children.Count != (historicalFixture ? 4 : 6))
         {
-            throw new InvalidOperationException("Validate environment must contain only dependency root and evidence properties.");
+            throw new InvalidOperationException("Validate environment must contain exactly the approved source admission, dependency root and evidence properties.");
+        }
+
+        if (!historicalFixture)
+        {
+            RequireScalarValue(environment, "MALIEV_FINITE_OWNER_SOURCE_HEAD", "${{ github.event.pull_request.head.sha || github.sha }}");
+            RequireScalarValue(environment, "MALIEV_FINITE_OWNER_DISCOVERY", "qualified-full-only");
         }
 
         RequireScalarValue(environment, "MalievWorkspaceRoot", "${{ github.workspace }}/.dependencies");
@@ -484,13 +539,12 @@ internal static partial class WorkflowContractValidator
         RequireScalarValue(evidenceInputs, "if-no-files-found", "warn");
         RequireScalarValue(evidenceInputs, "retention-days", "7");
 
-        ValidateStep(
-            steps.Children[0],
-            CheckoutAction,
-            new Dictionary<string, string>(StringComparer.Ordinal)
-            {
-                ["persist-credentials"] = "false",
-            });
+        var sourceCheckoutInputs = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["persist-credentials"] = "false",
+        };
+        if (!historicalFixture) sourceCheckoutInputs.Add("fetch-depth", "0");
+        ValidateStep(steps.Children[0], CheckoutAction, sourceCheckoutInputs);
         ValidateStep(
             steps.Children[1],
             CheckoutAction,
@@ -533,6 +587,7 @@ internal static partial class WorkflowContractValidator
         RequireScalarValue(build, "name", "Build before mandatory focused workflow checks");
         RequireScalarValue(build, "timeout-minutes", "5");
         RequireCommands(build, "export GITHUB_ACTIONS=false\n"
+            + "python3 -B scripts/verify-procurement-fixture-containment.py --source-admission\n"
             + "dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true\n"
             + "dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true");
         var test = RequireMapping(steps.Children[5], "focused tests");
