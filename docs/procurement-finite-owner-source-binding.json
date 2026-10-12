@@ -1,6 +1,6 @@
 {
-  "reviewedProducer": null,
-  "releaseAllowed": false,
+  "reviewedProducer": "149e49c65834db63ac0e811f01320b6eca25f422",
+  "releaseAllowed": true,
   "expectedExistingAuthSelectedInputs": 80,
   "productionBuildInputs": 66,
   "productionBuildInputSha256": "115556e55d729910cad1792c7d91297b65a03336b6de74a2aeee5b62447b1443",
@@ -32,8 +32,8 @@
     },
     {
       "path": "docs/procurement-fixture-containment-cases.json",
-      "sha256": "9754d962c8ead7ffc8d2118497897ce4c124bcf48f4d2ef8449ab21606d34f76",
-      "proposedGitBlob": "cb92d95e2bdff7f5fc0364286494803c5da22eb9",
+      "sha256": "f183b38a83210a6996ad6e9007ee8383455a3af86e079429aca50aa684f18a48",
+      "proposedGitBlob": "5e0897e37ae8ca4b368c3907b235ec63583162c9",
       "implementationSha256": "9754d962c8ead7ffc8d2118497897ce4c124bcf48f4d2ef8449ab21606d34f76",
       "implementationGitBlob": "cb92d95e2bdff7f5fc0364286494803c5da22eb9",
       "admissionMetadataFields": [
@@ -58,7 +58,28 @@
       "proposedGitBlob": "35938c37b6cf6489f898062c1a910b89623ac0c2"
     }
   ],
-  "nativeIds": null,
+  "nativeIds": [
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.ImageSpecificControl_HasFiniteOwnerCleanup(tag: \"18.1-bookworm\", profile: \"bookworm\")",
+      "id": "727ec019-ad58-8993-2904-8b57653e219a"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.ImageSpecificControl_HasFiniteOwnerCleanup(tag: \"18.1-alpine\", profile: \"alpine\")",
+      "id": "3d01ad46-f675-d805-e767-5b10966f7ce7"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_BlockedTaskRemainsOwnedAfterDeadline",
+      "id": "a5b54671-a741-4f4d-26aa-2dbeae08df6a"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_PostTimeoutFaultRetainsOriginalReference",
+      "id": "ba4f6f90-aa05-9741-c804-7c1d32aa6469"
+    },
+    {
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementImageExpiryProfileWitnessTests.RecoveryRead_ExpiredTotalLeaseRefusesFalseSettlement",
+      "id": "76fe65cf-25c5-85f1-7427-41ffcb8ad51c"
+    }
+  ],
   "activation": "Only after source review and actual producer/native GUID binding; original automatic exact-head API/artifact custody required",
   "requiresAuthRuntimeMetadataRebind": true,
   "runtimeMetadataOverride": {
