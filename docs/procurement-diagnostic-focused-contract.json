@@ -1,0 +1,963 @@
+{
+  "schemaVersion": 1,
+  "sourceHashes": {
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableDiagnosticPolicyTests.cs": "156d9d36d249461db32b7ab0fe66547c5796164d437e3f62da1f19ad5216471a",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableCreateTests.cs": "768e884b496bdbc1ed626e09297b5935b6b765264cf54d459079eaaf37200c4b",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableChildCreateTests.cs": "1d4e514668ff124fedeccf9e8090819be212af1b3eb2481afbbd7c05812c9118"
+  },
+  "cohortCounts": {
+    "diagnostic": 15,
+    "durable": 143
+  },
+  "cases": [
+    {
+      "cohort": "diagnostic",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests",
+      "method": "DiagnosticPolicy_PreservesArgumentsAndBoundsActualCreateParameters",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests.DiagnosticPolicy_PreservesArgumentsAndBoundsActualCreateParameters"
+    },
+    {
+      "cohort": "diagnostic",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests",
+      "method": "DiagnosticEndpoint_RejectsRemoteAndUnsupportedEndpoints",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests.DiagnosticEndpoint_RejectsRemoteAndUnsupportedEndpoints"
+    },
+    {
+      "cohort": "diagnostic",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests",
+      "method": "Initialization_PreservesFirstFailureObservesBeforeCleanupAndRetainsAllFailures",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests.Initialization_PreservesFirstFailureObservesBeforeCleanupAndRetainsAllFailures"
+    },
+    {
+      "cohort": "diagnostic",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests",
+      "method": "Initialization_SynchronousAllocationFailureStillObservesAndCleans",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests.Initialization_SynchronousAllocationFailureStillObservesAndCleans"
+    },
+    {
+      "cohort": "diagnostic",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests",
+      "method": "Initialization_UnsettledWorkIsReportedAndLateFaultRemainsOwned",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests.Initialization_UnsettledWorkIsReportedAndLateFaultRemainsOwned"
+    },
+    {
+      "cohort": "diagnostic",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests",
+      "method": "Initialization_TwoTrackedStartsRetainFailureWhileOtherSettles",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests.Initialization_TwoTrackedStartsRetainFailureWhileOtherSettles"
+    },
+    {
+      "cohort": "diagnostic",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests",
+      "method": "ServerCategories_DoNotPersistSecretSqlOrUnclassifiedMessages",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests.ServerCategories_DoNotPersistSecretSqlOrUnclassifiedMessages"
+    },
+    {
+      "cohort": "diagnostic",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests",
+      "method": "ServerLogs_BoundBytesAndDisposeStreamWithoutPersistingRawContent",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests.ServerLogs_BoundBytesAndDisposeStreamWithoutPersistingRawContent"
+    },
+    {
+      "cohort": "diagnostic",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests",
+      "method": "ServerLogs_InvalidUtf8IsUnavailableWithoutLeakingExceptionMessage",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests.ServerLogs_InvalidUtf8IsUnavailableWithoutLeakingExceptionMessage"
+    },
+    {
+      "cohort": "diagnostic",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests",
+      "method": "ClosedOwner_RefusesNewFactoryAllocationAfterCleanup",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests.ClosedOwner_RefusesNewFactoryAllocationAfterCleanup"
+    },
+    {
+      "cohort": "diagnostic",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests",
+      "method": "RacingAllocation_LateSuccessAfterBoundedCleanupReleasesExactValueOnce",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests.RacingAllocation_LateSuccessAfterBoundedCleanupReleasesExactValueOnce"
+    },
+    {
+      "cohort": "diagnostic",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests",
+      "method": "ReleaseDependencies_WaitForLateActualStartBeforeDisposingProvider",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests.ReleaseDependencies_WaitForLateActualStartBeforeDisposingProvider"
+    },
+    {
+      "cohort": "diagnostic",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests",
+      "method": "FactoryRelease_WaitsForActualServiceScopeCreationBeforeDisposal",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests.FactoryRelease_WaitsForActualServiceScopeCreationBeforeDisposal"
+    },
+    {
+      "cohort": "diagnostic",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests",
+      "method": "FailedStartDependency_StillDisposesExactProviderOnceAndRetainsFailure",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests.FailedStartDependency_StillDisposesExactProviderOnceAndRetainsFailure"
+    },
+    {
+      "cohort": "diagnostic",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests",
+      "method": "FailedMigrationDependenciesAndDisposal_RetainEveryFailureAndDisposeOnce",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableDiagnosticPolicyTests.FailedMigrationDependenciesAndDisposal_RetainEveryFailureAndDisposeOnce"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "SupplierCreate_IdempotencyResponseWriteFails_AcknowledgedRetryDoesNotDuplicate",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.SupplierCreate_IdempotencyResponseWriteFails_AcknowledgedRetryDoesNotDuplicate"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_CacheLossAfterAcknowledgement_ReplaysExactResponse",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CacheLossAfterAcknowledgement_ReplaysExactResponse(purchaseOrder: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_CacheLossAfterAcknowledgement_ReplaysExactResponse",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CacheLossAfterAcknowledgement_ReplaysExactResponse(purchaseOrder: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_SameActorAndKeyChangedPayload_ConflictsWithoutMutation",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_SameActorAndKeyChangedPayload_ConflictsWithoutMutation(purchaseOrder: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_SameActorAndKeyChangedPayload_ConflictsWithoutMutation",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_SameActorAndKeyChangedPayload_ConflictsWithoutMutation(purchaseOrder: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_DifferentSignedActorSameKey_HasIndependentNamespace",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_DifferentSignedActorSameKey_HasIndependentNamespace(purchaseOrder: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_DifferentSignedActorSameKey_HasIndependentNamespace",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_DifferentSignedActorSameKey_HasIndependentNamespace(purchaseOrder: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_IndependentHostsConcurrentSameKey_CommitOneResponse",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_IndependentHostsConcurrentSameKey_CommitOneResponse(purchaseOrder: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_IndependentHostsConcurrentSameKey_CommitOneResponse",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_IndependentHostsConcurrentSameKey_CommitOneResponse(purchaseOrder: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_HealthyReplayRequiresCurrentPermission",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_HealthyReplayRequiresCurrentPermission(purchaseOrder: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_HealthyReplayRequiresCurrentPermission",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_HealthyReplayRequiresCurrentPermission(purchaseOrder: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "SupplierCreate_NullAndOmittedFields_ReplaySameEffectivePayload",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.SupplierCreate_NullAndOmittedFields_ReplaySameEffectivePayload"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "SupplierCreate_EmptyAndNullAreDifferentEffectivePayloads_Conflict",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.SupplierCreate_EmptyAndNullAreDifferentEffectivePayloads_Conflict"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "SupplierCreate_AmbiguousSignedSubject_RejectsBeforeReceiptOrEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.SupplierCreate_AmbiguousSignedSubject_RejectsBeforeReceiptOrEffect"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "SupplierCreate_WrongSignedIssuer_NormalMiddlewareRejectsWithoutEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.SupplierCreate_WrongSignedIssuer_NormalMiddlewareRejectsWithoutEffect"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "PurchaseOrderCreate_DefaultOffExactServicePolicy_StillDeniesBeforeCreate",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.PurchaseOrderCreate_DefaultOffExactServicePolicy_StillDeniesBeforeCreate"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_InvalidIdempotencyHeader_RejectsBeforeEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_InvalidIdempotencyHeader_RejectsBeforeEffect(purchaseOrder: False, invalid: \"multiple\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_InvalidIdempotencyHeader_RejectsBeforeEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_InvalidIdempotencyHeader_RejectsBeforeEffect(purchaseOrder: False, invalid: \"oversized\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_InvalidIdempotencyHeader_RejectsBeforeEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_InvalidIdempotencyHeader_RejectsBeforeEffect(purchaseOrder: True, invalid: \"multiple\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_InvalidIdempotencyHeader_RejectsBeforeEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_InvalidIdempotencyHeader_RejectsBeforeEffect(purchaseOrder: True, invalid: \"oversized\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "OwningDatabase_MigrationsContainIndependentDurableReceiptSchema",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.OwningDatabase_MigrationsContainIndependentDurableReceiptSchema(purchaseOrder: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "OwningDatabase_MigrationsContainIndependentDurableReceiptSchema",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.OwningDatabase_MigrationsContainIndependentDurableReceiptSchema(purchaseOrder: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_IndependentHostsConcurrentDifferentPayload_LoserConflictsAndRollsBackRoot",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_IndependentHostsConcurrentDifferentPayload_LoserConflictsAndRollsBackRoot(purchaseOrder: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_IndependentHostsConcurrentDifferentPayload_LoserConflictsAndRollsBackRoot",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_IndependentHostsConcurrentDifferentPayload_LoserConflictsAndRollsBackRoot(purchaseOrder: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_RenewedSignedToken_ReplaysOriginalBytesAndLocationAfterEntityDeletion",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_RenewedSignedToken_ReplaysOriginalBytesAndLocationAfterEntityDeletion(purchaseOrder: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_RenewedSignedToken_ReplaysOriginalBytesAndLocationAfterEntityDeletion",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_RenewedSignedToken_ReplaysOriginalBytesAndLocationAfterEntityDeletion(purchaseOrder: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_CorruptPersistedResponse_FailsClosedWithoutAnotherRoot",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CorruptPersistedResponse_FailsClosedWithoutAnotherRoot(purchaseOrder: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_CorruptPersistedResponse_FailsClosedWithoutAnotherRoot",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CorruptPersistedResponse_FailsClosedWithoutAnotherRoot(purchaseOrder: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: False, drift: \"missing\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: True, drift: \"missing\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: False, drift: \"check\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: True, drift: \"check\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: False, drift: \"primary\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: True, drift: \"primary\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: False, drift: \"nullable\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_PhysicalReceiptSchemaDrift_WithMigrationHistoryIntact_Returns503BeforeEffect(purchaseOrder: True, drift: \"nullable\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay(purchaseOrder: False, teardown: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay(purchaseOrder: True, teardown: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay(purchaseOrder: False, teardown: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_ActualCommitThenLostAcknowledgementOrTeardown_FreshReceiptProvesNoReplay(purchaseOrder: True, teardown: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: False, drift: \"rls\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: True, drift: \"rls\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: False, drift: \"forced-rls\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: True, drift: \"forced-rls\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: False, drift: \"default\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: True, drift: \"default\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: False, drift: \"trigger\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: True, drift: \"trigger\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: False, drift: \"extra-fk\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: True, drift: \"extra-fk\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: False, drift: \"generated\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: True, drift: \"generated\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: False, drift: \"deferrable\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_UnknownPhysicalReceiptBehavior_RejectsBeforeRootSave(purchaseOrder: True, drift: \"deferrable\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "MigrationDown_RefusesDestructiveReceiptRemovalAndPreservesCommittedProof",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.MigrationDown_RefusesDestructiveReceiptRemovalAndPreservesCommittedProof(purchaseOrder: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "MigrationDown_RefusesDestructiveReceiptRemovalAndPreservesCommittedProof",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.MigrationDown_RefusesDestructiveReceiptRemovalAndPreservesCommittedProof(purchaseOrder: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity(purchaseOrder: False, mode: \"transient\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity(purchaseOrder: True, mode: \"transient\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity(purchaseOrder: False, mode: \"rollback\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity(purchaseOrder: True, mode: \"rollback\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity(purchaseOrder: False, mode: \"cancel\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_FailureBetweenRootAndReceipt_ConfirmedRollbackOrFreshRetryPreservesAtomicity(purchaseOrder: True, mode: \"cancel\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_CommitAttemptExceptionWithoutReceipt_DoesNotRetryMutationAndReturns503",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CommitAttemptExceptionWithoutReceipt_DoesNotRetryMutationAndReturns503(purchaseOrder: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_CommitAttemptExceptionWithoutReceipt_DoesNotRetryMutationAndReturns503",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CommitAttemptExceptionWithoutReceipt_DoesNotRetryMutationAndReturns503(purchaseOrder: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_MalformedExactKey_RejectsWithoutReceipt",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: False, kind: \"comma\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_MalformedExactKey_RejectsWithoutReceipt",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: True, kind: \"comma\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_MalformedExactKey_RejectsWithoutReceipt",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: False, kind: \"control\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_MalformedExactKey_RejectsWithoutReceipt",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: True, kind: \"control\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_MalformedExactKey_RejectsWithoutReceipt",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: False, kind: \"blank\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_MalformedExactKey_RejectsWithoutReceipt",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: True, kind: \"blank\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_MalformedExactKey_RejectsWithoutReceipt",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: False, kind: \"unicode-overflow\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_MalformedExactKey_RejectsWithoutReceipt",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_MalformedExactKey_RejectsWithoutReceipt(purchaseOrder: True, kind: \"unicode-overflow\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_ExactKeyCaseAndUtf8Boundary_AreDistinctValidatedNamespaces",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_ExactKeyCaseAndUtf8Boundary_AreDistinctValidatedNamespaces(purchaseOrder: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_ExactKeyCaseAndUtf8Boundary_AreDistinctValidatedNamespaces",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_ExactKeyCaseAndUtf8Boundary_AreDistinctValidatedNamespaces(purchaseOrder: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts(purchaseOrder: False, enabled: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts(purchaseOrder: True, enabled: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts(purchaseOrder: False, enabled: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_DefaultOffOrAbsentKey_PreservesLegacyRootBehaviorWithoutReceipts(purchaseOrder: True, enabled: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_CommittedReceiptWithUnavailableFreshProof_Returns503WithoutReplayingEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CommittedReceiptWithUnavailableFreshProof_Returns503WithoutReplayingEffect(purchaseOrder: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_CommittedReceiptWithUnavailableFreshProof_Returns503WithoutReplayingEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CommittedReceiptWithUnavailableFreshProof_Returns503WithoutReplayingEffect(purchaseOrder: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort(purchaseOrder: False, duringProbe: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort(purchaseOrder: True, duringProbe: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort(purchaseOrder: False, duringProbe: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.Create_CallerAbortAfterCommitOrDuringFreshProof_PreservesReceiptAndPropagatesAbort(purchaseOrder: True, duringProbe: True)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests",
+      "method": "PurchaseOrderCreate_SameSignedServiceAndKeyChangedEmployeeId_ConflictsWithoutChangingActorOrEffect",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableCreateTests.PurchaseOrderCreate_SameSignedServiceAndKeyChangedEmployeeId_ConflictsWithoutChangingActorOrEffect"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"default-off\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"no-header\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"replay\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"cache-loss\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"payload-conflict\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"parent-conflict\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"actor\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"multiple-key\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"blank-key\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"long-key\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"canonical\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"updated-body\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"corrupt-digest\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"corrupt-parent\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"missing-table\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"wrong-operation\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"database-unavailable\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"rollback\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"concurrent\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"concurrent-conflict\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"lost-ack\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"rollback-uncertain\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"deleted-child\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"permission\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"default-off\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"no-header\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"replay\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"cache-loss\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"payload-conflict\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"parent-conflict\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"actor\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"multiple-key\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"blank-key\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"long-key\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"canonical\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"updated-body\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"corrupt-digest\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"corrupt-parent\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"missing-table\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"wrong-operation\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"database-unavailable\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"rollback\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"concurrent\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"concurrent-conflict\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"lost-ack\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"rollback-uncertain\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"deleted-child\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"permission\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"reparent\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"reparent\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"parent-to-null\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"null-to-parent\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"null-replay\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: False, scenario: \"deleted-parent\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildCreate_AtomicReplayAndAssociationContract",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildCreate_AtomicReplayAndAssociationContract(file: True, scenario: \"deleted-parent\")"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "FileCreate_MissingParentDoesNotCreateReceiptOrMetadata",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.FileCreate_MissingParentDoesNotCreateReceiptOrMetadata"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildReceiptMigration_PreservesParentConstraintAndRefusesProofRemoval",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildReceiptMigration_PreservesParentConstraintAndRefusesProofRemoval(file: False)"
+    },
+    {
+      "cohort": "durable",
+      "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests",
+      "method": "ChildReceiptMigration_PreservesParentConstraintAndRefusesProofRemoval",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementDurableChildCreateTests.ChildReceiptMigration_PreservesParentConstraintAndRefusesProofRemoval(file: True)"
+    }
+  ],
+  "guidStatus": "First fresh native joins required; no GUID forecast or old result acceptance"
+}

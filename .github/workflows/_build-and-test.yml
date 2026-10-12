@@ -112,6 +112,54 @@ jobs:
           path: owner-correlation-results
           if-no-files-found: warn
           retention-days: 7
+      - name: Require diagnostic focused source enrollment
+        timeout-minutes: 1
+        run: |
+          python3 -B scripts/verify-diagnostic-focused-results.py --source-contract
+          python3 -B -m unittest discover -s scripts -p test_diagnostic_focused_results.py
+          python3 -B -O -m unittest discover -s scripts -p test_diagnostic_focused_results.py
+      - name: Execute diagnostic focused regressions
+        timeout-minutes: 2
+        env:
+          VSTestResultsDirectory: ${{ github.workspace }}/diagnostic-focused-results
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ProcurementDurableDiagnosticPolicyTests" --logger "trx;LogFileName=diagnostic-focused.trx" --results-directory diagnostic-focused-results
+      - name: Require every diagnostic focused execution
+        timeout-minutes: 1
+        if: always()
+        run: |
+          python3 -B scripts/verify-diagnostic-focused-results.py diagnostic-focused-results diagnostic
+      - name: Preserve diagnostic focused evidence
+        timeout-minutes: 1
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-diagnostic-focused-${{ github.sha }}
+          path: diagnostic-focused-results
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Execute durable focused regressions
+        timeout-minutes: 5
+        env:
+          VSTestResultsDirectory: ${{ github.workspace }}/durable-focused-results
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ProcurementDurableCreateTests|FullyQualifiedName~ProcurementDurableChildCreateTests" --logger "trx;LogFileName=durable-focused.trx" --results-directory durable-focused-results
+      - name: Require every durable focused execution
+        timeout-minutes: 1
+        if: always()
+        run: |
+          python3 -B scripts/verify-diagnostic-focused-results.py durable-focused-results durable
+      - name: Preserve durable focused evidence
+        timeout-minutes: 1
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-durable-focused-${{ github.sha }}
+          path: durable-focused-results
+          if-no-files-found: warn
+          retention-days: 7
       - name: Validate .NET solution
         uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8
         with:

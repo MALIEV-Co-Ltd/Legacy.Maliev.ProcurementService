@@ -56,11 +56,11 @@ jobs:
           ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
           path: .joined-public/Legacy.Maliev.CompatibilityContracts
           persist-credentials: false
-      - name: Check out predecessor witness pending genuine diagnostic producer
+      - name: Check out actual diagnostic source producer
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService
-          ref: 4a117fb68cebffc9e0acae9000750e8e45ec62cc
+          ref: 0098bf2b3ec647d9eb3239310f6946bfa97fb1d2
           path: .joined-public/Legacy.Maliev.ProcurementService
           persist-credentials: false
           fetch-depth: 0

@@ -79,8 +79,8 @@
   "sourceTrxSha256": "823c4d0c525a565db4b1f06b5a484388717fe921267e2de3aec7f1e34fd7145b",
   "status": "Execution identities only; all outcome acceptance is independently checked",
   "finiteOwnerExtension": {
-    "enabled": true,
-    "reviewedProducer": "fc78a7f495ab73880241ecc8cb5f379e3691792e",
+    "enabled": false,
+    "reviewedProducer": null,
     "cases": [
       {
         "profile": "bookworm",
@@ -109,6 +109,6 @@
       }
     ],
     "activationRequires": "Actual reviewed source producer, actual discovered GUIDs, explicit source admission; remove Skip and enable filter/strict extension together",
-    "discoveryOnly": false
+    "discoveryOnly": true
   }
 }

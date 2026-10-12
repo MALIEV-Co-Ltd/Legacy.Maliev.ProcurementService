@@ -7,6 +7,18 @@ spec = importlib.util.spec_from_file_location("join_guard", pathlib.Path(__file_
 guard = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(guard)
 ACTIVE_MANIFEST = guard.MANIFEST
+ORIGINAL_DIAGNOSTIC_PRODUCER = guard.DIAGNOSTIC_PRODUCER
+
+
+def inactive_source_graph():
+    # Runtime callers cannot downgrade. These controls exercise the immutable
+    # producer's inactive graph after current source admission becomes active.
+    if ORIGINAL_DIAGNOSTIC_PRODUCER is None:
+        return guard.strict_json(ACTIVE_MANIFEST.read_bytes())
+    return guard.strict_json(source_bytes(
+        'tools/ProcurementAuthProgram.Tests/public-graph-fixture-owner-correlation.json',
+        ORIGINAL_DIAGNOSTIC_PRODUCER))
+
 ORIGINAL_PREDECESSOR_BYTES = (guard.ROOT / guard.OWNER_PREDECESSOR_PATH).read_bytes()
 guard.MANIFEST = guard.ROOT / guard.OWNER_PREDECESSOR_PATH
 
@@ -552,7 +564,7 @@ class DiagnosticDependencyControls(unittest.TestCase):
         self.assertEqual(15, number)
 
     def test_inactive_source_schema_passes_but_inputs_results_reject(self):
-        inactive = guard.strict_json(ACTIVE_MANIFEST.read_bytes())
+        inactive = inactive_source_graph()
         with patch.object(guard, 'DIAGNOSTIC_PRODUCER', None), patch.object(guard, 'FROZEN_DIAGNOSTIC_GRAPH', inactive):
             guard.require_diagnostic_graph(inactive, source_only=True)
             self.reject_in_both_paths(inactive)
@@ -686,7 +698,7 @@ class DiagnosticDependencyControls(unittest.TestCase):
             guard.require_git_admission(self.joined, guard.frozen_historical_graph(), self.head, self.source)
 
     def test_inactive_types_are_not_waived(self):
-        inactive = guard.strict_json(ACTIVE_MANIFEST.read_bytes())
+        inactive = inactive_source_graph()
         with patch.object(guard, 'DIAGNOSTIC_PRODUCER', None), patch.object(guard, 'FROZEN_DIAGNOSTIC_GRAPH', copy.deepcopy(inactive)):
             for field, value in [('inputCount', 82.0), ('releaseAllowed', 0), ('fixtureInputCount', 16.0)]:
                 bad = copy.deepcopy(inactive)

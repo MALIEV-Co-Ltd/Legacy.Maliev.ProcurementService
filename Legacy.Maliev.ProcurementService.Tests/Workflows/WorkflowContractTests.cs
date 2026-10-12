@@ -11,7 +11,7 @@ public sealed class WorkflowContractTests
     private const string ReviewedProducerVersion = "b27fbef06a3aa58c1f4fc0e75d7c70b32be76266";
     private const string HistoricalProcurementVersion = "c40fd246c17b738879c9345c6bcca44d96faf025";
     private const string PreviousProcurementVersion = "99049bab2c100ffdf6606bf11a2f50980c0cf3cf";
-    private const string? ReviewedDiagnosticProducerVersion = null;
+    private const string ReviewedDiagnosticProducerVersion = "0098bf2b3ec647d9eb3239310f6946bfa97fb1d2";
     private const string RetainedOwnerCorrelationVersion = "4a117fb68cebffc9e0acae9000750e8e45ec62cc";
     private static readonly string Workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "_build-and-test.yml"));
     private static readonly string ApiProject = File.ReadAllText(
@@ -26,6 +26,12 @@ public sealed class WorkflowContractTests
         foreach (var (original, replacement) in new[]
         {
             ("--no-restore -warnaserror", "--no-restore"),
+            ("FullyQualifiedName~ProcurementDurableDiagnosticPolicyTests", "FullyQualifiedName~OtherTests"),
+            ("FullyQualifiedName~ProcurementDurableCreateTests|FullyQualifiedName~ProcurementDurableChildCreateTests", "FullyQualifiedName~ProcurementDurableCreateTests"),
+            ("name: Require diagnostic focused source enrollment", "name: Omitted diagnostic source enrollment"),
+            ("name: Require every diagnostic focused execution\n        timeout-minutes: 1\n        if: always()", "name: Require every diagnostic focused execution\n        timeout-minutes: 1\n        if: success()"),
+            ("path: durable-focused-results", "path: runner-results"),
+            ("name: Execute durable focused regressions\n        timeout-minutes: 5", "name: Execute durable focused regressions\n        timeout-minutes: 5\n        continue-on-error: true"),
             ("-p:UseLocalMalievDependencies=true", "-p:UseLocalMalievDependencies=false"),
             ("export GITHUB_ACTIONS=false", "export GITHUB_ACTIONS=true"),
             ("      MALIEV_FINITE_OWNER_SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}\n", ""),
@@ -339,7 +345,7 @@ public sealed class WorkflowContractTests
         var historical = original == HistoricalProcurementVersion;
         var source = historical ? ReadReviewedPreload(auth: true)
             : File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml"));
-        var activePin = original == PreviousProcurementVersion ? RetainedOwnerCorrelationVersion : original;
+        var activePin = original == PreviousProcurementVersion ? ReviewedDiagnosticProducerVersion : original;
         Assert.Contains(activePin, source, StringComparison.Ordinal);
         Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(source.Replace(activePin, replacement, StringComparison.Ordinal), historicalFixture: historical));
     }
@@ -536,7 +542,7 @@ internal static partial class WorkflowContractValidator
         if (!historicalFixture)
         {
             ValidateFocusedWorkflowGroup(steps);
-            steps = new YamlSequenceNode(steps.Children.Where((_, index) => index is < 3 or > 13));
+            steps = new YamlSequenceNode(steps.Children.Where((_, index) => index is < 3 or > 20));
         }
         RejectDuplicatedValidationActionsAndCommands(steps);
         if (steps.Children.Count == 9)
@@ -633,7 +639,7 @@ internal static partial class WorkflowContractValidator
 
     private static void ValidateFocusedWorkflowGroup(YamlSequenceNode steps)
     {
-        if (steps.Children.Count != 17)
+        if (steps.Children.Count != 24)
             throw new InvalidOperationException("Primary validation must retain the mandatory focused workflow group.");
         ValidateStep(steps.Children[3], "actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68",
             new Dictionary<string, string>(StringComparer.Ordinal) { ["dotnet-version"] = "10.0.x" });
@@ -674,6 +680,7 @@ internal static partial class WorkflowContractValidator
         RequireScalarValue(inputs, "retention-days", "7");
         ValidateStartupJournalGroup(steps);
         ValidateOwnerCorrelationGroup(steps);
+        ValidateDiagnosticFocusedGroup(steps);
     }
 
     private static void ValidateStartupJournalGroup(YamlSequenceNode steps)
@@ -738,6 +745,67 @@ internal static partial class WorkflowContractValidator
         RequireScalarValue(inputs, "path", "owner-correlation-results");
         RequireScalarValue(inputs, "if-no-files-found", "warn");
         RequireScalarValue(inputs, "retention-days", "7");
+    }
+
+    private static void ValidateDiagnosticFocusedGroup(YamlSequenceNode steps)
+    {
+        var diagnosticStep14 = RequireMapping(steps.Children[14], "diagnostic focused contract");
+        RequireStepKeys(diagnosticStep14, "name", "timeout-minutes", "run");
+        RequireScalarValue(diagnosticStep14, "name", "Require diagnostic focused source enrollment");
+        RequireScalarValue(diagnosticStep14, "timeout-minutes", "1");
+        RequireCommands(diagnosticStep14, "python3 -B scripts/verify-diagnostic-focused-results.py --source-contract\npython3 -B -m unittest discover -s scripts -p test_diagnostic_focused_results.py\npython3 -B -O -m unittest discover -s scripts -p test_diagnostic_focused_results.py");
+        var diagnosticStep15 = RequireMapping(steps.Children[15], "diagnostic focused contract");
+        RequireStepKeys(diagnosticStep15, "name", "timeout-minutes", "env", "run");
+        RequireScalarValue(diagnosticStep15, "name", "Execute diagnostic focused regressions");
+        RequireScalarValue(diagnosticStep15, "timeout-minutes", "2");
+        var diagnosticStep15Env = RequireMapping(diagnosticStep15, "env");
+        RequireStepKeys(diagnosticStep15Env, "VSTestResultsDirectory");
+        RequireScalarValue(diagnosticStep15Env, "VSTestResultsDirectory", "${{ github.workspace }}/diagnostic-focused-results");
+        RequireCommands(diagnosticStep15, "export GITHUB_ACTIONS=false\ndotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter \"FullyQualifiedName~ProcurementDurableDiagnosticPolicyTests\" --logger \"trx;LogFileName=diagnostic-focused.trx\" --results-directory diagnostic-focused-results");
+        var diagnosticStep16 = RequireMapping(steps.Children[16], "diagnostic focused contract");
+        RequireStepKeys(diagnosticStep16, "name", "timeout-minutes", "if", "run");
+        RequireScalarValue(diagnosticStep16, "name", "Require every diagnostic focused execution");
+        RequireScalarValue(diagnosticStep16, "timeout-minutes", "1");
+        RequireScalarValue(diagnosticStep16, "if", "always()");
+        RequireCommands(diagnosticStep16, "python3 -B scripts/verify-diagnostic-focused-results.py diagnostic-focused-results diagnostic");
+        var diagnosticStep17 = RequireMapping(steps.Children[17], "diagnostic focused contract");
+        RequireStepKeys(diagnosticStep17, "name", "timeout-minutes", "if", "uses", "with");
+        RequireScalarValue(diagnosticStep17, "name", "Preserve diagnostic focused evidence");
+        RequireScalarValue(diagnosticStep17, "timeout-minutes", "1");
+        RequireScalarValue(diagnosticStep17, "if", "always()");
+        RequireScalarValue(diagnosticStep17, "uses", "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+        var diagnosticStep17With = RequireMapping(diagnosticStep17, "with");
+        RequireStepKeys(diagnosticStep17With, "name", "path", "if-no-files-found", "retention-days");
+        RequireScalarValue(diagnosticStep17With, "name", "procurement-diagnostic-focused-${{ github.sha }}");
+        RequireScalarValue(diagnosticStep17With, "path", "diagnostic-focused-results");
+        RequireScalarValue(diagnosticStep17With, "if-no-files-found", "warn");
+        RequireScalarValue(diagnosticStep17With, "retention-days", "7");
+        var diagnosticStep18 = RequireMapping(steps.Children[18], "diagnostic focused contract");
+        RequireStepKeys(diagnosticStep18, "name", "timeout-minutes", "env", "run");
+        RequireScalarValue(diagnosticStep18, "name", "Execute durable focused regressions");
+        RequireScalarValue(diagnosticStep18, "timeout-minutes", "5");
+        var diagnosticStep18Env = RequireMapping(diagnosticStep18, "env");
+        RequireStepKeys(diagnosticStep18Env, "VSTestResultsDirectory");
+        RequireScalarValue(diagnosticStep18Env, "VSTestResultsDirectory", "${{ github.workspace }}/durable-focused-results");
+        RequireCommands(diagnosticStep18, "export GITHUB_ACTIONS=false\ndotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter \"FullyQualifiedName~ProcurementDurableCreateTests|FullyQualifiedName~ProcurementDurableChildCreateTests\" --logger \"trx;LogFileName=durable-focused.trx\" --results-directory durable-focused-results");
+        var diagnosticStep19 = RequireMapping(steps.Children[19], "diagnostic focused contract");
+        RequireStepKeys(diagnosticStep19, "name", "timeout-minutes", "if", "run");
+        RequireScalarValue(diagnosticStep19, "name", "Require every durable focused execution");
+        RequireScalarValue(diagnosticStep19, "timeout-minutes", "1");
+        RequireScalarValue(diagnosticStep19, "if", "always()");
+        RequireCommands(diagnosticStep19, "python3 -B scripts/verify-diagnostic-focused-results.py durable-focused-results durable");
+        var diagnosticStep20 = RequireMapping(steps.Children[20], "diagnostic focused contract");
+        RequireStepKeys(diagnosticStep20, "name", "timeout-minutes", "if", "uses", "with");
+        RequireScalarValue(diagnosticStep20, "name", "Preserve durable focused evidence");
+        RequireScalarValue(diagnosticStep20, "timeout-minutes", "1");
+        RequireScalarValue(diagnosticStep20, "if", "always()");
+        RequireScalarValue(diagnosticStep20, "uses", "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+        var diagnosticStep20With = RequireMapping(diagnosticStep20, "with");
+        RequireStepKeys(diagnosticStep20With, "name", "path", "if-no-files-found", "retention-days");
+        RequireScalarValue(diagnosticStep20With, "name", "procurement-durable-focused-${{ github.sha }}");
+        RequireScalarValue(diagnosticStep20With, "path", "durable-focused-results");
+        RequireScalarValue(diagnosticStep20With, "if-no-files-found", "warn");
+        RequireScalarValue(diagnosticStep20With, "retention-days", "7");
     }
 
     private static void RequireCommands(YamlMappingNode step, string commands)
