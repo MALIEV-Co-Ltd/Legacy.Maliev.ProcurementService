@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using System.Text.Json;
 
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
@@ -10,7 +11,8 @@ public sealed class WorkflowContractTests
     private const string ReviewedProducerVersion = "b27fbef06a3aa58c1f4fc0e75d7c70b32be76266";
     private const string HistoricalProcurementVersion = "c40fd246c17b738879c9345c6bcca44d96faf025";
     private const string PreviousProcurementVersion = "99049bab2c100ffdf6606bf11a2f50980c0cf3cf";
-    private const string CurrentProcurementVersion = "4a117fb68cebffc9e0acae9000750e8e45ec62cc";
+    private const string? ReviewedDiagnosticProducerVersion = null;
+    private const string RetainedOwnerCorrelationVersion = "4a117fb68cebffc9e0acae9000750e8e45ec62cc";
     private static readonly string Workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "_build-and-test.yml"));
     private static readonly string ApiProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Api.csproj"));
@@ -309,7 +311,20 @@ public sealed class WorkflowContractTests
     [Fact]
     public void ActualAuthProgramJoin_RequiresImmutableProducersAndAlwaysRetainedEvidence()
     {
-        ValidateAuthProgramJoin(File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml")));
+        var source = File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml"));
+        ValidateAuthProgramJoin(source);
+        foreach (var (original, replacement) in new[]
+        {
+            ("          fetch-depth: 0", "          fetch-depth: 1"),
+            (" --joined-root .joined-public", " --joined-root foreign"),
+            (" --source-head", " --historical-downgrade"),
+            ("python3 -B -O -m unittest", "echo skipped"),
+            ("inputs .joined-public", "inputs foreign"),
+        })
+        {
+            Assert.Contains(original, source, StringComparison.Ordinal);
+            Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(source.Replace(original, replacement, StringComparison.Ordinal)));
+        }
     }
 
     [Theory]
@@ -324,13 +339,32 @@ public sealed class WorkflowContractTests
         var historical = original == HistoricalProcurementVersion;
         var source = historical ? ReadReviewedPreload(auth: true)
             : File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml"));
-        var activePin = original == PreviousProcurementVersion ? CurrentProcurementVersion : original;
+        var activePin = original == PreviousProcurementVersion ? RetainedOwnerCorrelationVersion : original;
         Assert.Contains(activePin, source, StringComparison.Ordinal);
         Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(source.Replace(activePin, replacement, StringComparison.Ordinal), historicalFixture: historical));
     }
 
     private static void ValidateAuthProgramJoin(string source, bool historicalFixture = false)
     {
+        string? diagnosticProducer = null;
+        if (!historicalFixture)
+        {
+            using var manifest = JsonDocument.Parse(File.ReadAllText(FindRepositoryFile("tools", "ProcurementAuthProgram.Tests", "public-graph-fixture-owner-correlation.json")));
+            var graph = manifest.RootElement;
+            if (graph.GetProperty("schemaVersion").GetRawText() != "2"
+                || graph.GetProperty("graphId").GetString() != "procurement-auth-diagnostic-dependencies-v2")
+                throw new InvalidOperationException("Require exact diagnostic-v2 graph.");
+            var binding = graph.GetProperty("diagnosticDependencySourceBinding");
+            diagnosticProducer = binding.GetProperty("reviewedProducer").GetString();
+            if (diagnosticProducer != ReviewedDiagnosticProducerVersion
+                || binding.GetProperty("fixtureInputCount").GetRawText() != "16"
+                || binding.GetProperty("inputCount").GetRawText() != "82"
+                || binding.GetProperty("productionBuildInputCount").GetRawText() != "66"
+                || (diagnosticProducer is null && binding.GetProperty("releaseAllowed").GetRawText() != "false")
+                || (diagnosticProducer is not null && (!Regex.IsMatch(diagnosticProducer, "^[0-9a-f]{40}$")
+                    || binding.GetProperty("releaseAllowed").GetRawText() != "true")))
+                throw new InvalidOperationException("Diagnostic producer admission must remain exact and inactive until bound.");
+        }
         var yaml = new YamlStream();
         yaml.Load(new StringReader(source));
         var root = (YamlMappingNode)yaml.Documents.Single().RootNode;
@@ -351,7 +385,7 @@ public sealed class WorkflowContractTests
             ("MALIEV-Co-Ltd/Legacy.Maliev.AuthService", ReviewedProducerVersion),
             ("MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults", "ecb05cbbd68717e415f69df2ac488c1d323b1da3"),
             ("MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts", "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7"),
-            ("MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService", historicalFixture ? HistoricalProcurementVersion : CurrentProcurementVersion),
+            ("MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService", historicalFixture ? HistoricalProcurementVersion : diagnosticProducer ?? RetainedOwnerCorrelationVersion),
         }.ToDictionary(entry => entry.Repository, entry => entry.Commit);
         var checkouts = steps.Where(step => step.Children.TryGetValue(new YamlScalarNode("with"), out var node)
             && node is YamlMappingNode settings && settings.Children.ContainsKey(new YamlScalarNode("repository"))).ToArray();
@@ -363,8 +397,30 @@ public sealed class WorkflowContractTests
                 || ReadScalar(settings, "persist-credentials") != "false")
                 throw new InvalidOperationException("Producer checkout must retain its reviewed hard pin without credentials.");
         }
+        var evidence = " --owned-head \"${{ github.sha }}\" --source-head \"${{ github.event.pull_request.head.sha || github.sha }}\"";
+        var resultsCommand = "python3 -B scripts/verify-procurement-auth-program.py results auth-program-results"
+            + (historicalFixture ? "" : " --joined-root .joined-public" + evidence);
+        if (!historicalFixture)
+        {
+            var owned = (YamlMappingNode)ReadNode(steps[0], "with");
+            var witness = (YamlMappingNode)ReadNode(checkouts.Single(step => ReadScalar((YamlMappingNode)ReadNode(step, "with"), "repository") == "MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService"), "with");
+            if (ReadScalar(owned, "persist-credentials") != "false" || ReadScalar(owned, "fetch-depth") != "0"
+                || ReadScalar(witness, "fetch-depth") != "0")
+                throw new InvalidOperationException("Both owned and witness checkouts require complete sanitized history.");
+            var input = steps.Single(step => step.Children.TryGetValue(new YamlScalarNode("run"), out var command)
+                && ((YamlScalarNode)command).Value == "python3 -B scripts/verify-procurement-auth-program.py inputs .joined-public" + evidence);
+            if (!ReferenceEquals(input, steps[5]))
+                throw new InvalidOperationException("Source admission must precede controls and native join.");
+            if (input.Children.ContainsKey(new YamlScalarNode("if")) || input.Children.ContainsKey(new YamlScalarNode("continue-on-error")))
+                throw new InvalidOperationException("Input admission cannot be bypassed.");
+            var controls = steps.Single(step => ReadScalar(step, "name") == "Require runtime input guard mutation controls");
+            if (!ReferenceEquals(controls, steps[6]))
+                throw new InvalidOperationException("Controls must precede native join.");
+            if (ReadScalar(controls, "run").Trim() != "python3 -B -m unittest discover -s scripts -p test_procurement_auth_program_inputs.py\npython3 -B -O -m unittest discover -s scripts -p test_procurement_auth_program_inputs.py")
+                throw new InvalidOperationException("Normal and optimized mutation controls are required.");
+        }
         var results = steps.Single(step => step.Children.TryGetValue(new YamlScalarNode("run"), out var run)
-            && ((YamlScalarNode)run).Value == "python3 -B scripts/verify-procurement-auth-program.py results auth-program-results");
+            && ((YamlScalarNode)run).Value == resultsCommand);
         var artifact = steps.Single(step => step.Children.TryGetValue(new YamlScalarNode("uses"), out var uses)
             && ((YamlScalarNode)uses).Value == "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
             && step.Children.TryGetValue(new YamlScalarNode("with"), out var settings)

@@ -1,7 +1,7 @@
 {
   "reviewedProducer": "fc78a7f495ab73880241ecc8cb5f379e3691792e",
   "releaseAllowed": true,
-  "expectedExistingAuthSelectedInputs": 80,
+  "expectedExistingAuthSelectedInputs": 82,
   "productionBuildInputs": 66,
   "productionBuildInputSha256": "115556e55d729910cad1792c7d91297b65a03336b6de74a2aeee5b62447b1443",
   "inputs": [
@@ -217,5 +217,12 @@
         "externalTerminationExcluded": false
       }
     ]
+  },
+  "historicalAuthSelectedInputCustody": {
+    "path": "tools/ProcurementAuthProgram.Tests/public-graph-fixture-owner-correlation-v1.json",
+    "sha256": "5394705469105e1b020f4a7fe44247964605fe7c9e6cad51177c7667a1dd5b23",
+    "procurement": "4a117fb68cebffc9e0acae9000750e8e45ec62cc",
+    "fixtureInputCount": 14,
+    "inputCount": 80
   }
 }

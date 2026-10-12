@@ -851,11 +851,15 @@ public sealed class ProcurementDurableCreateTests(DurableCreateOwnedFixture fixt
 
 public class ProcurementDurableCreateFixture : IAsyncLifetime
 {
-    private const string DiagnosticOwner = "procurement-durable-create-fixture";
+    private const string DiagnosticOwner = ProcurementDurableDiagnosticContainerPolicy.Owner;
     private readonly string resourceRunId;
     private PostgreSqlContainer supplier = null!;
     private PostgreSqlContainer order = null!;
     private readonly ProcurementFixtureLifetime cleanupLifetime;
+    private readonly ProcurementDurableDiagnosticInitialization initializationOwner = new();
+    private readonly ProcurementDurableAllocationOwner allocationOwner;
+    private readonly object setupObservationGate = new();
+    private bool setupObservationStopped;
     private readonly List<string> observedContainerIds;
     private readonly List<string> observedVolumeIds;
     private readonly List<object> connectionEndpoints;
@@ -879,6 +883,7 @@ public class ProcurementDurableCreateFixture : IAsyncLifetime
         resourceRunId = Guid.NewGuid().ToString("N");
         ownerCorrelation = new(consumer, GetType().FullName!, resourceRunId);
         cleanupLifetime = new();
+        allocationOwner = new(task => { _ = initializationOwner.Track(task); });
         observedContainerIds = [];
         observedVolumeIds = [];
         connectionEndpoints = [];
@@ -888,46 +893,66 @@ public class ProcurementDurableCreateFixture : IAsyncLifetime
         Clock = new(new DateTimeOffset(2026, 10, 1, 0, 0, 0, TimeSpan.Zero));
     }
 
-    private PostgreSqlContainer DiagnosticContainer(string role) => new PostgreSqlBuilder("postgres:18.1-bookworm")
-        .WithLabel("maliev.codex.owner", DiagnosticOwner)
-        .WithLabel("maliev.codex.run", resourceRunId)
-        .WithLabel("maliev.codex.role", role)
-        .Build();
+    private PostgreSqlContainer DiagnosticContainer(string role) => ProcurementDurableDiagnosticContainerPolicy.Build(resourceRunId, role);
     private RSA signingKey = null!;
     public ProcurementDurableCreateFactory Factory { get; private set; } = null!;
     public ProcurementDurableCreateCache Cache { get; }
     public FakeTimeProvider Clock { get; }
     public ProcurementDurableCreateFactory CreateFactory(bool optIn, bool durable = true) => new(supplier.GetConnectionString(), order.GetConnectionString(), signingKey, Cache, Clock, optIn, durable);
 
-    public async Task InitializeAsync()
+    public Task InitializeAsync() => initializationOwner.RunAsync(InitializeCoreAsync, async failures =>
+    {
+        initializationFailed = true;
+        CaptureSetupObservation();
+        await WriteFailureEvidenceAsync(failures);
+    }, DisposeAsync, allocationOwner.Close);
+
+    private async Task InitializeCoreAsync(CancellationToken token)
     {
         var failures = new List<Exception>();
         AsyncServiceScope? scope = null;
         Task? starts = null;
         var stage = "resource-allocation";
+        failureStage = stage;
         try
         {
-            signingKey = RSA.Create(2048);
-            supplier = DiagnosticContainer("supplier");
-            order = DiagnosticContainer("purchase-order");
+            await initializationOwner.Track(allocationOwner.AllocateAsync("rsa", () => Task.FromResult(RSA.Create(2048)),
+                value => signingKey = value, value => { value.Dispose(); return Task.CompletedTask; }, token));
+            await initializationOwner.Track(allocationOwner.AllocateAsync("supplier", () => Task.FromResult(DiagnosticContainer("supplier")),
+                value => supplier = value, value => allocationOwner.ReleaseAfterAsync(["supplier-start"], () => value.DisposeAsync().AsTask()), token));
+            await initializationOwner.Track(allocationOwner.AllocateAsync("purchase-order", () => Task.FromResult(DiagnosticContainer("purchase-order")),
+                value => order = value, value => allocationOwner.ReleaseAfterAsync(["purchase-order-start"], () => value.DisposeAsync().AsTask()), token));
             ownerCorrelation.Record(0, "initialize-invoked");
             stage = "provider-start";
-            supplierStart = supplier.StartAsync();
-            orderStart = order.StartAsync();
-            starts = Task.WhenAll(supplierStart, orderStart);
+            failureStage = stage;
+            await initializationOwner.Track(allocationOwner.AllocateAsync("supplier-start", () => Task.FromResult(initializationOwner.Track(supplier.StartAsync(token))),
+                value => supplierStart = value, value => value, token));
+            await initializationOwner.Track(allocationOwner.AllocateAsync("purchase-order-start", () => Task.FromResult(initializationOwner.Track(order.StartAsync(token))),
+                value => orderStart = value, value => value, token));
+            starts = Task.WhenAll(supplierStart!, orderStart!);
             await starts;
             stage = "host-create";
-            Factory = CreateFactory(false);
+            failureStage = stage;
+            await initializationOwner.Track(allocationOwner.AllocateAsync("host", () => Task.FromResult(CreateFactory(false)),
+                value => Factory = value, async value => { await allocationOwner.AwaitCreationSettlementAsync("scope"); await value.DisposeAsync(); }, token));
             Factory.SetupConnectionJournal = connectionJournal;
-            scope = Factory.Services.CreateAsyncScope();
+            await initializationOwner.Track(allocationOwner.AllocateAsync("scope", () => Task.FromResult(Factory.Services.CreateAsyncScope()),
+                value => scope = value, value => allocationOwner.ReleaseAfterAsync(["supplier-migration", "purchase-order-migration"], () => value.DisposeAsync().AsTask()), token));
+            var ownedScope = scope ?? throw new InvalidOperationException("Owned setup scope was not published.");
             stage = "supplier-migration";
-            var supplierContext = scope.Value.ServiceProvider.GetRequiredService<SupplierDbContext>();
+            failureStage = stage;
+            var supplierContext = ownedScope.ServiceProvider.GetRequiredService<SupplierDbContext>();
             ObserveConnectionEndpoint("supplier", supplierContext, supplier);
-            await supplierContext.Database.MigrateAsync();
+            await initializationOwner.Track(allocationOwner.AllocateAsync("supplier-migration", () => Task.FromResult(initializationOwner.Track(supplierContext.Database.MigrateAsync(token))),
+                _ => { }, value => value, token));
+            await initializationOwner.Track(allocationOwner.ReleaseAsync("supplier-migration"));
             stage = "purchase-order-migration";
-            var orderContext = scope.Value.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>();
+            failureStage = stage;
+            var orderContext = ownedScope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>();
             ObserveConnectionEndpoint("purchase-order", orderContext, order);
-            await orderContext.Database.MigrateAsync();
+            await initializationOwner.Track(allocationOwner.AllocateAsync("purchase-order-migration", () => Task.FromResult(initializationOwner.Track(orderContext.Database.MigrateAsync(token))),
+                _ => { }, value => value, token));
+            await initializationOwner.Track(allocationOwner.ReleaseAsync("purchase-order-migration"));
         }
         catch (Exception primary)
         {
@@ -938,7 +963,7 @@ public class ProcurementDurableCreateFixture : IAsyncLifetime
         {
             if (scope is not null)
             {
-                try { await scope.Value.DisposeAsync(); }
+                try { await initializationOwner.Track(allocationOwner.ReleaseAsync("scope")); }
                 catch (Exception scopeFailure)
                 {
                     if (failures.Count == 0) failureStage = "scope-disposal";
@@ -946,19 +971,24 @@ public class ProcurementDurableCreateFixture : IAsyncLifetime
                 }
             }
         }
-        var connectionSnapshot = connectionJournal.Stop();
-        connectionEvents = connectionSnapshot.Events;
-        connectionEventsOverflow = connectionSnapshot.Overflow;
-        readerCommandEvents = connectionSnapshot.ReaderCommands;
-        uncapturedReaderRoles = connectionSnapshot.UncapturedReaderRoles;
-        connectionObservationFailures.AddRange(connectionSnapshot.Failures);
-        var primaryFailures = failures.ToArray();
-        await ProcurementDurableFixtureFailureCompletion.CompleteAsync(failures, connectionObservationFailures,
-            observationOnly =>
-            {
-                if (observationOnly) failureStage = "connection-observation";
-                initializationFailed = true;
-            }, () => WriteFailureEvidenceAsync(primaryFailures), DisposeAsync);
+        CaptureSetupObservation();
+        ProcurementFixtureDiagnosticFailures.PublishOrThrow(() => { },
+            failures.Concat(connectionObservationFailures).Distinct<Exception>(ReferenceEqualityComparer.Instance).ToArray());
+    }
+
+    private void CaptureSetupObservation()
+    {
+        lock (setupObservationGate)
+        {
+            if (setupObservationStopped) return;
+            setupObservationStopped = true;
+            var snapshot = connectionJournal.Stop();
+            connectionEvents = snapshot.Events;
+            connectionEventsOverflow = snapshot.Overflow;
+            readerCommandEvents = snapshot.ReaderCommands;
+            uncapturedReaderRoles = snapshot.UncapturedReaderRoles;
+            connectionObservationFailures.AddRange(snapshot.Failures);
+        }
     }
 
     public async Task ResetAsync()
@@ -991,12 +1021,14 @@ public class ProcurementDurableCreateFixture : IAsyncLifetime
 
     public Task DisposeAsync()
     {
+        allocationOwner.Close();
         var invocation = ownerCorrelation.BeginCleanup();
         return cleanupLifetime.CleanupAsync(
-            () => ownerCorrelation.ObserveCleanupAsync(invocation, "host", () => Factory is null ? Task.CompletedTask : Factory.DisposeAsync().AsTask()),
-            () => ownerCorrelation.ObserveCleanupAsync(invocation, "supplier", () => supplier is null ? Task.CompletedTask : supplier.DisposeAsync().AsTask()),
-            () => ownerCorrelation.ObserveCleanupAsync(invocation, "purchase-order", () => order is null ? Task.CompletedTask : order.DisposeAsync().AsTask()),
-            () => ownerCorrelation.ObserveCleanupAsync(invocation, "rsa", () => { signingKey?.Dispose(); return Task.CompletedTask; }),
+            () => ownerCorrelation.ObserveCleanupAsync(invocation, "host", () => allocationOwner.ReleaseAsync("scope")),
+            () => ownerCorrelation.ObserveCleanupAsync(invocation, "host", () => allocationOwner.ReleaseAsync("host")),
+            () => ownerCorrelation.ObserveCleanupAsync(invocation, "supplier", () => allocationOwner.ReleaseAsync("supplier")),
+            () => ownerCorrelation.ObserveCleanupAsync(invocation, "purchase-order", () => allocationOwner.ReleaseAsync("purchase-order")),
+            () => ownerCorrelation.ObserveCleanupAsync(invocation, "rsa", () => allocationOwner.ReleaseAsync("rsa")),
             () => ownerCorrelation.ObserveCleanupAsync(invocation, "observer", () => WriteFailureCleanupEvidenceAsync(invocation)));
     }
 
@@ -1047,60 +1079,78 @@ public class ProcurementDurableCreateFixture : IAsyncLifetime
     private async Task WriteFailureEvidenceAsync(IReadOnlyCollection<Exception> primaryFailures)
     {
         var rows = new List<object>();
+        var serverLogs = new List<object>();
+        var initializationSettled = initializationOwner.UnsettledOperations.Count == 0;
         var failures = connectionObservationFailures.ToList();
         using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
         try
         {
-            using var configuration = ReadOnlyLocalDockerConfiguration();
-            using var docker = configuration.CreateClient();
-            foreach (var (container, role, start) in new[] { (supplier, "supplier", supplierStart), (order, "purchase-order", orderStart) })
+            if (!initializationSettled)
             {
-                try
+                rows.Add(new { ObservationUnavailable = "initialization-unsettled", ProviderStateCoherent = false });
+            }
+            else
+            {
+                using var configuration = ReadOnlyLocalDockerConfiguration();
+                using var docker = configuration.CreateClient();
+                foreach (var (container, role, start) in new[] { (supplier, "supplier", supplierStart), (order, "purchase-order", orderStart) })
                 {
-                    if (container is null)
+                    try
                     {
-                        rows.Add(new { Role = role, AllocationCompleted = false, ContainerId = (string?)null });
-                        continue;
-                    }
-                    var actual = await docker.Containers.InspectContainerAsync(container.Id, deadline.Token);
-                    if (actual.ID != container.Id || actual.Config.Labels["maliev.codex.owner"] != DiagnosticOwner || actual.Config.Labels["maliev.codex.run"] != resourceRunId || actual.Config.Labels["maliev.codex.role"] != role)
-                        throw new InvalidOperationException("Durable fixture observation ownership mismatch.");
-                    string[] volumes = [];
-                    ProcurementFixtureOwnerCorrelation.PreserveOwnedScope(
-                        () =>
+                        if (container is null)
                         {
-                            observedContainerIds.Add(actual.ID);
-                            volumes = actual.Mounts.Where(mount => mount.Type == "volume").Select(mount => mount.Name).ToArray();
-                            observedVolumeIds.AddRange(volumes);
-                        },
-                        () => ownerCorrelation.CaptureInspection(role, container.Id, actual, DiagnosticOwner, false),
-                        failures);
-                    rows.Add(new
+                            rows.Add(new { Role = role, AllocationCompleted = false, ContainerId = (string?)null });
+                            continue;
+                        }
+                        var actual = await docker.Containers.InspectContainerAsync(container.Id, deadline.Token);
+                        if (actual.ID != container.Id || actual.Config.Labels["maliev.codex.owner"] != DiagnosticOwner || actual.Config.Labels["maliev.codex.run"] != resourceRunId || actual.Config.Labels["maliev.codex.role"] != role)
+                            throw new InvalidOperationException("Durable fixture observation ownership mismatch.");
+                        string[] volumes = [];
+                        ProcurementFixtureOwnerCorrelation.PreserveOwnedScope(
+                            () =>
+                            {
+                                observedContainerIds.Add(actual.ID);
+                                volumes = actual.Mounts.Where(mount => mount.Type == "volume").Select(mount => mount.Name).ToArray();
+                                observedVolumeIds.AddRange(volumes);
+                            },
+                            () => ownerCorrelation.CaptureInspection(role, container.Id, actual, DiagnosticOwner, false),
+                            failures);
+                        serverLogs.Add(new
+                        {
+                            Role = role,
+                            Observation = await ProcurementDurableServerLogObserver.CaptureAsync(docker.Containers,
+                                actual.ID, actual.Config.Tty, ownerCorrelation.Identity.ClockOriginUtc, deadline.Token),
+                        });
+                        rows.Add(new
+                        {
+                            Id = actual.ID,
+                            Role = role,
+                            StartTaskStatus = start?.Status.ToString() ?? "not-created",
+                            Created = actual.Created.ToString(),
+                            StartedAt = actual.State.StartedAt.ToString(),
+                            FinishedAt = actual.State.FinishedAt.ToString(),
+                            ProcessId = actual.State.Pid,
+                            actual.State.Running,
+                            actual.State.Status,
+                            actual.State.ExitCode,
+                            actual.State.OOMKilled,
+                            Labels = actual.Config.Labels.Where(pair => pair.Key is "maliev.codex.owner" or "maliev.codex.run" or "maliev.codex.role" or "maliev.codex.parent-run" or "maliev.codex.expires-utc" or "maliev.codex.persistent-data" or "org.testcontainers.session-id").ToDictionary(pair => pair.Key, pair => pair.Value),
+                            ImageId = actual.Image,
+                            Entrypoint = actual.Config.Entrypoint,
+                            Command = actual.Config.Cmd,
+                            actual.HostConfig.Memory,
+                            actual.HostConfig.MemorySwap,
+                            actual.HostConfig.NanoCPUs,
+                            RequestedBindings = actual.HostConfig.PortBindings?.SelectMany(pair => (pair.Value ?? []).Select(binding => new { ContainerPort = pair.Key, binding.HostIP, binding.HostPort })).ToArray() ?? [],
+                            ActualBindings = actual.NetworkSettings.Ports?.SelectMany(pair => (pair.Value ?? []).Select(binding => new { ContainerPort = pair.Key, binding.HostIP, binding.HostPort })).ToArray() ?? [],
+                            Volumes = volumes,
+                        });
+                    }
+                    catch (Exception observationFailure)
                     {
-                        Id = actual.ID,
-                        Role = role,
-                        StartTaskStatus = start?.Status.ToString() ?? "not-created",
-                        Created = actual.Created.ToString(),
-                        StartedAt = actual.State.StartedAt.ToString(),
-                        FinishedAt = actual.State.FinishedAt.ToString(),
-                        ProcessId = actual.State.Pid,
-                        actual.State.Running,
-                        actual.State.Status,
-                        actual.State.ExitCode,
-                        actual.State.OOMKilled,
-                        Labels = actual.Config.Labels.Where(pair => pair.Key is "maliev.codex.owner" or "maliev.codex.run" or "maliev.codex.role" or "org.testcontainers.session-id").ToDictionary(pair => pair.Key, pair => pair.Value),
-                        actual.HostConfig.Memory,
-                        actual.HostConfig.MemorySwap,
-                        actual.HostConfig.NanoCPUs,
-                        RequestedBindings = actual.HostConfig.PortBindings?.SelectMany(pair => (pair.Value ?? []).Select(binding => new { ContainerPort = pair.Key, binding.HostIP, binding.HostPort })).ToArray() ?? [],
-                        ActualBindings = actual.NetworkSettings.Ports?.SelectMany(pair => (pair.Value ?? []).Select(binding => new { ContainerPort = pair.Key, binding.HostIP, binding.HostPort })).ToArray() ?? [],
-                        Volumes = volumes,
-                    });
-                }
-                catch (Exception observationFailure)
-                {
-                    failures.Add(observationFailure);
-                    rows.Add(new { Role = role, StartTaskStatus = start?.Status.ToString() ?? "not-created", ObservationFailureType = observationFailure.GetType().FullName });
+                        failures.Add(observationFailure);
+                        rows.Add(new { Role = role, StartTaskStatus = start?.Status.ToString() ?? "not-created", ObservationFailureType = observationFailure.GetType().FullName });
+                    }
                 }
             }
         }
@@ -1113,6 +1163,10 @@ public class ProcurementDurableCreateFixture : IAsyncLifetime
             InitializationFailureStage = failureStage,
             ObservedAtUtc = DateTimeOffset.UtcNow,
             Resources = rows,
+            InitializationSettled = initializationSettled,
+            PendingInitializationOperations = initializationOwner.UnsettledOperations.Count,
+            PendingAllocationReservations = allocationOwner.PendingReservations,
+            ServerLogObservations = serverLogs,
             ConnectionEndpoints = connectionEndpoints,
             ConnectionEvents = connectionEvents,
             ConnectionEventsOverflow = connectionEventsOverflow,
@@ -1180,6 +1234,9 @@ public class ProcurementDurableCreateFixture : IAsyncLifetime
             ContainersAbsent = absentContainers,
             VolumesAbsent = absentVolumes,
             PendingOperationsAtObservation = cleanupLifetime.UnsettledOperations.Count,
+            PendingInitializationOperations = initializationOwner.UnsettledOperations.Count,
+            PendingAllocationReservations = allocationOwner.PendingReservations,
+            InitializationFailureTypes = initializationOwner.ObservedFailures.Select(error => error.GetType().FullName).ToArray(),
             IncludesCurrentReadOnlyObserver = true,
             CleanupFailureTypes = cleanupLifetime.ObservedFailures.Select(error => error.GetType().FullName).ToArray(),
             ObservationFailureTypes = failures.Select(error => error.GetType().FullName).ToArray(),
