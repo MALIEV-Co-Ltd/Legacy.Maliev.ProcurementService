@@ -27,8 +27,8 @@
     },
     {
       "path": "scripts/test_procurement_fixture_containment.py",
-      "sha256": "b3f7564df548840e21934c653f9d69e0119919410926a7881ecadf089fc87a88",
-      "proposedGitBlob": "94162b7c0cdeb648f47043587a21fec5f4721f73"
+      "sha256": "bfb5ab9eafa313bcec9a451cda9727be5ce54bb8b02784705de818b457d93e7b",
+      "proposedGitBlob": "875b170e7b01759aee48e58dd795c86d97e6d0f5"
     },
     {
       "path": "docs/procurement-fixture-containment-cases.json",

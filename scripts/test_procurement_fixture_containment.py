@@ -383,7 +383,17 @@ if __name__ == "__main__":
 class ProvisionalDiscoveryControls(unittest.TestCase):
     def test_null_source_admission_cannot_start_native_discovery(self):
         extension = json.loads((pathlib.Path(__file__).resolve().parents[1] / "docs/procurement-fixture-containment-cases.json").read_text())["finiteOwnerExtension"]
-        with self.assertRaises(ValueError): guard.finite_bootstrap(extension)
+        import os
+        root=pathlib.Path(__file__).resolve().parents[1]
+        binding=json.loads((root/'docs/procurement-finite-owner-source-binding.json').read_text())
+        binding['bootstrapReviewedProducer']=None;binding['bootstrapSourceAdmission']=None
+        with tempfile.TemporaryDirectory() as directory:
+            isolated=pathlib.Path(directory);(isolated/'docs').mkdir();(isolated/'scripts').mkdir()
+            (isolated/'docs/procurement-finite-owner-source-binding.json').write_text(json.dumps(binding))
+            from unittest.mock import patch
+            with patch.object(guard,'__file__',str(isolated/'scripts/verify-procurement-fixture-containment.py')),patch.dict(os.environ,{'MALIEV_FINITE_OWNER_DISCOVERY':'reviewed-source-only'},clear=False),patch.object(guard.subprocess,'run') as run,patch.object(guard.subprocess,'check_output') as output:
+                with self.assertRaisesRegex(ValueError,'Real source producer'):guard.finite_bootstrap(extension)
+                run.assert_not_called();output.assert_not_called()
 
     def test_unreviewed_discovery_keeps_original_eighteen_guid_pins(self):
         from unittest.mock import patch
