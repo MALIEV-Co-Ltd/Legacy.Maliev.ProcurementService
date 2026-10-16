@@ -24,6 +24,17 @@ OBSERVED_CONVERTER_ROW = {
     "path": "baseline/_runnervm8k3b6_2026-10-16_06_31_52_net10.0.trx"
 }
 
+SHORT_OBSERVED_CONVERTER_ROW = {
+    "artifact": 12030477742,
+    "sha256": "7d4ea799db32fbfdfbeaff984e53a9116b22090987f6a116d6b9ec17db4e866a",
+    "path": "baseline/_runnervm8k3b6_2026-10-16_06_58_36_net10.0.trx",
+    "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry",
+    "outcome": "Failed",
+    "error": "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertSupplierAddressRequest. Path: $.Building | LineNumber: 0 | BytePositionInLine: 22.\n---- System.InvalidOperationException : Cannot get the value of a token type 'Number' as a string.",
+    "stack": "   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, Utf8JsonReader& reader, Exception ex)\n   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)\n   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)\n   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)\n   at Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry() in /home/runner/work/Legacy.Maliev.ProcurementService/Legacy.Maliev.ProcurementService/.address-baseline/Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierAddressScalarStringTests.cs:line 213\n   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n----- Inner Stack Trace -----\n   at System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(JsonTokenType tokenType)\n   at System.Text.Json.Utf8JsonReader.GetString()\n   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)\n   at System.Text.Json.Serialization.JsonConverter`1.TryReadAsObject(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, Object& value)\n   at System.Text.Json.Serialization.Converters.LargeObjectWithParameterizedConstructorConverter`1.ReadAndCacheConstructorArgument(ReadStack& state, Utf8JsonReader& reader, JsonParameterInfo jsonParameterInfo)\n   at System.Text.Json.Serialization.Converters.ObjectWithParameterizedConstructorConverter`1.OnTryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value)\n   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)",
+    "counters": "<Counters total=\"33\" executed=\"33\" passed=\"20\" failed=\"13\" error=\"0\" timeout=\"0\" aborted=\"0\" inconclusive=\"0\" passedButRunAborted=\"0\" notRunnable=\"0\" notExecuted=\"0\" disconnected=\"0\" warning=\"0\" completed=\"0\" inProgress=\"0\" pending=\"0\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />"
+}
+
 class CausalEvidenceTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
@@ -87,14 +98,14 @@ class CausalEvidenceTests(unittest.TestCase):
                 doc=self.fixture('baseline');doc.find('.//ErrorInfo/StackTrace').text=ACTUAL_CONVERTER_STACK.replace(before,after)
                 with self.assertRaises(ValueError):self.run_guard(doc,'baseline')
 
-    def observed_baseline(self):
+    def observed_baseline(self, observed=OBSERVED_CONVERTER_ROW):
         doc = self.fixture('baseline')
         row = next(x for x in doc.findall('./Results/UnitTestResult')
-                   if x.get('testName') == OBSERVED_CONVERTER_ROW['name'])
-        self.assertEqual(OBSERVED_CONVERTER_ROW['outcome'], row.get('outcome'))
+                   if x.get('testName') == observed['name'])
+        self.assertEqual(observed['outcome'], row.get('outcome'))
         error = row.find('./Output/ErrorInfo')
-        error.find('Message').text = OBSERVED_CONVERTER_ROW['error']
-        error.find('StackTrace').text = OBSERVED_CONVERTER_ROW['stack']
+        error.find('Message').text = observed['error']
+        error.find('StackTrace').text = observed['stack']
         return doc, error
 
     def test_observed_parameterized_string_stack_positive(self):
@@ -142,6 +153,8 @@ class CausalEvidenceTests(unittest.TestCase):
     def test_observed_requires_each_exact_typed_reader_frame(self):
         frames = OBSERVED_CONVERTER_ROW['stack'].splitlines()
         for index in range(len(frames)):
+            if index in (2, 15):
+                continue  # Only the two reviewed optional framework positions.
             with self.subTest(removed_frame=index):
                 doc, error = self.observed_baseline()
                 error.find('StackTrace').text = '\n'.join(frames[:index] + frames[index + 1:])
@@ -194,6 +207,71 @@ class CausalEvidenceTests(unittest.TestCase):
                     (self.root/'coverage.cobertura.xml').write_text('<coverage />')
                 with self.assertRaises(ValueError):
                     self.run_guard(doc, 'baseline')
+
+
+    def test_four_reviewed_frame_shapes_positive(self):
+        long_row = copy.deepcopy(OBSERVED_CONVERTER_ROW)
+        short_row = copy.deepcopy(SHORT_OBSERVED_CONVERTER_ROW)
+        self.assertEqual(17, len(long_row['stack'].splitlines()))
+        self.assertEqual(15, len(short_row['stack'].splitlines()))
+        outer = long_row['stack'].splitlines()[2]
+        inner = long_row['stack'].splitlines()[15]
+        outer_only = copy.deepcopy(short_row)
+        frames = short_row['stack'].splitlines()
+        outer_only['stack'] = '\n'.join(frames[:2] + [outer] + frames[2:])
+        inner_only = copy.deepcopy(short_row)
+        # Insert directly after OnTryRead and before the final ReadCore.
+        inner_only['stack'] = '\n'.join(frames[:-1] + [inner] + frames[-1:])
+        for shape, observed in [('both', long_row), ('neither', short_row),
+                                ('outer-only', outer_only), ('inner-only', inner_only)]:
+            with self.subTest(shape=shape):
+                doc, _ = self.observed_baseline(observed)
+                proof = self.run_guard(doc, 'baseline')
+                self.assertEqual((20, 13, 0), (proof['passed'], proof['failed'], proof['skipped']))
+                self.assertFalse(proof['fullSuiteAcceptance'])
+                self.assertFalse(proof['providerDisposalAcceptance'])
+                self.assertFalse(proof['productionEnrollmentProven'])
+
+    def test_short_observed_shape_requires_every_remaining_frame(self):
+        frames = SHORT_OBSERVED_CONVERTER_ROW['stack'].splitlines()
+        for index in range(len(frames)):
+            with self.subTest(removed_required=index):
+                doc, error = self.observed_baseline(SHORT_OBSERVED_CONVERTER_ROW)
+                error.find('StackTrace').text = '\n'.join(frames[:index] + frames[index + 1:])
+                with self.assertRaises(ValueError):
+                    self.run_guard(doc, 'baseline')
+
+    def test_required_frame_reordering_is_refused_in_both_observed_shapes(self):
+        for observed in (OBSERVED_CONVERTER_ROW, SHORT_OBSERVED_CONVERTER_ROW):
+            frames = observed['stack'].splitlines()
+            for first, second in [(0, 1), (9, 10)]:
+                with self.subTest(size=len(frames), swapped=(first, second)):
+                    changed = list(frames)
+                    changed[first], changed[second] = changed[second], changed[first]
+                    doc, error = self.observed_baseline(observed)
+                    error.find('StackTrace').text = '\n'.join(changed)
+                    with self.assertRaises(ValueError):
+                        self.run_guard(doc, 'baseline')
+
+    def test_optional_frames_cannot_be_substituted_duplicated_or_moved(self):
+        long_frames = OBSERVED_CONVERTER_ROW['stack'].splitlines()
+        short_frames = SHORT_OBSERVED_CONVERTER_ROW['stack'].splitlines()
+        for index in (2, 15):
+            for mutation in ('substitute', 'duplicate', 'move', 'wrong-short-position'):
+                with self.subTest(optional=index, mutation=mutation):
+                    frames = list(long_frames)
+                    if mutation == 'substitute':
+                        frames[index] = frames[index].replace('System.Text.Json.', 'Foreign.Reader.')
+                    elif mutation == 'duplicate':
+                        frames.insert(index, frames[index])
+                    elif mutation == 'move':
+                        frames.insert(0, frames.pop(index))
+                    else:
+                        frames = [long_frames[index]] + short_frames
+                    doc, error = self.observed_baseline()
+                    error.find('StackTrace').text = '\n'.join(frames)
+                    with self.assertRaises(ValueError):
+                        self.run_guard(doc, 'baseline')
 
 
     def diagnostics(self, doc):

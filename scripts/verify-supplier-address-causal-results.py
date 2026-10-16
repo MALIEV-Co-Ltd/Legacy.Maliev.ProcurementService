@@ -49,11 +49,16 @@ def observed_parameterized_string_origin(stack):
         "at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)",
         "at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)",
     )
-    if len(frames) != len(expected):
-        return False
     caller = r'at Legacy\.Maliev\.ProcurementService\.Tests\.Integration\.ProcurementSupplierAddressScalarStringTests\.Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry\(\) in [^\r\n]+[/\\]ProcurementSupplierAddressScalarStringTests\.cs:line 213'
-    return all(re.fullmatch(caller, actual) is not None if wanted is None else actual == wanted
-               for actual, wanted in zip(frames, expected))
+    # Only the observed outer Deserialize and the second, post-OnTryRead TryRead
+    # are optional. Enumerate four complete shapes; never skip arbitrary frames.
+    for omitted in ((), (2,), (15,), (2, 15)):
+        shape = tuple(frame for index, frame in enumerate(expected) if index not in omitted)
+        if len(frames) == len(shape) and all(
+                re.fullmatch(caller, actual) is not None if wanted is None else actual == wanted
+                for actual, wanted in zip(frames, shape)):
+            return True
+    return False
 
 
 def verify(root, manifest, phase, exit_code):
