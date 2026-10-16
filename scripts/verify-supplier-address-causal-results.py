@@ -91,7 +91,13 @@ def verify(root, manifest, phase, exit_code):
             if case['method'] == 'Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry':
                 expected_message = "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertSupplierAddressRequest. Path: $.Building | LineNumber: 0 | BytePositionInLine: 22.\n---- System.InvalidOperationException : Cannot get the value of a token type 'Number' as a string."
                 require(message == expected_message, 'Expected frozen Building numeric-to-string deserialization failure')
-                require(re.search(re.escape('ProcurementSupplierAddressScalarStringTests.' + case['method'] + '()') + r' in .+ProcurementSupplierAddressScalarStringTests\.cs:line 213\b', stack) and 'System.Text.Json.Serialization.Converters.StringConverter.Read(' in stack and 'System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(' in stack, 'Expected frozen numeric string converter failure origin')
+                # Frozen harness line 213 is the address Deserialize call. Paired actual
+                # TRX receipts differ in internal framework frames, which remain diagnostic.
+                frame = (r'^[ \t]*at '
+                         + re.escape('Legacy.Maliev.ProcurementService.Tests.Integration.'
+                                     + 'ProcurementSupplierAddressScalarStringTests.' + case['method'] + '()')
+                         + r' in [^\r\n]*[/\\]ProcurementSupplierAddressScalarStringTests\.cs:line 213\r?$')
+                require(re.search(frame, stack, re.MULTILINE), 'Expected frozen numeric string converter failure origin')
             else:
                 expected_status = 'NotFound' if case['method'].startswith('MissingOwnerOrAddress_') else ('NoContent' if 'update: True' in case['name'] else 'Created')
                 require('Assert.Equal() Failure' in message and re.search(r'Expected:\s+' + expected_status + r'\b', message) and re.search(r'Actual:\s+BadRequest\b', message), 'Expected pre-business binding status assertion failure')
