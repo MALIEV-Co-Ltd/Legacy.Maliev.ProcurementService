@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Legacy.Maliev.ProcurementService.Api.Authorization;
+using Legacy.Maliev.ProcurementService.Api.Serialization;
 using Legacy.Maliev.ProcurementService.Application.Interfaces;
 using Legacy.Maliev.ProcurementService.Application.Services;
 using Legacy.Maliev.ProcurementService.Data;
@@ -28,6 +29,7 @@ builder.AddStandardOpenApi(
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
+    options.JsonSerializerOptions.Converters.Add(new PurchaseOrderHeaderRequestJsonConverter());
     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     options.JsonSerializerOptions.PropertyNamingPolicy = null;
     options.JsonSerializerOptions.DictionaryKeyPolicy = null;
