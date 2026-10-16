@@ -1,0 +1,753 @@
+{
+  "schemaVersion": 1,
+  "status": "SOURCE-AUTHORED; no runtime discovery/pass claim",
+  "issue": 66,
+  "base": "0c0f622d07a03c7bd5dcbb731d3b8afa07b1fbc4",
+  "testClass": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests",
+  "expectedCandidateCases": 108,
+  "expectedCandidateMethods": 13,
+  "candidate": [
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "bucket_empty",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_empty\")"
+    },
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "bucket_padded",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_padded\")"
+    },
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "bucket_thai",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_thai\")"
+    },
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "bucket_integer",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_integer\")"
+    },
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "bucket_decimal",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_decimal\")"
+    },
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "bucket_exponent",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_exponent\")"
+    },
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "bucket_true",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_true\")"
+    },
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "bucket_false",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_false\")"
+    },
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "object_empty",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_empty\")"
+    },
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "object_padded",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_padded\")"
+    },
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "object_thai",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_thai\")"
+    },
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "object_integer",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_integer\")"
+    },
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "object_decimal",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_decimal\")"
+    },
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "object_exponent",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_exponent\")"
+    },
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "object_true",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_true\")"
+    },
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "caseId": "object_false",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_false\")"
+    },
+    {
+      "method": "TextEdges_MatchPublicTypedReaderWithoutOwnerCoercion",
+      "caseId": "null",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.TextEdges_MatchPublicTypedReaderWithoutOwnerCoercion(caseId: \"null\")"
+    },
+    {
+      "method": "TextEdges_MatchPublicTypedReaderWithoutOwnerCoercion",
+      "caseId": "negative_zero",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.TextEdges_MatchPublicTypedReaderWithoutOwnerCoercion(caseId: \"negative_zero\")"
+    },
+    {
+      "method": "TextEdges_MatchPublicTypedReaderWithoutOwnerCoercion",
+      "caseId": "capital_exponent",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.TextEdges_MatchPublicTypedReaderWithoutOwnerCoercion(caseId: \"capital_exponent\")"
+    },
+    {
+      "method": "TextEdges_MatchPublicTypedReaderWithoutOwnerCoercion",
+      "caseId": "large_integer",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.TextEdges_MatchPublicTypedReaderWithoutOwnerCoercion(caseId: \"large_integer\")"
+    },
+    {
+      "method": "TextEdges_MatchPublicTypedReaderWithoutOwnerCoercion",
+      "caseId": "large_exponent",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.TextEdges_MatchPublicTypedReaderWithoutOwnerCoercion(caseId: \"large_exponent\")"
+    },
+    {
+      "method": "OrderedOccurrences_MatchNullIgnoringPublicProjection",
+      "caseId": "replace",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.OrderedOccurrences_MatchNullIgnoringPublicProjection(caseId: \"replace\")"
+    },
+    {
+      "method": "OrderedOccurrences_MatchNullIgnoringPublicProjection",
+      "caseId": "null_after",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.OrderedOccurrences_MatchNullIgnoringPublicProjection(caseId: \"null_after\")"
+    },
+    {
+      "method": "OrderedOccurrences_MatchNullIgnoringPublicProjection",
+      "caseId": "null_before",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.OrderedOccurrences_MatchNullIgnoringPublicProjection(caseId: \"null_before\")"
+    },
+    {
+      "method": "OrderedOccurrences_MatchNullIgnoringPublicProjection",
+      "caseId": "empty_after",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.OrderedOccurrences_MatchNullIgnoringPublicProjection(caseId: \"empty_after\")"
+    },
+    {
+      "method": "OrderedOccurrences_MatchNullIgnoringPublicProjection",
+      "caseId": "repeat_null",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.OrderedOccurrences_MatchNullIgnoringPublicProjection(caseId: \"repeat_null\")"
+    },
+    {
+      "method": "OrderedOccurrences_MatchNullIgnoringPublicProjection",
+      "caseId": "null_only",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.OrderedOccurrences_MatchNullIgnoringPublicProjection(caseId: \"null_only\")"
+    },
+    {
+      "method": "OrderedOccurrences_MatchNullIgnoringPublicProjection",
+      "caseId": "omitted",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.OrderedOccurrences_MatchNullIgnoringPublicProjection(caseId: \"omitted\")"
+    },
+    {
+      "method": "OrderedOccurrences_MatchNullIgnoringPublicProjection",
+      "caseId": "mixed_case",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.OrderedOccurrences_MatchNullIgnoringPublicProjection(caseId: \"mixed_case\")"
+    },
+    {
+      "method": "MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue",
+      "caseId": "bucket_object_only",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue(caseId: \"bucket_object_only\")"
+    },
+    {
+      "method": "MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue",
+      "caseId": "bucket_object_before",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue(caseId: \"bucket_object_before\")"
+    },
+    {
+      "method": "MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue",
+      "caseId": "bucket_object_after",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue(caseId: \"bucket_object_after\")"
+    },
+    {
+      "method": "MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue",
+      "caseId": "bucket_array_only",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue(caseId: \"bucket_array_only\")"
+    },
+    {
+      "method": "MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue",
+      "caseId": "bucket_array_before",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue(caseId: \"bucket_array_before\")"
+    },
+    {
+      "method": "MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue",
+      "caseId": "bucket_array_after",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue(caseId: \"bucket_array_after\")"
+    },
+    {
+      "method": "MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue",
+      "caseId": "object_object_only",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue(caseId: \"object_object_only\")"
+    },
+    {
+      "method": "MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue",
+      "caseId": "object_object_before",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue(caseId: \"object_object_before\")"
+    },
+    {
+      "method": "MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue",
+      "caseId": "object_object_after",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue(caseId: \"object_object_after\")"
+    },
+    {
+      "method": "MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue",
+      "caseId": "object_array_only",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue(caseId: \"object_array_only\")"
+    },
+    {
+      "method": "MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue",
+      "caseId": "object_array_before",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue(caseId: \"object_array_before\")"
+    },
+    {
+      "method": "MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue",
+      "caseId": "object_array_after",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.MalformedRecognizedOccurrence_CannotBeHiddenByAnotherValue(caseId: \"object_array_after\")"
+    },
+    {
+      "method": "PropertyNames_MatchPublicPropertyCollection",
+      "caseId": "bucket",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PropertyNames_MatchPublicPropertyCollection(caseId: \"bucket\")"
+    },
+    {
+      "method": "PropertyNames_MatchPublicPropertyCollection",
+      "caseId": "bucket_mixed",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PropertyNames_MatchPublicPropertyCollection(caseId: \"bucket_mixed\")"
+    },
+    {
+      "method": "PropertyNames_MatchPublicPropertyCollection",
+      "caseId": "object_lower",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PropertyNames_MatchPublicPropertyCollection(caseId: \"object_lower\")"
+    },
+    {
+      "method": "PropertyNames_MatchPublicPropertyCollection",
+      "caseId": "foreign",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PropertyNames_MatchPublicPropertyCollection(caseId: \"foreign\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "omitted",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"omitted\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "null",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"null\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "zero",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"zero\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "negative",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"negative\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "positive",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"positive\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "quoted",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"quoted\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "quoted_spaces",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"quoted_spaces\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "quoted_plus",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"quoted_plus\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "empty",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"empty\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "blank",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"blank\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "fraction",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"fraction\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "integral_float",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"integral_float\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "exponent",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"exponent\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "overflow",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"overflow\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "true",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"true\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "false",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"false\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "object",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"object\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "array",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"array\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "duplicate_null",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"duplicate_null\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "duplicate_number",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"duplicate_number\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "bad_then_valid",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"bad_then_valid\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "valid_then_bad",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"valid_then_bad\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "string_null",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"string_null\")"
+    },
+    {
+      "method": "ParentRepresentations_DelegateToUnchangedMvcReader",
+      "caseId": "minimum",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.ParentRepresentations_DelegateToUnchangedMvcReader(caseId: \"minimum\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "bucket_empty",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"bucket_empty\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "bucket_padded",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"bucket_padded\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "bucket_thai",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"bucket_thai\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "bucket_integer",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"bucket_integer\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "bucket_decimal",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"bucket_decimal\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "bucket_exponent",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"bucket_exponent\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "bucket_true",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"bucket_true\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "bucket_false",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"bucket_false\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "object_empty",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"object_empty\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "object_padded",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"object_padded\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "object_thai",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"object_thai\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "object_integer",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"object_integer\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "object_decimal",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"object_decimal\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "object_exponent",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"object_exponent\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "object_true",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"object_true\")"
+    },
+    {
+      "method": "HttpPrimitiveMembers_RoundTripExactly",
+      "caseId": "object_false",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpPrimitiveMembers_RoundTripExactly(caseId: \"object_false\")"
+    },
+    {
+      "method": "HttpOrderedNullAndEmpty_KeepLiteralMetadata",
+      "caseId": "bucket_null",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpOrderedNullAndEmpty_KeepLiteralMetadata(caseId: \"bucket_null\")"
+    },
+    {
+      "method": "HttpOrderedNullAndEmpty_KeepLiteralMetadata",
+      "caseId": "object_null",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpOrderedNullAndEmpty_KeepLiteralMetadata(caseId: \"object_null\")"
+    },
+    {
+      "method": "HttpOrderedNullAndEmpty_KeepLiteralMetadata",
+      "caseId": "bucket_empty",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpOrderedNullAndEmpty_KeepLiteralMetadata(caseId: \"bucket_empty\")"
+    },
+    {
+      "method": "HttpOrderedNullAndEmpty_KeepLiteralMetadata",
+      "caseId": "object_empty",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpOrderedNullAndEmpty_KeepLiteralMetadata(caseId: \"object_empty\")"
+    },
+    {
+      "method": "HttpMalformedOccurrence_IsBadRequestWithoutWrites",
+      "caseId": "bucket_object_before",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpMalformedOccurrence_IsBadRequestWithoutWrites(caseId: \"bucket_object_before\")"
+    },
+    {
+      "method": "HttpMalformedOccurrence_IsBadRequestWithoutWrites",
+      "caseId": "bucket_array_before",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpMalformedOccurrence_IsBadRequestWithoutWrites(caseId: \"bucket_array_before\")"
+    },
+    {
+      "method": "HttpMalformedOccurrence_IsBadRequestWithoutWrites",
+      "caseId": "object_object_before",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpMalformedOccurrence_IsBadRequestWithoutWrites(caseId: \"object_object_before\")"
+    },
+    {
+      "method": "HttpMalformedOccurrence_IsBadRequestWithoutWrites",
+      "caseId": "object_array_before",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpMalformedOccurrence_IsBadRequestWithoutWrites(caseId: \"object_array_before\")"
+    },
+    {
+      "method": "HttpParentValues_RetainExistingNullablePolicy",
+      "caseId": "omitted",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpParentValues_RetainExistingNullablePolicy(caseId: \"omitted\")"
+    },
+    {
+      "method": "HttpParentValues_RetainExistingNullablePolicy",
+      "caseId": "null",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpParentValues_RetainExistingNullablePolicy(caseId: \"null\")"
+    },
+    {
+      "method": "HttpParentValues_RetainExistingNullablePolicy",
+      "caseId": "positive",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpParentValues_RetainExistingNullablePolicy(caseId: \"positive\")"
+    },
+    {
+      "method": "HttpParentValues_RetainExistingNullablePolicy",
+      "caseId": "quoted",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpParentValues_RetainExistingNullablePolicy(caseId: \"quoted\")"
+    },
+    {
+      "method": "HttpParentValues_RetainExistingNullablePolicy",
+      "caseId": "duplicate_null",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpParentValues_RetainExistingNullablePolicy(caseId: \"duplicate_null\")"
+    },
+    {
+      "method": "HttpParentValues_RetainExistingNullablePolicy",
+      "caseId": "duplicate_number",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpParentValues_RetainExistingNullablePolicy(caseId: \"duplicate_number\")"
+    },
+    {
+      "method": "HttpParentValues_RetainExistingNullablePolicy",
+      "caseId": "other",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpParentValues_RetainExistingNullablePolicy(caseId: \"other\")"
+    },
+    {
+      "method": "HttpDeniedActor_CannotMutateMetadata",
+      "caseId": "anonymous",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpDeniedActor_CannotMutateMetadata(caseId: \"anonymous\")"
+    },
+    {
+      "method": "HttpDeniedActor_CannotMutateMetadata",
+      "caseId": "wrong_permission",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpDeniedActor_CannotMutateMetadata(caseId: \"wrong_permission\")"
+    },
+    {
+      "method": "HttpWrongRoot_IsBadRequestWithoutWrites",
+      "caseId": "null",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpWrongRoot_IsBadRequestWithoutWrites(caseId: \"null\")"
+    },
+    {
+      "method": "HttpWrongRoot_IsBadRequestWithoutWrites",
+      "caseId": "array",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpWrongRoot_IsBadRequestWithoutWrites(caseId: \"array\")"
+    },
+    {
+      "method": "HttpWrongRoot_IsBadRequestWithoutWrites",
+      "caseId": "true",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpWrongRoot_IsBadRequestWithoutWrites(caseId: \"true\")"
+    },
+    {
+      "method": "HttpWrongRoot_IsBadRequestWithoutWrites",
+      "caseId": "number",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpWrongRoot_IsBadRequestWithoutWrites(caseId: \"number\")"
+    },
+    {
+      "method": "HttpWrongRoot_IsBadRequestWithoutWrites",
+      "caseId": "text",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.HttpWrongRoot_IsBadRequestWithoutWrites(caseId: \"text\")"
+    },
+    {
+      "method": "Converter_IsRequestLocalAndPreservesDefaultWriteAndUnknownHandling",
+      "caseId": null,
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.Converter_IsRequestLocalAndPreservesDefaultWriteAndUnknownHandling"
+    }
+  ],
+  "baseline": {
+    "expectedCases": 16,
+    "expectedPassed": 6,
+    "expectedFailed": 10,
+    "filter": "FullyQualifiedName=Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader",
+    "cases": [
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "bucket_empty",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_empty\")",
+        "expectedOutcome": "Passed",
+        "field": "Bucket",
+        "token": "\"\"",
+        "payload": "{\"ObjectName\":\"unchanged\",\"Bucket\":\"\"}",
+        "expectedMessage": null
+      },
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "bucket_padded",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_padded\")",
+        "expectedOutcome": "Passed",
+        "field": "Bucket",
+        "token": "\" ก padded %_ \"",
+        "payload": "{\"ObjectName\":\"unchanged\",\"Bucket\":\" ก padded %_ \"}",
+        "expectedMessage": null
+      },
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "bucket_thai",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_thai\")",
+        "expectedOutcome": "Passed",
+        "field": "Bucket",
+        "token": "\"ไทย\"",
+        "payload": "{\"ObjectName\":\"unchanged\",\"Bucket\":\"ไทย\"}",
+        "expectedMessage": null
+      },
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "bucket_integer",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_integer\")",
+        "expectedOutcome": "Failed",
+        "field": "Bucket",
+        "token": "-42",
+        "payload": "{\"ObjectName\":\"unchanged\",\"Bucket\":-42}",
+        "expectedMessage": "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertPurchaseOrderFileRequest. Path: $.Bucket | LineNumber: 0 | BytePositionInLine: 38.\n---- System.InvalidOperationException : Cannot get the value of a token type 'Number' as a string."
+      },
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "bucket_decimal",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_decimal\")",
+        "expectedOutcome": "Failed",
+        "field": "Bucket",
+        "token": "12.50",
+        "payload": "{\"ObjectName\":\"unchanged\",\"Bucket\":12.50}",
+        "expectedMessage": "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertPurchaseOrderFileRequest. Path: $.Bucket | LineNumber: 0 | BytePositionInLine: 40.\n---- System.InvalidOperationException : Cannot get the value of a token type 'Number' as a string."
+      },
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "bucket_exponent",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_exponent\")",
+        "expectedOutcome": "Failed",
+        "field": "Bucket",
+        "token": "1e2",
+        "payload": "{\"ObjectName\":\"unchanged\",\"Bucket\":1e2}",
+        "expectedMessage": "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertPurchaseOrderFileRequest. Path: $.Bucket | LineNumber: 0 | BytePositionInLine: 38.\n---- System.InvalidOperationException : Cannot get the value of a token type 'Number' as a string."
+      },
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "bucket_true",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_true\")",
+        "expectedOutcome": "Failed",
+        "field": "Bucket",
+        "token": "true",
+        "payload": "{\"ObjectName\":\"unchanged\",\"Bucket\":true}",
+        "expectedMessage": "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertPurchaseOrderFileRequest. Path: $.Bucket | LineNumber: 0 | BytePositionInLine: 39.\n---- System.InvalidOperationException : Cannot get the value of a token type 'True' as a string."
+      },
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "bucket_false",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"bucket_false\")",
+        "expectedOutcome": "Failed",
+        "field": "Bucket",
+        "token": "false",
+        "payload": "{\"ObjectName\":\"unchanged\",\"Bucket\":false}",
+        "expectedMessage": "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertPurchaseOrderFileRequest. Path: $.Bucket | LineNumber: 0 | BytePositionInLine: 40.\n---- System.InvalidOperationException : Cannot get the value of a token type 'False' as a string."
+      },
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "object_empty",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_empty\")",
+        "expectedOutcome": "Passed",
+        "field": "ObjectName",
+        "token": "\"\"",
+        "payload": "{\"Bucket\":\"unchanged\",\"ObjectName\":\"\"}",
+        "expectedMessage": null
+      },
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "object_padded",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_padded\")",
+        "expectedOutcome": "Passed",
+        "field": "ObjectName",
+        "token": "\" ก padded %_ \"",
+        "payload": "{\"Bucket\":\"unchanged\",\"ObjectName\":\" ก padded %_ \"}",
+        "expectedMessage": null
+      },
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "object_thai",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_thai\")",
+        "expectedOutcome": "Passed",
+        "field": "ObjectName",
+        "token": "\"ไทย\"",
+        "payload": "{\"Bucket\":\"unchanged\",\"ObjectName\":\"ไทย\"}",
+        "expectedMessage": null
+      },
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "object_integer",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_integer\")",
+        "expectedOutcome": "Failed",
+        "field": "ObjectName",
+        "token": "-42",
+        "payload": "{\"Bucket\":\"unchanged\",\"ObjectName\":-42}",
+        "expectedMessage": "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertPurchaseOrderFileRequest. Path: $.ObjectName | LineNumber: 0 | BytePositionInLine: 38.\n---- System.InvalidOperationException : Cannot get the value of a token type 'Number' as a string."
+      },
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "object_decimal",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_decimal\")",
+        "expectedOutcome": "Failed",
+        "field": "ObjectName",
+        "token": "12.50",
+        "payload": "{\"Bucket\":\"unchanged\",\"ObjectName\":12.50}",
+        "expectedMessage": "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertPurchaseOrderFileRequest. Path: $.ObjectName | LineNumber: 0 | BytePositionInLine: 40.\n---- System.InvalidOperationException : Cannot get the value of a token type 'Number' as a string."
+      },
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "object_exponent",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_exponent\")",
+        "expectedOutcome": "Failed",
+        "field": "ObjectName",
+        "token": "1e2",
+        "payload": "{\"Bucket\":\"unchanged\",\"ObjectName\":1e2}",
+        "expectedMessage": "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertPurchaseOrderFileRequest. Path: $.ObjectName | LineNumber: 0 | BytePositionInLine: 38.\n---- System.InvalidOperationException : Cannot get the value of a token type 'Number' as a string."
+      },
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "object_true",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_true\")",
+        "expectedOutcome": "Failed",
+        "field": "ObjectName",
+        "token": "true",
+        "payload": "{\"Bucket\":\"unchanged\",\"ObjectName\":true}",
+        "expectedMessage": "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertPurchaseOrderFileRequest. Path: $.ObjectName | LineNumber: 0 | BytePositionInLine: 39.\n---- System.InvalidOperationException : Cannot get the value of a token type 'True' as a string."
+      },
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "caseId": "object_false",
+        "name": "Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader(caseId: \"object_false\")",
+        "expectedOutcome": "Failed",
+        "field": "ObjectName",
+        "token": "false",
+        "payload": "{\"Bucket\":\"unchanged\",\"ObjectName\":false}",
+        "expectedMessage": "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertPurchaseOrderFileRequest. Path: $.ObjectName | LineNumber: 0 | BytePositionInLine: 40.\n---- System.InvalidOperationException : Cannot get the value of a token type 'False' as a string."
+      }
+    ],
+    "requiredUserFrames": [
+      {
+        "method": "PrimitiveMembers_UsePublicTypedStringReader",
+        "line": 214
+      },
+      {
+        "method": "Bind",
+        "line": 372
+      }
+    ],
+    "frameworkFrames": "diagnostic only"
+  },
+  "harness": {
+    "path": "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs",
+    "gitBlob": "7027574d3ab9a669d1cabef897c4525c842cd904",
+    "baselineOverlay": "Same test file only; no new converter file or Program change in immutable baseline"
+  },
+  "currentParentPolicy": "Unchanged;24 differential representation cases plus7 HTTP retention cases",
+  "newtonsoft": "Existing test-only13.0.3 public typed reader/projection; historical effective assembly identity unknown",
+  "testIds": "Not invented; require canonical unique actual IDs joined definitions/results/entries; baseline subset IDs must agree with candidate where same names",
+  "requiredHosted": [
+    "baseline6P10F actual typed source-origin obligations",
+    "candidate108P0F0S exact names/identities/counters",
+    "normal Release0W/E, focused28, RED+restore, header135, affected/full suite, format/security/audits/unchangedrawcoverage",
+    "normal owned process/container/volume disposal and immutable source before/after binding"
+  ],
+  "holds": [
+    "no financial, Comment/TrackingNumber, GCS/provider/POST/schema/data/authroles",
+    "Whole29/72eb/model remains PARTIAL",
+    "Root sourceGO before refs/publication"
+  ],
+  "implementationRuntime": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": "d97961fce1c1e4240750f591cee1343ce426b39e",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": "b25c869f80f02d59e1d75549e74f87cd5776c61b"
+  }
+}
