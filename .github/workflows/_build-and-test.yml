@@ -50,7 +50,7 @@ jobs:
           VSTestResultsDirectory: ${{ github.workspace }}/focused-workflow-results
         run: |
           export GITHUB_ACTIONS=false
-          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload"
+          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload|FullyQualifiedName=Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_SatisfiesStructuralContract"
       - name: Require every focused workflow execution
         if: always()
         run: |
