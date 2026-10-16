@@ -10,6 +10,8 @@ import tempfile
 BASE = "0c0f622d07a03c7bd5dcbb731d3b8afa07b1fbc4"
 PROGRAM = "Legacy.Maliev.ProcurementService.Api/Program.cs"
 CONVERTER = "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs"
+API_PROJECT = "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj"
+SUPPLIER_CONVERTER = "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs"
 FIXTURE = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs"
 TEST = "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs"
 
@@ -61,6 +63,11 @@ def phase_reports(directory):
         require(not reports, "Multiple phase TRX files")
         reports.append(path)
     return reports
+
+
+def require_runtime_roster(value):
+    require(set(value) == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER},
+            "Runtime postimage roster must equal the four reviewed current inputs")
 
 
 def require_phase_evidence(output, phase, budget=None):
@@ -123,11 +130,11 @@ def prepare(baseline, manifest_path, verify_only=False):
                     "Legacy.Maliev.ProcurementService.Data", "Legacy.Maliev.ProcurementService.Domain",
                     "Legacy.Maliev.ProcurementService.Tests"), "Untracked compiled source inputs are forbidden")
     expected_runtime = manifest["implementationRuntime"]
-    require(set(expected_runtime) == {PROGRAM, CONVERTER}, "Runtime postimage roster must contain only the two reviewed inputs")
+    require_runtime_roster(expected_runtime)
     changed = set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--",
                       "Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Application",
                       "Legacy.Maliev.ProcurementService.Data", "Legacy.Maliev.ProcurementService.Domain").decode().splitlines())
-    require(changed == {PROGRAM, CONVERTER}, "Unexpected production source changes")
+    require(changed == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER}, "Unexpected production source changes")
     for path, expected in expected_runtime.items():
         require(blob(candidate, path) == expected, "Candidate runtime postimage differs: " + path)
     for path in ("scripts/observe-supplier-address-providers.py", "scripts/supplier_address_owned_processes.py"):

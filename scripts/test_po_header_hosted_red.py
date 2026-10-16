@@ -405,9 +405,17 @@ class CandidateSourceCustodyTests(unittest.TestCase):
         converter = "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs"
         previous = CONTRACT["previousCandidateBindings"]
         self.assertEqual(5, len(previous))
-        self.assertEqual(6, len(CONTRACT["candidateBindings"]))
+        self.assertEqual(8, len(CONTRACT["candidateBindings"]))
         self.assertNotEqual(previous[program], CONTRACT["candidateBindings"][program])
-        self.assertEqual({converter}, set(CONTRACT["candidateBindings"]) - set(previous))
+        supplier = "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs"
+        project = "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj"
+        self.assertEqual({converter, supplier, project}, set(CONTRACT["candidateBindings"]) - set(previous))
+        retained = CONTRACT["previousFileMetadataCandidateBindings"]
+        self.assertEqual(6, len(retained))
+        self.assertEqual({supplier, project}, set(CONTRACT["candidateBindings"]) - set(retained))
+        for relative in retained:
+            if relative != program:
+                self.assertEqual(retained[relative], CONTRACT["candidateBindings"][relative])
         for relative in previous:
             if relative != program:
                 self.assertEqual(previous[relative], CONTRACT["candidateBindings"][relative])

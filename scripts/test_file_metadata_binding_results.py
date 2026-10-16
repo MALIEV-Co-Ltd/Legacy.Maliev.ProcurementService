@@ -548,5 +548,22 @@ class FileMetadataBoundedReaderControls(unittest.TestCase):
             parser.assert_not_called()
 
 
+class MetadataRuntimeEnvelopeControls(unittest.TestCase):
+    def test_exact_reviewed_four_input_envelope_passes(self):
+        prep.require_runtime_roster(CONTRACT["implementationRuntime"])
+
+    def test_each_missing_or_foreign_runtime_input_is_refused(self):
+        original = CONTRACT["implementationRuntime"]
+        for path in (*original, "Legacy.Maliev.ProcurementService.Data/Unreviewed.cs"):
+            with self.subTest(path=path):
+                changed = dict(original)
+                if path in changed:
+                    del changed[path]
+                else:
+                    changed[path] = "unreviewed"
+                with self.assertRaises(ValueError):
+                    prep.require_runtime_roster(changed)
+
+
 if __name__ == "__main__":
     unittest.main()

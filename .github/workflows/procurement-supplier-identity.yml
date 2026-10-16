@@ -1,0 +1,119 @@
+name: Supplier ignored identity baseline and candidate107
+
+on:
+  pull_request:
+    branches: [main, develop, staging]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: procurement-supplier-identity-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  supplier-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      LEGACY_DEPLOY_ENABLED: 'false'
+      TreatWarningsAsErrors: 'true'
+      BuildInParallel: 'false'
+      DOTNET_PROCESSOR_COUNT: '1'
+      DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER: '1'
+      MSBUILDDISABLENODEREUSE: '1'
+      UseSharedCompilation: 'false'
+      MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
+      VSTestCollect: XPlat Code Coverage
+      VSTestLogger: trx
+    steps:
+      - name: Check out candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check out immutable pre-change baseline
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService
+          ref: e8850889cb81b5bdf5bac5fdd1c55f2ed08cae8d
+          path: .supplier-identity-baseline
+          persist-credentials: false
+      - name: Check out accepted Defaults
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults
+          ref: ecb05cbbd68717e415f69df2ac488c1d323b1da3
+          path: .dependencies/Legacy.Maliev.ServiceDefaults
+          persist-credentials: false
+      - name: Check out CompatibilityContracts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts
+          ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
+          path: .dependencies/Legacy.Maliev.CompatibilityContracts
+          persist-credentials: false
+      - name: Set up accepted SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.x
+      - name: Bind identical original107 harnesses and reviewed production inputs
+        timeout-minutes: 2
+        run: python3 -B scripts/prepare-supplier-identity-baseline.py .supplier-identity-baseline docs/procurement-supplier-identity-contract.json
+      - name: Build immutable baseline before execution
+        timeout-minutes: 5
+        working-directory: .supplier-identity-baseline
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true
+          dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true
+      - name: Require source and evidence controls in normal and optimized Python
+        timeout-minutes: 3
+        run: |
+          python3 -B -m unittest discover -s scripts -p test_supplier_identity_results.py
+          python3 -O -B -m unittest discover -s scripts -p test_supplier_identity_results.py
+      - name: Execute baseline Id55 with owned resource observation
+        timeout-minutes: 6
+        run: python3 -B scripts/observe-supplier-identity-providers.py .supplier-identity-baseline supplier-identity-results/baseline-id baseline id
+      - name: Require exact Id baseline26 passes and29 causal failures
+        timeout-minutes: 2
+        run: python3 -B scripts/verify-supplier-identity-results.py supplier-identity-results/baseline-id baseline id "$(cat supplier-identity-results/baseline-id/test-exit-code.txt)"
+      - name: Execute baseline AddressId52 with owned resource observation
+        timeout-minutes: 6
+        run: python3 -B scripts/observe-supplier-identity-providers.py .supplier-identity-baseline supplier-identity-results/baseline-address baseline address
+      - name: Require exact AddressId baseline30 passes and22 causal failures
+        timeout-minutes: 2
+        run: python3 -B scripts/verify-supplier-identity-results.py supplier-identity-results/baseline-address baseline address "$(cat supplier-identity-results/baseline-address/test-exit-code.txt)"
+      - name: Build reviewed candidate before execution
+        timeout-minutes: 5
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true
+          dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true
+      - name: Execute candidate Id55 with owned resource observation
+        timeout-minutes: 6
+        run: python3 -B scripts/observe-supplier-identity-providers.py . supplier-identity-results/candidate-id candidate id
+      - name: Require exact Id55 passes and unchanged actual baseline identities
+        timeout-minutes: 2
+        run: python3 -B scripts/verify-supplier-identity-results.py supplier-identity-results/candidate-id candidate id "$(cat supplier-identity-results/candidate-id/test-exit-code.txt)" supplier-identity-results/baseline-id
+      - name: Execute candidate AddressId52 with owned resource observation
+        timeout-minutes: 6
+        run: python3 -B scripts/observe-supplier-identity-providers.py . supplier-identity-results/candidate-address candidate address
+      - name: Require exact AddressId52 passes and unchanged actual baseline identities
+        timeout-minutes: 2
+        run: python3 -B scripts/verify-supplier-identity-results.py supplier-identity-results/candidate-address candidate address "$(cat supplier-identity-results/candidate-address/test-exit-code.txt)" supplier-identity-results/baseline-address
+      - name: Require unchanged source and normal disposal proof
+        if: always()
+        timeout-minutes: 2
+        run: python3 -B scripts/prepare-supplier-identity-baseline.py .supplier-identity-baseline docs/procurement-supplier-identity-contract.json --verify-only
+      - name: Preserve isolated Supplier baseline and candidate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-supplier-identity-${{ github.sha }}
+          path: supplier-identity-results
+          if-no-files-found: error
+          retention-days: 7
