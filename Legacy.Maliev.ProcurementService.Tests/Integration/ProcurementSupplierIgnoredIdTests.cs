@@ -196,7 +196,7 @@ public sealed class ProcurementSupplierIgnoredIdTests(ProcurementRuntimeFixture 
         return update ? await client.PutAsync($"/Suppliers/{id}", content) : await client.PostAsync("/Suppliers", content);
     }
 
-    private static async Task<int> CreateControlAsync(HttpClient client)
+    private async Task<int> CreateControlAsync(HttpClient client)
     {
         using var response = await client.PostAsJsonAsync("/Suppliers", new UpsertSupplierRequest("Control", null, null, null, null, null, null, null));
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
