@@ -31,6 +31,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new PurchaseOrderHeaderRequestJsonConverter());
     options.JsonSerializerOptions.Converters.Add(new PurchaseOrderFileMetadataRequestJsonConverter());
+    options.JsonSerializerOptions.Converters.Add(new SupplierIgnoredIdJsonConverter());
     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     options.JsonSerializerOptions.PropertyNamingPolicy = null;
     options.JsonSerializerOptions.DictionaryKeyPolicy = null;
