@@ -1,0 +1,79 @@
+name: Supplier ignored identity compatibility
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supplier-ignored-identity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  supplier-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
+      LEGACY_DEPLOY_ENABLED: 'false'
+      DOTNET_PROCESSOR_COUNT: '2'
+    steps:
+      - name: Check out proposed supplier source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Check out exact ServiceDefaults
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults
+          ref: ecb05cbbd68717e415f69df2ac488c1d323b1da3
+          path: .dependencies/Legacy.Maliev.ServiceDefaults
+          persist-credentials: false
+      - name: Check out exact CompatibilityContracts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts
+          ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
+          path: .dependencies/Legacy.Maliev.CompatibilityContracts
+          persist-credentials: false
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.x
+      - name: Build supplier compatibility regression
+        timeout-minutes: 5
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true
+          dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true
+      - name: Execute supplier ignored identity regression
+        timeout-minutes: 8
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ProcurementSupplierIgnoredIdTests" --logger "trx;LogFileName=supplier-ignored-id.trx" --results-directory supplier-id-results
+      - name: Require all 55 passing supplier identity cases
+        run: |
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          root = ET.parse("supplier-id-results/supplier-ignored-id.trx").getroot()
+          ns = {"t": "http://microsoft.com/schemas/VisualStudio/TeamTest/2010"}
+          counters = root.find("./t:ResultSummary/t:Counters", ns)
+          expected = {"total": 55, "executed": 55, "passed": 55, "failed": 0, "notExecuted": 0}
+          rows = root.findall("./t:Results/t:UnitTestResult", ns)
+          if counters is None or any(int(counters.get(key, "-1")) != value for key, value in expected.items()):
+              raise SystemExit("Supplier identity counters must prove all 55 passes")
+          if len(rows) != 55 or any(row.get("outcome") != "Passed" for row in rows):
+              raise SystemExit("Supplier identity execution rows must prove all 55 passes")
+          PY
+      - name: Preserve supplier identity execution evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: supplier-ignored-identity-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: supplier-id-results
+          if-no-files-found: error
+          retention-days: 7

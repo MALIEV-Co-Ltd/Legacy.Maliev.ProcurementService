@@ -64,20 +64,6 @@ jobs:
           path: focused-workflow-results
           if-no-files-found: warn
           retention-days: 7
-      - name: Execute supplier ignored identity regression
-        timeout-minutes: 8
-        run: |
-          export GITHUB_ACTIONS=false
-          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ProcurementSupplierIgnoredIdTests" --logger "trx;LogFileName=supplier-ignored-id.trx" --results-directory supplier-id-results
-          python3 - <<'PY'
-          import xml.etree.ElementTree as ET
-          root = ET.parse("supplier-id-results/supplier-ignored-id.trx").getroot()
-          ns = {"t": "http://microsoft.com/schemas/VisualStudio/TeamTest/2010"}
-          counters = root.find("./t:ResultSummary/t:Counters", ns)
-          expected = {"total": 55, "executed": 55, "passed": 55, "failed": 0, "notExecuted": 0}
-          if counters is None or any(int(counters.get(key, "-1")) != value for key, value in expected.items()):
-              raise SystemExit("Supplier ignored identity regression did not execute all 55 cases successfully")
-          PY
       - name: Validate .NET solution
         uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8
         with:
@@ -90,8 +76,6 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: procurement-validation-${{ github.sha }}
-          path: |
-            runner-results
-            supplier-id-results
+          path: runner-results
           if-no-files-found: warn
           retention-days: 7
