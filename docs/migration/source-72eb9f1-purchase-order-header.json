@@ -1,0 +1,94 @@
+{
+  "schema": 1,
+  "status": "candidate; exact-head hosted validation required",
+  "issue": 63,
+  "owner": "Legacy.Maliev.ProcurementService",
+  "source": {
+    "sha": "72eb9f1949176392141951d35e6e06f7c30af4c2",
+    "subject": "update",
+    "parents": [
+      "023aa2f143fa5a8f557d72c1302b9add64792d6a"
+    ],
+    "paths": [
+      "Maliev.PurchaseOrderService.Api/Controllers/PurchaseOrdersController.cs",
+      "Maliev.PurchaseOrderService.Data/Database/PurchaseOrderContext/PurchaseOrder.cs",
+      "Maliev.PurchaseOrderService.Data/Database/PurchaseOrderContext/PurchaseOrderContext.cs",
+      "Maliev.PurchaseOrderService.Data/Maliev.PurchaseOrderService.Data.csproj",
+      "Maliev.PurchaseOrderService.Api/Maliev.PurchaseOrderService.Api.csproj",
+      "Maliev.PurchaseOrderService.Api/Startup.cs"
+    ]
+  },
+  "canonicalBase": "f84d493ea3cbfd9667d1a2e2a31fabebfc0bba93",
+  "disposition": {
+    "migratedCandidate": "17 consumed header scalar fields: ordered occurrence, typed primitive/null-ignore binding, OrdinalIgnoreCase admission and independent contacts",
+    "notClosedByThisSlice": [
+      "whole source SHA",
+      "ignored model/navigation/financial graph parsing",
+      "Comment/TrackingNumber",
+      "financial-stopped execution"
+    ],
+    "preserved": [
+      "response PascalCase and null omission",
+      "30 routes/query/sort/named-route contracts",
+      "auth and permissions",
+      "server ID and time",
+      "existing PostgreSQL storage/FK/concurrency/idempotency constraints",
+      "generic error privacy",
+      "SupplierAddress versus PurchaseOrderAddress separation"
+    ]
+  },
+  "implementation": [
+    {
+      "path": "Legacy.Maliev.ProcurementService.Api/Program.cs",
+      "preimage": "19d17888cd77004b42f290a3c0daad454dfd4b5e",
+      "postimage": "86173d6dcb8f95b1f94cae0969c5e4ffde1fe952",
+      "bytes": 3829,
+      "sha256": "d0cffdde9bf680775b44dafdb7cc37a5e41035727351e3fd1cf25829147f839e"
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs",
+      "preimage": null,
+      "postimage": "8d6d8eb2c232a76bae57d6419a69da37b687b36d",
+      "bytes": 7158,
+      "sha256": "d889daf8f8c8adeb10291476b592184f8a1551f170bc8a527888ff4f6c7bec0e"
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs",
+      "preimage": null,
+      "postimage": "390a8a1d13a0f5f1eca7fe3f07d519a74703a9bb",
+      "bytes": 22656,
+      "sha256": "21bf9c11c2fdbc2c2800bfeffce46e64df547af2f2bf29e6d0724d158a83f5b7"
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj",
+      "preimage": "1d196cdd5f9421fbf99623a59ca3c2db549706b8",
+      "postimage": "69b4ebf74c1a85d0949321360e81105db0f671a6",
+      "bytes": 1705,
+      "sha256": "d29189ed0f2caf97153aa534bbb3f708c18d300c428e72389b78310466726845"
+    }
+  ],
+  "oracle": {
+    "package": "test-only Newtonsoft.Json13.0.3 public typed reader/property collection",
+    "historicalEffectiveBinary": "unknown; not claimed"
+  },
+  "review": {
+    "sourceV2Seal": "e604c258d5593185438445d56cc4588bf53b4184fc8fccf1b34926ac7e3a63d3",
+    "sourceFindings": "C0/I0/M0 after OrdinalIgnoreCase and initialization cleanup corrections"
+  },
+  "validation": {
+    "localNative": "NOT RUN; owner-approved hosted-first lane",
+    "authoredFocusedCases": 135,
+    "hostedRequired": [
+      "Release zero warnings and errors",
+      "bounded baseline primitive regression control, source restoration and candidate rebuild",
+      "all135 focused result-definition-entry joins",
+      "both PostgreSQL18 fixture databases",
+      "affected/full suite, storage/concurrency/idempotency/OpenAPI",
+      "format/static/security/transitive dependency audit",
+      "unchanged raw generated-inclusive coverage",
+      "normal protected-main merge and fresh exact-main checks"
+    ]
+  },
+  "deployment": "disabled",
+  "dataChanges": "none"
+}

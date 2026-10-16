@@ -10,7 +10,7 @@ public sealed class WorkflowContractTests
     private const string ReviewedProducerVersion = "b27fbef06a3aa58c1f4fc0e75d7c70b32be76266";
     private const string HistoricalProcurementVersion = "c40fd246c17b738879c9345c6bcca44d96faf025";
     private const string PreviousProcurementVersion = "99049bab2c100ffdf6606bf11a2f50980c0cf3cf";
-    private const string CurrentProcurementVersion = "430d2cabbdaa712e3536a119abe88f9167021358";
+    private const string CurrentProcurementVersion = "abcbd59573d615642777a74564e348167016dc97";
     private static readonly string Workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "_build-and-test.yml"));
     private static readonly string ApiProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Api.csproj"));
@@ -29,13 +29,61 @@ public sealed class WorkflowContractTests
             ("name: Set up SDK for mandatory focused workflow checks", "name: Omitted mandatory SDK"),
             ("name: Build before mandatory focused workflow checks", "name: Execute mandatory focused workflow checks"),
             ("name: Execute mandatory focused workflow checks", "name: Execute mandatory focused workflow checks\n        if: false"),
-            ("FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload", "FullyQualifiedName~ReviewedImagePreload"),
+            ("FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload|FullyQualifiedName=Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_SatisfiesStructuralContract", "FullyQualifiedName~ReviewedImagePreload"),
             ("path: focused-workflow-results", "path: runner-results"),
             ("name: Require every focused workflow execution\n        if: always()", "name: Require every focused workflow execution\n        if: success()"),
             ("name: Preserve focused workflow evidence\n        if: always()", "name: Preserve focused workflow evidence\n        if: success()"),
             ("name: Build before mandatory focused workflow checks", "name: Build before mandatory focused workflow checks\n        continue-on-error: true"),
         })
             AssertMutationRejected(original, replacement);
+
+        for (var index = 8; index <= 14; index++)
+        {
+            var proofIndex = index;
+            AssertHeaderMutationRejected(steps => steps.Children.RemoveAt(proofIndex));
+            AssertHeaderMutationRejected(steps =>
+            {
+                var moved = steps.Children[proofIndex];
+                steps.Children.RemoveAt(proofIndex);
+                steps.Children.Insert(15, moved);
+            });
+            foreach (var key in new[] { "if", "continue-on-error", "env" })
+                AssertHeaderMutationRejected(steps =>
+                {
+                    var step = (YamlMappingNode)steps.Children[proofIndex];
+                    step.Children[new YamlScalarNode(key)] = new YamlScalarNode("false");
+                });
+            var yaml = new YamlStream();
+            yaml.Load(new StringReader(Workflow));
+            var jobs = (YamlMappingNode)ReadNode((YamlMappingNode)yaml.Documents.Single().RootNode, "jobs");
+            var originalSteps = (YamlSequenceNode)ReadNode((YamlMappingNode)ReadNode(jobs, "validate"), "steps");
+            var original = (YamlMappingNode)originalSteps.Children[proofIndex];
+            foreach (var entry in original.Children)
+            {
+                var outerKey = ((YamlScalarNode)entry.Key).Value!;
+                if (entry.Value is YamlMappingNode nested)
+                {
+                    foreach (var nestedEntry in nested.Children)
+                    {
+                        var innerKey = ((YamlScalarNode)nestedEntry.Key).Value!;
+                        AssertHeaderMutationRejected(steps =>
+                        {
+                            var step = (YamlMappingNode)steps.Children[proofIndex];
+                            var values = (YamlMappingNode)ReadNode(step, outerKey);
+                            var value = (YamlScalarNode)ReadNode(values, innerKey);
+                            value.Value += " drift";
+                        });
+                    }
+                }
+                else
+                    AssertHeaderMutationRejected(steps =>
+                    {
+                        var step = (YamlMappingNode)steps.Children[proofIndex];
+                        var value = (YamlScalarNode)ReadNode(step, outerKey);
+                        value.Value += " drift";
+                    });
+            }
+        }
     }
 
     [Theory]
@@ -294,6 +342,19 @@ public sealed class WorkflowContractTests
             throw new InvalidOperationException("Joined executions and failure evidence must always be checked/retained.");
     }
 
+
+    private static void AssertHeaderMutationRejected(Action<YamlSequenceNode> mutation)
+    {
+        var yaml = new YamlStream();
+        yaml.Load(new StringReader(Workflow));
+        var jobs = (YamlMappingNode)ReadNode((YamlMappingNode)yaml.Documents.Single().RootNode, "jobs");
+        var steps = (YamlSequenceNode)ReadNode((YamlMappingNode)ReadNode(jobs, "validate"), "steps");
+        mutation(steps);
+        using var writer = new StringWriter();
+        yaml.Save(writer, assignAnchors: false);
+        Assert.Throws<InvalidOperationException>(() => WorkflowContractValidator.Validate(writer.ToString()));
+    }
+
     private static void AssertMutationRejected(string original, string replacement)
     {
         Assert.Contains(original, Workflow, StringComparison.Ordinal);
@@ -381,6 +442,7 @@ internal static partial class WorkflowContractValidator
         var steps = RequireSequence(validateJob, "steps");
         if (!historicalFixture)
         {
+            steps = ValidateHeaderProofGroup(steps);
             ValidateFocusedWorkflowGroup(steps);
             steps = new YamlSequenceNode(steps.Children.Where((_, index) => index is < 3 or > 7));
         }
@@ -472,6 +534,81 @@ internal static partial class WorkflowContractValidator
             });
     }
 
+
+    private static YamlSequenceNode ValidateHeaderProofGroup(YamlSequenceNode steps)
+    {
+        if (steps.Children.Count != 18)
+            throw new InvalidOperationException("Primary validation must retain exactly seven ordered header proof steps.");
+        const string expectedSource = """
+            - name: Verify PO header RED guard using synthetic TRX
+              timeout-minutes: 1
+              run: python3 -B -m unittest discover -s scripts -p test_po_header_hosted_red.py
+            - name: Prove PO header baseline RED with exact nine-case joins
+              timeout-minutes: 12
+              run: python3 -B scripts/verify-po-header-hosted-red.py run
+            - name: Restore reviewed candidate and require Release zero warnings and errors
+              if: always()
+              timeout-minutes: 6
+              run: python3 -B scripts/verify-po-header-hosted-red.py rebuild
+            - name: Preserve isolated PO header RED and restoration evidence
+              if: always()
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+              with:
+                name: procurement-po-header-red-${{ github.sha }}
+                path: po-header-red-control-results
+                if-no-files-found: error
+                retention-days: 7
+            - name: Verify consumed purchase-order header binding through actual MVC
+              timeout-minutes: 10
+              env:
+                VSTestResultsDirectory: ${{ github.workspace }}/purchase-order-header-results
+              run: |
+                export GITHUB_ACTIONS=false
+                dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ProcurementPurchaseOrderHeaderBindingTests"
+            - name: Require all 135 header binding executions
+              if: always()
+              run: |
+                python3 -B scripts/verify-purchase-order-header-results.py --self-test
+                python3 -B scripts/verify-purchase-order-header-results.py purchase-order-header-results
+            - name: Preserve focused header binding evidence
+              if: always()
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+              with:
+                name: procurement-header-binding-${{ github.sha }}
+                path: purchase-order-header-results
+                if-no-files-found: error
+                retention-days: 7
+            """;
+        var expected = new YamlStream();
+        expected.Load(new StringReader(expectedSource));
+        var proof = (YamlSequenceNode)expected.Documents.Single().RootNode;
+        for (var index = 0; index < proof.Children.Count; index++)
+            RequireExactProofNode(steps.Children[index + 8], proof.Children[index]);
+        return new YamlSequenceNode(steps.Children.Where((_, index) => index is < 8 or > 14));
+    }
+
+    private static void RequireExactProofNode(YamlNode actual, YamlNode expected)
+    {
+        if (actual is YamlScalarNode scalar && expected is YamlScalarNode expectedScalar)
+        {
+            if (scalar.Value != expectedScalar.Value)
+                throw new InvalidOperationException("Header proof values and commands must remain exact.");
+            return;
+        }
+        if (actual is YamlMappingNode mapping && expected is YamlMappingNode expectedMapping
+            && mapping.Children.Count == expectedMapping.Children.Count)
+        {
+            foreach (var entry in expectedMapping.Children)
+            {
+                if (!mapping.Children.TryGetValue(entry.Key, out var value))
+                    throw new InvalidOperationException("Header proof properties must remain exact.");
+                RequireExactProofNode(value, entry.Value);
+            }
+            return;
+        }
+        throw new InvalidOperationException("Header proof structure must remain exact.");
+    }
+
     private static void ValidateFocusedWorkflowGroup(YamlSequenceNode steps)
     {
         if (steps.Children.Count != 11)
@@ -494,7 +631,7 @@ internal static partial class WorkflowContractValidator
         RequireStepKeys(testEnv, "VSTestResultsDirectory");
         RequireScalarValue(testEnv, "VSTestResultsDirectory", "${{ github.workspace }}/focused-workflow-results");
         RequireCommands(test, "export GITHUB_ACTIONS=false\n"
-            + "dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter \"FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload\"");
+            + "dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter \"FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload|FullyQualifiedName=Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_SatisfiesStructuralContract\"");
         var gate = RequireMapping(steps.Children[6], "focused gate");
         RequireStepKeys(gate, "name", "if", "run");
         RequireScalarValue(gate, "name", "Require every focused workflow execution");

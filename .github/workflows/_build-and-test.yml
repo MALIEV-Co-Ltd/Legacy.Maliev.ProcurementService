@@ -50,7 +50,7 @@ jobs:
           VSTestResultsDirectory: ${{ github.workspace }}/focused-workflow-results
         run: |
           export GITHUB_ACTIONS=false
-          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload"
+          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload|FullyQualifiedName=Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_SatisfiesStructuralContract"
       - name: Require every focused workflow execution
         if: always()
         run: |
@@ -63,6 +63,44 @@ jobs:
           name: procurement-focused-workflow-${{ github.sha }}
           path: focused-workflow-results
           if-no-files-found: warn
+          retention-days: 7
+      - name: Verify PO header RED guard using synthetic TRX
+        timeout-minutes: 1
+        run: python3 -B -m unittest discover -s scripts -p test_po_header_hosted_red.py
+      - name: Prove PO header baseline RED with exact nine-case joins
+        timeout-minutes: 12
+        run: python3 -B scripts/verify-po-header-hosted-red.py run
+      - name: Restore reviewed candidate and require Release zero warnings and errors
+        if: always()
+        timeout-minutes: 6
+        run: python3 -B scripts/verify-po-header-hosted-red.py rebuild
+      - name: Preserve isolated PO header RED and restoration evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-po-header-red-${{ github.sha }}
+          path: po-header-red-control-results
+          if-no-files-found: error
+          retention-days: 7
+      - name: Verify consumed purchase-order header binding through actual MVC
+        timeout-minutes: 10
+        env:
+          VSTestResultsDirectory: ${{ github.workspace }}/purchase-order-header-results
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ProcurementPurchaseOrderHeaderBindingTests"
+      - name: Require all 135 header binding executions
+        if: always()
+        run: |
+          python3 -B scripts/verify-purchase-order-header-results.py --self-test
+          python3 -B scripts/verify-purchase-order-header-results.py purchase-order-header-results
+      - name: Preserve focused header binding evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-header-binding-${{ github.sha }}
+          path: purchase-order-header-results
+          if-no-files-found: error
           retention-days: 7
       - name: Validate .NET solution
         uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8

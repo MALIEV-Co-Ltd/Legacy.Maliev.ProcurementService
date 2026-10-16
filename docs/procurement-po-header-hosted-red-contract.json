@@ -1,0 +1,192 @@
+{
+  "status": "SOURCE PROPOSAL; no helper, SDK or test executed locally",
+  "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests",
+  "methodName": "AllTextFields_MatchPinnedPublicTypedReader",
+  "filter": "FullyQualifiedName=Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader",
+  "baseline": {
+    "programPath": "Legacy.Maliev.ProcurementService.Api/Program.cs",
+    "programArtifact": "ci-source/procurement-po-header-red/Program.cs",
+    "programBlob": "19d17888cd77004b42f290a3c0daad454dfd4b5e",
+    "programSha256": "afa62156da9a55476326bd9bfe1295a345f6fed72bfaaa437a5427ca93cbfef7",
+    "absentPath": "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs"
+  },
+  "candidateBindings": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": "d0cffdde9bf680775b44dafdb7cc37a5e41035727351e3fd1cf25829147f839e",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": "d889daf8f8c8adeb10291476b592184f8a1551f170bc8a527888ff4f6c7bec0e",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": "444a71c704d94fc5d8e5b4eaa100d06b0fe3e5e2ff544b4af31e0e94b62d1c9e",
+    "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": "d29189ed0f2caf97153aa534bbb3f708c18d300c428e72389b78310466726845",
+    "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs": "cb0e10f9eecf82f64fb389929c0c53a82b8461d3af918572fece2f4dbe51d679"
+  },
+  "expectedCounters": {
+    "total": 9,
+    "executed": 9,
+    "passed": 4,
+    "failed": 5,
+    "error": 0,
+    "timeout": 0,
+    "aborted": 0,
+    "inconclusive": 0,
+    "passedButRunAborted": 0,
+    "notRunnable": 0,
+    "notExecuted": 0,
+    "disconnected": 0,
+    "warning": 0,
+    "completed": 0,
+    "inProgress": 0,
+    "pending": 0
+  },
+  "cases": [
+    {
+      "token": "null",
+      "expected": null,
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"null\", expected: null)",
+      "outcome": "Passed"
+    },
+    {
+      "token": "\"\"",
+      "expected": "",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"\\\"\\\"\", expected: \"\")",
+      "outcome": "Passed"
+    },
+    {
+      "token": "\" padded \"",
+      "expected": " padded ",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"\\\" padded \\\"\", expected: \" padded \")",
+      "outcome": "Passed"
+    },
+    {
+      "token": "\"ไทย\"",
+      "expected": "ไทย",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"\\\"ไทย\\\"\", expected: \"ไทย\")",
+      "outcome": "Passed"
+    },
+    {
+      "token": "-42",
+      "expected": "-42",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"-42\", expected: \"-42\")",
+      "outcome": "Failed",
+      "bindingFailure": {
+        "tokenType": "Number",
+        "bytePosition": 28
+      }
+    },
+    {
+      "token": "12.50",
+      "expected": "12.50",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"12.50\", expected: \"12.50\")",
+      "outcome": "Failed",
+      "bindingFailure": {
+        "tokenType": "Number",
+        "bytePosition": 30
+      }
+    },
+    {
+      "token": "1e2",
+      "expected": "1e2",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"1e2\", expected: \"1e2\")",
+      "outcome": "Failed",
+      "bindingFailure": {
+        "tokenType": "Number",
+        "bytePosition": 28
+      }
+    },
+    {
+      "token": "true",
+      "expected": "true",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"true\", expected: \"true\")",
+      "outcome": "Failed",
+      "bindingFailure": {
+        "tokenType": "True",
+        "bytePosition": 29
+      }
+    },
+    {
+      "token": "false",
+      "expected": "false",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"false\", expected: \"false\")",
+      "outcome": "Failed",
+      "bindingFailure": {
+        "tokenType": "False",
+        "bytePosition": 30
+      }
+    }
+  ],
+  "failureCategory": {
+    "outerType": "System.Text.Json.JsonException",
+    "requiredFrames": [
+      "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.Bind",
+      "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader"
+    ],
+    "excludedCategories": [
+      "fixture/initialization/cleanup failure",
+      "Newtonsoft reader failure",
+      "assertion mismatch",
+      "build/restore failure",
+      "zero tests",
+      "arbitrary nonzero exit"
+    ],
+    "outerTarget": "Legacy.Maliev.ProcurementService.Application.Models.UpsertPurchaseOrderRequest",
+    "propertyPath": "$.SupplierContactPerson",
+    "innerType": "System.InvalidOperationException",
+    "diagnosticInternalFrames": [
+      "System.Text.Json.Utf8JsonReader.GetString",
+      "System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString"
+    ],
+    "frameObligationScope": "Exact witnessed two-line exception chain plus anchored Bind and selected test remain mandatory; internal framework frames are diagnostic, not admission obligations"
+  },
+  "sources": [
+    "https://github.com/xunit/xunit/blob/v2-2.9.3/src/xunit.execution/Sdk/TypeUtility.cs#L187-L219",
+    "https://github.com/xunit/assert.xunit/blob/3603bc6083cfd3cba20071b840bf04c4380eec33/Sdk/ArgumentFormatter.cs#L376-L389"
+  ],
+  "historicalRuntime": "Not claimed; this is actual candidate tests/options with two-file bounded baseline substitution",
+  "xmlPolicy": {
+    "maxBytes": 16777216,
+    "readBytes": 16777217,
+    "encoding": "strict UTF-8 or UTF-8 BOM",
+    "forbidden": "DOCTYPE/ENTITY after decoding; NUL; foreign namespace",
+    "namespace": "http://microsoft.com/schemas/VisualStudio/TeamTest/2010",
+    "paths": "direct TestRun structure"
+  },
+  "reporterNoticePolicy": {
+    "count": 5,
+    "outcome": "Error",
+    "format": "[xUnit.net HH:MM:SS.ff]     ESCAPED_DISPLAY_NAME [FAIL]",
+    "spacesAfterPrefix": 5,
+    "escape": "CR LF TAB NUL only; no quote/backslash reescape",
+    "identity": "Bijection to validated five failed rows; no unknown/missing/duplicate notice, extra Text/Exception or other category",
+    "sources": [
+      {
+        "url": "https://github.com/xunit/xunit/blob/v3-3.0.1/src/xunit.v3.runner.common/Reporters/Builtin/DefaultRunnerReporterMessageHandler.cs",
+        "blob": "920ba6a3318b7e6bb468e4c461069ac56c3e47a4"
+      },
+      {
+        "url": "https://github.com/xunit/visualstudio.xunit/blob/3.1.4/src/xunit.runner.visualstudio/Utility/LoggerHelper.cs",
+        "blob": "905028b103ff80c4aff3b40d29ca8ea9cef6f205"
+      },
+      {
+        "url": "https://github.com/microsoft/vstest/blob/v17.14.1/src/Microsoft.TestPlatform.Extensions.TrxLogger/ObjectModel/RunInfo.cs",
+        "blob": "4c245f3e2e7276c2b8c0b04181ad7a0a28152545"
+      }
+    ]
+  },
+  "actualHostedBinderWitness": {
+    "head": "abcbd59573d615642777a74564e348167016dc97",
+    "hostedMerge": "7f7e21b3d9ccf2f471bc8dfbec457a44ab384170",
+    "runId": 38945556661,
+    "jobId": 117123654212,
+    "artifactId": 12065482180,
+    "artifactSha256": "bb5d907f5dc818cb289723f9a9eef00b29b5b4d21e2545f68663a317d780a237",
+    "scope": "Actual9/4P5F; guard rejected old System.String outer-target assumption; no135/full acceptance"
+  },
+  "actualHostedStackComparison": {
+    "previousHead": "abcbd59573d615642777a74564e348167016dc97",
+    "previousArtifactId": 12065482180,
+    "previousArtifactSha256": "bb5d907f5dc818cb289723f9a9eef00b29b5b4d21e2545f68663a317d780a237",
+    "head": "1b705ddf3fd58fcbb97bec6bb2ef5dd2a3232877",
+    "runId": 38948489894,
+    "jobId": 117133573691,
+    "artifactId": 12067023655,
+    "artifactSha256": "dae3d83732548841dc224d051248e37c44f009ee17b20e4a7544065229d1c9bf",
+    "observation": "Both5 retain exact core Bind/test sites and exception chains; GetString absent from all5 newer stacks; ExpectedString throw helper present. Cause not inferred."
+  }
+}

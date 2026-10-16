@@ -12,6 +12,7 @@ class RuntimeInputs(unittest.TestCase):
     def setUp(self):
         self.reviewed = {project + "/Input.cs": "100644 blob reviewed" for project in guard.PROJECTS}
         self.reviewed[guard.FIXTURE] = "100644 blob fixture"
+        self.reviewed[guard.JOIN_TEST_PROJECT] = "100644 blob join-test-project"
 
     def test_identical_reviewed_runtime_and_fixture_pass(self):
         guard.require_equal(dict(self.reviewed), self.reviewed)
@@ -40,6 +41,18 @@ class RuntimeInputs(unittest.TestCase):
         with self.assertRaises(ValueError):
             guard.require_equal(reviewed, reviewed)
 
+
+    def test_missing_join_test_project_is_rejected_even_when_equal(self):
+        reviewed = dict(self.reviewed)
+        del reviewed[guard.JOIN_TEST_PROJECT]
+        with self.assertRaises(ValueError):
+            guard.require_equal(reviewed, reviewed)
+
+    def test_changed_join_test_project_blob_is_rejected(self):
+        current = dict(self.reviewed)
+        current[guard.JOIN_TEST_PROJECT] = "100644 blob drift"
+        with self.assertRaises(ValueError):
+            guard.require_equal(current, self.reviewed)
 
     def test_frozen_literal_changes_keep_other_runtime_inputs(self):
         import json
