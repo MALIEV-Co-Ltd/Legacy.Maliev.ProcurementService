@@ -15,6 +15,15 @@ ACTUAL_CONVERTER_MESSAGE = "System.Text.Json.JsonException : The JSON value coul
 ACTUAL_CONVERTER_STACK = 'at Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry() in /fixture/ProcurementSupplierAddressScalarStringTests.cs:line 213\n at System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(JsonTokenType tokenType)\n at System.Text.Json.Serialization.Converters.StringConverter.Read(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options)'
 
 
+OBSERVED_CONVERTER_ROW = {
+    "outcome": "Failed",
+    "counters": "<Counters total=\"33\" executed=\"33\" passed=\"20\" failed=\"13\" error=\"0\" timeout=\"0\" aborted=\"0\" inconclusive=\"0\" passedButRunAborted=\"0\" notRunnable=\"0\" notExecuted=\"0\" disconnected=\"0\" warning=\"0\" completed=\"0\" inProgress=\"0\" pending=\"0\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+    "stack": "   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, Utf8JsonReader& reader, Exception ex)\n   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)\n   at System.Text.Json.Serialization.Metadata.JsonTypeInfo`1.Deserialize(Utf8JsonReader& reader, ReadStack& state)\n   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)\n   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)\n   at Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry() in /home/runner/work/Legacy.Maliev.ProcurementService/Legacy.Maliev.ProcurementService/.address-baseline/Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierAddressScalarStringTests.cs:line 213\n   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n----- Inner Stack Trace -----\n   at System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(JsonTokenType tokenType)\n   at System.Text.Json.Utf8JsonReader.GetString()\n   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)\n   at System.Text.Json.Serialization.JsonConverter`1.TryReadAsObject(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, Object& value)\n   at System.Text.Json.Serialization.Converters.LargeObjectWithParameterizedConstructorConverter`1.ReadAndCacheConstructorArgument(ReadStack& state, Utf8JsonReader& reader, JsonParameterInfo jsonParameterInfo)\n   at System.Text.Json.Serialization.Converters.ObjectWithParameterizedConstructorConverter`1.OnTryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value)\n   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)\n   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)",
+    "error": "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertSupplierAddressRequest. Path: $.Building | LineNumber: 0 | BytePositionInLine: 22.\n---- System.InvalidOperationException : Cannot get the value of a token type 'Number' as a string.",
+    "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry",
+    "path": "baseline/_runnervm8k3b6_2026-10-16_06_31_52_net10.0.trx"
+}
+
 class CausalEvidenceTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
@@ -77,6 +86,115 @@ class CausalEvidenceTests(unittest.TestCase):
             with self.subTest(before=before):
                 doc=self.fixture('baseline');doc.find('.//ErrorInfo/StackTrace').text=ACTUAL_CONVERTER_STACK.replace(before,after)
                 with self.assertRaises(ValueError):self.run_guard(doc,'baseline')
+
+    def observed_baseline(self):
+        doc = self.fixture('baseline')
+        row = next(x for x in doc.findall('./Results/UnitTestResult')
+                   if x.get('testName') == OBSERVED_CONVERTER_ROW['name'])
+        self.assertEqual(OBSERVED_CONVERTER_ROW['outcome'], row.get('outcome'))
+        error = row.find('./Output/ErrorInfo')
+        error.find('Message').text = OBSERVED_CONVERTER_ROW['error']
+        error.find('StackTrace').text = OBSERVED_CONVERTER_ROW['stack']
+        return doc, error
+
+    def test_observed_parameterized_string_stack_positive(self):
+        # Exact PII-free hosted row from38861609108/job116844927031; no JIT-cause claim.
+        doc, _ = self.observed_baseline()
+        proof = self.run_guard(doc, 'baseline')
+        self.assertEqual((20, 13, 0), (proof['passed'], proof['failed'], proof['skipped']))
+        self.assertFalse(proof['fullSuiteAcceptance'])
+        self.assertFalse(proof['providerDisposalAcceptance'])
+        self.assertFalse(proof['productionEnrollmentProven'])
+
+    def test_observed_wrong_caller_or_source_line_refused(self):
+        for before, after in [
+            ('ProcurementSupplierAddressScalarStringTests.Converter_', 'ForeignTests.Converter_'),
+            ('Legacy.Maliev.ProcurementService.Tests.Integration.', 'Foreign.Namespace.'),
+            ('Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry()', 'InitializeAsync()'),
+            ('ProcurementSupplierAddressScalarStringTests.cs:line 213', 'ForeignTests.cs:line 213'),
+            ('line 213', 'line 212'),
+            ('line 213', 'line 2130'),
+        ]:
+            with self.subTest(before=before, after=after):
+                doc, error = self.observed_baseline()
+                error.find('StackTrace').text = OBSERVED_CONVERTER_ROW['stack'].replace(before, after)
+                with self.assertRaises(ValueError):
+                    self.run_guard(doc, 'baseline')
+
+    def test_observed_wrong_error_token_path_or_position_refused(self):
+        for before, after in [
+            ('System.Text.Json.JsonException', 'System.IO.IOException'),
+            ('UpsertSupplierAddressRequest', 'UpsertPurchaseOrderRequest'),
+            ('$.Building', '$.CountryId'),
+            ('LineNumber: 0', 'LineNumber: 1'),
+            ('BytePositionInLine: 22', 'BytePositionInLine: 23'),
+            ('System.InvalidOperationException', 'System.IO.IOException'),
+            ("'Number'", "'StartObject'"),
+            ("'Number'", "'Boolean'"),
+            ('as a string.', 'as an integer.'),
+        ]:
+            with self.subTest(before=before, after=after):
+                doc, error = self.observed_baseline()
+                error.find('Message').text = OBSERVED_CONVERTER_ROW['error'].replace(before, after)
+                with self.assertRaises(ValueError):
+                    self.run_guard(doc, 'baseline')
+
+    def test_observed_requires_each_exact_typed_reader_frame(self):
+        frames = OBSERVED_CONVERTER_ROW['stack'].splitlines()
+        for index in range(len(frames)):
+            with self.subTest(removed_frame=index):
+                doc, error = self.observed_baseline()
+                error.find('StackTrace').text = '\n'.join(frames[:index] + frames[index + 1:])
+                with self.assertRaises(ValueError):
+                    self.run_guard(doc, 'baseline')
+        for before, after in [
+            ('Utf8JsonReader.GetString()', 'Utf8JsonReader.GetInt32()'),
+            ('JsonConverter`1.TryRead(', 'JsonConverter`1.Read('),
+            ('JsonConverter`1.TryReadAsObject(', 'ObjectConverter.Read('),
+            ('ReadAndCacheConstructorArgument(', 'ReadConstructorArguments('),
+            ('ObjectWithParameterizedConstructorConverter`1.OnTryRead(', 'ObjectDefaultConverter`1.OnTryRead('),
+            ('ThrowInvalidOperationException_ExpectedString(', 'ThrowJsonReaderException('),
+        ]:
+            with self.subTest(reader=before):
+                doc, error = self.observed_baseline()
+                error.find('StackTrace').text = OBSERVED_CONVERTER_ROW['stack'].replace(before, after)
+                with self.assertRaises(ValueError):
+                    self.run_guard(doc, 'baseline')
+
+    def test_observed_infrastructure_and_extra_frames_refused(self):
+        for stack in [
+            'at Testcontainers.Container.StartAsync()\n' + OBSERVED_CONVERTER_ROW['stack'],
+            OBSERVED_CONVERTER_ROW['stack'] + '\n at Fixture.InitializeAsync()',
+            OBSERVED_CONVERTER_ROW['stack'].replace('at System.Text.Json.Utf8JsonReader.GetString()', 'at Testcontainers.Container.StartAsync()'),
+        ]:
+            with self.subTest(stack=stack):
+                doc, error = self.observed_baseline()
+                error.find('StackTrace').text = stack
+                with self.assertRaises(ValueError):
+                    self.run_guard(doc, 'baseline')
+
+    def test_observed_alternative_keeps_outer_evidence_guards(self):
+        for mutation in ('roster', 'counters', 'execution', 'identity', 'entry', 'timestamp', 'coverage'):
+            with self.subTest(mutation=mutation):
+                doc, _ = self.observed_baseline()
+                if mutation == 'roster':
+                    results = doc.find('Results')
+                    results.remove(results[-1])
+                elif mutation == 'counters':
+                    doc.find('./ResultSummary/Counters').set('failed', '12')
+                elif mutation == 'execution':
+                    doc.find('./Results/UnitTestResult').set('executionId', 'INVALID')
+                elif mutation == 'identity':
+                    doc.find('./Results/UnitTestResult').set('testId', str(uuid.uuid4()))
+                elif mutation == 'entry':
+                    doc.find('./TestEntries/TestEntry').set('executionId', str(uuid.uuid4()))
+                elif mutation == 'timestamp':
+                    self.diagnostics(doc)[0].set('timestamp', '2026-10-16T06:31:52')
+                else:
+                    (self.root/'coverage.cobertura.xml').write_text('<coverage />')
+                with self.assertRaises(ValueError):
+                    self.run_guard(doc, 'baseline')
+
 
     def diagnostics(self, doc):
         infos = ET.SubElement(doc.find('ResultSummary'), 'RunInfos')

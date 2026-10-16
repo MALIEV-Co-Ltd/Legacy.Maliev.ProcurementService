@@ -27,6 +27,35 @@ def one(node, path, message):
     return nodes[0]
 
 
+def observed_parameterized_string_origin(stack):
+    # Exact observed hosted frame shape; no inference about why one frame is absent.
+    frames = tuple(line.strip() for line in stack.splitlines())
+    expected = (
+        "at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, Utf8JsonReader& reader, Exception ex)",
+        "at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)",
+        "at System.Text.Json.Serialization.Metadata.JsonTypeInfo`1.Deserialize(Utf8JsonReader& reader, ReadStack& state)",
+        "at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)",
+        "at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)",
+        None,
+        "at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)",
+        "at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)",
+        "----- Inner Stack Trace -----",
+        "at System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(JsonTokenType tokenType)",
+        "at System.Text.Json.Utf8JsonReader.GetString()",
+        "at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)",
+        "at System.Text.Json.Serialization.JsonConverter`1.TryReadAsObject(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, Object& value)",
+        "at System.Text.Json.Serialization.Converters.LargeObjectWithParameterizedConstructorConverter`1.ReadAndCacheConstructorArgument(ReadStack& state, Utf8JsonReader& reader, JsonParameterInfo jsonParameterInfo)",
+        "at System.Text.Json.Serialization.Converters.ObjectWithParameterizedConstructorConverter`1.OnTryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value)",
+        "at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)",
+        "at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)",
+    )
+    if len(frames) != len(expected):
+        return False
+    caller = r'at Legacy\.Maliev\.ProcurementService\.Tests\.Integration\.ProcurementSupplierAddressScalarStringTests\.Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry\(\) in [^\r\n]+[/\\]ProcurementSupplierAddressScalarStringTests\.cs:line 213'
+    return all(re.fullmatch(caller, actual) is not None if wanted is None else actual == wanted
+               for actual, wanted in zip(frames, expected))
+
+
 def verify(root, manifest, phase, exit_code):
     require(phase in ('baseline', 'candidate'), 'Unknown phase')
     require(exit_code == (1 if phase == 'baseline' else 0), 'Unexpected test process exit')
@@ -91,7 +120,7 @@ def verify(root, manifest, phase, exit_code):
             if case['method'] == 'Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry':
                 expected_message = "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertSupplierAddressRequest. Path: $.Building | LineNumber: 0 | BytePositionInLine: 22.\n---- System.InvalidOperationException : Cannot get the value of a token type 'Number' as a string."
                 require(message == expected_message, 'Expected frozen Building numeric-to-string deserialization failure')
-                require(re.search(re.escape('ProcurementSupplierAddressScalarStringTests.' + case['method'] + '()') + r' in .+ProcurementSupplierAddressScalarStringTests\.cs:line 213\b', stack) and 'System.Text.Json.Serialization.Converters.StringConverter.Read(' in stack and 'System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(' in stack, 'Expected frozen numeric string converter failure origin')
+                require(re.search(re.escape('ProcurementSupplierAddressScalarStringTests.' + case['method'] + '()') + r' in .+ProcurementSupplierAddressScalarStringTests\.cs:line 213\b', stack) and ('System.Text.Json.Serialization.Converters.StringConverter.Read(' in stack or observed_parameterized_string_origin(stack)) and 'System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(' in stack, 'Expected frozen numeric string converter failure origin')
             else:
                 expected_status = 'NotFound' if case['method'].startswith('MissingOwnerOrAddress_') else ('NoContent' if 'update: True' in case['name'] else 'Created')
                 require('Assert.Equal() Failure' in message and re.search(r'Expected:\s+' + expected_status + r'\b', message) and re.search(r'Actual:\s+BadRequest\b', message), 'Expected pre-business binding status assertion failure')
