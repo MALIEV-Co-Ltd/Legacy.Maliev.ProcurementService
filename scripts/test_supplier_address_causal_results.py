@@ -12,7 +12,8 @@ guard = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(guard)
 MANIFEST = json.loads((pathlib.Path(__file__).parents[1] / 'docs' / 'procurement-supplier-address-causal-contract.json').read_text(encoding='utf-8'))
 ACTUAL_CONVERTER_MESSAGE = "System.Text.Json.JsonException : The JSON value could not be converted to Legacy.Maliev.ProcurementService.Application.Models.UpsertSupplierAddressRequest. Path: $.Building | LineNumber: 0 | BytePositionInLine: 22.\n---- System.InvalidOperationException : Cannot get the value of a token type 'Number' as a string."
-ACTUAL_CONVERTER_STACK = 'at Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry() in /fixture/ProcurementSupplierAddressScalarStringTests.cs:line 213\n at System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(JsonTokenType tokenType)\n at System.Text.Json.Serialization.Converters.StringConverter.Read(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options)'
+ACTUAL_CONVERTER_STACK = "   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, Utf8JsonReader& reader, Exception ex)\n   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)\n   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)\n   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)\n   at Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry() in /home/runner/work/Legacy.Maliev.ProcurementService/Legacy.Maliev.ProcurementService/.address-baseline/Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierAddressScalarStringTests.cs:line 213\n   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n----- Inner Stack Trace -----\n   at System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(JsonTokenType tokenType)\n   at System.Text.Json.Serialization.Converters.StringConverter.Read(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options)\n   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)\n   at System.Text.Json.Serialization.JsonConverter`1.TryReadAsObject(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, Object& value)\n   at System.Text.Json.Serialization.Converters.LargeObjectWithParameterizedConstructorConverter`1.ReadAndCacheConstructorArgument(ReadStack& state, Utf8JsonReader& reader, JsonParameterInfo jsonParameterInfo)\n   at System.Text.Json.Serialization.Converters.ObjectWithParameterizedConstructorConverter`1.OnTryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value)\n   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)\n   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)"
+ACTUAL_MAIN_CONVERTER_STACK = "   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, Utf8JsonReader& reader, Exception ex)\n   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)\n   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)\n   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)\n   at Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry() in /home/runner/work/Legacy.Maliev.ProcurementService/Legacy.Maliev.ProcurementService/.address-baseline/Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierAddressScalarStringTests.cs:line 213\n   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n----- Inner Stack Trace -----\n   at System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(JsonTokenType tokenType)\n   at System.Text.Json.Utf8JsonReader.GetString()\n   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)\n   at System.Text.Json.Serialization.JsonConverter`1.TryReadAsObject(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, Object& value)\n   at System.Text.Json.Serialization.Converters.LargeObjectWithParameterizedConstructorConverter`1.ReadAndCacheConstructorArgument(ReadStack& state, Utf8JsonReader& reader, JsonParameterInfo jsonParameterInfo)\n   at System.Text.Json.Serialization.Converters.ObjectWithParameterizedConstructorConverter`1.OnTryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value)\n   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)"
 
 
 class CausalEvidenceTests(unittest.TestCase):
@@ -72,11 +73,60 @@ class CausalEvidenceTests(unittest.TestCase):
                 doc=self.fixture('baseline');doc.find('.//ErrorInfo/Message').text=ACTUAL_CONVERTER_MESSAGE.replace(before,after)
                 with self.assertRaises(ValueError):self.run_guard(doc,'baseline')
 
+    def test_authentic_main_baseline_numeric_string_failure(self):
+        doc=self.fixture('baseline')
+        doc.find('.//ErrorInfo/StackTrace').text=ACTUAL_MAIN_CONVERTER_STACK
+        self.assertEqual(13,self.run_guard(doc,'baseline')['failed'])
+
+    def test_framework_frames_are_diagnostic_in_both_observed_stacks(self):
+        for observed in (ACTUAL_CONVERTER_STACK, ACTUAL_MAIN_CONVERTER_STACK):
+            with self.subTest(observed=observed):
+                doc=self.fixture('baseline')
+                frame=next(line for line in observed.splitlines()
+                           if 'at Legacy.Maliev.ProcurementService.Tests.Integration.' in line)
+                doc.find('.//ErrorInfo/StackTrace').text=frame
+                self.assertEqual(13,self.run_guard(doc,'baseline')['failed'])
+
     def test_unrelated_converter_stack_refused(self):
-        for before,after in [('line 213','line 212'),('StringConverter.Read(','ObjectConverter.Read('),('ThrowInvalidOperationException_ExpectedString(','Fixture.InitializeAsync(')]:
-            with self.subTest(before=before):
-                doc=self.fixture('baseline');doc.find('.//ErrorInfo/StackTrace').text=ACTUAL_CONVERTER_STACK.replace(before,after)
-                with self.assertRaises(ValueError):self.run_guard(doc,'baseline')
+        for observed in (ACTUAL_CONVERTER_STACK, ACTUAL_MAIN_CONVERTER_STACK):
+            for before,after in [('line 213','line 212'),
+                                 ('line 213','line 2139'),
+                                 ('Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry()','ForeignConverter()'),
+                                 ('ProcurementSupplierAddressScalarStringTests.cs:line','Foreign.cs:line'),
+                                 ('ProcurementSupplierAddressScalarStringTests.cs:line','ForeignProcurementSupplierAddressScalarStringTests.cs:line'),
+                                 ('Legacy.Maliev.ProcurementService.Tests.Integration.','Foreign.Integration.')]:
+                with self.subTest(before=before, observed=observed):
+                    doc=self.fixture('baseline')
+                    doc.find('.//ErrorInfo/StackTrace').text=observed.replace(before,after)
+                    with self.assertRaises(ValueError):self.run_guard(doc,'baseline')
+
+    def test_missing_or_unanchored_user_conversion_frame_refused(self):
+        for observed in (ACTUAL_CONVERTER_STACK, ACTUAL_MAIN_CONVERTER_STACK):
+            frame=next(line for line in observed.splitlines()
+                       if 'at Legacy.Maliev.ProcurementService.Tests.Integration.' in line)
+            for stack in (observed.replace(frame,''), 'diagnostic: '+frame, frame+' foreign suffix', ''):
+                with self.subTest(stack=stack):
+                    doc=self.fixture('baseline')
+                    doc.find('.//ErrorInfo/StackTrace').text=stack
+                    with self.assertRaises(ValueError):self.run_guard(doc,'baseline')
+
+    def test_both_observed_stacks_require_the_exact_typed_chain_path_and_position(self):
+        for observed in (ACTUAL_CONVERTER_STACK, ACTUAL_MAIN_CONVERTER_STACK):
+            for before,after in [('System.Text.Json.JsonException','System.IO.IOException'),
+                                 ('BytePositionInLine: 22.','BytePositionInLine: 23.'),
+                                 ('LineNumber: 0','LineNumber: 1'),
+                                 ('$.Building','$.Address1'),
+                                 ("'Number'","'True'"),
+                                 ('---- System.InvalidOperationException','---- System.IO.IOException')]:
+                with self.subTest(before=before, observed=observed):
+                    doc=self.fixture('baseline')
+                    doc.find('.//ErrorInfo/StackTrace').text=observed
+                    doc.find('.//ErrorInfo/Message').text=ACTUAL_CONVERTER_MESSAGE.replace(before,after)
+                    with self.assertRaises(ValueError):self.run_guard(doc,'baseline')
+            doc=self.fixture('baseline')
+            doc.find('.//ErrorInfo/StackTrace').text=observed
+            doc.find('.//ErrorInfo/Message').text=ACTUAL_CONVERTER_MESSAGE.splitlines()[0]
+            with self.assertRaises(ValueError):self.run_guard(doc,'baseline')
 
     def diagnostics(self, doc):
         infos = ET.SubElement(doc.find('ResultSummary'), 'RunInfos')
