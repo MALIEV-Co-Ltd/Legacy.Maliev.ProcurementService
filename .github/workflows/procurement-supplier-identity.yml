@@ -69,6 +69,25 @@ jobs:
           if len(rows) != 55 or any(row.get("outcome") != "Passed" for row in rows):
               raise SystemExit("Supplier identity execution rows must prove all 55 passes")
           PY
+      - name: Execute supplier ignored address reference regression
+        timeout-minutes: 8
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ProcurementSupplierIgnoredAddressIdTests" --logger "trx;LogFileName=supplier-ignored-address-id.trx" --results-directory supplier-id-results
+      - name: Require all 52 passing supplier address reference cases
+        run: |
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          root = ET.parse("supplier-id-results/supplier-ignored-address-id.trx").getroot()
+          ns = {"t": "http://microsoft.com/schemas/VisualStudio/TeamTest/2010"}
+          counters = root.find("./t:ResultSummary/t:Counters", ns)
+          expected = {"total": 52, "executed": 52, "passed": 52, "failed": 0, "notExecuted": 0}
+          rows = root.findall("./t:Results/t:UnitTestResult", ns)
+          if counters is None or any(int(counters.get(key, "-1")) != value for key, value in expected.items()):
+              raise SystemExit("Supplier address reference counters must prove all 52 passes")
+          if len(rows) != 52 or any(row.get("outcome") != "Passed" for row in rows):
+              raise SystemExit("Supplier address reference execution rows must prove all 52 passes")
+          PY
       - name: Preserve supplier identity execution evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

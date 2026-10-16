@@ -5,7 +5,7 @@ using Legacy.Maliev.ProcurementService.Application.Models;
 
 namespace Legacy.Maliev.ProcurementService.Api.Serialization;
 
-/// <summary>Validates and discards the original supplier body's server-owned identity.</summary>
+/// <summary>Validates and discards the original supplier body's identity and address reference.</summary>
 public sealed class SupplierIgnoredIdJsonConverter : JsonConverter<UpsertSupplierRequest>
 {
     /// <inheritdoc />
@@ -21,7 +21,8 @@ public sealed class SupplierIgnoredIdJsonConverter : JsonConverter<UpsertSupplie
             writer.WriteStartObject();
             foreach (var property in document.RootElement.EnumerateObject())
             {
-                if (string.Equals(property.Name, "Id", comparison))
+                if (string.Equals(property.Name, "Id", comparison)
+                    || string.Equals(property.Name, "AddressId", comparison))
                 {
                     ValidateIgnoredId(property.Value);
                     continue;
