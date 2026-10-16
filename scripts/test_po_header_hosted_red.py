@@ -395,5 +395,69 @@ class OwnedCommandCleanupTests(unittest.TestCase):
             git.assert_not_called()
 
 
+class CandidateSourceCustodyTests(unittest.TestCase):
+    def sources(self):
+        root = MODULE_PATH.parent.parent
+        return {relative: (root / relative).read_bytes() for relative in CONTRACT["candidateBindings"]}
+
+    def test_current_binding_advance_preserves_original_header_witness(self):
+        program = CONTRACT["baseline"]["programPath"]
+        converter = "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs"
+        previous = CONTRACT["previousCandidateBindings"]
+        self.assertEqual(5, len(previous))
+        self.assertEqual(6, len(CONTRACT["candidateBindings"]))
+        self.assertNotEqual(previous[program], CONTRACT["candidateBindings"][program])
+        self.assertEqual({converter}, set(CONTRACT["candidateBindings"]) - set(previous))
+        for relative in previous:
+            if relative != program:
+                self.assertEqual(previous[relative], CONTRACT["candidateBindings"][relative])
+        self.assertEqual("19d17888cd77004b42f290a3c0daad454dfd4b5e", CONTRACT["baseline"]["programBlob"])
+        self.assertEqual("afa62156da9a55476326bd9bfe1295a345f6fed72bfaaa437a5427ca93cbfef7", CONTRACT["baseline"]["programSha256"])
+        sources = self.sources()
+        with mock.patch.object(RED, "git", side_effect=lambda root, command, binding: sources[binding.removeprefix("HEAD:")]):
+            self.assertEqual(sources, RED.candidate_sources(Path("."), CONTRACT))
+
+    def test_each_current_candidate_binding_drift_is_rejected(self):
+        sources = self.sources()
+        for relative in sources:
+            with self.subTest(relative=relative):
+                mutated = dict(sources)
+                mutated[relative] += b"source drift"
+                with mock.patch.object(RED, "git", side_effect=lambda root, command, binding: mutated[binding.removeprefix("HEAD:")]):
+                    with self.assertRaisesRegex(ValueError, "Reviewed candidate HEAD source changed"):
+                        RED.candidate_sources(Path("."), CONTRACT)
+
+    def test_restoration_checks_new_converter_and_all_other_retained_inputs(self):
+        sources = self.sources()
+        replaced = {CONTRACT["baseline"]["programPath"], CONTRACT["baseline"]["absentPath"]}
+        for changed in (None, *(relative for relative in sources if relative not in replaced)):
+            with self.subTest(changed=changed), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory).resolve()
+                evidence = root / "evidence"
+                evidence.mkdir()
+                for relative, data in sources.items():
+                    path = root / relative
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_bytes(data)
+                (root / CONTRACT["baseline"]["programPath"]).write_bytes(b"synthetic baseline replacement")
+                (root / CONTRACT["baseline"]["absentPath"]).unlink()
+                if changed is not None:
+                    (root / changed).write_bytes(sources[changed] + b"source drift")
+                with mock.patch.object(RED, "settle_command_groups") as settle, \
+                        mock.patch.object(RED, "git", side_effect=lambda root, *args: b"synthetic-head" if args == ("rev-parse", "HEAD") else b""):
+                    if changed is None:
+                        RED.restore(root, CONTRACT, sources, evidence, "synthetic-head")
+                        receipt = json.loads((evidence / "restoration.json").read_text(encoding="utf-8"))
+                        self.assertEqual(CONTRACT["candidateBindings"], receipt["restored"])
+                        self.assertTrue(receipt["trackedClean"])
+                        for relative, data in sources.items():
+                            self.assertEqual(data, (root / relative).read_bytes())
+                    else:
+                        with self.assertRaisesRegex(ValueError, "Candidate restoration mismatch"):
+                            RED.restore(root, CONTRACT, sources, evidence, "synthetic-head")
+                        self.assertFalse((evidence / "restoration.json").exists())
+                    settle.assert_called_once_with(evidence)
+
+
 if __name__ == "__main__":
     unittest.main()

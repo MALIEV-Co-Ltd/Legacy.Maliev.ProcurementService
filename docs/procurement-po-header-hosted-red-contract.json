@@ -11,7 +11,8 @@
     "absentPath": "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs"
   },
   "candidateBindings": {
-    "Legacy.Maliev.ProcurementService.Api/Program.cs": "d0cffdde9bf680775b44dafdb7cc37a5e41035727351e3fd1cf25829147f839e",
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": "1982a8b5655a6c3c038b70a2ab64fa41b9d46ef93d5566ee9215c0392b1d3226",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": "349d3a65d493710af63b4909da3f40933e9e0a99769498405daaeba2f71af7aa",
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": "d889daf8f8c8adeb10291476b592184f8a1551f170bc8a527888ff4f6c7bec0e",
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": "444a71c704d94fc5d8e5b4eaa100d06b0fe3e5e2ff544b4af31e0e94b62d1c9e",
     "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": "d29189ed0f2caf97153aa534bbb3f708c18d300c428e72389b78310466726845",
@@ -188,5 +189,25 @@
     "artifactId": 12067023655,
     "artifactSha256": "dae3d83732548841dc224d051248e37c44f009ee17b20e4a7544065229d1c9bf",
     "observation": "Both5 retain exact core Bind/test sites and exception chains; GetString absent from all5 newer stacks; ExpectedString throw helper present. Cause not inferred."
+  },
+  "previousCandidateBindings": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": "d0cffdde9bf680775b44dafdb7cc37a5e41035727351e3fd1cf25829147f839e",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": "d889daf8f8c8adeb10291476b592184f8a1551f170bc8a527888ff4f6c7bec0e",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": "444a71c704d94fc5d8e5b4eaa100d06b0fe3e5e2ff544b4af31e0e94b62d1c9e",
+    "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": "d29189ed0f2caf97153aa534bbb3f708c18d300c428e72389b78310466726845",
+    "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs": "cb0e10f9eecf82f64fb389929c0c53a82b8461d3af918572fece2f4dbe51d679"
+  },
+  "candidateBindingAdvance": {
+    "previousRuntimeCommit": "abcbd59573d615642777a74564e348167016dc97",
+    "acceptedBase": "0c0f622d07a03c7bd5dcbb731d3b8afa07b1fbc4",
+    "reviewedRuntimeCommit": "effa0ffbe129c29bbb5ac2a974b15eed63f07464",
+    "reviewedCandidateHead": "d329df3082bba3302fbf606b123e4277116fa70b",
+    "runtimeBlobs": {
+      "Legacy.Maliev.ProcurementService.Api/Program.cs": "d97961fce1c1e4240750f591cee1343ce426b39e",
+      "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": "b25c869f80f02d59e1d75549e74f87cd5776c61b"
+    },
+    "scope": "Current candidate adds only the reviewed file-metadata converter registration and converter source. Preserve the prior five bindings as historical custody; freeze all six current sources before RED and after restoration.",
+    "baseline": "Original Program asset/blob/hash, removed header-converter path, nine identities, exact typed failures and restoration/rebuild paths unchanged. Added file-metadata converter stays present and unregistered in original baseline Program.",
+    "nativeAcceptance": "NOT RUN on correction; fresh hosted nine-case RED, candidate restoration Release0W/E, header135, metadata16/108 and full/all required checks remain mandatory."
   }
 }
