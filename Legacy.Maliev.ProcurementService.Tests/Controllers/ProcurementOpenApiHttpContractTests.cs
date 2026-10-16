@@ -38,7 +38,7 @@ public sealed class ProcurementOpenApiHttpContractTests(ProcurementRuntimeFixtur
         return schema;
     }
 
-    private static void AssertPrimitiveSchema(JsonObject document, JsonObject schema, string expectedType, bool nullable, string? format = null)
+    private static void AssertPrimitiveSchema(JsonObject document, JsonObject schema, string[] expectedTypes, bool nullable, string? format = null)
     {
         schema = Resolve(document, schema);
         Assert.Null(schema["allOf"]);
@@ -48,7 +48,7 @@ public sealed class ProcurementOpenApiHttpContractTests(ProcurementRuntimeFixtur
             ? array.Select(value => value!.GetValue<string>()).ToHashSet(StringComparer.Ordinal)
             : new HashSet<string>(StringComparer.Ordinal) { schema["type"]!.GetValue<string>() };
         var acceptsNull = types.Remove("null") || schema["nullable"]?.GetValue<bool>() == true;
-        Assert.Equal(expectedType, Assert.Single(types));
+        Assert.Equal(expectedTypes.Order(StringComparer.Ordinal), types.Order(StringComparer.Ordinal));
         Assert.Equal(nullable, acceptsNull);
         Assert.Equal(format, schema["format"]?.GetValue<string>());
     }
@@ -147,14 +147,16 @@ public sealed class ProcurementOpenApiHttpContractTests(ProcurementRuntimeFixtur
         Assert.Equal("id", fileId["name"]!.GetValue<string>());
         Assert.Equal("path", fileId["in"]!.GetValue<string>());
         Assert.True(fileId["required"]!.GetValue<bool>());
-        AssertPrimitiveSchema(document, fileId["schema"]!.AsObject(), "integer", nullable: false, format: "int32");
+        AssertPrimitiveSchema(document, fileId["schema"]!.AsObject(), new[] { "integer" }, nullable: false, format: "int32");
         var fileRequest = Resolve(document, fileOperation["requestBody"]!["content"]!["application/json"]!["schema"]!.AsObject());
         Assert.Equal("object", fileRequest["type"]!.GetValue<string>());
         var fileProperties = fileRequest["properties"]!.AsObject();
         Assert.Equal(new[] { "Bucket", "ObjectName", "PurchaseOrderId" },
             fileProperties.Select(property => property.Key).Order(StringComparer.Ordinal));
-        AssertPrimitiveSchema(document, fileProperties["PurchaseOrderId"]!.AsObject(), "integer", nullable: true, format: "int32");
-        AssertPrimitiveSchema(document, fileProperties["Bucket"]!.AsObject(), "string", nullable: false);
-        AssertPrimitiveSchema(document, fileProperties["ObjectName"]!.AsObject(), "string", nullable: false);
+        var fileOwner = fileProperties["PurchaseOrderId"]!.AsObject();
+        AssertPrimitiveSchema(document, fileOwner, new[] { "integer", "string" }, nullable: true, format: "int32");
+        Assert.Equal(@"^-?(?:0|[1-9]\d*)$", fileOwner["pattern"]!.GetValue<string>());
+        AssertPrimitiveSchema(document, fileProperties["Bucket"]!.AsObject(), new[] { "string" }, nullable: false);
+        AssertPrimitiveSchema(document, fileProperties["ObjectName"]!.AsObject(), new[] { "string" }, nullable: false);
     }
 }
