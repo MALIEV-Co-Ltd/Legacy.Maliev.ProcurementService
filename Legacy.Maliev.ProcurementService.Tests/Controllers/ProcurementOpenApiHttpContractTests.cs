@@ -38,6 +38,21 @@ public sealed class ProcurementOpenApiHttpContractTests(ProcurementRuntimeFixtur
         return schema;
     }
 
+    private static void AssertPrimitiveSchema(JsonObject document, JsonObject schema, string[] expectedTypes, bool nullable, string? format = null)
+    {
+        schema = Resolve(document, schema);
+        Assert.Null(schema["allOf"]);
+        Assert.Null(schema["anyOf"]);
+        Assert.Null(schema["oneOf"]);
+        var types = schema["type"] is JsonArray array
+            ? array.Select(value => value!.GetValue<string>()).ToHashSet(StringComparer.Ordinal)
+            : new HashSet<string>(StringComparer.Ordinal) { schema["type"]!.GetValue<string>() };
+        var acceptsNull = types.Remove("null") || schema["nullable"]?.GetValue<bool>() == true;
+        Assert.Equal(expectedTypes.Order(StringComparer.Ordinal), types.Order(StringComparer.Ordinal));
+        Assert.Equal(nullable, acceptsNull);
+        Assert.Equal(format, schema["format"]?.GetValue<string>());
+    }
+
     [Fact]
     public async Task Production_DocumentationIsUnavailableAndSupplierReadRequiresAuthentication()
     {
@@ -126,5 +141,22 @@ public sealed class ProcurementOpenApiHttpContractTests(ProcurementRuntimeFixtur
         var item = Resolve(document, Path(document, "/purchaseorders/orderitems/{orderItemId}")["put"]!["requestBody"]!["content"]!["application/json"]!["schema"]!.AsObject())["properties"]!.AsObject();
         Assert.False(item.ContainsKey("Subtotal"));
         Assert.True(item.ContainsKey("UnitPrice"));
+
+        var fileOperation = Path(document, "/purchaseorders/files/{id}")["put"]!.AsObject();
+        var fileId = Assert.Single(fileOperation["parameters"]!.AsArray())!.AsObject();
+        Assert.Equal("id", fileId["name"]!.GetValue<string>());
+        Assert.Equal("path", fileId["in"]!.GetValue<string>());
+        Assert.True(fileId["required"]!.GetValue<bool>());
+        AssertPrimitiveSchema(document, fileId["schema"]!.AsObject(), new[] { "integer" }, nullable: false, format: "int32");
+        var fileRequest = Resolve(document, fileOperation["requestBody"]!["content"]!["application/json"]!["schema"]!.AsObject());
+        Assert.Equal("object", fileRequest["type"]!.GetValue<string>());
+        var fileProperties = fileRequest["properties"]!.AsObject();
+        Assert.Equal(new[] { "Bucket", "ObjectName", "PurchaseOrderId" },
+            fileProperties.Select(property => property.Key).Order(StringComparer.Ordinal));
+        var fileOwner = fileProperties["PurchaseOrderId"]!.AsObject();
+        AssertPrimitiveSchema(document, fileOwner, new[] { "integer", "string" }, nullable: true, format: "int32");
+        Assert.Equal(@"^-?(?:0|[1-9]\d*)$", fileOwner["pattern"]!.GetValue<string>());
+        AssertPrimitiveSchema(document, fileProperties["Bucket"]!.AsObject(), new[] { "string" }, nullable: false);
+        AssertPrimitiveSchema(document, fileProperties["ObjectName"]!.AsObject(), new[] { "string" }, nullable: false);
     }
 }

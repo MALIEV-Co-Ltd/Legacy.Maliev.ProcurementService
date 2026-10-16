@@ -163,5 +163,43 @@ class RuntimeInputs(unittest.TestCase):
                     guard.require_historical_graph(mutated)
 
 
+    def test_current_graph_rejects_address_header_witness_custody_drift(self):
+        import copy
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        for field in ("path", "sha256", "procurement"):
+            with self.subTest(field=field):
+                mutated = copy.deepcopy(manifest)
+                mutated["latestAcceptedPurchaseOrderAddressGraph"][field] = "drift"
+                with self.assertRaises(ValueError):
+                    guard.require_historical_graph(mutated)
+
+    def test_current_graph_rejects_address_header_witness_input_count_drift(self):
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        manifest["latestAcceptedPurchaseOrderAddressGraph"]["inputCount"] = 68
+        with self.assertRaises(ValueError):
+            guard.require_historical_graph(manifest)
+
+    def test_exact_successor_inventory_drift_is_rejected(self):
+        import copy
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        reviewed = guard.tracked_inputs(guard.ROOT)
+        for mutation in ("change", "remove", "add"):
+            with self.subTest(mutation=mutation):
+                mutated = copy.deepcopy(manifest)
+                inventory = mutated["intentionalSourceChanges"]["reviewedInputs"]
+                path = next(iter(inventory))
+                if mutation == "change":
+                    inventory[path] = "100644 blob drift"
+                elif mutation == "remove":
+                    del inventory[path]
+                else:
+                    inventory["Legacy.Maliev.ProcurementService.Api/Unreviewed.cs"] = "100644 blob added"
+                with self.assertRaises(ValueError):
+                    guard.require_source_change(reviewed, mutated)
+
+
 if __name__ == "__main__":
     unittest.main()
