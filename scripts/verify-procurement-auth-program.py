@@ -16,6 +16,7 @@ PREVIOUS_ACCEPTED_PATH = "tools/ProcurementAuthProgram.Tests/public-graph-child-
 PREVIOUS_ACCEPTED_SHA256 = "d4aab5b24027fb666b8571c67450c59cd6b188970b34818fa308b34e215edd1a"
 PROJECTS = tuple("Legacy.Maliev.ProcurementService." + part for part in ("Api", "Application", "Data", "Domain"))
 FIXTURE = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs"
+JOIN_TEST_PROJECT = "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj"
 PATTERNS = ("directory.build.*", "directory.packages.*", "global.json", "nuget.config", "*.slnx")
 
 
@@ -27,7 +28,7 @@ def tracked_inputs(repository):
             continue
         metadata, raw_path = record.split(b"\t", 1)
         path = raw_path.decode("utf-8")
-        if path == FIXTURE or any(path.startswith(project + "/") for project in PROJECTS) or (
+        if path in (FIXTURE, JOIN_TEST_PROJECT) or any(path.startswith(project + "/") for project in PROJECTS) or (
             "/" not in path and any(fnmatch.fnmatchcase(path.lower(), pattern) for pattern in PATTERNS)
         ):
             selected[path] = metadata.decode("ascii")
@@ -35,7 +36,7 @@ def tracked_inputs(repository):
 
 
 def require_equal(current, reviewed):
-    if current != reviewed or FIXTURE not in reviewed or any(
+    if current != reviewed or FIXTURE not in reviewed or JOIN_TEST_PROJECT not in reviewed or any(
         not any(path.startswith(project + "/") for path in reviewed) for project in PROJECTS
     ):
         raise ValueError("Runtime/build/public fixture drift requires a separately reviewed graph")
