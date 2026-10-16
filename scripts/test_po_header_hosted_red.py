@@ -41,7 +41,8 @@ class HostedRedTrxTests(unittest.TestCase):
                     category["outerType"] + " : The JSON value could not be converted to " + category["outerTarget"]
                     + ". Path: " + category["propertyPath"] + " | LineNumber: 0 | BytePositionInLine: " + str(expected["bytePosition"]) + ".\n"
                     + "---- " + category["innerType"] + " : Cannot get the value of a token type '" + expected["tokenType"] + "' as a string.")
-                bind, test, get_string = category["requiredFrames"]
+                bind, test = category["requiredFrames"]
+                get_string = category["diagnosticInternalFrames"][0]
                 ET.SubElement(error, "StackTrace").text = (
                     "   at " + bind + "(String payload) in /repo/HeaderTests.cs:line 309\n"
                     "   at " + test + "(String token, String expected) in /repo/HeaderTests.cs:line 84\n"
@@ -142,7 +143,8 @@ class HostedRedTrxTests(unittest.TestCase):
                     self.verify(doc)
 
     def test_required_methods_must_be_real_exact_frames(self):
-        first, second, get_string = CONTRACT["failureCategory"]["requiredFrames"]
+        first, second = CONTRACT["failureCategory"]["requiredFrames"]
+        get_string = CONTRACT["failureCategory"]["diagnosticInternalFrames"][0]
         for bad in (first + "(System.String value)", "text at " + first + "(System.String value)",
                     "   at " + first + "Spoof(System.String value)", "   at " + first + ".Other()",
                     "   at " + first + "(System.String value) arbitrary suffix"):
@@ -183,16 +185,30 @@ class HostedRedTrxTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     self.verify(doc)
 
-    def test_actual_string_reader_frame_is_required_without_spoof(self):
-        for mutation in ("missing", "suffix", "nonframe"):
-            with self.subTest(mutation=mutation):
+    def test_recorded_internal_stack_layouts_are_diagnostic_only(self):
+        bind, test = CONTRACT["failureCategory"]["requiredFrames"]
+        for internal in ("System.Text.Json.Utf8JsonReader.GetString()",
+                         "System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(JsonTokenType tokenType)", None):
+            with self.subTest(internal=internal):
                 doc = self.fixture()
-                node = doc.find(".//ErrorInfo/StackTrace")
-                frame = "   at System.Text.Json.Utf8JsonReader.GetString()"
-                replacement = "" if mutation == "missing" else frame.replace("GetString()", "GetStringSpoof()") if mutation == "suffix" else frame.lstrip().removeprefix("at ")
-                node.text = node.text.replace(frame, replacement)
-                with self.assertRaises(ValueError):
-                    self.verify(doc)
+                for node in doc.findall(".//ErrorInfo/StackTrace"):
+                    node.text = ("   at " + bind + "(String payload) in /repo/HeaderTests.cs:line 284\n"
+                                 "   at " + test + "(String token, String expected) in /repo/HeaderTests.cs:line 80")
+                    if internal is not None:
+                        node.text += "\n   at " + internal
+                self.verify(doc)
+
+    def test_both_core_binding_sites_are_mandatory_with_real_boundaries(self):
+        for site in CONTRACT["failureCategory"]["requiredFrames"]:
+            for mutation in ("missing", "suffix", "nonframe"):
+                with self.subTest(site=site, mutation=mutation):
+                    doc = self.fixture()
+                    node = doc.find(".//ErrorInfo/StackTrace")
+                    frame = next(line for line in node.text.splitlines() if line.lstrip().startswith("at " + site + "("))
+                    replacement = "" if mutation == "missing" else frame.replace(site, site + "Spoof") if mutation == "suffix" else frame.lstrip().removeprefix("at ")
+                    node.text = node.text.replace(frame, replacement)
+                    with self.assertRaises(ValueError):
+                        self.verify(doc)
 
     def test_utf8_and_utf8_bom_are_accepted(self):
         for prefix in (b"", b"\xef\xbb\xbf"):
