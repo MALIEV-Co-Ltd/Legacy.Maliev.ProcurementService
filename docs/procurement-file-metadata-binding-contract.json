@@ -729,7 +729,7 @@
   },
   "harness": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs",
-    "gitBlob": "7027574d3ab9a669d1cabef897c4525c842cd904",
+    "gitBlob": "f799a76a90dd7e823c76aa6763b0c45d5ae14309",
     "baselineOverlay": "Same test file only; no new converter file or Program change in immutable baseline"
   },
   "currentParentPolicy": "Unchanged;24 differential representation cases plus7 HTTP retention cases",

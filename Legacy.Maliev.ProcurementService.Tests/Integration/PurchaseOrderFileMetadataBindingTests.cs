@@ -467,7 +467,7 @@ public sealed class PurchaseOrderFileMetadataBindingTests(ProcurementRuntimeFixt
         })
             foreach (var table in boundary.Tables)
             {
-                var filter = excludeTarget && table == "PurchaseOrderFile" ? " WHERE \"Id\" <> 9100" : "";
+                var filter = excludeTarget && table == "PurchaseOrderFile" ? " WHERE \"ID\" <> 9100" : "";
                 var sql = $"SELECT COALESCE(jsonb_agg(to_jsonb(r) ORDER BY to_jsonb(r)::text)::text,'[]') AS \"Value\" FROM (SELECT * FROM public.\"{table}\"{filter}) r";
                 snapshots.Add(boundary.Context.GetType().Name + ":" + table + ":" + await boundary.Context.Database.SqlQueryRaw<string>(sql).SingleAsync(lifetime.Token));
             }
