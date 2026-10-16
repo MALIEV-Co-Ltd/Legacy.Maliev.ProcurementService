@@ -266,11 +266,14 @@ def read_trx(path):
     return doc, digest(raw)
 
 
-def binder_failure(message, stack, category):
-    first_line = message.splitlines()[0] if message else ""
-    outer = re.fullmatch(re.escape(category["outerType"]) + r"[ \t]*:[ \t]*(.*)", first_line)
-    require(outer is not None and category["messageFragment"] in outer.group(1),
-            "Failure is not the exact outer string-binding exception")
+def binder_failure(message, stack, category, expected_failure):
+    expected_outer = (category["outerType"] + " : The JSON value could not be converted to "
+                      + category["outerTarget"] + ". Path: " + category["propertyPath"]
+                      + " | LineNumber: 0 | BytePositionInLine: " + str(expected_failure["bytePosition"]) + ".")
+    expected_inner = ("---- " + category["innerType"]
+                      + " : Cannot get the value of a token type '" + expected_failure["tokenType"] + "' as a string.")
+    require(message.splitlines() == [expected_outer, expected_inner],
+            "Failure differs from the exact witnessed request/string-token exception chain")
     for method in category["requiredFrames"]:
         pattern = (r"^[ \t]*at[ \t]+" + re.escape(method)
                    + r"\([^()\r\n]*\)(?:[ \t]+in[ \t]+[^\r\n]+:line[ \t]+[0-9]+)?[ \t]*$")
@@ -324,6 +327,7 @@ def verify_trx(root, contract):
     definitions, entries, results = map(list, containers)
     require(len(definitions) == len(entries) == len(results) == 9, "Baseline identity cardinality")
     expected = {case["name"]: case["outcome"] for case in contract["cases"]}
+    expected_cases = {case["name"]: case for case in contract["cases"]}
     require(len(expected) == 9, "Baseline roster must have nine distinct exact names")
     defs = {guid(item.get("id")): item for item in definitions}
     joins = {guid(item.get("testId")): guid(item.get("executionId")) for item in entries}
@@ -349,7 +353,7 @@ def verify_trx(root, contract):
             message_node, stack_node = one(errors[0], "./t:Message"), one(errors[0], "./t:StackTrace")
             require(len(message_node) == len(stack_node) == 0, "Nested failure text is forbidden")
             category = contract["failureCategory"]
-            binder_failure(message_node.text or "", stack_node.text or "", category)
+            binder_failure(message_node.text or "", stack_node.text or "", category, expected_cases[name]["bindingFailure"])
             failures.append({"name": name, "testId": test_id, "executionId": execution,
                              "category": category["outerType"]})
         else:

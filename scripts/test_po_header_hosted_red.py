@@ -36,11 +36,16 @@ class HostedRedTrxTests(unittest.TestCase):
                 info = ET.SubElement(notices, "RunInfo", outcome="Error", computerName="synthetic", timestamp="2026-10-17T00:00:00Z")
                 ET.SubElement(info, "Text").text = "[xUnit.net 00:00:01.23]     " + case["name"] + " [FAIL]"
                 error = ET.SubElement(ET.SubElement(result, "Output"), "ErrorInfo")
-                ET.SubElement(error, "Message").text = "System.Text.Json.JsonException : The JSON value could not be converted to System.String."
-                bind, test = CONTRACT["failureCategory"]["requiredFrames"]
+                category, expected = CONTRACT["failureCategory"], case["bindingFailure"]
+                ET.SubElement(error, "Message").text = (
+                    category["outerType"] + " : The JSON value could not be converted to " + category["outerTarget"]
+                    + ". Path: " + category["propertyPath"] + " | LineNumber: 0 | BytePositionInLine: " + str(expected["bytePosition"]) + ".\n"
+                    + "---- " + category["innerType"] + " : Cannot get the value of a token type '" + expected["tokenType"] + "' as a string.")
+                bind, test, get_string = category["requiredFrames"]
                 ET.SubElement(error, "StackTrace").text = (
                     "   at " + bind + "(String payload) in /repo/HeaderTests.cs:line 309\n"
-                    "   at " + test + "(String token, String expected) in /repo/HeaderTests.cs:line 84")
+                    "   at " + test + "(String token, String expected) in /repo/HeaderTests.cs:line 84\n"
+                    "   at " + get_string + "()")
         return doc
 
     def verify(self, doc, extra=False):
@@ -131,26 +136,63 @@ class HostedRedTrxTests(unittest.TestCase):
                        "System.Text.Json.JsonException.Other", "prefix System.Text.Json.JsonException"):
             with self.subTest(prefix=prefix):
                 doc = self.fixture()
-                doc.find(".//ErrorInfo/Message").text = prefix + " : The JSON value could not be converted to System.String."
+                message = doc.find(".//ErrorInfo/Message")
+                message.text = message.text.replace(CONTRACT["failureCategory"]["outerType"], prefix, 1)
                 with self.assertRaises(ValueError):
                     self.verify(doc)
 
     def test_required_methods_must_be_real_exact_frames(self):
-        first, second = CONTRACT["failureCategory"]["requiredFrames"]
+        first, second, get_string = CONTRACT["failureCategory"]["requiredFrames"]
         for bad in (first + "(System.String value)", "text at " + first + "(System.String value)",
                     "   at " + first + "Spoof(System.String value)", "   at " + first + ".Other()",
                     "   at " + first + "(System.String value) arbitrary suffix"):
             with self.subTest(frame=bad):
                 doc = self.fixture()
-                doc.find(".//ErrorInfo/StackTrace").text = bad + "\n   at " + second + "(System.String token, System.String expected)"
+                doc.find(".//ErrorInfo/StackTrace").text = bad + "\n   at " + second + "(System.String token, System.String expected)\n   at " + get_string + "()"
                 with self.assertRaises(ValueError):
                     self.verify(doc)
 
     def test_real_frames_without_source_suffix_are_accepted(self):
         doc = self.fixture()
         for stack in doc.findall(".//ErrorInfo/StackTrace"):
-            stack.text = "\n".join("   at " + frame + "(System.String value)" for frame in CONTRACT["failureCategory"]["requiredFrames"])
+            stack.text = "\n".join("   at " + frame + ("()" if frame.endswith(".GetString") else "(System.String value)")
+                                   for frame in CONTRACT["failureCategory"]["requiredFrames"])
         self.verify(doc)
+
+    def test_actual_wrapper_rejects_wrong_dto_property_token_or_inner_chain(self):
+        for mutation in ("dto", "property", "token", "position", "line", "inner-type", "missing-inner", "extra-line"):
+            with self.subTest(mutation=mutation):
+                doc = self.fixture()
+                node = doc.find(".//ErrorInfo/Message")
+                if mutation == "dto":
+                    node.text = node.text.replace(CONTRACT["failureCategory"]["outerTarget"], "System.String")
+                elif mutation == "property":
+                    node.text = node.text.replace("$.SupplierContactPerson", "$.Notes")
+                elif mutation == "token":
+                    node.text = node.text.replace("'Number'", "'True'")
+                elif mutation == "position":
+                    node.text = node.text.replace("BytePositionInLine: 28.", "BytePositionInLine: 29.")
+                elif mutation == "line":
+                    node.text = node.text.replace("LineNumber: 0", "LineNumber: 1")
+                elif mutation == "inner-type":
+                    node.text = node.text.replace("System.InvalidOperationException", "System.InvalidOperationExceptionSpoof")
+                elif mutation == "missing-inner":
+                    node.text = node.text.splitlines()[0]
+                else:
+                    node.text += "\nextra exception"
+                with self.assertRaises(ValueError):
+                    self.verify(doc)
+
+    def test_actual_string_reader_frame_is_required_without_spoof(self):
+        for mutation in ("missing", "suffix", "nonframe"):
+            with self.subTest(mutation=mutation):
+                doc = self.fixture()
+                node = doc.find(".//ErrorInfo/StackTrace")
+                frame = "   at System.Text.Json.Utf8JsonReader.GetString()"
+                replacement = "" if mutation == "missing" else frame.replace("GetString()", "GetStringSpoof()") if mutation == "suffix" else frame.lstrip().removeprefix("at ")
+                node.text = node.text.replace(frame, replacement)
+                with self.assertRaises(ValueError):
+                    self.verify(doc)
 
     def test_utf8_and_utf8_bom_are_accepted(self):
         for prefix in (b"", b"\xef\xbb\xbf"):

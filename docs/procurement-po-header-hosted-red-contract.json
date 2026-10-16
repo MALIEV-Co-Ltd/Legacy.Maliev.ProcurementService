@@ -13,7 +13,7 @@
   "candidateBindings": {
     "Legacy.Maliev.ProcurementService.Api/Program.cs": "d0cffdde9bf680775b44dafdb7cc37a5e41035727351e3fd1cf25829147f839e",
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": "d889daf8f8c8adeb10291476b592184f8a1551f170bc8a527888ff4f6c7bec0e",
-    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": "21bf9c11c2fdbc2c2800bfeffce46e64df547af2f2bf29e6d0724d158a83f5b7",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": "444a71c704d94fc5d8e5b4eaa100d06b0fe3e5e2ff544b4af31e0e94b62d1c9e",
     "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": "d29189ed0f2caf97153aa534bbb3f708c18d300c428e72389b78310466726845",
     "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs": "cb0e10f9eecf82f64fb389929c0c53a82b8461d3af918572fece2f4dbe51d679"
   },
@@ -64,39 +64,59 @@
       "token": "-42",
       "expected": "-42",
       "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"-42\", expected: \"-42\")",
-      "outcome": "Failed"
+      "outcome": "Failed",
+      "bindingFailure": {
+        "tokenType": "Number",
+        "bytePosition": 28
+      }
     },
     {
       "token": "12.50",
       "expected": "12.50",
       "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"12.50\", expected: \"12.50\")",
-      "outcome": "Failed"
+      "outcome": "Failed",
+      "bindingFailure": {
+        "tokenType": "Number",
+        "bytePosition": 30
+      }
     },
     {
       "token": "1e2",
       "expected": "1e2",
       "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"1e2\", expected: \"1e2\")",
-      "outcome": "Failed"
+      "outcome": "Failed",
+      "bindingFailure": {
+        "tokenType": "Number",
+        "bytePosition": 28
+      }
     },
     {
       "token": "true",
       "expected": "true",
       "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"true\", expected: \"true\")",
-      "outcome": "Failed"
+      "outcome": "Failed",
+      "bindingFailure": {
+        "tokenType": "True",
+        "bytePosition": 29
+      }
     },
     {
       "token": "false",
       "expected": "false",
       "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"false\", expected: \"false\")",
-      "outcome": "Failed"
+      "outcome": "Failed",
+      "bindingFailure": {
+        "tokenType": "False",
+        "bytePosition": 30
+      }
     }
   ],
   "failureCategory": {
     "outerType": "System.Text.Json.JsonException",
-    "messageFragment": "could not be converted to System.String",
     "requiredFrames": [
       "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.Bind",
-      "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader"
+      "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader",
+      "System.Text.Json.Utf8JsonReader.GetString"
     ],
     "excludedCategories": [
       "fixture/initialization/cleanup failure",
@@ -105,7 +125,10 @@
       "build/restore failure",
       "zero tests",
       "arbitrary nonzero exit"
-    ]
+    ],
+    "outerTarget": "Legacy.Maliev.ProcurementService.Application.Models.UpsertPurchaseOrderRequest",
+    "propertyPath": "$.SupplierContactPerson",
+    "innerType": "System.InvalidOperationException"
   },
   "sources": [
     "https://github.com/xunit/xunit/blob/v2-2.9.3/src/xunit.execution/Sdk/TypeUtility.cs#L187-L219",
@@ -141,5 +164,14 @@
         "blob": "4c245f3e2e7276c2b8c0b04181ad7a0a28152545"
       }
     ]
+  },
+  "actualHostedBinderWitness": {
+    "head": "abcbd59573d615642777a74564e348167016dc97",
+    "hostedMerge": "7f7e21b3d9ccf2f471bc8dfbec457a44ab384170",
+    "runId": 38945556661,
+    "jobId": 117123654212,
+    "artifactId": 12065482180,
+    "artifactSha256": "bb5d907f5dc818cb289723f9a9eef00b29b5b4d21e2545f68663a317d780a237",
+    "scope": "Actual9/4P5F; guard rejected old System.String outer-target assumption; no135/full acceptance"
   }
 }
