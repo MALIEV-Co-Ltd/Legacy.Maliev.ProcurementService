@@ -1,0 +1,145 @@
+{
+  "status": "SOURCE PROPOSAL; no helper, SDK or test executed locally",
+  "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests",
+  "methodName": "AllTextFields_MatchPinnedPublicTypedReader",
+  "filter": "FullyQualifiedName=Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader",
+  "baseline": {
+    "programPath": "Legacy.Maliev.ProcurementService.Api/Program.cs",
+    "programArtifact": "ci-source/procurement-po-header-red/Program.cs",
+    "programBlob": "19d17888cd77004b42f290a3c0daad454dfd4b5e",
+    "programSha256": "afa62156da9a55476326bd9bfe1295a345f6fed72bfaaa437a5427ca93cbfef7",
+    "absentPath": "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs"
+  },
+  "candidateBindings": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": "d0cffdde9bf680775b44dafdb7cc37a5e41035727351e3fd1cf25829147f839e",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": "d889daf8f8c8adeb10291476b592184f8a1551f170bc8a527888ff4f6c7bec0e",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": "21bf9c11c2fdbc2c2800bfeffce46e64df547af2f2bf29e6d0724d158a83f5b7",
+    "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": "d29189ed0f2caf97153aa534bbb3f708c18d300c428e72389b78310466726845",
+    "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs": "cb0e10f9eecf82f64fb389929c0c53a82b8461d3af918572fece2f4dbe51d679"
+  },
+  "expectedCounters": {
+    "total": 9,
+    "executed": 9,
+    "passed": 4,
+    "failed": 5,
+    "error": 0,
+    "timeout": 0,
+    "aborted": 0,
+    "inconclusive": 0,
+    "passedButRunAborted": 0,
+    "notRunnable": 0,
+    "notExecuted": 0,
+    "disconnected": 0,
+    "warning": 0,
+    "completed": 0,
+    "inProgress": 0,
+    "pending": 0
+  },
+  "cases": [
+    {
+      "token": "null",
+      "expected": null,
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"null\", expected: null)",
+      "outcome": "Passed"
+    },
+    {
+      "token": "\"\"",
+      "expected": "",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"\\\"\\\"\", expected: \"\")",
+      "outcome": "Passed"
+    },
+    {
+      "token": "\" padded \"",
+      "expected": " padded ",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"\\\" padded \\\"\", expected: \" padded \")",
+      "outcome": "Passed"
+    },
+    {
+      "token": "\"ไทย\"",
+      "expected": "ไทย",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"\\\"ไทย\\\"\", expected: \"ไทย\")",
+      "outcome": "Passed"
+    },
+    {
+      "token": "-42",
+      "expected": "-42",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"-42\", expected: \"-42\")",
+      "outcome": "Failed"
+    },
+    {
+      "token": "12.50",
+      "expected": "12.50",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"12.50\", expected: \"12.50\")",
+      "outcome": "Failed"
+    },
+    {
+      "token": "1e2",
+      "expected": "1e2",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"1e2\", expected: \"1e2\")",
+      "outcome": "Failed"
+    },
+    {
+      "token": "true",
+      "expected": "true",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"true\", expected: \"true\")",
+      "outcome": "Failed"
+    },
+    {
+      "token": "false",
+      "expected": "false",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader(token: \"false\", expected: \"false\")",
+      "outcome": "Failed"
+    }
+  ],
+  "failureCategory": {
+    "outerType": "System.Text.Json.JsonException",
+    "messageFragment": "could not be converted to System.String",
+    "requiredFrames": [
+      "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.Bind",
+      "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementPurchaseOrderHeaderBindingTests.AllTextFields_MatchPinnedPublicTypedReader"
+    ],
+    "excludedCategories": [
+      "fixture/initialization/cleanup failure",
+      "Newtonsoft reader failure",
+      "assertion mismatch",
+      "build/restore failure",
+      "zero tests",
+      "arbitrary nonzero exit"
+    ]
+  },
+  "sources": [
+    "https://github.com/xunit/xunit/blob/v2-2.9.3/src/xunit.execution/Sdk/TypeUtility.cs#L187-L219",
+    "https://github.com/xunit/assert.xunit/blob/3603bc6083cfd3cba20071b840bf04c4380eec33/Sdk/ArgumentFormatter.cs#L376-L389"
+  ],
+  "historicalRuntime": "Not claimed; this is actual candidate tests/options with two-file bounded baseline substitution",
+  "xmlPolicy": {
+    "maxBytes": 16777216,
+    "readBytes": 16777217,
+    "encoding": "strict UTF-8 or UTF-8 BOM",
+    "forbidden": "DOCTYPE/ENTITY after decoding; NUL; foreign namespace",
+    "namespace": "http://microsoft.com/schemas/VisualStudio/TeamTest/2010",
+    "paths": "direct TestRun structure"
+  },
+  "reporterNoticePolicy": {
+    "count": 5,
+    "outcome": "Error",
+    "format": "[xUnit.net HH:MM:SS.ff]     ESCAPED_DISPLAY_NAME [FAIL]",
+    "spacesAfterPrefix": 5,
+    "escape": "CR LF TAB NUL only; no quote/backslash reescape",
+    "identity": "Bijection to validated five failed rows; no unknown/missing/duplicate notice, extra Text/Exception or other category",
+    "sources": [
+      {
+        "url": "https://github.com/xunit/xunit/blob/v3-3.0.1/src/xunit.v3.runner.common/Reporters/Builtin/DefaultRunnerReporterMessageHandler.cs",
+        "blob": "920ba6a3318b7e6bb468e4c461069ac56c3e47a4"
+      },
+      {
+        "url": "https://github.com/xunit/visualstudio.xunit/blob/3.1.4/src/xunit.runner.visualstudio/Utility/LoggerHelper.cs",
+        "blob": "905028b103ff80c4aff3b40d29ca8ea9cef6f205"
+      },
+      {
+        "url": "https://github.com/microsoft/vstest/blob/v17.14.1/src/Microsoft.TestPlatform.Extensions.TrxLogger/ObjectModel/RunInfo.cs",
+        "blob": "4c245f3e2e7276c2b8c0b04181ad7a0a28152545"
+      }
+    ]
+  }
+}
