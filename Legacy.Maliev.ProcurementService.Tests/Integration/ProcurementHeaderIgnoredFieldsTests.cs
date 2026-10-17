@@ -72,21 +72,21 @@ public sealed class ProcurementHeaderIgnoredFieldsTests(ProcurementRuntimeFixtur
             .SelectMany(token => new[] { new object[] { false, field, token }, new object[] { true, field, token } }));
     public static IEnumerable<object[]> ValidFields => Cross(true);
     public static IEnumerable<object[]> InvalidFields => Cross(false);
-    public static IEnumerable<object[]> DuplicateFields => Fields.SelectMany(field => new[] { false, true }.SelectMany(update => new[]
+    public static IEnumerable<object[]> DuplicateFields => Fields.SelectMany(propertyName => new[] { false, true }.SelectMany(update => new[]
     {
-        new object[] { update, field, "bad_first" },
-        new object[] { update, field, "bad_last" },
-        new object[] { update, field, "bad_scalar_first" },
-        new object[] { update, field, "bad_scalar_last" },
-        new object[] { update, field, "null_last" },
-        new object[] { update, field, "null_first" },
+        new object[] { update, propertyName, "bad_first" },
+        new object[] { update, propertyName, "bad_last" },
+        new object[] { update, propertyName, "bad_scalar_first" },
+        new object[] { update, propertyName, "bad_scalar_last" },
+        new object[] { update, propertyName, "null_last" },
+        new object[] { update, propertyName, "null_first" },
     }));
-    public static IEnumerable<object[]> DeniedFields => Fields.SelectMany(field => new[] { false, true }.SelectMany(update => new[]
+    public static IEnumerable<object[]> DeniedFields => Fields.SelectMany(propertyName => new[] { false, true }.SelectMany(update => new[]
     {
-        new object[] { update, field, false }, new object[] { update, field, true },
+        new object[] { update, propertyName, false }, new object[] { update, propertyName, true },
     }));
-    public static IEnumerable<object[]> MissingFields => Fields.Select(field => new object[] { field });
-    public static IEnumerable<object[]> MalformedFields => Fields.SelectMany(field => new[] { new object[] { field, false }, new object[] { field, true } });
+    public static IEnumerable<object[]> MissingFields => Fields.Select(propertyName => new object[] { propertyName });
+    public static IEnumerable<object[]> MalformedFields => Fields.SelectMany(propertyName => new[] { new object[] { propertyName, false }, new object[] { propertyName, true } });
 
     [Theory]
     [MemberData(nameof(ValidFields))]
