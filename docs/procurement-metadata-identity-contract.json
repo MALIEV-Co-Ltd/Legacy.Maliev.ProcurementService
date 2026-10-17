@@ -1706,7 +1706,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-metadata-identity-baseline.py": {
-      "gitBlob": "aa8ec1a0705d9756c490606012734b0dc2ac0198"
+      "gitBlob": "a31ae1a1167efdb69297274c044c29b966ed027e"
     },
     "scripts/verify-metadata-identity-results.py": {
       "gitBlob": "a1cb8d97044e6c4aa9da33549e967551074b616d"
@@ -1715,7 +1715,7 @@
       "gitBlob": "bdd2544a6ff844d6500512db9ac255192def30fb"
     },
     "scripts/test_metadata_identity_results.py": {
-      "gitBlob": "a6829cf378a094dae150bef94cee58f6e0729cc5"
+      "gitBlob": "7e8032e37fd577f0269c152487e9fcdb187bca64"
     },
     "scripts/require-metadata-identity-admission.py": {
       "gitBlob": "0c91e5b94fa2ddaeb5e602ebfa68e242efd81a7a"
@@ -1726,7 +1726,7 @@
   },
   "authEnrollmentTestBinding": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs",
-    "gitBlob": "ca20dc9a5a14b1d73d27dcb9060fd6ac91072a58"
+    "gitBlob": "d3a4eb47069a67fe6b9fa23ee93c8672f8de7304"
   },
   "candidateBoundaryHarness": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Controllers/ProcurementOpenApiHttpContractTests.cs",
@@ -1773,8 +1773,11 @@
   },
   "supersededUnpublishedDesign": {
     "producer": "2ab0dc07909a8b690597b54262498afb1b0da5f3",
-    "authPacket": "b06528e31494a72f0752e8a853b3b888d4d91a80",
-    "status": "HOLD; never publish/reuse Auth pin; Root must create fresh reviewed producer"
+    "authPacket": {
+      "gitBlob": "b06528e31494a72f0752e8a853b3b888d4d91a80"
+    },
+    "status": "HOLD; never publish/reuse Auth pin; Root must create fresh reviewed producer",
+    "bindingFormat": "git-blob-record-v1"
   },
   "analyzerCorrection": {
     "rule": "xUnit2031",

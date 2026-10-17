@@ -633,5 +633,31 @@ class NewSourceEnvelopeControls(unittest.TestCase):
         self.assertNotIn("TypeInfoResolverChain",raw)
         self.assertNotIn('GetProperty("Inner")',raw)
 
+class RetiredPublicSourceCustodyControls(unittest.TestCase):
+    def test_closed_typed_public_source_record_is_required(self):
+        prep.require_retired_source_custody(CONTRACT)
+        for mutation in ("missing-format","wrong-format","scalar","wrong-algorithm","extra-record-field","extra-custody-field"):
+            changed = copy.deepcopy(CONTRACT)
+            record = changed["supersededUnpublishedDesign"]
+            if mutation == "missing-format": del record["bindingFormat"]
+            elif mutation == "wrong-format": record["bindingFormat"] = "unreviewed"
+            elif mutation == "scalar": record["authPacket"] = prep.RETIRED_REVIEW_BLOB
+            elif mutation == "wrong-algorithm": record["authPacket"] = {"sha256":"a"*64}
+            elif mutation == "extra-record-field": record["authPacket"]["extra"] = True
+            else: record["extra"] = True
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                prep.require_retired_source_custody(changed)
+
+    def test_other_valid_source_identities_or_reactivated_status_are_refused(self):
+        for mutation in ("producer","review-blob","status"):
+            changed = copy.deepcopy(CONTRACT)
+            record = changed["supersededUnpublishedDesign"]
+            if mutation == "producer": record["producer"] = "0"*40
+            elif mutation == "review-blob": record["authPacket"] = {"gitBlob":"0"*40}
+            else: record["status"] = "accepted"
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                prep.require_retired_source_custody(changed)
+
+
 if __name__ == "__main__":
     unittest.main()

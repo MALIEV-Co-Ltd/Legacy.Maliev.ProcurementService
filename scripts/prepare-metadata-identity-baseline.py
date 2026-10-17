@@ -27,6 +27,8 @@ SCRIPT_PATHS = {
     "scripts/require-metadata-identity-admission.py",
     ".github/workflows/procurement-metadata-identity.yml",
 }
+RETIRED_PRODUCER = "2ab0dc07909a8b690597b54262498afb1b0da5f3"
+RETIRED_REVIEW_BLOB = "b06528e31494a72f0752e8a853b3b888d4d91a80"
 MAX_JSON_BYTES = 2 * 1024 * 1024
 MAX_SOURCE_BYTES = 1024 * 1024
 MAX_TRX_BYTES = 16 * 1024 * 1024
@@ -72,6 +74,17 @@ def git_blob_record(value):
             and re.fullmatch(r"[0-9a-f]{40}", value["gitBlob"]) is not None,
             "Require one explicit public Git blob provenance record")
     return value["gitBlob"]
+
+
+def require_retired_source_custody(manifest):
+    retired = manifest["supersededUnpublishedDesign"]
+    require(isinstance(retired, dict)
+            and set(retired) == {"producer", "authPacket", "status", "bindingFormat"}
+            and retired["bindingFormat"] == "git-blob-record-v1"
+            and retired["producer"] == RETIRED_PRODUCER
+            and git_blob_record(retired["authPacket"]) == RETIRED_REVIEW_BLOB
+            and retired["status"] == "HOLD; never publish/reuse Auth pin; Root must create fresh reviewed producer",
+            "Retired public source-review custody must remain exact and explicitly typed")
 
 
 def runtime_bindings(manifest):
@@ -180,6 +193,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     require(manifest["base"] == BASE and manifest["baseTree"] == BASE_TREE and manifest["expectedTotalCases"] == 171,
             "Wrong immutable source baseline")
     require(set(manifest["profiles"]) == set(TESTS), "Wrong source profile roster")
+    require_retired_source_custody(manifest)
     require(git(baseline, "rev-parse", "HEAD").decode().strip() == BASE
             and git(baseline, "rev-parse", "HEAD^{tree}").decode().strip() == BASE_TREE, "Wrong baseline head/tree")
     require(not git(baseline, "diff", "--name-only") and not git(baseline, "diff", "--cached", "--name-only"),

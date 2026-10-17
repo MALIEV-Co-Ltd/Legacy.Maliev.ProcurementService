@@ -10,7 +10,6 @@ jobs:
   validate:
     name: validate
     runs-on: ubuntu-latest
-    timeout-minutes: 45
     env:
       MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
       VSTestCollect: XPlat Code Coverage
@@ -103,18 +102,6 @@ jobs:
           path: purchase-order-header-results
           if-no-files-found: error
           retention-days: 7
-      - name: Check out exact tested PR69 scanner provenance
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          repository: MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService
-          ref: d6d75eec7e3b02afb4fa45d533dc35f4b71697cd
-          path: .proc69-gitleaks-scan
-          fetch-depth: 1
-          persist-credentials: false
-      - name: Temporarily diagnose PR69 gitleaks provenance privately
-        shell: bash
-        timeout-minutes: 6
-        run: bash scripts/run_proc69_gitleaks_diagnostic.sh
       - name: Validate .NET solution
         uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8
         with:
