@@ -119,7 +119,7 @@ def require_previous_supplier_audit_binding_advance(contract, current):
     return header_changes | {supplier}
 
 
-def require_header_binding_advance(contract, current):
+def require_previous_metadata_audit_binding_advance(contract, current):
     metadata = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs"
     retained = contract["previousMetadataAuditCandidateBindings"]
     require(isinstance(retained, dict) and set(retained) == set(current) and len(retained) == 9,
@@ -144,6 +144,34 @@ def require_header_binding_advance(contract, current):
             and binding_digest(post[metadata]) == current[metadata]
             == "758b99c2bba630978087272bb2800553c6502df92baadf26339845e842c8c6da",
             "Metadata audit successor detached from exact pre/postimage")
+    return retained_changes | {metadata}
+
+
+def require_header_binding_advance(contract, current):
+    metadata = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs"
+    retained = contract["previousCountryIdCandidateBindings"]
+    require(isinstance(retained, dict) and set(retained) == set(current) and len(retained) == 9,
+            "Retain all nine accepted metadata audit header source bindings")
+    old = {path: binding_digest(record) for path, record in retained.items()}
+    retained_changes = require_previous_metadata_audit_binding_advance(contract, old)
+    advance = contract["countryIdBindingAdvance"]
+    require(isinstance(advance, dict)
+            and set(advance) == {"issue", "base", "bindingFormat", "preimages", "postimages"}
+            and advance["issue"] == 76
+            and advance["base"] == "797d872a243d5d4be4939c37fa648ecfcee459ac"
+            and advance["bindingFormat"] == "sha256-record-v1",
+            "Require reviewed address country binding generation")
+    pre, post = advance["preimages"], advance["postimages"]
+    require(isinstance(pre, dict) and isinstance(post, dict)
+            and set(pre) == set(post) == {metadata},
+            "Address country advance requires only one explicit binding")
+    require({path for path in current if current[path] != old[path]} == {metadata},
+            "Unrelated accepted metadata audit source binding changed")
+    require(binding_digest(pre[metadata]) == old[metadata]
+            == "758b99c2bba630978087272bb2800553c6502df92baadf26339845e842c8c6da"
+            and binding_digest(post[metadata]) == current[metadata]
+            == "77d6145f30de7f47b9248eef11416efad888c315ab55ab572aaff23a8c07fe26",
+            "Address country successor detached from exact pre/postimage")
     return retained_changes | {metadata}
 
 

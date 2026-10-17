@@ -9,7 +9,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-metadata-ignored-audits.json"
+MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-address-country-id.json"
 HISTORICAL_PATH = "tools/ProcurementAuthProgram.Tests/public-graph.json"
 HISTORICAL_SHA256 = "205063c79697948343ba659b13757b68ef4814d1b62861484a1dd90c0b8e7d41"
 PREVIOUS_ACCEPTED_PATH = "tools/ProcurementAuthProgram.Tests/public-graph-child-replay.json"
@@ -286,7 +286,7 @@ def require_previous_supplier_audit_graph(manifest):
         raise ValueError("Supplier audit custody does not qualify production or whole-source closure")
 
 
-def require_historical_graph(manifest):
+def require_previous_metadata_audit_graph(manifest):
     custody = manifest["latestAcceptedSupplierAuditGraph"]
     path = "tools/ProcurementAuthProgram.Tests/public-graph-supplier-ignored-audits.json"
     digest = "a97f8ef186e665d0e9610fcdbfc566172bc7038f6d7b82897ddfa21b52798057"
@@ -344,6 +344,66 @@ def require_historical_graph(manifest):
     if any(manifest[field] is not False for field in
            ("productionEnrollmentProven", "productionIamBridgeProven", "wholeInitialSourceParityClosed")):
         raise ValueError("Metadata audit custody does not qualify production or whole-source closure")
+
+
+def require_historical_graph(manifest):
+    custody = manifest["latestAcceptedMetadataAuditGraph"]
+    path = "tools/ProcurementAuthProgram.Tests/public-graph-metadata-ignored-audits.json"
+    digest = "3ca45a0827fea6653f6fd0e4d3966f363bb013e418fe20e627c82016d0fd6f97"
+    with (ROOT / path).open("rb") as stream:
+        raw = stream.read(2 * 1024 * 1024 + 1)
+    if not 0 < len(raw) <= 2 * 1024 * 1024:
+        raise ValueError("Accepted metadata audit72 witness exceeds bounded reader")
+    if (set(custody) != {"path", "sha256", "gitBlob", "procurement", "inputCount", "acceptedMain", "acceptedReceipt"}
+            or custody["path"] != path or custody["sha256"] != digest
+            or custody["gitBlob"] != "8bec326c5639c6c437abbb3926bf2000bd3ddd8e"
+            or custody["procurement"] != "22e307d936993c2976d8f64819d37c5035b4b1de"
+            or custody["inputCount"] != 72
+            or custody["acceptedMain"] != "797d872a243d5d4be4939c37fa648ecfcee459ac"
+            or custody["acceptedReceipt"] != "17f6ed69f945a2e0410b249ba116c38f8c6cdd81"
+            or hashlib.sha256(raw).hexdigest() != digest):
+        raise ValueError("Accepted metadata audit72 source custody must remain exact")
+    previous = json.loads(raw)
+    require_previous_metadata_audit_graph(previous)
+    for field in previous:
+        if field not in ("graphId", "references", "intentionalSourceChanges") and manifest[field] != previous[field]:
+            raise ValueError("Retained previous metadata audit witness differs: " + field)
+    if manifest["previousMetadataAuditIntentionalSourceChanges"] != previous["intentionalSourceChanges"]:
+        raise ValueError("Previous metadata audit72/1/71 source envelope must remain exact")
+    change = manifest["intentionalSourceChanges"]
+    metadata = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs"
+    paths = {metadata}
+    if (change["previousProcurement"] != custody["procurement"]
+            or change["acceptedBase"] != "797d872a243d5d4be4939c37fa648ecfcee459ac"
+            or change["inputCount"] != 72 or change["unchangedInputCount"] != 71
+            or set(change["changedInputs"]) != paths):
+        raise ValueError("Address country successor requires exact72/1/71 source envelope")
+    previous_inputs = previous["intentionalSourceChanges"]["reviewedInputs"]
+    if set(change["reviewedInputs"]) != set(previous_inputs):
+        raise ValueError("Address country successor cannot add or remove runtime/build/fixture inputs")
+    binding = change["changedInputs"][metadata]
+    if (set(binding) != {"previousMetadata", "reviewedMetadata"}
+            or binding["previousMetadata"] != previous_inputs[metadata]
+            or binding["previousMetadata"] != "100644 blob 2646aec8eb8e6ff44e48b52b7a47fed5b4a6fac2"
+            or binding["reviewedMetadata"] != "100644 blob 112e92787f4c07d47cf0caa404abb392a3d8563b"
+            or change["reviewedInputs"][metadata] != binding["reviewedMetadata"]):
+        raise ValueError("Address country delta detached from accepted metadata audit preimage/postimage")
+    for path, value in change["reviewedInputs"].items():
+        if path not in paths and previous_inputs[path] != value:
+            raise ValueError("Unrelated runtime tuple differs from accepted metadata audit72")
+    pins = [entry["commit"] for entry in manifest["references"]
+            if entry["repository"] == "Legacy.Maliev.ProcurementService"]
+    if (pins != ["d997f2a527a478110ac3bd96c915f4d0f6ab734a"] or change["reviewedProcurement"] != "d997f2a527a478110ac3bd96c915f4d0f6ab734a"
+            or change["reviewedTree"] != "0b15ce62424c15f2ffda7004304939b919888d76"):
+        raise ValueError("Address country Auth successor requires exact independently reviewed producer")
+    external = lambda graph: {entry["repository"]: entry["commit"] for entry in graph["references"]
+                              if entry["repository"] != "Legacy.Maliev.ProcurementService"}
+    if (external(manifest) != external(previous) or manifest["expectedCases"] != previous["expectedCases"]
+            or manifest["expectedMethods"] != previous["expectedMethods"]):
+        raise ValueError("External pins and all actual15 Auth identities must remain unchanged")
+    if any(manifest[field] is not False for field in
+           ("productionEnrollmentProven", "productionIamBridgeProven", "wholeInitialSourceParityClosed")):
+        raise ValueError("Address country custody does not qualify production or whole-source closure")
 
 
 def results(root, manifest):

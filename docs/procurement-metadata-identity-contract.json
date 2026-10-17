@@ -1508,7 +1508,7 @@
   "runtimeBindingFormat": "git-blob-record-v1",
   "runtimePostimages": {
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
-      "gitBlob": "2646aec8eb8e6ff44e48b52b7a47fed5b4a6fac2"
+      "gitBlob": "112e92787f4c07d47cf0caa404abb392a3d8563b"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
       "gitBlob": "3aca6cb413f13945efc28e9e2cebeafbe351d8f3"
@@ -1715,7 +1715,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-metadata-identity-baseline.py": {
-      "gitBlob": "9c9450cf2227a5ba02333a00a976c009fc6d0c35"
+      "gitBlob": "d94f14be9533aed54917177ee5bd64d4bafc50dd"
     },
     "scripts/verify-metadata-identity-results.py": {
       "gitBlob": "a1cb8d97044e6c4aa9da33549e967551074b616d"
@@ -1735,7 +1735,7 @@
   },
   "authEnrollmentTestBinding": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs",
-    "gitBlob": "36019ac73ad9bc4f9f627e8fe2ddbcb8caa49867"
+    "gitBlob": "507b8dc2fa30154f51cd2fa99edecc2dff7ce722"
   },
   "candidateBoundaryHarness": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Controllers/ProcurementOpenApiHttpContractTests.cs",
@@ -1831,6 +1831,9 @@
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredAuditDateTests.cs": {
       "gitBlob": "16109c5013df74ad4c27f14b128287ceb649efb1"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementAddressCountryIdBindingTests.cs": {
+      "gitBlob": "cbf5e0c303172de15e6e889924b887381cbeb912"
     }
   },
   "postContactSourceAdvance": {

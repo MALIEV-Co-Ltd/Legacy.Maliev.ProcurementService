@@ -321,21 +321,25 @@ class RuntimeInputs(unittest.TestCase):
     def test_metadata_audit_successor_has_one_change_and_seventy_one_retained_inputs(self):
         import json
         manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
-        change = manifest["intentionalSourceChanges"]
+        change = manifest["previousMetadataAuditIntentionalSourceChanges"]
         self.assertEqual((72,71),(change["inputCount"],change["unchangedInputCount"]))
         self.assertEqual({"Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs"},
                          set(change["changedInputs"]))
+        current = manifest["intentionalSourceChanges"]
+        self.assertEqual((72,71),(current["inputCount"],current["unchangedInputCount"]))
+        self.assertEqual(set(change["changedInputs"]),set(current["changedInputs"]))
         guard.require_historical_graph(manifest)
 
     def test_supplier_audit_witness_custody_cannot_be_rebound(self):
         import copy
         import json
         manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
-        for field in ("path","sha256","gitBlob","procurement","inputCount","acceptedMain","acceptedReceipt"):
-            changed = copy.deepcopy(manifest)
-            changed["latestAcceptedSupplierAuditGraph"][field] = "drift"
-            with self.subTest(field=field), self.assertRaises(ValueError):
-                guard.require_historical_graph(changed)
+        for witness in ("latestAcceptedSupplierAuditGraph", "latestAcceptedMetadataAuditGraph"):
+            for field in ("path","sha256","gitBlob","procurement","inputCount","acceptedMain","acceptedReceipt"):
+                changed = copy.deepcopy(manifest)
+                changed[witness][field] = "drift"
+                with self.subTest(witness=witness,field=field), self.assertRaises(ValueError):
+                    guard.require_historical_graph(changed)
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace Legacy.Maliev.ProcurementService.Api.Serialization;
 
-/// <summary>Configures source-compatible discarded identities and audit dates on three metadata request contracts.</summary>
+/// <summary>Configures source-compatible metadata request fields and address country inputs.</summary>
 public sealed class ProcurementIgnoredBodyIdJsonOptions : IConfigureOptions<JsonOptions>
 {
     /// <summary>Preserves native object traversal while validating identity and audit inputs discarded by source controllers.</summary>
@@ -72,6 +72,9 @@ public sealed class ProcurementIgnoredBodyIdJsonTypeInfoResolver(IJsonTypeInfoRe
                 throw new InvalidOperationException("Exactly two file metadata text properties are required.");
         }
 
+        if (type != typeof(UpsertPurchaseOrderFileRequest))
+            ConfigureAddressCountry(metadata, type, options);
+
         var identity = metadata.CreateJsonPropertyInfo(typeof(int?), "Id");
         identity.CustomConverter = IdentityReader;
         identity.Set = static (_, _) => { };
@@ -89,6 +92,42 @@ public sealed class ProcurementIgnoredBodyIdJsonTypeInfoResolver(IJsonTypeInfoRe
         }
         return metadata;
     }
+    private static void ConfigureAddressCountry(JsonTypeInfo metadata, Type type, JsonSerializerOptions options)
+    {
+        var country = metadata.Properties.Single(property => property.Name == "CountryId");
+        if (country.PropertyType != typeof(int) || country.CustomConverter is not null
+            || country.Get is not { } getter || country.Set is not { } setter)
+            throw new InvalidOperationException("Native address country integer property contract is required.");
+        var index = metadata.Properties.IndexOf(country);
+        var scalarOptions = country.NumberHandling is { } handling && handling != options.NumberHandling
+            ? new JsonSerializerOptions(options) { NumberHandling = handling }
+            : options;
+        var nullable = metadata.CreateJsonPropertyInfo(typeof(int?), country.Name);
+        nullable.CustomConverter = new AddressCountryIdJsonConverter(scalarOptions);
+        nullable.Get = getter;
+        nullable.Set = (target, value) =>
+        {
+            if (value is int identifier) setter(target, identifier);
+        };
+        nullable.ShouldSerialize = country.ShouldSerialize;
+        nullable.IsRequired = country.IsRequired;
+        nullable.Order = country.Order;
+        nullable.AttributeProvider = country.AttributeProvider;
+        nullable.IsSetNullable = true;
+        nullable.IsGetNullable = false;
+        metadata.Properties.RemoveAt(index);
+        metadata.Properties.Insert(index, nullable);
+
+        // The read slot may ignore null while the unchanged CLR property remains int.
+        // Existing factories are retained; ordinary records start with their native defaults.
+        if (metadata.CreateObject is null)
+        {
+            metadata.CreateObject = type == typeof(UpsertSupplierAddressRequest)
+                ? static () => new UpsertSupplierAddressRequest(null, null, null, null, null, null, 0)
+                : static () => new UpsertPurchaseOrderAddressRequest(null, null!, null, null, null, null, 0);
+        }
+    }
+
 }
 
 internal sealed class IgnoredBodyInt32JsonConverter : JsonConverter<int?>
@@ -154,4 +193,30 @@ internal sealed class IgnoredBodyNullableDateTimeJsonConverter : JsonConverter<D
 
     public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
         => throw new NotSupportedException("Discarded audit inputs must never be serialized.");
+}
+
+internal sealed class AddressCountryIdJsonConverter(JsonSerializerOptions scalarOptions) : JsonConverter<int?>
+{
+    private static readonly JsonConverter<int?> PublicReader = new IgnoredBodyInt32JsonConverter();
+
+    public override int? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null) return null;
+        try
+        {
+            // The source typed Int32 reader also maps empty strings to ignored null.
+            return PublicReader.Read(ref reader, typeof(int?), options);
+        }
+        catch (JsonException exception)
+        {
+            // Native object traversal supplies CountryId's path without echoing the input.
+            throw new JsonException("The address country identifier has an invalid type.", exception);
+        }
+    }
+
+    public override void Write(Utf8JsonWriter writer, int? value, JsonSerializerOptions options)
+    {
+        if (value is { } identifier) JsonSerializer.Serialize(writer, identifier, scalarOptions);
+        else writer.WriteNullValue();
+    }
 }
