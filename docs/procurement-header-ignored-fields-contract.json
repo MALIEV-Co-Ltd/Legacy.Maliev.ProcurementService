@@ -2194,7 +2194,7 @@
       "gitBlob": "0ead4f73792f03a1f037a10e6a3ec0c32860934a"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs": {
-      "gitBlob": "fbca0d7eb799d53f79f6950909fc14c83f493d31"
+      "gitBlob": "19b545ae0a96fdc1541b74cd23c75e07d79c460c"
     }
   },
   "retainedSourceProposal": {
@@ -2221,7 +2221,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-header-ignored-fields-baseline.py": {
-      "gitBlob": "6909fd5f92622231220d744f979944c66beddb8f"
+      "gitBlob": "d119c2b628515ade06aad7ffe964496f827b3ad1"
     },
     "scripts/verify-header-ignored-fields-results.py": {
       "gitBlob": "009579c8ec2790bd0d0338a4fd61cb083cfdbcd6"

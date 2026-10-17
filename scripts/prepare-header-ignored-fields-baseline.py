@@ -42,7 +42,7 @@ SOURCE_TESTS = {
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSourceBodyAdmissionTests.cs",
 }
 SOURCE_COMPILED_POSTIMAGES = {
-    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs": "fbca0d7eb799d53f79f6950909fc14c83f493d31",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs": "19b545ae0a96fdc1541b74cd23c75e07d79c460c",
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataOriginalModels.cs": "0f1751b705cf1b41fd3e7a489534eacece6e3e64",
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceOracle.cs": "26950761aedd6be196e09f04a02ab99565f5dcf6",
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceProtocolTests.cs": "16ce05f77ec4d3ca655046dbc76fbdfa0d92edad",

@@ -1369,7 +1369,7 @@
       "gitBlob": "0ead4f73792f03a1f037a10e6a3ec0c32860934a"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs": {
-      "gitBlob": "fbca0d7eb799d53f79f6950909fc14c83f493d31"
+      "gitBlob": "19b545ae0a96fdc1541b74cd23c75e07d79c460c"
     }
   },
   "holds": {
@@ -1393,7 +1393,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-supplier-ignored-audits-baseline.py": {
-      "gitBlob": "2debf665bb549c72b30463de7ea3cba16b8c56d4"
+      "gitBlob": "acb6414fdd727791b1c947ecba3aef82a805fead"
     },
     "scripts/verify-supplier-ignored-audits-results.py": {
       "gitBlob": "2b718a0b66baeab9ee321f23482df27addabd9f3"

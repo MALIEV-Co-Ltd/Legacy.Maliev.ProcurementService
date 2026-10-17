@@ -183,7 +183,7 @@ public sealed class ProcurementSupplierScalarStringTests(ProcurementRuntimeFixtu
             Assert.Equal(1, oracle.State.Entries);
             Assert.Equal(0, oracle.State.BinderCalls);
             Assert.Null(oracle.State.Unexpected);
-            var original = Assert.IsType<Maliev.SupplierService.Data.Database.SupplierContext.Supplier>(oracle.State.Captured);
+            var original = Assert.IsType<global::Maliev.SupplierService.Data.Database.SupplierContext.Supplier>(oracle.State.Captured);
             Assert.Equal(Enumerable.Repeat("01", Fields.Length), new[]
             {
                 original.Name, original.Website, original.TaxNumber, original.Email,
