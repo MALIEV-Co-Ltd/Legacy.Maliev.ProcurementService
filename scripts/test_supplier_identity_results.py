@@ -415,7 +415,7 @@ class SourceAndOwnershipControls(unittest.TestCase):
     def test_original107_harnesses_and_closed_runtime_roster(self):
         self.assertEqual({"id","address"},set(CONTRACT["profiles"]))
         self.assertEqual(107,sum(profile["expectedCases"] for profile in CONTRACT["profiles"].values()))
-        self.assertEqual({prep.PROGRAM,prep.API_PROJECT,prep.CONVERTER,prep.FILE_CONVERTER,prep.METADATA_IDENTITY},set(CONTRACT["runtimePostimages"]))
+        self.assertEqual({prep.PROGRAM,prep.API_PROJECT,prep.CONVERTER,prep.FILE_CONVERTER,prep.METADATA_IDENTITY,prep.HEADER},set(CONTRACT["runtimePostimages"]))
         for profile in CONTRACT["profiles"].values():
             raw = (HERE.parent/profile["testPath"]).read_bytes()
             header = ("blob " + str(len(raw)) + "\0").encode()

@@ -986,6 +986,9 @@
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
       "gitBlob": "3aca6cb413f13945efc28e9e2cebeafbe351d8f3"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
+      "gitBlob": "b21e6fe697acdeb945dc0acbd3c80dee22a23a02"
     }
   },
   "publicFixture": {
@@ -1152,5 +1155,32 @@
     "heldProducer": "2ab0dc07909a8b690597b54262498afb1b0da5f3",
     "status": "Unreferenced design superseded; no runtime acceptance or source closure",
     "cause": "Framework resolver wrappers invalidate chain-based oracle; native options now independently constructed."
+  },
+  "previousHeaderIgnoredFieldRuntime": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+      "gitBlob": "0259b5722072609bb7c356bd1c9a5f49fd2d0caa"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+      "gitBlob": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "gitBlob": "bcb6cdab502c0b0e62835399afc774c31f57d3bd"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
+      "gitBlob": "be119d54a90a0772444b9f61f97be53a779610ba"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
+      "gitBlob": "3aca6cb413f13945efc28e9e2cebeafbe351d8f3"
+    }
+  },
+  "headerIgnoredFieldBuildAdvance": {
+    "issue": 70,
+    "base": "44c79ed24c142883563e037bbb5be724ea87322a",
+    "scope": "Only header ignored Id/CreatedDate/ModifiedDate validation;17consumedfields unchanged",
+    "runtimePostimage": {
+      "path": "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs",
+      "gitBlob": "b21e6fe697acdeb945dc0acbd3c80dee22a23a02"
+    },
+    "status": "NOT RUN; fresh hosted historical differential gates required"
   }
 }

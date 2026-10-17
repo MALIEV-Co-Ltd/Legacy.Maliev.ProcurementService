@@ -264,7 +264,7 @@ public sealed class ProcurementPurchaseOrderHeaderBindingTests(ProcurementRuntim
     {
         Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<UpsertPurchaseOrderRequest>("{\"Notes\":123}"));
         Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<PurchaseOrderResponse>("{\"Notes\":123}", Options));
-        var value = Bind("{\"Notes\":12.50,\"EmployeeId\":\"42\",\"Unknown\":{\"Notes\":{}},\"OrderItem\":[{\"Notes\":[]}],\"Id\":{},\"CreatedDate\":[]}");
+        var value = Bind("{\"Notes\":12.50,\"EmployeeId\":\"42\",\"Unknown\":{\"Notes\":{}},\"OrderItem\":[{\"Notes\":[]}],\"Id\":null,\"CreatedDate\":null}");
         Assert.Equal("12.50", value.Notes);
         Assert.Equal(42, value.EmployeeId);
         using var wire = JsonDocument.Parse(JsonSerializer.Serialize(value, Options));

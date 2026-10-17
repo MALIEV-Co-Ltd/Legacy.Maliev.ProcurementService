@@ -419,7 +419,7 @@ class SourceAndOwnershipControls(unittest.TestCase):
     def test_new171_harnesses_and_closed_runtime_roster(self):
         self.assertEqual({"metadata"},set(CONTRACT["profiles"]))
         self.assertEqual(171,sum(profile["expectedCases"] for profile in CONTRACT["profiles"].values()))
-        self.assertEqual({prep.PROGRAM,prep.CONVERTER,prep.METADATA_IDENTITY},set(CONTRACT["runtimePostimages"]))
+        self.assertEqual({prep.PROGRAM,prep.CONVERTER,prep.METADATA_IDENTITY,prep.HEADER},set(CONTRACT["runtimePostimages"]))
         for profile in CONTRACT["profiles"].values():
             raw = (HERE.parent/profile["testPath"]).read_bytes()
             header = ("blob " + str(len(raw)) + "\0").encode()
@@ -571,6 +571,21 @@ class HostedAdmissionControls(unittest.TestCase):
 
 
 class NewSourceEnvelopeControls(unittest.TestCase):
+    def test_reviewed_header_harness_successors_are_closed_typed_and_exact(self):
+        expected = {path: record["gitBlob"] for path, record in CONTRACT["headerIgnoredFieldHarnesses"].items()}
+        with mock.patch.object(prep, "blob", side_effect=lambda root, path: expected[path]):
+            self.assertEqual(set(expected), prep.require_header_harness_bindings(pathlib.Path("."), CONTRACT))
+            for path in expected:
+                changed = copy.deepcopy(CONTRACT)
+                changed["headerIgnoredFieldHarnesses"][path] = {"gitBlob":"0"*40}
+                with self.subTest(path=path), self.assertRaises(ValueError):
+                    prep.require_header_harness_bindings(pathlib.Path("."), changed)
+            for extra in (False, True):
+                changed = copy.deepcopy(CONTRACT)
+                if extra: changed["headerIgnoredFieldHarnesses"]["unreviewed"] = {"gitBlob":"a"*40}
+                else: changed["headerIgnoredFieldHarnesses"].pop(next(iter(expected)))
+                with self.assertRaises(ValueError): prep.require_header_harness_bindings(pathlib.Path("."), changed)
+
     def test_every_hosted_script_binding_is_closed_typed_and_matches_actual_head(self):
         actual = {path: record["gitBlob"] for path,record in CONTRACT["scriptBindings"].items()}
         with mock.patch.object(prep,"blob",side_effect=lambda root,path: actual[path]), \

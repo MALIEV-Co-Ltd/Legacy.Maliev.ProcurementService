@@ -18,10 +18,10 @@
       "sha256": "e7dae18e5cc6095eda6444239532455e85c8de3c359dc0514797cccf478e80f0"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
-      "sha256": "d889daf8f8c8adeb10291476b592184f8a1551f170bc8a527888ff4f6c7bec0e"
+      "sha256": "08acc76e39ad164565efdd4d61690c84fda773fd2067535812b95ece0d72fdbc"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": {
-      "sha256": "444a71c704d94fc5d8e5b4eaa100d06b0fe3e5e2ff544b4af31e0e94b62d1c9e"
+      "sha256": "aee3b6cac1c8b57ae85221049bfe0be44c76a464601876076a931d0f74249737"
     },
     "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": {
       "sha256": "d29189ed0f2caf97153aa534bbb3f708c18d300c428e72389b78310466726845"
@@ -303,5 +303,40 @@
     "heldProducer": "2ab0dc07909a8b690597b54262498afb1b0da5f3",
     "status": "Unreferenced design superseded; no runtime acceptance or source closure",
     "cause": "Framework resolver wrappers invalidate chain-based oracle; native options now independently constructed."
+  },
+  "previousHeaderIgnoredFieldBindings": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+      "sha256": "9448746c2f26f65d90622afe3b1271327031cece0a21c7b9c0faa9b56fbe83ee"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
+      "sha256": "e7dae18e5cc6095eda6444239532455e85c8de3c359dc0514797cccf478e80f0"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
+      "sha256": "d889daf8f8c8adeb10291476b592184f8a1551f170bc8a527888ff4f6c7bec0e"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": {
+      "sha256": "444a71c704d94fc5d8e5b4eaa100d06b0fe3e5e2ff544b4af31e0e94b62d1c9e"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": {
+      "sha256": "d29189ed0f2caf97153aa534bbb3f708c18d300c428e72389b78310466726845"
+    },
+    "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs": {
+      "sha256": "cb0e10f9eecf82f64fb389929c0c53a82b8461d3af918572fece2f4dbe51d679"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+      "sha256": "8b979fcda8bd10fb806389e1e0e4181adbe4c390fc55e902f1b36e445efe6469"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "sha256": "6ea1dce207535603db4cc4cb367ac60ba5c1179bc77d0c05ddabaffa22397d55"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
+      "sha256": "77710ac49252bcf82ca56792418a0ae57d26b5f8d84be58b6abe235441717509"
+    }
+  },
+  "headerIgnoredFieldBindingAdvance": {
+    "issue": 70,
+    "base": "44c79ed24c142883563e037bbb5be724ea87322a",
+    "scope": "3ignoredproperties only; old135obsolete fixtureline intentionally corrected; strictnative9method/cases unchanged",
+    "status": "NOT RUN"
   }
 }

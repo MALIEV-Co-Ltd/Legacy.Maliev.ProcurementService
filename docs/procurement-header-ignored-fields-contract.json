@@ -1,0 +1,2130 @@
+{
+  "schemaVersion": 1,
+  "status": "SOURCE FORECAST ONLY; hosted actual identities/outcomes unobserved",
+  "base": "44c79ed24c142883563e037bbb5be724ea87322a",
+  "baseTree": "869dab0b2a715def4a9c5613346d698a2943838e",
+  "profiles": {
+    "header": {
+      "testClass": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+      "testPath": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementHeaderIgnoredFieldsTests.cs",
+      "testBlob": "7bccbfc83cd0552f2e1a2c8889e0acb02fcdcb1d",
+      "expectedCases": 195,
+      "baselinePassed": 96,
+      "baselineFailed": 99,
+      "cases": [
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"Id\", token: \"0\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"Id\", token: \"0\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"Id\", token: \"-17\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"Id\", token: \"-17\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"Id\", token: \"2147483647\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"Id\", token: \"2147483647\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"Id\", token: \"-2147483648\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"Id\", token: \"-2147483648\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"Id\", token: \"\\\"42\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"Id\", token: \"\\\"42\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"Id\", token: \"\\\" +42 \\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"Id\", token: \"\\\" +42 \\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"Id\", token: \"\\\"\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"Id\", token: \"\\\"\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"Id\", token: \"null\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"Id\", token: \"null\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"Id\", token: \"123\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"Id\", token: \"123\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"Id\", token: \"7007\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"Id\", token: \"7007\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"CreatedDate\", token: \"null\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"CreatedDate\", token: \"null\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"CreatedDate\", token: \"\\\"\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"CreatedDate\", token: \"\\\"\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"CreatedDate\", token: \"\\\"2000-02-29\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"CreatedDate\", token: \"\\\"2000-02-29\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"CreatedDate\", token: \"\\\"2000-02-29T12:34:56Z\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"CreatedDate\", token: \"\\\"2000-02-29T12:34:56Z\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"CreatedDate\", token: \"\\\"2000-02-29T12:34:56+07:00\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"CreatedDate\", token: \"\\\"2000-02-29T12:34:56+07:00\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"CreatedDate\", token: \"\\\"/Date(0)/\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"CreatedDate\", token: \"\\\"/Date(0)/\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"CreatedDate\", token: \"\\\"2000-02-29T24:00:00Z\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"CreatedDate\", token: \"\\\"2000-02-29T24:00:00Z\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"CreatedDate\", token: \"\\\"02/03/2000\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"CreatedDate\", token: \"\\\"02/03/2000\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"CreatedDate\", token: \"\\\"2000-02-29T12:34:56.1234567Z\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"CreatedDate\", token: \"\\\"2000-02-29T12:34:56.1234567Z\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"CreatedDate\", token: \"\\\"/Date(0+0700)/\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"CreatedDate\", token: \"\\\"/Date(0+0700)/\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"ModifiedDate\", token: \"null\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"ModifiedDate\", token: \"null\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"ModifiedDate\", token: \"\\\"\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"ModifiedDate\", token: \"\\\"\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"ModifiedDate\", token: \"\\\"2000-02-29\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"ModifiedDate\", token: \"\\\"2000-02-29\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"ModifiedDate\", token: \"\\\"2000-02-29T12:34:56Z\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"ModifiedDate\", token: \"\\\"2000-02-29T12:34:56Z\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"ModifiedDate\", token: \"\\\"2000-02-29T12:34:56+07:00\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"ModifiedDate\", token: \"\\\"2000-02-29T12:34:56+07:00\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"ModifiedDate\", token: \"\\\"/Date(0)/\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"ModifiedDate\", token: \"\\\"/Date(0)/\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"ModifiedDate\", token: \"\\\"2000-02-29T24:00:00Z\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"ModifiedDate\", token: \"\\\"2000-02-29T24:00:00Z\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"ModifiedDate\", token: \"\\\"02/03/2000\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"ModifiedDate\", token: \"\\\"02/03/2000\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"ModifiedDate\", token: \"\\\"2000-02-29T12:34:56.1234567Z\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"ModifiedDate\", token: \"\\\"2000-02-29T12:34:56.1234567Z\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: False, field: \"ModifiedDate\", token: \"\\\"/Date(0+0700)/\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment(update: True, field: \"ModifiedDate\", token: \"\\\"/Date(0+0700)/\\\"\")",
+          "method": "ParsedBodyValues_AreDiscardedBeforeServerIdentityAndAuditAssignment",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"Id\", token: \"1.5\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"Id\", token: \"1.5\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"Id\", token: \"1e3\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"Id\", token: \"1e3\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"Id\", token: \"true\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"Id\", token: \"true\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"Id\", token: \"false\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"Id\", token: \"false\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"Id\", token: \"[]\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"Id\", token: \"[]\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"Id\", token: \"{}\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"Id\", token: \"{}\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"Id\", token: \"2147483648\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"Id\", token: \"2147483648\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"Id\", token: \"-2147483649\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"Id\", token: \"-2147483649\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"Id\", token: \"\\\"SYNTHETIC-PRIVATE-HEADER-ID\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"Id\", token: \"\\\"SYNTHETIC-PRIVATE-HEADER-ID\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"Id\", token: \"\\\"1.0\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"Id\", token: \"\\\"1.0\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"Id\", token: \"\\\"2147483648\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"Id\", token: \"\\\"2147483648\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"Id\", token: \"\\\"null\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"Id\", token: \"\\\"null\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"CreatedDate\", token: \"0\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"CreatedDate\", token: \"0\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"CreatedDate\", token: \"-1\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"CreatedDate\", token: \"-1\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"CreatedDate\", token: \"1.5\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"CreatedDate\", token: \"1.5\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"CreatedDate\", token: \"true\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"CreatedDate\", token: \"true\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"CreatedDate\", token: \"false\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"CreatedDate\", token: \"false\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"CreatedDate\", token: \"[]\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"CreatedDate\", token: \"[]\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"CreatedDate\", token: \"{}\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"CreatedDate\", token: \"{}\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"CreatedDate\", token: \"\\\"SYNTHETIC-PRIVATE-HEADER-DATE\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"CreatedDate\", token: \"\\\"SYNTHETIC-PRIVATE-HEADER-DATE\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"CreatedDate\", token: \"\\\"2000-02-30\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"CreatedDate\", token: \"\\\"2000-02-30\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"CreatedDate\", token: \"\\\"2000-13-01\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"CreatedDate\", token: \"\\\"2000-13-01\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"CreatedDate\", token: \"\\\"2000-02-29T24:00:01Z\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"CreatedDate\", token: \"\\\"2000-02-29T24:00:01Z\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"CreatedDate\", token: \"\\\"9999-12-31T24:00:00Z\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"CreatedDate\", token: \"\\\"9999-12-31T24:00:00Z\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"ModifiedDate\", token: \"0\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"ModifiedDate\", token: \"0\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"ModifiedDate\", token: \"-1\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"ModifiedDate\", token: \"-1\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"ModifiedDate\", token: \"1.5\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"ModifiedDate\", token: \"1.5\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"ModifiedDate\", token: \"true\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"ModifiedDate\", token: \"true\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"ModifiedDate\", token: \"false\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"ModifiedDate\", token: \"false\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"ModifiedDate\", token: \"[]\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"ModifiedDate\", token: \"[]\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"ModifiedDate\", token: \"{}\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"ModifiedDate\", token: \"{}\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"ModifiedDate\", token: \"\\\"SYNTHETIC-PRIVATE-HEADER-DATE\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"ModifiedDate\", token: \"\\\"SYNTHETIC-PRIVATE-HEADER-DATE\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"ModifiedDate\", token: \"\\\"2000-02-30\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"ModifiedDate\", token: \"\\\"2000-02-30\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"ModifiedDate\", token: \"\\\"2000-13-01\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"ModifiedDate\", token: \"\\\"2000-13-01\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"ModifiedDate\", token: \"\\\"2000-02-29T24:00:01Z\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"ModifiedDate\", token: \"\\\"2000-02-29T24:00:01Z\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: False, field: \"ModifiedDate\", token: \"\\\"9999-12-31T24:00:00Z\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.InvalidBodyValue_RefusesBeforeAnyWrite(update: True, field: \"ModifiedDate\", token: \"\\\"9999-12-31T24:00:00Z\\\"\")",
+          "method": "InvalidBodyValue_RefusesBeforeAnyWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"Id\", mode: \"bad_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"Id\", mode: \"bad_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"Id\", mode: \"bad_scalar_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"Id\", mode: \"bad_scalar_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"Id\", mode: \"null_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"Id\", mode: \"null_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"Id\", mode: \"bad_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"Id\", mode: \"bad_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"Id\", mode: \"bad_scalar_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"Id\", mode: \"bad_scalar_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"Id\", mode: \"null_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"Id\", mode: \"null_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"CreatedDate\", mode: \"bad_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"CreatedDate\", mode: \"bad_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"CreatedDate\", mode: \"bad_scalar_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"CreatedDate\", mode: \"bad_scalar_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"CreatedDate\", mode: \"null_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"CreatedDate\", mode: \"null_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"CreatedDate\", mode: \"bad_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"CreatedDate\", mode: \"bad_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"CreatedDate\", mode: \"bad_scalar_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"CreatedDate\", mode: \"bad_scalar_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"CreatedDate\", mode: \"null_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"CreatedDate\", mode: \"null_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"ModifiedDate\", mode: \"bad_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"ModifiedDate\", mode: \"bad_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"ModifiedDate\", mode: \"bad_scalar_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"ModifiedDate\", mode: \"bad_scalar_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"ModifiedDate\", mode: \"null_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: False, field: \"ModifiedDate\", mode: \"null_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"ModifiedDate\", mode: \"bad_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"ModifiedDate\", mode: \"bad_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"ModifiedDate\", mode: \"bad_scalar_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"ModifiedDate\", mode: \"bad_scalar_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "AssertRefusedAsync",
+          "sourceLine": 282,
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"ModifiedDate\", mode: \"null_last\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.EveryIgnoredOccurrence_IsValidatedInOrder(update: True, field: \"ModifiedDate\", mode: \"null_first\")",
+          "method": "EveryIgnoredOccurrence_IsValidatedInOrder",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.OmittedFieldsAndUnknownNestedGraphs_PreserveCurrentContract(update: False)",
+          "method": "OmittedFieldsAndUnknownNestedGraphs_PreserveCurrentContract",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.OmittedFieldsAndUnknownNestedGraphs_PreserveCurrentContract(update: True)",
+          "method": "OmittedFieldsAndUnknownNestedGraphs_PreserveCurrentContract",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding(update: False, field: \"Id\", anonymous: False)",
+          "method": "AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding(update: False, field: \"Id\", anonymous: True)",
+          "method": "AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding(update: True, field: \"Id\", anonymous: False)",
+          "method": "AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding(update: True, field: \"Id\", anonymous: True)",
+          "method": "AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding(update: False, field: \"CreatedDate\", anonymous: False)",
+          "method": "AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding(update: False, field: \"CreatedDate\", anonymous: True)",
+          "method": "AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding(update: True, field: \"CreatedDate\", anonymous: False)",
+          "method": "AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding(update: True, field: \"CreatedDate\", anonymous: True)",
+          "method": "AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding(update: False, field: \"ModifiedDate\", anonymous: False)",
+          "method": "AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding(update: False, field: \"ModifiedDate\", anonymous: True)",
+          "method": "AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding(update: True, field: \"ModifiedDate\", anonymous: False)",
+          "method": "AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding(update: True, field: \"ModifiedDate\", anonymous: True)",
+          "method": "AuthenticationAndAuthorization_PrecedeIgnoredFieldBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyField_DoesNotReplaceMissingRoute(field: \"Id\")",
+          "method": "ParsedBodyField_DoesNotReplaceMissingRoute",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyField_DoesNotReplaceMissingRoute(field: \"CreatedDate\")",
+          "method": "ParsedBodyField_DoesNotReplaceMissingRoute",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.ParsedBodyField_DoesNotReplaceMissingRoute(field: \"ModifiedDate\")",
+          "method": "ParsedBodyField_DoesNotReplaceMissingRoute",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.PublicTypedProjectionAndMvc_AgreeOnAcceptedAndRejectedPrimitiveShapes",
+          "method": "PublicTypedProjectionAndMvc_AgreeOnAcceptedAndRejectedPrimitiveShapes",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "PublicTypedProjectionAndMvc_AgreeOnAcceptedAndRejectedPrimitiveShapes",
+          "sourceLine": 165,
+          "failure": {
+            "kind": "throws"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.IgnoredFields_AddNoClrRequestOrResponseWriteProperties",
+          "method": "IgnoredFields_AddNoClrRequestOrResponseWriteProperties",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.CurrentCulture_CannotChangePublicInvariantIgnoredDateParsing(culture: \"en-US\")",
+          "method": "CurrentCulture_CannotChangePublicInvariantIgnoredDateParsing",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "CurrentCulture_CannotChangePublicInvariantIgnoredDateParsing",
+          "sourceLine": 202,
+          "failure": {
+            "kind": "throws"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.CurrentCulture_CannotChangePublicInvariantIgnoredDateParsing(culture: \"th-TH\")",
+          "method": "CurrentCulture_CannotChangePublicInvariantIgnoredDateParsing",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Failed",
+          "failureMethod": "CurrentCulture_CannotChangePublicInvariantIgnoredDateParsing",
+          "sourceLine": 202,
+          "failure": {
+            "kind": "throws"
+          }
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.MalformedIgnoredFields_PreserveExistingWholeHeaderSyntaxFailure(field: \"Id\", unterminatedString: False)",
+          "method": "MalformedIgnoredFields_PreserveExistingWholeHeaderSyntaxFailure",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.MalformedIgnoredFields_PreserveExistingWholeHeaderSyntaxFailure(field: \"Id\", unterminatedString: True)",
+          "method": "MalformedIgnoredFields_PreserveExistingWholeHeaderSyntaxFailure",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.MalformedIgnoredFields_PreserveExistingWholeHeaderSyntaxFailure(field: \"CreatedDate\", unterminatedString: False)",
+          "method": "MalformedIgnoredFields_PreserveExistingWholeHeaderSyntaxFailure",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.MalformedIgnoredFields_PreserveExistingWholeHeaderSyntaxFailure(field: \"CreatedDate\", unterminatedString: True)",
+          "method": "MalformedIgnoredFields_PreserveExistingWholeHeaderSyntaxFailure",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.MalformedIgnoredFields_PreserveExistingWholeHeaderSyntaxFailure(field: \"ModifiedDate\", unterminatedString: False)",
+          "method": "MalformedIgnoredFields_PreserveExistingWholeHeaderSyntaxFailure",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests.MalformedIgnoredFields_PreserveExistingWholeHeaderSyntaxFailure(field: \"ModifiedDate\", unterminatedString: True)",
+          "method": "MalformedIgnoredFields_PreserveExistingWholeHeaderSyntaxFailure",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
+          "baselineOutcome": "Passed"
+        }
+      ]
+    }
+  },
+  "expectedTotalCases": 195,
+  "assemblyBindings": {
+    "baseline": {
+      "storage": "/home/runner/work/legacy.maliev.procurementservice/legacy.maliev.procurementservice/.header-ignored-fields-baseline/legacy.maliev.procurementservice.tests/bin/release/net10.0/legacy.maliev.procurementservice.tests.dll",
+      "codeBase": "/home/runner/work/Legacy.Maliev.ProcurementService/Legacy.Maliev.ProcurementService/.header-ignored-fields-baseline/Legacy.Maliev.ProcurementService.Tests/bin/Release/net10.0/Legacy.Maliev.ProcurementService.Tests.dll",
+      "adapterTypeName": "executor://xunit/VsTestRunner3/netcore/"
+    },
+    "candidate": {
+      "storage": "/home/runner/work/legacy.maliev.procurementservice/legacy.maliev.procurementservice/legacy.maliev.procurementservice.tests/bin/release/net10.0/legacy.maliev.procurementservice.tests.dll",
+      "codeBase": "/home/runner/work/Legacy.Maliev.ProcurementService/Legacy.Maliev.ProcurementService/Legacy.Maliev.ProcurementService.Tests/bin/Release/net10.0/Legacy.Maliev.ProcurementService.Tests.dll",
+      "adapterTypeName": "executor://xunit/VsTestRunner3/netcore/"
+    }
+  },
+  "runtimeBindingFormat": "git-blob-record-v1",
+  "runtimePostimages": {
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
+      "gitBlob": "b21e6fe697acdeb945dc0acbd3c80dee22a23a02"
+    }
+  },
+  "publicFixture": {
+    "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs",
+    "gitBlob": "13bef56d1b51a1df43fffe2e48967bd4e6f16ba2"
+  },
+  "joinTestProject": {
+    "path": "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj",
+    "gitBlob": "69b4ebf74c1a85d0949321360e81105db0f671a6"
+  },
+  "buildProject": {
+    "path": "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj",
+    "gitBlob": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7"
+  },
+  "compiledTestPostimages": {
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": {
+      "gitBlob": "b15aedf9e56a76ce8f3b3a6d5e84384606b64f26"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementHeaderIgnoredFieldsTests.cs": {
+      "gitBlob": "7bccbfc83cd0552f2e1a2c8889e0acb02fcdcb1d"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Controllers/ProcurementOpenApiHttpContractTests.cs": {
+      "gitBlob": "eb9a3cc0f299279ad4db1f305dd86519d69f5429"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs": {
+      "gitBlob": "d3a4eb47069a67fe6b9fa23ee93c8672f8de7304"
+    }
+  },
+  "retainedSourceProposal": {
+    "gitBlob": "4c969d6f1f03007bc343ecfcb67ef3e8dcc03432"
+  },
+  "holds": {
+    "financial": "STOPPED",
+    "commentTracking": "BLOCKED",
+    "schema55": "HELD",
+    "activation52": "HELD",
+    "fixture57": "HELD",
+    "privateSDK": "HELD",
+    "ancestry": "HELD",
+    "whole29": "PARTIAL",
+    "wholeSourceSHAs": "PARTIAL",
+    "globalCountsChanged": false
+  },
+  "resourcePolicy": {
+    "fixture": "Unchanged accepted public fixture; normal disposal proof only",
+    "universalFailureCleanup57": "HELD; not repaired/accepted",
+    "postgres": "18.1-bookworm; two isolated databases",
+    "minimumMemAvailableKiB": 3145728,
+    "localWorkers": 0
+  },
+  "scriptBindings": {
+    "scripts/prepare-header-ignored-fields-baseline.py": {
+      "gitBlob": "288a3568d3df26633858728802c0bb2bb5d1a7bb"
+    },
+    "scripts/verify-header-ignored-fields-results.py": {
+      "gitBlob": "d53698bebfa5f258fe0f35a368e62c6a2f4e44aa"
+    },
+    "scripts/observe-header-ignored-fields-providers.py": {
+      "gitBlob": "8e410c2ae3a3b0cad4388d95974eb2776a7f298e"
+    },
+    "scripts/test_header_ignored_fields_results.py": {
+      "gitBlob": "b6c0c065f4ab5d4d90db7b2fbfc836055a92902c"
+    },
+    ".github/workflows/procurement-header-ignored-fields.yml": {
+      "gitBlob": "5ced63cfaed12741c1d530c6c38103b94a00f421"
+    },
+    "scripts/require-metadata-identity-admission.py": {
+      "gitBlob": "0c91e5b94fa2ddaeb5e602ebfa68e242efd81a7a"
+    }
+  },
+  "baseInputs": {
+    "Directory.Build.props": "100644 blob b47c8d23651f11ea8366bb63f4520fb8de6c6df3",
+    "Legacy.Maliev.ProcurementService.Api/Authorization/ProcurementIamComposition.cs": "100644 blob 1bad18d6797295124d84083ba7f5e93276124c1e",
+    "Legacy.Maliev.ProcurementService.Api/Authorization/ProcurementPermissions.cs": "100644 blob 58a5a184edc50559048dd4b0329b80b5a6a57b5f",
+    "Legacy.Maliev.ProcurementService.Api/Authorization/ProcurementWorkloadExchangeGuard.cs": "100644 blob 2cbafd5644b7653a1eb323788be8f95bd98337ad",
+    "Legacy.Maliev.ProcurementService.Api/Controllers/FilesController.cs": "100644 blob 5382d06a862ff843bbb01539ddd8822070e86757",
+    "Legacy.Maliev.ProcurementService.Api/Controllers/OrderItemsController.cs": "100644 blob d5e94258bed07bff6c4c915ab4cb1e34fa368902",
+    "Legacy.Maliev.ProcurementService.Api/Controllers/PurchaseOrderAddressesController.cs": "100644 blob 91b6bf11646f89f5c6736e7f54af964e044ae6ed",
+    "Legacy.Maliev.ProcurementService.Api/Controllers/PurchaseOrdersController.cs": "100644 blob 19530897851dcd97dbf52ee71d297f0b4cd0517c",
+    "Legacy.Maliev.ProcurementService.Api/Controllers/SupplierAddressesController.cs": "100644 blob 63dfa7c375090e0a1d3dd191f7430b1519c8bdea",
+    "Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs": "100644 blob f7549641da035088c553d07e42202c73ea881512",
+    "Legacy.Maliev.ProcurementService.Api/Dockerfile": "100644 blob b2c525d395006937f2faf1dbbe0ffa53b669e6d0",
+    "Legacy.Maliev.ProcurementService.Api/DurableChildCreateEndpoint.cs": "100644 blob 84b6da4468a7a22ae10d81aed8b29f6dab15dfaf",
+    "Legacy.Maliev.ProcurementService.Api/DurableCreateEndpoint.cs": "100644 blob 4a723a638129fbdb99a17758a06a8cd5c3f026ac",
+    "Legacy.Maliev.ProcurementService.Api/IdempotentCreates.cs": "100644 blob c8a0e7f92a10b833cd5a5254b0253f7537b67074",
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": "100644 blob bd8fdadcbee41805eedd7a43c6eb8a02099e17d7",
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": "100644 blob 0259b5722072609bb7c356bd1c9a5f49fd2d0caa",
+    "Legacy.Maliev.ProcurementService.Api/Properties/launchSettings.json": "100644 blob 5b49ab6aa8f800b7ed4a376abb9ccf0942625251",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": "100644 blob be119d54a90a0772444b9f61f97be53a779610ba",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": "100644 blob 3aca6cb413f13945efc28e9e2cebeafbe351d8f3",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": "100644 blob 8d6d8eb2c232a76bae57d6419a69da37b687b36d",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": "100644 blob bcb6cdab502c0b0e62835399afc774c31f57d3bd",
+    "Legacy.Maliev.ProcurementService.Api/appsettings.Development.json": "100644 blob 0c208ae9181e5e5717e47ec1bd59368aebc6066e",
+    "Legacy.Maliev.ProcurementService.Api/appsettings.json": "100644 blob b057873ee272efdfc5311a0179a6214f4e1768b7",
+    "Legacy.Maliev.ProcurementService.Application/Interfaces/IDurableProcurementChildCreates.cs": "100644 blob b3cda03315eb9e70d9264a5a50fbdbfeef6c3705",
+    "Legacy.Maliev.ProcurementService.Application/Interfaces/IDurableProcurementCreates.cs": "100644 blob b91e35948db367bb5279029e5838a0e87617041c",
+    "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs": "100644 blob 90c2628be1aceef0178533add09fdea7efa4c42a",
+    "Legacy.Maliev.ProcurementService.Application/Legacy.Maliev.ProcurementService.Application.csproj": "100644 blob 8f5ac62cbd3b2f8cf8370a899a575e25d4a07dab",
+    "Legacy.Maliev.ProcurementService.Application/Models/DurableCreateModels.cs": "100644 blob 6fce05a93ea834e1fc661e0938456e92b908a003",
+    "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs": "100644 blob f20b6e2ac31e8a4e91567fca14cf6af449e3b3f0",
+    "Legacy.Maliev.ProcurementService.Application/Models/ProcurementTransactionUncertainException.cs": "100644 blob 6486a812e5e78ae8e8be9bcf54ee8683989e0615",
+    "Legacy.Maliev.ProcurementService.Application/Models/PurchaseOrderAddressScalarStringJsonConverter.cs": "100644 blob cdbfc2e43f4d8575006df249836145cf7ecb50d6",
+    "Legacy.Maliev.ProcurementService.Application/Models/SupplierAddressScalarStringJsonConverter.cs": "100644 blob a450e196d981d66aef98b6a5970e6f1f53bcef67",
+    "Legacy.Maliev.ProcurementService.Application/Models/SupplierScalarStringJsonConverter.cs": "100644 blob 25834e7c9705786777a707734b914fbf99987cfc",
+    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "100644 blob 9b17fd46fce25162e30854210a1f945a1f9d6f48",
+    "Legacy.Maliev.ProcurementService.Data/ChildReceiptRecords.cs": "100644 blob 8974e76d5c72762828a0d32624a09faaafe8dda4",
+    "Legacy.Maliev.ProcurementService.Data/CreateReceiptRecord.cs": "100644 blob 7df3a2a661854d928fb4ac6363596546419ffeb3",
+    "Legacy.Maliev.ProcurementService.Data/DistributedProcurementCache.cs": "100644 blob cd88f078148dadf470850b383874f2453c3ab146",
+    "Legacy.Maliev.ProcurementService.Data/DurableProcurementChildCreates.cs": "100644 blob 0fe45073973624adcf21d6abcef8a23ced035f97",
+    "Legacy.Maliev.ProcurementService.Data/DurableProcurementCreates.cs": "100644 blob d8e7d7f4182fc613a399990acf9109f0ca7a9e3a",
+    "Legacy.Maliev.ProcurementService.Data/Legacy.Maliev.ProcurementService.Data.csproj": "100644 blob c152c047af1ddb1bcedccf08b25d6a03320d34f3",
+    "Legacy.Maliev.ProcurementService.Data/LegacyUtf16StringStorage.cs": "100644 blob 2e68e9f383160dfe6082f7a23b859bfbf5b2d325",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20260715045323_InitialPurchaseOrderPostgresCompatibility.Designer.cs": "100644 blob ff647d92152d6acaa1b5d54c2381711263a6e38a",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20260715045323_InitialPurchaseOrderPostgresCompatibility.cs": "100644 blob f27917f143b0cbdf2809881b96c2ccce3b4dccb8",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20260721031258_FixTimestampColumnType.Designer.cs": "100644 blob 2e9588ac6e0a9da4feaa4fb59a683f785560c713",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20260721031258_FixTimestampColumnType.cs": "100644 blob 86049cb052f1390dad51c9800f301d2af411a87f",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261001013651_AddDurablePurchaseOrderCreateReceipts.Designer.cs": "100644 blob 9ab941b4fbbc26b1bf4277328792cc594936e7ca",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261001013651_AddDurablePurchaseOrderCreateReceipts.cs": "100644 blob 8b1f910f078b8a4d13f15c6903a9825e0198bbbf",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261006210000_PreservePurchaseOrderSourceStringBoundaries.Designer.cs": "100644 blob 143e1ae02a1fd1100eb2d75dce9b8124188e4cd4",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261006210000_PreservePurchaseOrderSourceStringBoundaries.cs": "100644 blob 1663bacce0bf61de8db5688a82e48354c24ba658",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261011073000_AddDurablePurchaseOrderChildReceipts.Designer.cs": "100644 blob 71271d8755686ea6609b0d794484ec8ae29e41eb",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261011073000_AddDurablePurchaseOrderChildReceipts.cs": "100644 blob 2ba84b62673cd157fd53807eeb21bb9c59375422",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/PurchaseOrderDbContextModelSnapshot.cs": "100644 blob b3477b7823f63b37bed92959f7100e3cd287baf9",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20260715045317_InitialSupplierPostgresCompatibility.Designer.cs": "100644 blob 84c0f1841ecd125e52dbdd8fff6d560cf26baab7",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20260715045317_InitialSupplierPostgresCompatibility.cs": "100644 blob 2d36ff6600a6c973baf717fe07c61e72a3cad80e",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20260721031252_FixTimestampColumnType.Designer.cs": "100644 blob 7edb0df2fe539c86629d0296e95ae428506d2a90",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20260721031252_FixTimestampColumnType.cs": "100644 blob f6c70ffcb468140850659ff2dee07290d5b891b4",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20261001013648_AddDurableSupplierCreateReceipts.Designer.cs": "100644 blob 022a0c30e60b669e22b310ba6f589244f4d004fa",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20261001013648_AddDurableSupplierCreateReceipts.cs": "100644 blob 653202333c192a7c96844f639858f9e362524d77",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20261006210000_PreserveSupplierSourceStringBoundaries.Designer.cs": "100644 blob a36060169d6812f83f1fe764faddc0c0eeee2fea",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20261006210000_PreserveSupplierSourceStringBoundaries.cs": "100644 blob 8c82219082c3a6f2bb629a65d72d8a459b07b5d4",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/SupplierDbContextModelSnapshot.cs": "100644 blob e77cced2826569ba96cb46d659e0fb90be8ceb0e",
+    "Legacy.Maliev.ProcurementService.Data/ProcurementDbContextFactories.cs": "100644 blob 0eadcec30749cdccde9c4a8eae39e5f9c9a0ec80",
+    "Legacy.Maliev.ProcurementService.Data/ProcurementDbContexts.cs": "100644 blob 1a8487f24a647a186258d487b84e1cc08fa7d83b",
+    "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": "100644 blob e3e6d902b10d7b985f12bb5d852982313cb13884",
+    "Legacy.Maliev.ProcurementService.Data/PurchaseOrderFileSourceConstraints.cs": "100644 blob c182f47f50e92fd3225c08d14bcb505e49d73ad5",
+    "Legacy.Maliev.ProcurementService.Data/ReceiptReadiness.cs": "100644 blob 7e252a2a88928f12d421b10fe7cf831146268b9d",
+    "Legacy.Maliev.ProcurementService.Domain/Legacy.Maliev.ProcurementService.Domain.csproj": "100644 blob 51addf44ecf979d69d9d77527d402f14c06a4fa5",
+    "Legacy.Maliev.ProcurementService.Domain/ProcurementEntities.cs": "100644 blob 141a05708c3374afe8ad9471698a892addbf2531",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs": "100644 blob 13bef56d1b51a1df43fffe2e48967bd4e6f16ba2",
+    "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": "100644 blob 69b4ebf74c1a85d0949321360e81105db0f671a6",
+    "Legacy.Maliev.ProcurementService.slnx": "100644 blob 48c1f4ac9b6141df5596bcdc99eb0b22b4a1213e",
+    "nuget.config": "100644 blob 765346e5343d46ac83654843869dc06b65b2bdc4"
+  },
+  "reviewedInputs": {
+    "Directory.Build.props": "100644 blob b47c8d23651f11ea8366bb63f4520fb8de6c6df3",
+    "Legacy.Maliev.ProcurementService.Api/Authorization/ProcurementIamComposition.cs": "100644 blob 1bad18d6797295124d84083ba7f5e93276124c1e",
+    "Legacy.Maliev.ProcurementService.Api/Authorization/ProcurementPermissions.cs": "100644 blob 58a5a184edc50559048dd4b0329b80b5a6a57b5f",
+    "Legacy.Maliev.ProcurementService.Api/Authorization/ProcurementWorkloadExchangeGuard.cs": "100644 blob 2cbafd5644b7653a1eb323788be8f95bd98337ad",
+    "Legacy.Maliev.ProcurementService.Api/Controllers/FilesController.cs": "100644 blob 5382d06a862ff843bbb01539ddd8822070e86757",
+    "Legacy.Maliev.ProcurementService.Api/Controllers/OrderItemsController.cs": "100644 blob d5e94258bed07bff6c4c915ab4cb1e34fa368902",
+    "Legacy.Maliev.ProcurementService.Api/Controllers/PurchaseOrderAddressesController.cs": "100644 blob 91b6bf11646f89f5c6736e7f54af964e044ae6ed",
+    "Legacy.Maliev.ProcurementService.Api/Controllers/PurchaseOrdersController.cs": "100644 blob 19530897851dcd97dbf52ee71d297f0b4cd0517c",
+    "Legacy.Maliev.ProcurementService.Api/Controllers/SupplierAddressesController.cs": "100644 blob 63dfa7c375090e0a1d3dd191f7430b1519c8bdea",
+    "Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs": "100644 blob f7549641da035088c553d07e42202c73ea881512",
+    "Legacy.Maliev.ProcurementService.Api/Dockerfile": "100644 blob b2c525d395006937f2faf1dbbe0ffa53b669e6d0",
+    "Legacy.Maliev.ProcurementService.Api/DurableChildCreateEndpoint.cs": "100644 blob 84b6da4468a7a22ae10d81aed8b29f6dab15dfaf",
+    "Legacy.Maliev.ProcurementService.Api/DurableCreateEndpoint.cs": "100644 blob 4a723a638129fbdb99a17758a06a8cd5c3f026ac",
+    "Legacy.Maliev.ProcurementService.Api/IdempotentCreates.cs": "100644 blob c8a0e7f92a10b833cd5a5254b0253f7537b67074",
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": "100644 blob bd8fdadcbee41805eedd7a43c6eb8a02099e17d7",
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": "100644 blob 0259b5722072609bb7c356bd1c9a5f49fd2d0caa",
+    "Legacy.Maliev.ProcurementService.Api/Properties/launchSettings.json": "100644 blob 5b49ab6aa8f800b7ed4a376abb9ccf0942625251",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": "100644 blob be119d54a90a0772444b9f61f97be53a779610ba",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": "100644 blob 3aca6cb413f13945efc28e9e2cebeafbe351d8f3",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": "100644 blob b21e6fe697acdeb945dc0acbd3c80dee22a23a02",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": "100644 blob bcb6cdab502c0b0e62835399afc774c31f57d3bd",
+    "Legacy.Maliev.ProcurementService.Api/appsettings.Development.json": "100644 blob 0c208ae9181e5e5717e47ec1bd59368aebc6066e",
+    "Legacy.Maliev.ProcurementService.Api/appsettings.json": "100644 blob b057873ee272efdfc5311a0179a6214f4e1768b7",
+    "Legacy.Maliev.ProcurementService.Application/Interfaces/IDurableProcurementChildCreates.cs": "100644 blob b3cda03315eb9e70d9264a5a50fbdbfeef6c3705",
+    "Legacy.Maliev.ProcurementService.Application/Interfaces/IDurableProcurementCreates.cs": "100644 blob b91e35948db367bb5279029e5838a0e87617041c",
+    "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs": "100644 blob 90c2628be1aceef0178533add09fdea7efa4c42a",
+    "Legacy.Maliev.ProcurementService.Application/Legacy.Maliev.ProcurementService.Application.csproj": "100644 blob 8f5ac62cbd3b2f8cf8370a899a575e25d4a07dab",
+    "Legacy.Maliev.ProcurementService.Application/Models/DurableCreateModels.cs": "100644 blob 6fce05a93ea834e1fc661e0938456e92b908a003",
+    "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs": "100644 blob f20b6e2ac31e8a4e91567fca14cf6af449e3b3f0",
+    "Legacy.Maliev.ProcurementService.Application/Models/ProcurementTransactionUncertainException.cs": "100644 blob 6486a812e5e78ae8e8be9bcf54ee8683989e0615",
+    "Legacy.Maliev.ProcurementService.Application/Models/PurchaseOrderAddressScalarStringJsonConverter.cs": "100644 blob cdbfc2e43f4d8575006df249836145cf7ecb50d6",
+    "Legacy.Maliev.ProcurementService.Application/Models/SupplierAddressScalarStringJsonConverter.cs": "100644 blob a450e196d981d66aef98b6a5970e6f1f53bcef67",
+    "Legacy.Maliev.ProcurementService.Application/Models/SupplierScalarStringJsonConverter.cs": "100644 blob 25834e7c9705786777a707734b914fbf99987cfc",
+    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "100644 blob 9b17fd46fce25162e30854210a1f945a1f9d6f48",
+    "Legacy.Maliev.ProcurementService.Data/ChildReceiptRecords.cs": "100644 blob 8974e76d5c72762828a0d32624a09faaafe8dda4",
+    "Legacy.Maliev.ProcurementService.Data/CreateReceiptRecord.cs": "100644 blob 7df3a2a661854d928fb4ac6363596546419ffeb3",
+    "Legacy.Maliev.ProcurementService.Data/DistributedProcurementCache.cs": "100644 blob cd88f078148dadf470850b383874f2453c3ab146",
+    "Legacy.Maliev.ProcurementService.Data/DurableProcurementChildCreates.cs": "100644 blob 0fe45073973624adcf21d6abcef8a23ced035f97",
+    "Legacy.Maliev.ProcurementService.Data/DurableProcurementCreates.cs": "100644 blob d8e7d7f4182fc613a399990acf9109f0ca7a9e3a",
+    "Legacy.Maliev.ProcurementService.Data/Legacy.Maliev.ProcurementService.Data.csproj": "100644 blob c152c047af1ddb1bcedccf08b25d6a03320d34f3",
+    "Legacy.Maliev.ProcurementService.Data/LegacyUtf16StringStorage.cs": "100644 blob 2e68e9f383160dfe6082f7a23b859bfbf5b2d325",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20260715045323_InitialPurchaseOrderPostgresCompatibility.Designer.cs": "100644 blob ff647d92152d6acaa1b5d54c2381711263a6e38a",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20260715045323_InitialPurchaseOrderPostgresCompatibility.cs": "100644 blob f27917f143b0cbdf2809881b96c2ccce3b4dccb8",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20260721031258_FixTimestampColumnType.Designer.cs": "100644 blob 2e9588ac6e0a9da4feaa4fb59a683f785560c713",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20260721031258_FixTimestampColumnType.cs": "100644 blob 86049cb052f1390dad51c9800f301d2af411a87f",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261001013651_AddDurablePurchaseOrderCreateReceipts.Designer.cs": "100644 blob 9ab941b4fbbc26b1bf4277328792cc594936e7ca",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261001013651_AddDurablePurchaseOrderCreateReceipts.cs": "100644 blob 8b1f910f078b8a4d13f15c6903a9825e0198bbbf",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261006210000_PreservePurchaseOrderSourceStringBoundaries.Designer.cs": "100644 blob 143e1ae02a1fd1100eb2d75dce9b8124188e4cd4",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261006210000_PreservePurchaseOrderSourceStringBoundaries.cs": "100644 blob 1663bacce0bf61de8db5688a82e48354c24ba658",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261011073000_AddDurablePurchaseOrderChildReceipts.Designer.cs": "100644 blob 71271d8755686ea6609b0d794484ec8ae29e41eb",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261011073000_AddDurablePurchaseOrderChildReceipts.cs": "100644 blob 2ba84b62673cd157fd53807eeb21bb9c59375422",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/PurchaseOrderDbContextModelSnapshot.cs": "100644 blob b3477b7823f63b37bed92959f7100e3cd287baf9",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20260715045317_InitialSupplierPostgresCompatibility.Designer.cs": "100644 blob 84c0f1841ecd125e52dbdd8fff6d560cf26baab7",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20260715045317_InitialSupplierPostgresCompatibility.cs": "100644 blob 2d36ff6600a6c973baf717fe07c61e72a3cad80e",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20260721031252_FixTimestampColumnType.Designer.cs": "100644 blob 7edb0df2fe539c86629d0296e95ae428506d2a90",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20260721031252_FixTimestampColumnType.cs": "100644 blob f6c70ffcb468140850659ff2dee07290d5b891b4",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20261001013648_AddDurableSupplierCreateReceipts.Designer.cs": "100644 blob 022a0c30e60b669e22b310ba6f589244f4d004fa",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20261001013648_AddDurableSupplierCreateReceipts.cs": "100644 blob 653202333c192a7c96844f639858f9e362524d77",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20261006210000_PreserveSupplierSourceStringBoundaries.Designer.cs": "100644 blob a36060169d6812f83f1fe764faddc0c0eeee2fea",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20261006210000_PreserveSupplierSourceStringBoundaries.cs": "100644 blob 8c82219082c3a6f2bb629a65d72d8a459b07b5d4",
+    "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/SupplierDbContextModelSnapshot.cs": "100644 blob e77cced2826569ba96cb46d659e0fb90be8ceb0e",
+    "Legacy.Maliev.ProcurementService.Data/ProcurementDbContextFactories.cs": "100644 blob 0eadcec30749cdccde9c4a8eae39e5f9c9a0ec80",
+    "Legacy.Maliev.ProcurementService.Data/ProcurementDbContexts.cs": "100644 blob 1a8487f24a647a186258d487b84e1cc08fa7d83b",
+    "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": "100644 blob e3e6d902b10d7b985f12bb5d852982313cb13884",
+    "Legacy.Maliev.ProcurementService.Data/PurchaseOrderFileSourceConstraints.cs": "100644 blob c182f47f50e92fd3225c08d14bcb505e49d73ad5",
+    "Legacy.Maliev.ProcurementService.Data/ReceiptReadiness.cs": "100644 blob 7e252a2a88928f12d421b10fe7cf831146268b9d",
+    "Legacy.Maliev.ProcurementService.Domain/Legacy.Maliev.ProcurementService.Domain.csproj": "100644 blob 51addf44ecf979d69d9d77527d402f14c06a4fa5",
+    "Legacy.Maliev.ProcurementService.Domain/ProcurementEntities.cs": "100644 blob 141a05708c3374afe8ad9471698a892addbf2531",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs": "100644 blob 13bef56d1b51a1df43fffe2e48967bd4e6f16ba2",
+    "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": "100644 blob 69b4ebf74c1a85d0949321360e81105db0f671a6",
+    "Legacy.Maliev.ProcurementService.slnx": "100644 blob 48c1f4ac9b6141df5596bcdc99eb0b22b4a1213e",
+    "nuget.config": "100644 blob 765346e5343d46ac83654843869dc06b65b2bdc4"
+  },
+  "issue": 70,
+  "publicOracleExceptionBoundary": {
+    "ordinaryTypedFailure": "Newtonsoft.Json.JsonException",
+    "maxDateISO24Roll": "ArgumentOutOfRangeException",
+    "targetMvc": "Generic controlled400 with no writes",
+    "historicalMvcHttpStatus": "UNKNOWN; no status400 parity claim",
+    "enumeratedOnly": true,
+    "historicalResolvedBinary": "UNKNOWN"
+  },
+  "publicDateLexicalSources": [
+    {
+      "path": "Src/Newtonsoft.Json/Utilities/DateTimeParser.cs",
+      "gitBlob": "9addb98eb357ec102db95837ebf8f4588e0a6c13"
+    },
+    {
+      "path": "Src/Newtonsoft.Json/Utilities/DateTimeUtils.cs",
+      "gitBlob": "af000ea9037164b8b28fe3ca12cc933f4d362702"
+    }
+  ],
+  "predictedControlCount": 37
+}

@@ -138,6 +138,16 @@ public sealed class ProcurementOpenApiHttpContractTests(ProcurementRuntimeFixtur
         Assert.Contains("integer", order["EmployeeId"]!.ToJsonString(), StringComparison.Ordinal);
         Assert.False(order.ContainsKey("Supplier"));
         Assert.False(order.ContainsKey("Employee"));
+        var headerFields = new[] { "BillingAddressId", "BillingContactPerson", "BillingFax", "BillingMobile", "BillingTelephone", "EmployeeId", "Fob", "Notes", "ShippingAddressId", "ShippingContactPerson", "ShippingFax", "ShippingMethod", "ShippingMobile", "ShippingTelephone", "SupplierContactPerson", "SupplierId", "Terms" };
+        foreach (var (path, method) in new[] { ("/PurchaseOrders", "post"), ("/PurchaseOrders/{purchaseOrderId}", "put") })
+        {
+            var request = Resolve(document, Path(document, path)[method]!["requestBody"]!["content"]!["application/json"]!["schema"]!.AsObject());
+            Assert.Equal("object", request["type"]!.GetValue<string>());
+            Assert.Null(request["allOf"]);
+            Assert.Null(request["anyOf"]);
+            Assert.Null(request["oneOf"]);
+            Assert.Equal(headerFields, request["properties"]!.AsObject().Select(property => property.Key).Order(StringComparer.Ordinal));
+        }
         var item = Resolve(document, Path(document, "/purchaseorders/orderitems/{orderItemId}")["put"]!["requestBody"]!["content"]!["application/json"]!["schema"]!.AsObject())["properties"]!.AsObject();
         Assert.False(item.ContainsKey("Subtotal"));
         Assert.True(item.ContainsKey("UnitPrice"));
