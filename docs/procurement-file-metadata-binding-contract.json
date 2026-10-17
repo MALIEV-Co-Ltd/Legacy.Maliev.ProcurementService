@@ -729,7 +729,7 @@
   },
   "harness": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs",
-    "gitBlob": "f799a76a90dd7e823c76aa6763b0c45d5ae14309",
+    "gitBlob": "c54d89262a63f04683d09df15a6814a2cbbdcff9",
     "baselineOverlay": "Same test file only; no new converter file or Program change in immutable baseline"
   },
   "currentParentPolicy": "Unchanged;24 differential representation cases plus7 HTTP retention cases",
@@ -748,6 +748,33 @@
   ],
   "implementationRuntime": {
     "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+      "gitBlob": "0259b5722072609bb7c356bd1c9a5f49fd2d0caa"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
+      "gitBlob": "3aca6cb413f13945efc28e9e2cebeafbe351d8f3"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+      "gitBlob": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "gitBlob": "bcb6cdab502c0b0e62835399afc774c31f57d3bd"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
+      "gitBlob": "be119d54a90a0772444b9f61f97be53a779610ba"
+    }
+  },
+  "previousAcceptedMetadataRuntime": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": "d97961fce1c1e4240750f591cee1343ce426b39e",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": "b25c869f80f02d59e1d75549e74f87cd5776c61b"
+  },
+  "supplierIdentityBuildAdvance": {
+    "acceptedBase": "e8850889cb81b5bdf5bac5fdd1c55f2ed08cae8d",
+    "scope": "Explicit current-candidate runtime/build envelope only; immutable0c baseline/harness16+108/parent policy/typedreader proof unchanged",
+    "nativeAcceptance": "NOT RUN on successor; fresh metadata35+additivecontrols/baseline16/candidate108/source/resource proof and all normal gates required"
+  },
+  "runtimeBindingFormat": "git-blob-record-v1",
+  "previousSupplierIdentityMetadataRuntime": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": {
       "gitBlob": "1086ad175dd885789ea4deec794c8d916c88360e"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
@@ -760,14 +787,20 @@
       "gitBlob": "bcb6cdab502c0b0e62835399afc774c31f57d3bd"
     }
   },
-  "previousAcceptedMetadataRuntime": {
-    "Legacy.Maliev.ProcurementService.Api/Program.cs": "d97961fce1c1e4240750f591cee1343ce426b39e",
-    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": "b25c869f80f02d59e1d75549e74f87cd5776c61b"
+  "previousAccepted108Harness": {
+    "path": "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs",
+    "gitBlob": "f799a76a90dd7e823c76aa6763b0c45d5ae14309",
+    "baselineOverlay": "Same test file only; no new converter file or Program change in immutable baseline"
   },
-  "supplierIdentityBuildAdvance": {
-    "acceptedBase": "e8850889cb81b5bdf5bac5fdd1c55f2ed08cae8d",
-    "scope": "Explicit current-candidate runtime/build envelope only; immutable0c baseline/harness16+108/parent policy/typedreader proof unchanged",
-    "nativeAcceptance": "NOT RUN on successor; fresh metadata35+additivecontrols/baseline16/candidate108/source/resource proof and all normal gates required"
+  "metadataIdentityBuildAdvance": {
+    "base": "9005cfbae5e5ef2b5e4267d1700b343256e7a821",
+    "scope": "Native property-reader implementation plus ignored body identity validation; same108 identities/16baseline cases; explicit Id7007 unknown-control successor, no semantic/type assertion removals",
+    "nativeAcceptance": "NOT RUN; strict source/resource gates/baseline16/candidate108 and all normal gates required",
+    "nativeComparison": "Independent fresh MVC OptionsFactory(DefaultName) over all ordered public configure/postconfigure/validate services excluding only exact owned IConfigureOptions action. Audit live default factory, zero owned properties/readers. No resolver chain inspection or reflection; old exact file converter removal retained only in historical native comparison."
   },
-  "runtimeBindingFormat": "git-blob-record-v1"
+  "unpublishedResolverDesignCorrection": {
+    "heldProducer": "2ab0dc07909a8b690597b54262498afb1b0da5f3",
+    "status": "Unreferenced design superseded; no runtime acceptance or source closure",
+    "cause": "Framework resolver wrappers invalidate chain-based oracle; native options now independently constructed."
+  }
 }

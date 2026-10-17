@@ -30,12 +30,12 @@ builder.AddStandardOpenApi(
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new PurchaseOrderHeaderRequestJsonConverter());
-    options.JsonSerializerOptions.Converters.Add(new PurchaseOrderFileMetadataRequestJsonConverter());
     options.JsonSerializerOptions.Converters.Add(new SupplierIgnoredIdJsonConverter());
     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     options.JsonSerializerOptions.PropertyNamingPolicy = null;
     options.JsonSerializerOptions.DictionaryKeyPolicy = null;
 });
+builder.Services.AddSingleton<Microsoft.Extensions.Options.IConfigureOptions<Microsoft.AspNetCore.Mvc.JsonOptions>, ProcurementIgnoredBodyIdJsonOptions>();
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;

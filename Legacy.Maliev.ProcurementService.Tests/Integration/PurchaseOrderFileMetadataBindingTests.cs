@@ -362,7 +362,7 @@ public sealed class PurchaseOrderFileMetadataBindingTests(ProcurementRuntimeFixt
         Assert.Equal(new[] { "Bucket", "ObjectName" }, wire.RootElement.EnumerateObject().Select(value => value.Name).ToArray());
         Assert.Equal(JsonValueKind.String, wire.RootElement.GetProperty("Bucket").ValueKind);
         Assert.Equal(JsonValueKind.String, wire.RootElement.GetProperty("ObjectName").ValueKind);
-        var payload = "{\"Bucket\":\"bucket\",\"ObjectName\":\"name\",\"Id\":{},\"CreatedDate\":[],\"ModifiedDate\":true,\"Unknown\":{\"Bucket\":[]}}";
+        var payload = "{\"Bucket\":\"bucket\",\"ObjectName\":\"name\",\"Id\":7007,\"CreatedDate\":[],\"ModifiedDate\":true,\"Unknown\":{\"Bucket\":[]}}";
         Assert.Equal(JsonSerializer.Deserialize<UpsertPurchaseOrderFileRequest>(payload, WithoutFileConverter()), Bind(payload));
         Assert.Throws<JsonException>(() => Bind("{\"Bucket\":\"bucket\"} {}"));
     }
@@ -371,13 +371,58 @@ public sealed class PurchaseOrderFileMetadataBindingTests(ProcurementRuntimeFixt
     private UpsertPurchaseOrderFileRequest Bind(string payload)
         => JsonSerializer.Deserialize<UpsertPurchaseOrderFileRequest>(payload, Options)!;
 
-    private JsonSerializerOptions WithoutFileConverter()
+    private JsonSerializerOptions WithoutFileConverter() => NativeMvcOptions();
+
+    private const string OwnedConfigure = "Legacy.Maliev.ProcurementService.Api.Serialization.ProcurementIgnoredBodyIdJsonOptions";
+
+    private static bool IsOwnedConfigure(IConfigureOptions<Microsoft.AspNetCore.Mvc.JsonOptions> action)
+        => action.GetType().FullName == OwnedConfigure && action.GetType().Assembly == typeof(ProcurementPermissions).Assembly;
+
+    private static Microsoft.AspNetCore.Mvc.JsonOptions ConstructNativeMvcOptions(
+        IConfigureOptions<Microsoft.AspNetCore.Mvc.JsonOptions>[] setups,
+        IPostConfigureOptions<Microsoft.AspNetCore.Mvc.JsonOptions>[] posts,
+        IValidateOptions<Microsoft.AspNetCore.Mvc.JsonOptions>[] validations)
     {
-        var baseline = new JsonSerializerOptions(Options);
-        for (var index = baseline.Converters.Count - 1; index >= 0; index--)
-            if (baseline.Converters[index].GetType().FullName == FileConverter)
-                baseline.Converters.RemoveAt(index);
-        return baseline;
+        var nativeSetups = setups.Where(action => !IsOwnedConfigure(action)).ToArray();
+        Assert.InRange(setups.Length - nativeSetups.Length, 0, 1);
+        var index = 0;
+        foreach (var action in setups)
+        {
+            if (IsOwnedConfigure(action)) continue;
+            Assert.Same(action, nativeSetups[index++]);
+        }
+        Assert.Equal(nativeSetups.Length, index);
+        // OptionsFactory preserves ordered named/default Configure actions, followed by
+        // every PostConfigure and validator. No candidate resolver is inspected or unwrapped.
+        return new OptionsFactory<Microsoft.AspNetCore.Mvc.JsonOptions>(nativeSetups, posts, validations)
+            .Create(Microsoft.Extensions.Options.Options.DefaultName);
+    }
+
+    private JsonSerializerOptions NativeMvcOptions()
+    {
+        Assert.IsType<OptionsFactory<Microsoft.AspNetCore.Mvc.JsonOptions>>(app.Services.GetRequiredService<IOptionsFactory<Microsoft.AspNetCore.Mvc.JsonOptions>>());
+        var setups = app.Services.GetServices<IConfigureOptions<Microsoft.AspNetCore.Mvc.JsonOptions>>().ToArray();
+        var posts = app.Services.GetServices<IPostConfigureOptions<Microsoft.AspNetCore.Mvc.JsonOptions>>().ToArray();
+        var validations = app.Services.GetServices<IValidateOptions<Microsoft.AspNetCore.Mvc.JsonOptions>>().ToArray();
+        var configured = ConstructNativeMvcOptions(setups, posts, validations);
+        var native = new JsonSerializerOptions(configured.JsonSerializerOptions);
+        // Historical0c/9005 controls already removed this exact pre-existing whole-DTO
+        // converter. Keep that bounded native comparison policy on read-only baselines.
+        for (var index = native.Converters.Count - 1; index >= 0; index--)
+            if (native.Converters[index].GetType().FullName ==
+                    FileConverter
+                && native.Converters[index].GetType().Assembly == typeof(ProcurementPermissions).Assembly)
+                native.Converters.RemoveAt(index);
+        foreach (var requestType in new[] { typeof(UpsertSupplierAddressRequest), typeof(UpsertPurchaseOrderAddressRequest), typeof(UpsertPurchaseOrderFileRequest) })
+        {
+            var metadata = native.GetTypeInfo(requestType);
+            Assert.Equal(System.Text.Json.Serialization.Metadata.JsonTypeInfoKind.Object, metadata.Kind);
+            Assert.DoesNotContain(metadata.Properties, property => property.Name == "Id");
+            Assert.DoesNotContain(metadata.Properties, property => property.CustomConverter?.GetType().FullName is
+                "Legacy.Maliev.ProcurementService.Api.Serialization.IgnoredBodyInt32JsonConverter" or
+                FileConverter);
+        }
+        return native;
     }
 
     private static IEnumerable<object[]> CaseIds<T>(IReadOnlyDictionary<string, T> vectors)

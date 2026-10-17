@@ -405,20 +405,30 @@ class CandidateSourceCustodyTests(unittest.TestCase):
         converter = "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs"
         previous = CONTRACT["previousCandidateBindings"]
         self.assertEqual(5, len(previous))
-        self.assertEqual(8, len(CONTRACT["candidateBindings"]))
-        self.assertNotEqual(previous[program], RED.binding_digest(CONTRACT["candidateBindings"][program]))
+        retained_supplier = CONTRACT["previousIgnoredSupplierCandidateBindings"]
+        self.assertEqual(8, len(retained_supplier))
+        self.assertNotEqual(previous[program], RED.binding_digest(retained_supplier[program]))
         supplier = "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs"
         project = "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj"
-        self.assertEqual({converter, supplier, project}, set(CONTRACT["candidateBindings"]) - set(previous))
+        self.assertEqual({converter, supplier, project}, set(retained_supplier) - set(previous))
         retained = CONTRACT["previousFileMetadataCandidateBindings"]
         self.assertEqual(6, len(retained))
-        self.assertEqual({supplier, project}, set(CONTRACT["candidateBindings"]) - set(retained))
+        self.assertEqual({supplier, project}, set(retained_supplier) - set(retained))
         for relative in retained:
             if relative != program:
-                self.assertEqual(retained[relative], RED.binding_digest(CONTRACT["candidateBindings"][relative]))
+                self.assertEqual(retained[relative], RED.binding_digest(retained_supplier[relative]))
         for relative in previous:
             if relative != program:
-                self.assertEqual(previous[relative], RED.binding_digest(CONTRACT["candidateBindings"][relative]))
+                self.assertEqual(previous[relative], RED.binding_digest(retained_supplier[relative]))
+        current = CONTRACT["candidateBindings"]
+        metadata_identity = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs"
+        self.assertEqual(9, len(current))
+        self.assertEqual({metadata_identity}, set(current) - set(retained_supplier))
+        for relative in retained_supplier:
+            if relative in {program, converter}:
+                self.assertNotEqual(RED.binding_digest(retained_supplier[relative]), RED.binding_digest(current[relative]))
+            else:
+                self.assertEqual(RED.binding_digest(retained_supplier[relative]), RED.binding_digest(current[relative]))
         self.assertEqual("19d17888cd77004b42f290a3c0daad454dfd4b5e", CONTRACT["baseline"]["programBlob"])
         self.assertEqual("afa62156da9a55476326bd9bfe1295a345f6fed72bfaaa437a5427ca93cbfef7", CONTRACT["baseline"]["programSha256"])
         sources = self.sources()

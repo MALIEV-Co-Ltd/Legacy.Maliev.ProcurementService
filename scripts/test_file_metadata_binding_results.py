@@ -549,7 +549,7 @@ class FileMetadataBoundedReaderControls(unittest.TestCase):
 
 
 class MetadataRuntimeEnvelopeControls(unittest.TestCase):
-    def test_exact_reviewed_four_input_envelope_passes(self):
+    def test_exact_reviewed_five_input_envelope_passes(self):
         prep.require_runtime_roster(CONTRACT["implementationRuntime"])
 
     def test_each_missing_or_foreign_runtime_input_is_refused(self):

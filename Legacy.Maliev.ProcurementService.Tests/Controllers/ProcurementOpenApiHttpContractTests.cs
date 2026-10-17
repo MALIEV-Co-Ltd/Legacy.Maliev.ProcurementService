@@ -171,5 +171,23 @@ public sealed class ProcurementOpenApiHttpContractTests(ProcurementRuntimeFixtur
             Assert.Equal(supplierRequestFields, profile["properties"]!.AsObject().Select(property => property.Key).Order(StringComparer.Ordinal));
         }
         Assert.True(JsonNode.DeepEquals(supplierCreate, supplierUpdate));
+
+        var supplierAddressFields = new[] { "Address1", "Address2", "Building", "City", "CountryId", "PostalCode", "State" };
+        var purchaseAddressFields = new[] { "AddressLine1", "AddressLine2", "Building", "City", "CountryId", "PostalCode", "State" };
+        foreach (var (path, method, fields) in new[]
+        {
+            ("/suppliers/{supplierId}/addresses", "post", supplierAddressFields),
+            ("/suppliers/addresses/{addressId}", "put", supplierAddressFields),
+            ("/purchaseorders/addresses", "post", purchaseAddressFields),
+            ("/purchaseorders/addresses/{addressId}", "put", purchaseAddressFields),
+        })
+        {
+            var request = Resolve(document, Path(document, path)[method]!["requestBody"]!["content"]!["application/json"]!["schema"]!.AsObject());
+            Assert.Equal("object", request["type"]!.GetValue<string>());
+            Assert.Null(request["allOf"]);
+            Assert.Null(request["anyOf"]);
+            Assert.Null(request["oneOf"]);
+            Assert.Equal(fields, request["properties"]!.AsObject().Select(property => property.Key).Order(StringComparer.Ordinal));
+        }
     }
 }

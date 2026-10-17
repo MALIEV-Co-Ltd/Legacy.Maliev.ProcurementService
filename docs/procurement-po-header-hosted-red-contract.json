@@ -12,10 +12,10 @@
   },
   "candidateBindings": {
     "Legacy.Maliev.ProcurementService.Api/Program.cs": {
-      "sha256": "4cd118f460ebe86fa81745a27bb06c374f704f99083e1be2631bea09be047740"
+      "sha256": "9448746c2f26f65d90622afe3b1271327031cece0a21c7b9c0faa9b56fbe83ee"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
-      "sha256": "349d3a65d493710af63b4909da3f40933e9e0a99769498405daaeba2f71af7aa"
+      "sha256": "e7dae18e5cc6095eda6444239532455e85c8de3c359dc0514797cccf478e80f0"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
       "sha256": "d889daf8f8c8adeb10291476b592184f8a1551f170bc8a527888ff4f6c7bec0e"
@@ -34,6 +34,9 @@
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
       "sha256": "6ea1dce207535603db4cc4cb367ac60ba5c1179bc77d0c05ddabaffa22397d55"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
+      "sha256": "77710ac49252bcf82ca56792418a0ae57d26b5f8d84be58b6abe235441717509"
     }
   },
   "expectedCounters": {
@@ -253,5 +256,52 @@
     "nativeAcceptance": "NOT RUN on successor;29controls/native9/restoration0WE/header135/allnormalgates required.",
     "runtimeBindingFormat": "git-blob-record-v1"
   },
-  "candidateBindingFormat": "sha256-record-v1"
+  "candidateBindingFormat": "sha256-record-v1",
+  "previousIgnoredSupplierCandidateBindings": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+      "sha256": "4cd118f460ebe86fa81745a27bb06c374f704f99083e1be2631bea09be047740"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
+      "sha256": "349d3a65d493710af63b4909da3f40933e9e0a99769498405daaeba2f71af7aa"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
+      "sha256": "d889daf8f8c8adeb10291476b592184f8a1551f170bc8a527888ff4f6c7bec0e"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": {
+      "sha256": "444a71c704d94fc5d8e5b4eaa100d06b0fe3e5e2ff544b4af31e0e94b62d1c9e"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": {
+      "sha256": "d29189ed0f2caf97153aa534bbb3f708c18d300c428e72389b78310466726845"
+    },
+    "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs": {
+      "sha256": "cb0e10f9eecf82f64fb389929c0c53a82b8461d3af918572fece2f4dbe51d679"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+      "sha256": "8b979fcda8bd10fb806389e1e0e4181adbe4c390fc55e902f1b36e445efe6469"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "sha256": "6ea1dce207535603db4cc4cb367ac60ba5c1179bc77d0c05ddabaffa22397d55"
+    }
+  },
+  "metadataIdentityBindingAdvance": {
+    "acceptedBase": "9005cfbae5e5ef2b5e4267d1700b343256e7a821",
+    "scope": "Separate public IConfigureOptions MVC enrollment; original runtime binding histories and RED/header behavior retained.",
+    "runtimePostimages": {
+      "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
+        "gitBlob": "be119d54a90a0772444b9f61f97be53a779610ba"
+      },
+      "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
+        "gitBlob": "3aca6cb413f13945efc28e9e2cebeafbe351d8f3"
+      },
+      "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+        "gitBlob": "0259b5722072609bb7c356bd1c9a5f49fd2d0caa"
+      }
+    },
+    "nativeAcceptance": "NOT RUN; unchanged exact9 RED/restoration/header135 and all required hosted checks"
+  },
+  "unpublishedResolverDesignCorrection": {
+    "heldProducer": "2ab0dc07909a8b690597b54262498afb1b0da5f3",
+    "status": "Unreferenced design superseded; no runtime acceptance or source closure",
+    "cause": "Framework resolver wrappers invalidate chain-based oracle; native options now independently constructed."
+  }
 }
