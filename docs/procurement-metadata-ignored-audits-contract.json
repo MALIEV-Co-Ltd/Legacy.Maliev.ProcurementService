@@ -3178,7 +3178,7 @@
       "gitBlob": "16109c5013df74ad4c27f14b128287ceb649efb1"
     },
     "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs": {
-      "gitBlob": "36019ac73ad9bc4f9f627e8fe2ddbcb8caa49867"
+      "gitBlob": "507b8dc2fa30154f51cd2fa99edecc2dff7ce722"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs": {
       "gitBlob": "a67b02f189ef4fddaa42e3bddec015b3bfe4d05c"

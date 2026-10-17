@@ -15,7 +15,8 @@ public sealed class WorkflowContractTests
     private const string PreviousHeaderDraftVersion = "9e8f243f9813b7b2b232fe2525a2fba819a6c97c";
     private const string PreviousHeaderContactVersion = "4f655c9394c20e5968d8bf6f1d77fdba3f77c7f4";
     private const string PreviousSupplierAuditVersion = "d159befd91d7bed196d045366870b5bb60c21725";
-    private const string CurrentProcurementVersion = "22e307d936993c2976d8f64819d37c5035b4b1de";
+    private const string PreviousMetadataAuditVersion = "22e307d936993c2976d8f64819d37c5035b4b1de";
+    private const string CurrentProcurementVersion = "d997f2a527a478110ac3bd96c915f4d0f6ab734a";
     private static readonly string Workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "_build-and-test.yml"));
     private static readonly string ApiProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Api.csproj"));
@@ -285,6 +286,7 @@ public sealed class WorkflowContractTests
         Assert.NotEqual(PreviousHeaderDraftVersion, CurrentProcurementVersion);
         Assert.NotEqual(PreviousHeaderContactVersion, CurrentProcurementVersion);
         Assert.NotEqual(PreviousSupplierAuditVersion, CurrentProcurementVersion);
+        Assert.NotEqual(PreviousMetadataAuditVersion, CurrentProcurementVersion);
         var source = File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml"));
         ValidateAuthProgramJoin(source);
         Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(
@@ -295,6 +297,8 @@ public sealed class WorkflowContractTests
             source.Replace(CurrentProcurementVersion, PreviousHeaderContactVersion, StringComparison.Ordinal)));
         Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(
             source.Replace(CurrentProcurementVersion, PreviousSupplierAuditVersion, StringComparison.Ordinal)));
+        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(
+            source.Replace(CurrentProcurementVersion, PreviousMetadataAuditVersion, StringComparison.Ordinal)));
     }
 
     [Theory]

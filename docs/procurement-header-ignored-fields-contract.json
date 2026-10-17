@@ -2152,7 +2152,7 @@
       "gitBlob": "eb9a3cc0f299279ad4db1f305dd86519d69f5429"
     },
     "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs": {
-      "gitBlob": "36019ac73ad9bc4f9f627e8fe2ddbcb8caa49867"
+      "gitBlob": "507b8dc2fa30154f51cd2fa99edecc2dff7ce722"
     },
     "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementPostgresMigrationTests.cs": {
       "gitBlob": "c8c60dc1cf1fd050536bdffd35328605a9fe4147"
