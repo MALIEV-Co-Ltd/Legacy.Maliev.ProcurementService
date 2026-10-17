@@ -1724,7 +1724,10 @@
       "gitBlob": "def71e595a946d1ff7a7fe74fcc0ba640916872f"
     }
   },
-  "authEnrollmentTestBinding": null,
+  "authEnrollmentTestBinding": {
+    "path": "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs",
+    "gitBlob": "d3a4eb47069a67fe6b9fa23ee93c8672f8de7304"
+  },
   "candidateBoundaryHarness": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Controllers/ProcurementOpenApiHttpContractTests.cs",
     "gitBlob": "385a8b3339537347019f3226e8ec7de949417c2d"

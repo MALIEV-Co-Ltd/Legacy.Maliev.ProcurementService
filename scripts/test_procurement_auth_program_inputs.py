@@ -220,5 +220,38 @@ class RuntimeInputs(unittest.TestCase):
             guard.require_historical_graph(manifest)
 
 
+    def test_current_graph_rejects_supplier_identity71_witness_and_preimage_drift(self):
+        import copy
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        for field in ("path", "sha256", "procurement", "gitBlob"):
+            with self.subTest(field=field):
+                changed = copy.deepcopy(manifest)
+                changed["latestAcceptedSupplierIdentityGraph"][field] = "drift"
+                with self.assertRaises(ValueError):
+                    guard.require_historical_graph(changed)
+        for path in manifest["intentionalSourceChanges"]["changedInputs"]:
+            with self.subTest(path=path):
+                changed = copy.deepcopy(manifest)
+                changed["intentionalSourceChanges"]["changedInputs"][path]["previousMetadata"] = "100644 blob unrelated"
+                with self.assertRaises(ValueError):
+                    guard.require_historical_graph(changed)
+
+    def test_current_graph_rejects_supplier_identity71_and_current72_count_drift(self):
+        import copy
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        for source, field, value in (("latestAcceptedSupplierIdentityGraph","inputCount",70),
+                                     ("intentionalSourceChanges","inputCount",71),
+                                     ("intentionalSourceChanges","unchangedInputCount",68),
+                                     ("intentionalSourceChanges","reviewedProcurement","main"),
+                                     ("intentionalSourceChanges","reviewedTree","0"*40)):
+            with self.subTest(source=source,field=field):
+                changed = copy.deepcopy(manifest)
+                changed[source][field] = value
+                with self.assertRaises(ValueError):
+                    guard.require_historical_graph(changed)
+
+
 if __name__ == "__main__":
     unittest.main()
