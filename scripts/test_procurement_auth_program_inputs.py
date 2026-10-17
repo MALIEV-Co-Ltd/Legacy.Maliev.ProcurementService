@@ -253,5 +253,36 @@ class RuntimeInputs(unittest.TestCase):
                     guard.require_historical_graph(changed)
 
 
+    def test_current_graph_rejects_metadata_identity72_witness_custody_drift(self):
+        import copy
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        for field, value in (("path", "drift"), ("sha256", "0"*64), ("gitBlob", "0"*40),
+                             ("procurement", "main"), ("inputCount", 71)):
+            with self.subTest(field=field):
+                changed = copy.deepcopy(manifest)
+                changed["latestAcceptedMetadataIdentityGraph"][field] = value
+                with self.assertRaises(ValueError):
+                    guard.require_historical_graph(changed)
+
+    def test_current_graph_rejects_header72_one_delta71_unchanged_envelope_drift(self):
+        import copy
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        for field, value in (("acceptedBase", "main"), ("previousProcurement", "main"),
+                             ("inputCount", 71), ("unchangedInputCount", 70),
+                             ("reviewedProcurement", "main"), ("reviewedTree", "0"*40)):
+            with self.subTest(field=field):
+                changed = copy.deepcopy(manifest)
+                changed["intentionalSourceChanges"][field] = value
+                with self.assertRaises(ValueError):
+                    guard.require_historical_graph(changed)
+        changed = copy.deepcopy(manifest)
+        changed["previousMetadataIdentityIntentionalSourceChanges"]["unchangedInputCount"] = 1
+        with self.assertRaises(ValueError):
+            guard.require_historical_graph(changed)
+
+
+
 if __name__ == "__main__":
     unittest.main()

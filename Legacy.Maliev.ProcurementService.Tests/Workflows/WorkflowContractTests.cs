@@ -11,7 +11,8 @@ public sealed class WorkflowContractTests
     private const string HistoricalProcurementVersion = "c40fd246c17b738879c9345c6bcca44d96faf025";
     private const string PreviousProcurementVersion = "99049bab2c100ffdf6606bf11a2f50980c0cf3cf";
     private const string PreviousSupplierIdentityProcurementVersion = "f7f6930a84278c50f878898169123fe7641211ac";
-    private const string CurrentProcurementVersion = "56a6b8d8576b71cfd8e76216118684839c8ea102";
+    private const string PreviousMetadataIdentityProcurementVersion = "56a6b8d8576b71cfd8e76216118684839c8ea102";
+    private const string CurrentProcurementVersion = "9e8f243f9813b7b2b232fe2525a2fba819a6c97c";
     private static readonly string Workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "_build-and-test.yml"));
     private static readonly string ApiProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Api.csproj"));
@@ -277,7 +278,11 @@ public sealed class WorkflowContractTests
     public void ActualAuthProgramJoin_RequiresImmutableProducersAndAlwaysRetainedEvidence()
     {
         Assert.NotEqual(PreviousSupplierIdentityProcurementVersion, CurrentProcurementVersion);
-        ValidateAuthProgramJoin(File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml")));
+        Assert.NotEqual(PreviousMetadataIdentityProcurementVersion, CurrentProcurementVersion);
+        var source = File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml"));
+        ValidateAuthProgramJoin(source);
+        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(
+            source.Replace(CurrentProcurementVersion, PreviousMetadataIdentityProcurementVersion, StringComparison.Ordinal)));
     }
 
     [Theory]
