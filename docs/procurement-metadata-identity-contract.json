@@ -1521,6 +1521,9 @@
     },
     "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": {
       "gitBlob": "49461d4f6a13cba8b347001c24920006a5fd5eaf"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "gitBlob": "87fd40bbe9072c8da0cc3567020d2872b05a107d"
     }
   },
   "publicFixture": {
@@ -1712,7 +1715,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-metadata-identity-baseline.py": {
-      "gitBlob": "2851127b51e02ecc57e5ebf41f1e4e30b255925c"
+      "gitBlob": "00f0dc43c387589dc20057102cf2cc5e12e5d6ec"
     },
     "scripts/verify-metadata-identity-results.py": {
       "gitBlob": "a1cb8d97044e6c4aa9da33549e967551074b616d"
@@ -1721,7 +1724,7 @@
       "gitBlob": "bdd2544a6ff844d6500512db9ac255192def30fb"
     },
     "scripts/test_metadata_identity_results.py": {
-      "gitBlob": "f91449a0b738dccf7caa44334b3dbcef8a918e01"
+      "gitBlob": "bd02e77b77a5ce32db4955739120f5a6f6dcabac"
     },
     "scripts/require-metadata-identity-admission.py": {
       "gitBlob": "0c91e5b94fa2ddaeb5e602ebfa68e242efd81a7a"
@@ -1822,6 +1825,9 @@
     },
     "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementPostgresMigrationTests.cs": {
       "gitBlob": "c8c60dc1cf1fd050536bdffd35328605a9fe4147"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierIgnoredAuditTests.cs": {
+      "gitBlob": "a56ac1ba5adc5d7321b90da8c9d1b2fe4a1839a5"
     }
   },
   "postContactSourceAdvance": {

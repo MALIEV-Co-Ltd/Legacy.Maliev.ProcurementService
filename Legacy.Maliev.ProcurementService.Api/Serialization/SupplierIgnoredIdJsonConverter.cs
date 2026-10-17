@@ -5,7 +5,7 @@ using Legacy.Maliev.ProcurementService.Application.Models;
 
 namespace Legacy.Maliev.ProcurementService.Api.Serialization;
 
-/// <summary>Validates and discards the original supplier body's identity and address reference.</summary>
+/// <summary>Validates and discards the original supplier body's identity, address reference, and audit dates.</summary>
 public sealed class SupplierIgnoredIdJsonConverter : JsonConverter<UpsertSupplierRequest>
 {
     /// <inheritdoc />
@@ -27,6 +27,12 @@ public sealed class SupplierIgnoredIdJsonConverter : JsonConverter<UpsertSupplie
                     ValidateIgnoredId(property.Value);
                     continue;
                 }
+                if (string.Equals(property.Name, "CreatedDate", comparison)
+                    || string.Equals(property.Name, "ModifiedDate", comparison))
+                {
+                    ReadIgnoredAuditDate(property.Value);
+                    continue;
+                }
                 writer.WritePropertyName(property.Name);
                 writer.WriteRawValue(property.Value.GetRawText());
             }
@@ -46,6 +52,22 @@ public sealed class SupplierIgnoredIdJsonConverter : JsonConverter<UpsertSupplie
         for (var index = inner.Converters.Count - 1; index >= 0; index--)
             if (ReferenceEquals(inner.Converters[index], this)) inner.Converters.RemoveAt(index);
         return inner;
+    }
+
+    private static void ReadIgnoredAuditDate(JsonElement value)
+    {
+        // Only compatibility with the pinned public reader is claimed.
+        // The effective historical deployed Newtonsoft binary remains unknown.
+        using var text = new StringReader(value.GetRawText());
+        using var legacy = new Newtonsoft.Json.JsonTextReader(text) { Culture = CultureInfo.InvariantCulture };
+        try
+        {
+            _ = legacy.ReadAsDateTime();
+        }
+        catch (Exception exception) when (exception is Newtonsoft.Json.JsonException or ArgumentOutOfRangeException)
+        {
+            throw new JsonException("The ignored audit date has an invalid legacy type.", exception);
+        }
     }
 
     private static void ValidateIgnoredId(JsonElement value)
