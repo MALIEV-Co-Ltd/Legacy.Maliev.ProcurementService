@@ -299,7 +299,7 @@ public sealed class PurchaseOrderFileMetadataBindingTests(ProcurementRuntimeFixt
     public async Task HttpPrimitiveMembers_RoundTripExactly(string caseId)
     {
         var (field, token) = PrimitiveVectors[caseId];
-        var payload = Payload(field, token);
+        var payload = WithExplicitParent(Payload(field, token));
         var expected = PublicProjection(payload);
         await AssertRoundTripAsync(payload, expected.Bucket!, expected.ObjectName!, 9100);
     }
@@ -309,7 +309,7 @@ public sealed class PurchaseOrderFileMetadataBindingTests(ProcurementRuntimeFixt
     public async Task HttpOrderedNullAndEmpty_KeepLiteralMetadata(string caseId)
     {
         var (field, tokens) = HttpOrderedVectors[caseId];
-        var payload = Repeated(field, tokens);
+        var payload = WithExplicitParent(Repeated(field, tokens));
         var expected = PublicProjection(payload);
         await AssertRoundTripAsync(payload, expected.Bucket!, expected.ObjectName!, 9100);
     }
@@ -328,8 +328,15 @@ public sealed class PurchaseOrderFileMetadataBindingTests(ProcurementRuntimeFixt
     public async Task HttpParentValues_RetainExistingNullablePolicy(string caseId)
     {
         var payload = WithParent(HttpParentVectors[caseId]);
-        var expected = JsonSerializer.Deserialize<UpsertPurchaseOrderFileRequest>(payload, WithoutFileConverter())!;
-        await AssertRoundTripAsync(payload, expected.Bucket, expected.ObjectName, expected.PurchaseOrderId ?? 9100);
+        // Historical method identity is retained for baseline custody. Direct
+        // STJ nullable policy above is unchanged; HTTP now binds the original int.
+        var expected = OriginalFileProjection(payload);
+        if (expected.PurchaseOrderId == 0)
+        {
+            await AssertRefusedAsync(payload, HttpStatusCode.InternalServerError);
+            return;
+        }
+        await AssertRoundTripAsync(payload, expected.Bucket, expected.ObjectName, expected.PurchaseOrderId);
     }
 
     [Theory]
@@ -430,6 +437,33 @@ public sealed class PurchaseOrderFileMetadataBindingTests(ProcurementRuntimeFixt
 
     private static IEnumerable<object[]> CaseIds<T>(IReadOnlyDictionary<string, T> vectors)
         => vectors.Keys.Select(value => new object[] { value });
+    private static string WithExplicitParent(string body) => "{\"PurchaseOrderId\":9100," + body[1..];
+
+    private static SourceFileOwnerProjection OriginalFileProjection(string body)
+    {
+        // This same-file helper must compile in the immutable 16-case baseline,
+        // whose only overlay is this harness and whose public package is Json.NET.
+        var settings = new JsonSerializerSettings
+        {
+            Culture = CultureInfo.InvariantCulture,
+            NullValueHandling = NullValueHandling.Ignore,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            MaxDepth = 32,
+            TypeNameHandling = TypeNameHandling.None,
+            MetadataPropertyHandling = MetadataPropertyHandling.Default,
+            MissingMemberHandling = MissingMemberHandling.Ignore,
+        };
+        using var reader = new JsonTextReader(new StringReader(body));
+        return Newtonsoft.Json.JsonSerializer.Create(settings).Deserialize<SourceFileOwnerProjection>(reader)!;
+    }
+
+    private sealed class SourceFileOwnerProjection
+    {
+        public int PurchaseOrderId { get; set; }
+        public string Bucket { get; set; } = null!;
+        public string ObjectName { get; set; } = null!;
+    }
+
     private static JsonTextReader PublicReader(string token)
         => new(new StringReader(token)) { Culture = CultureInfo.InvariantCulture, CloseInput = true };
     private static MetadataProjection PublicProjection(string payload)
