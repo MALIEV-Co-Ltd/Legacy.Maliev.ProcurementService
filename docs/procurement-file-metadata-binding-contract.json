@@ -722,7 +722,7 @@
       },
       {
         "method": "Bind",
-        "line": 375
+        "line": 382
       }
     ],
     "frameworkFrames": "diagnostic only"
@@ -910,5 +910,15 @@
     "path": "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs",
     "gitBlob": "a67b02f189ef4fddaa42e3bddec015b3bfe4d05c",
     "baselineOverlay": "Same test file only; no new converter file or Program change in immutable baseline"
-  }
+  },
+  "previousSourceBodyRequiredUserFrames": [
+    {
+      "method": "PrimitiveMembers_UsePublicTypedStringReader",
+      "line": 214
+    },
+    {
+      "method": "Bind",
+      "line": 375
+    }
+  ]
 }
