@@ -475,5 +475,46 @@ class SourceAndOwnershipControls(unittest.TestCase):
         self.assertEqual(expected,(HERE/"observe-supplier-identity-providers.py").read_text(encoding="utf-8"))
 
 
+
+class TypedSupplierProvenanceControls(unittest.TestCase):
+    def test_closed_git_blob_record_shape_and_exact_digest_are_required(self):
+        for record in CONTRACT["runtimePostimages"].values():
+            self.assertEqual(record["gitBlob"], prep.git_blob_record(record))
+            for invalid in (record["gitBlob"], None, {}, {"sha256": "a" * 64},
+                            {"gitBlob": record["gitBlob"], "extra": True},
+                            {"gitBlob": "a" * 39}, {"gitBlob": "G" * 40},
+                            {"gitBlob": record["gitBlob"].upper()}, {"gitBlob": 7}):
+                with self.subTest(invalid_type=type(invalid).__name__), self.assertRaises(ValueError):
+                    prep.git_blob_record(invalid)
+
+    def test_missing_or_wrong_format_and_runtime_roster_are_refused(self):
+        for mutation in ("missing-format", "wrong-format", "missing-record", "extra-record", "wrong-record"):
+            changed = copy.deepcopy(CONTRACT)
+            if mutation == "missing-format":
+                del changed["runtimeBindingFormat"]
+            elif mutation == "wrong-format":
+                changed["runtimeBindingFormat"] = "unreviewed"
+            elif mutation == "missing-record":
+                changed["runtimePostimages"].pop(next(iter(changed["runtimePostimages"])))
+            elif mutation == "wrong-record":
+                changed["runtimePostimages"][next(iter(changed["runtimePostimages"]))] = {"gitBlob": "not-a-blob"}
+            else:
+                changed["runtimePostimages"]["unreviewed"] = {"gitBlob": "a" * 40}
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                prep.runtime_bindings(changed)
+
+
+
+    def test_every_validly_shaped_but_wrong_git_object_is_refused(self):
+        actual = {path: record["gitBlob"] for path, record in CONTRACT["runtimePostimages"].items()}
+        with mock.patch.object(prep, "blob", side_effect=lambda root, path: actual[path]):
+            prep.require_runtime_postimages(pathlib.Path("."), CONTRACT)
+            for path in actual:
+                changed = copy.deepcopy(CONTRACT)
+                changed["runtimePostimages"][path] = {"gitBlob": "0" * 40}
+                with self.subTest(path=path), self.assertRaises(ValueError):
+                    prep.require_runtime_postimages(pathlib.Path("."), changed)
+
+
 if __name__ == "__main__":
     unittest.main()

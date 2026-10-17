@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import pathlib
+import re
 import subprocess
 import sys
 import tempfile
@@ -55,6 +56,28 @@ def git(root, *args):
 
 def blob(root, path):
     return git(root, "hash-object", path).decode().strip()
+
+
+def git_blob_record(value):
+    require(isinstance(value, dict) and set(value) == {"gitBlob"}
+            and isinstance(value["gitBlob"], str)
+            and re.fullmatch(r"[0-9a-f]{40}", value["gitBlob"]) is not None,
+            "Require one explicit public Git blob provenance record")
+    return value["gitBlob"]
+
+
+def runtime_bindings(manifest):
+    require(manifest.get("runtimeBindingFormat") == "git-blob-record-v1",
+            "Require the reviewed Git blob provenance format")
+    value = manifest["runtimePostimages"]
+    require(isinstance(value, dict) and set(value) == {PROGRAM, API_PROJECT, CONVERTER},
+            "Require exactly the three reviewed runtime inputs")
+    return {path: git_blob_record(record) for path, record in value.items()}
+
+
+def require_runtime_postimages(candidate, manifest):
+    for path, expected in runtime_bindings(manifest).items():
+        require(blob(candidate, path) == expected, "Wrong reviewed runtime postimage: " + path)
 
 
 def phase_reports(directory):
@@ -133,8 +156,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     require(set(runtime) == allowed, "Wrong exact runtime input roster")
     require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *directories).decode().splitlines()) == allowed,
             "Unexpected production source/build drift")
-    for path, expected in runtime.items():
-        require(blob(candidate, path) == expected, "Wrong reviewed runtime postimage: " + path)
+    require_runtime_postimages(candidate, manifest)
     for path in ("scripts/observe-supplier-address-providers.py", "scripts/supplier_address_owned_processes.py",
                  "scripts/observe-file-metadata-providers.py", "scripts/verify-file-metadata-binding-results.py",
                  "scripts/verify-supplier-address-causal-results.py"):

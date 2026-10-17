@@ -972,9 +972,15 @@
     }
   },
   "runtimePostimages": {
-    "Legacy.Maliev.ProcurementService.Api/Program.cs": "1086ad175dd885789ea4deec794c8d916c88360e",
-    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7",
-    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": "bcb6cdab502c0b0e62835399afc774c31f57d3bd"
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+      "gitBlob": "1086ad175dd885789ea4deec794c8d916c88360e"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+      "gitBlob": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "gitBlob": "bcb6cdab502c0b0e62835399afc774c31f57d3bd"
+    }
   },
   "publicFixture": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs",
@@ -1118,5 +1124,6 @@
     "candidate": "Exact observed absolute codeBase/storage/adapter; no path fallback",
     "baseline": "Exact observed workspace root and Release DLL suffix plus source-pinned workflow checkout .supplier-identity-baseline; new execution NOT RUN",
     "historicalEvidenceDoesNotQualifyNewCandidate": true
-  }
+  },
+  "runtimeBindingFormat": "git-blob-record-v1"
 }

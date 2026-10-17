@@ -747,10 +747,18 @@
     "Root sourceGO before refs/publication"
   ],
   "implementationRuntime": {
-    "Legacy.Maliev.ProcurementService.Api/Program.cs": "1086ad175dd885789ea4deec794c8d916c88360e",
-    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": "b25c869f80f02d59e1d75549e74f87cd5776c61b",
-    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7",
-    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": "bcb6cdab502c0b0e62835399afc774c31f57d3bd"
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+      "gitBlob": "1086ad175dd885789ea4deec794c8d916c88360e"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
+      "gitBlob": "b25c869f80f02d59e1d75549e74f87cd5776c61b"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+      "gitBlob": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "gitBlob": "bcb6cdab502c0b0e62835399afc774c31f57d3bd"
+    }
   },
   "previousAcceptedMetadataRuntime": {
     "Legacy.Maliev.ProcurementService.Api/Program.cs": "d97961fce1c1e4240750f591cee1343ce426b39e",
@@ -760,5 +768,6 @@
     "acceptedBase": "e8850889cb81b5bdf5bac5fdd1c55f2ed08cae8d",
     "scope": "Explicit current-candidate runtime/build envelope only; immutable0c baseline/harness16+108/parent policy/typedreader proof unchanged",
     "nativeAcceptance": "NOT RUN on successor; fresh metadata35+additivecontrols/baseline16/candidate108/source/resource proof and all normal gates required"
-  }
+  },
+  "runtimeBindingFormat": "git-blob-record-v1"
 }

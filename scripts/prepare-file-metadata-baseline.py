@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import pathlib
+import re
 import subprocess
 import sys
 import tempfile
@@ -65,9 +66,32 @@ def phase_reports(directory):
     return reports
 
 
+def git_blob_record(value):
+    require(isinstance(value, dict) and set(value) == {"gitBlob"}
+            and isinstance(value["gitBlob"], str)
+            and re.fullmatch(r"[0-9a-f]{40}", value["gitBlob"]) is not None,
+            "Require one explicit public Git blob provenance record")
+    return value["gitBlob"]
+
+
 def require_runtime_roster(value):
-    require(set(value) == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER},
+    require(isinstance(value, dict) and set(value) == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER},
             "Runtime postimage roster must equal the four reviewed current inputs")
+    for record in value.values():
+        git_blob_record(record)
+
+
+def runtime_bindings(manifest):
+    require(manifest.get("runtimeBindingFormat") == "git-blob-record-v1",
+            "Require the reviewed Git blob provenance format")
+    value = manifest["implementationRuntime"]
+    require_runtime_roster(value)
+    return {path: git_blob_record(record) for path, record in value.items()}
+
+
+def require_runtime_postimages(candidate, manifest):
+    for path, expected in runtime_bindings(manifest).items():
+        require(blob(candidate, path) == expected, "Candidate runtime postimage differs: " + path)
 
 
 def require_phase_evidence(output, phase, budget=None):
@@ -135,8 +159,7 @@ def prepare(baseline, manifest_path, verify_only=False):
                       "Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Application",
                       "Legacy.Maliev.ProcurementService.Data", "Legacy.Maliev.ProcurementService.Domain").decode().splitlines())
     require(changed == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER}, "Unexpected production source changes")
-    for path, expected in expected_runtime.items():
-        require(blob(candidate, path) == expected, "Candidate runtime postimage differs: " + path)
+    require_runtime_postimages(candidate, manifest)
     for path in ("scripts/observe-supplier-address-providers.py", "scripts/supplier_address_owned_processes.py"):
         require(blob(candidate, path) == git(baseline, "rev-parse", BASE + ":" + path).decode().strip(),
                 "Reviewed process/provider ownership implementation changed")

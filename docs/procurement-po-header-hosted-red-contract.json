@@ -11,14 +11,30 @@
     "absentPath": "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs"
   },
   "candidateBindings": {
-    "Legacy.Maliev.ProcurementService.Api/Program.cs": "4cd118f460ebe86fa81745a27bb06c374f704f99083e1be2631bea09be047740",
-    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": "349d3a65d493710af63b4909da3f40933e9e0a99769498405daaeba2f71af7aa",
-    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": "d889daf8f8c8adeb10291476b592184f8a1551f170bc8a527888ff4f6c7bec0e",
-    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": "444a71c704d94fc5d8e5b4eaa100d06b0fe3e5e2ff544b4af31e0e94b62d1c9e",
-    "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": "d29189ed0f2caf97153aa534bbb3f708c18d300c428e72389b78310466726845",
-    "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs": "cb0e10f9eecf82f64fb389929c0c53a82b8461d3af918572fece2f4dbe51d679",
-    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": "8b979fcda8bd10fb806389e1e0e4181adbe4c390fc55e902f1b36e445efe6469",
-    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": "6ea1dce207535603db4cc4cb367ac60ba5c1179bc77d0c05ddabaffa22397d55"
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+      "sha256": "4cd118f460ebe86fa81745a27bb06c374f704f99083e1be2631bea09be047740"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
+      "sha256": "349d3a65d493710af63b4909da3f40933e9e0a99769498405daaeba2f71af7aa"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
+      "sha256": "d889daf8f8c8adeb10291476b592184f8a1551f170bc8a527888ff4f6c7bec0e"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": {
+      "sha256": "444a71c704d94fc5d8e5b4eaa100d06b0fe3e5e2ff544b4af31e0e94b62d1c9e"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": {
+      "sha256": "d29189ed0f2caf97153aa534bbb3f708c18d300c428e72389b78310466726845"
+    },
+    "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs": {
+      "sha256": "cb0e10f9eecf82f64fb389929c0c53a82b8461d3af918572fece2f4dbe51d679"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+      "sha256": "8b979fcda8bd10fb806389e1e0e4181adbe4c390fc55e902f1b36e445efe6469"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "sha256": "6ea1dce207535603db4cc4cb367ac60ba5c1179bc77d0c05ddabaffa22397d55"
+    }
   },
   "expectedCounters": {
     "total": 9,
@@ -223,11 +239,19 @@
   "supplierIdentityBindingAdvance": {
     "base": "e8850889cb81b5bdf5bac5fdd1c55f2ed08cae8d",
     "runtimePostimages": {
-      "Legacy.Maliev.ProcurementService.Api/Program.cs": "1086ad175dd885789ea4deec794c8d916c88360e",
-      "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7",
-      "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": "bcb6cdab502c0b0e62835399afc774c31f57d3bd"
+      "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+        "gitBlob": "1086ad175dd885789ea4deec794c8d916c88360e"
+      },
+      "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+        "gitBlob": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7"
+      },
+      "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+        "gitBlob": "bcb6cdab502c0b0e62835399afc774c31f57d3bd"
+      }
     },
     "scope": "Explicit current Program/build/converter binding; previoussix and olderfive retained. Frozen two-file header baseline/cases/typed chains/resource restoration unchanged.",
-    "nativeAcceptance": "NOT RUN on successor;29controls/native9/restoration0WE/header135/allnormalgates required."
-  }
+    "nativeAcceptance": "NOT RUN on successor;29controls/native9/restoration0WE/header135/allnormalgates required.",
+    "runtimeBindingFormat": "git-blob-record-v1"
+  },
+  "candidateBindingFormat": "sha256-record-v1"
 }
