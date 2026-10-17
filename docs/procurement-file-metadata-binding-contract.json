@@ -722,14 +722,14 @@
       },
       {
         "method": "Bind",
-        "line": 372
+        "line": 375
       }
     ],
     "frameworkFrames": "diagnostic only"
   },
   "harness": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs",
-    "gitBlob": "c54d89262a63f04683d09df15a6814a2cbbdcff9",
+    "gitBlob": "a67b02f189ef4fddaa42e3bddec015b3bfe4d05c",
     "baselineOverlay": "Same test file only; no new converter file or Program change in immutable baseline"
   },
   "currentParentPolicy": "Unchanged;24 differential representation cases plus7 HTTP retention cases",
@@ -760,7 +760,7 @@
       "gitBlob": "87fd40bbe9072c8da0cc3567020d2872b05a107d"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
-      "gitBlob": "be119d54a90a0772444b9f61f97be53a779610ba"
+      "gitBlob": "2646aec8eb8e6ff44e48b52b7a47fed5b4a6fac2"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
       "gitBlob": "b21e6fe697acdeb945dc0acbd3c80dee22a23a02"

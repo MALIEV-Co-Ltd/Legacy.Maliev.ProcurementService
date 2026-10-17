@@ -363,7 +363,10 @@ public sealed class PurchaseOrderFileMetadataBindingTests(ProcurementRuntimeFixt
         Assert.Equal(JsonValueKind.String, wire.RootElement.GetProperty("Bucket").ValueKind);
         Assert.Equal(JsonValueKind.String, wire.RootElement.GetProperty("ObjectName").ValueKind);
         var payload = "{\"Bucket\":\"bucket\",\"ObjectName\":\"name\",\"Id\":7007,\"CreatedDate\":[],\"ModifiedDate\":true,\"Unknown\":{\"Bucket\":[]}}";
-        Assert.Equal(JsonSerializer.Deserialize<UpsertPurchaseOrderFileRequest>(payload, WithoutFileConverter()), Bind(payload));
+        Assert.NotNull(JsonSerializer.Deserialize<UpsertPurchaseOrderFileRequest>(payload, WithoutFileConverter()));
+        Assert.Throws<JsonException>(() => Bind(payload));
+        var unknown = "{\"Bucket\":\"bucket\",\"ObjectName\":\"name\",\"Id\":7007,\"Unknown\":{\"Bucket\":[],\"CreatedDate\":[],\"ModifiedDate\":true}}";
+        Assert.Equal(JsonSerializer.Deserialize<UpsertPurchaseOrderFileRequest>(unknown, WithoutFileConverter()), Bind(unknown));
         Assert.Throws<JsonException>(() => Bind("{\"Bucket\":\"bucket\"} {}"));
     }
 
