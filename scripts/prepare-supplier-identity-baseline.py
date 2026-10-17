@@ -11,6 +11,8 @@ import tempfile
 BASE = "e8850889cb81b5bdf5bac5fdd1c55f2ed08cae8d"
 BASE_TREE = "e380830777da16ddd6834642b1df8a6761cf2f87"
 PROGRAM = "Legacy.Maliev.ProcurementService.Api/Program.cs"
+METADATA_IDENTITY = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs"
+FILE_CONVERTER = "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs"
 API_PROJECT = "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj"
 CONVERTER = "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs"
 FIXTURE = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs"
@@ -70,8 +72,8 @@ def runtime_bindings(manifest):
     require(manifest.get("runtimeBindingFormat") == "git-blob-record-v1",
             "Require the reviewed Git blob provenance format")
     value = manifest["runtimePostimages"]
-    require(isinstance(value, dict) and set(value) == {PROGRAM, API_PROJECT, CONVERTER},
-            "Require exactly the three reviewed runtime inputs")
+    require(isinstance(value, dict) and set(value) == {PROGRAM, API_PROJECT, CONVERTER, FILE_CONVERTER, METADATA_IDENTITY},
+            "Require exactly the five reviewed runtime inputs")
     return {path: git_blob_record(record) for path, record in value.items()}
 
 
@@ -152,7 +154,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     require(not git(candidate, "ls-files", "--others", "--exclude-standard", "--", *directories,
                     "Legacy.Maliev.ProcurementService.Tests"), "Untracked compiled inputs forbidden")
     runtime = manifest["runtimePostimages"]
-    allowed = {PROGRAM, API_PROJECT, CONVERTER}
+    allowed = {PROGRAM, API_PROJECT, CONVERTER, FILE_CONVERTER, METADATA_IDENTITY}
     require(set(runtime) == allowed, "Wrong exact runtime input roster")
     require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *directories).decode().splitlines()) == allowed,
             "Unexpected production source/build drift")

@@ -67,8 +67,8 @@ def candidate_digests(contract):
     require(contract.get("candidateBindingFormat") == "sha256-record-v1",
             "Require the reviewed SHA256 provenance format")
     bindings = contract["candidateBindings"]
-    require(isinstance(bindings, dict) and len(bindings) == 8,
-            "Require all eight reviewed current source bindings")
+    require(isinstance(bindings, dict) and len(bindings) == 9,
+            "Require all nine reviewed current source bindings")
     return {relative: binding_digest(record) for relative, record in bindings.items()}
 
 

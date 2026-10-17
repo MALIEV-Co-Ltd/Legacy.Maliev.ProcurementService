@@ -973,13 +973,19 @@
   },
   "runtimePostimages": {
     "Legacy.Maliev.ProcurementService.Api/Program.cs": {
-      "gitBlob": "1086ad175dd885789ea4deec794c8d916c88360e"
+      "gitBlob": "0259b5722072609bb7c356bd1c9a5f49fd2d0caa"
     },
     "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
       "gitBlob": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
       "gitBlob": "bcb6cdab502c0b0e62835399afc774c31f57d3bd"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
+      "gitBlob": "be119d54a90a0772444b9f61f97be53a779610ba"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
+      "gitBlob": "3aca6cb413f13945efc28e9e2cebeafbe351d8f3"
     }
   },
   "publicFixture": {
@@ -1125,5 +1131,26 @@
     "baseline": "Exact observed workspace root and Release DLL suffix plus source-pinned workflow checkout .supplier-identity-baseline; new execution NOT RUN",
     "historicalEvidenceDoesNotQualifyNewCandidate": true
   },
-  "runtimeBindingFormat": "git-blob-record-v1"
+  "runtimeBindingFormat": "git-blob-record-v1",
+  "previousAcceptedSupplierRuntime": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+      "gitBlob": "1086ad175dd885789ea4deec794c8d916c88360e"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+      "gitBlob": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "gitBlob": "bcb6cdab502c0b0e62835399afc774c31f57d3bd"
+    }
+  },
+  "metadataIdentityBuildAdvance": {
+    "base": "9005cfbae5e5ef2b5e4267d1700b343256e7a821",
+    "scope": "Explicit separate MVC IConfigureOptions action + Program/native helper/file reader envelope; original107/e885 remain unchanged.",
+    "nativeAcceptance": "NOT RUN; original107 causal/source/resource/full normal hosted checks required"
+  },
+  "unpublishedResolverDesignCorrection": {
+    "heldProducer": "2ab0dc07909a8b690597b54262498afb1b0da5f3",
+    "status": "Unreferenced design superseded; no runtime acceptance or source closure",
+    "cause": "Framework resolver wrappers invalidate chain-based oracle; native options now independently constructed."
+  }
 }
