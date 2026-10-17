@@ -1518,6 +1518,9 @@
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
       "gitBlob": "b21e6fe697acdeb945dc0acbd3c80dee22a23a02"
+    },
+    "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": {
+      "gitBlob": "49461d4f6a13cba8b347001c24920006a5fd5eaf"
     }
   },
   "publicFixture": {
@@ -1709,7 +1712,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-metadata-identity-baseline.py": {
-      "gitBlob": "83b3a9ee8804a1e7d83f7fd39eb5ba037fc6eee7"
+      "gitBlob": "2851127b51e02ecc57e5ebf41f1e4e30b255925c"
     },
     "scripts/verify-metadata-identity-results.py": {
       "gitBlob": "a1cb8d97044e6c4aa9da33549e967551074b616d"
@@ -1718,7 +1721,7 @@
       "gitBlob": "bdd2544a6ff844d6500512db9ac255192def30fb"
     },
     "scripts/test_metadata_identity_results.py": {
-      "gitBlob": "3495119adce4d22c3e7db88fd38492ef0df0d005"
+      "gitBlob": "f91449a0b738dccf7caa44334b3dbcef8a918e01"
     },
     "scripts/require-metadata-identity-admission.py": {
       "gitBlob": "0c91e5b94fa2ddaeb5e602ebfa68e242efd81a7a"
@@ -1812,10 +1815,25 @@
   },
   "headerIgnoredFieldHarnesses": {
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": {
-      "gitBlob": "b15aedf9e56a76ce8f3b3a6d5e84384606b64f26"
+      "gitBlob": "256f096c8a40de83ff096bdd1329ba0a2443924c"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementHeaderIgnoredFieldsTests.cs": {
-      "gitBlob": "1a9db7f52e12c9d83d0987e4d7491b4a25a7bb18"
+      "gitBlob": "9511b108f50ffc625b4cb97caf04b57a926c03c6"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementPostgresMigrationTests.cs": {
+      "gitBlob": "c8c60dc1cf1fd050536bdffd35328605a9fe4147"
     }
+  },
+  "postContactSourceAdvance": {
+    "issue": 70,
+    "sourceController": {
+      "gitBlob": "273a4724d46bd95c16a0613cfac59954e4c2b035"
+    },
+    "scope": "POST-only original shipping-to-supplier contact copy; PUT/sharedMap/rawcanonical/durablecode unchanged",
+    "runtimePostimage": {
+      "path": "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs",
+      "gitBlob": "49461d4f6a13cba8b347001c24920006a5fd5eaf"
+    },
+    "status": "SOURCE ONLY; new hosted checks NOT RUN"
   }
 }

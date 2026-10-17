@@ -300,6 +300,114 @@ public sealed class ProcurementHeaderIgnoredFieldsTests(ProcurementRuntimeFixtur
         });
     }
 
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public async Task PostContact_AllCreateBranchesAndReplay_PreservePutAndCanonicalReceipt(bool durable, bool withKey)
+    {
+        await using var branch = fixture.CreateFactory(true);
+        branch.WorkloadSettings = new Dictionary<string, string?> { ["Procurement:DurableCreates:Enabled"] = durable.ToString() };
+        using var client = fixture.ClientAs(branch, "service:procurement-parity",
+            ProcurementPermissions.PurchaseOrdersCreate, ProcurementPermissions.PurchaseOrdersUpdate, ProcurementPermissions.PurchaseOrdersRead);
+        var key = "header-contacts-" + Guid.NewGuid().ToString("N");
+        var keyDigest = System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(key));
+        if (withKey) client.DefaultRequestHeaders.Add("Idempotency-Key", key);
+        var before = await SnapshotAsync();
+        fixture.Clock.Advance(TimeSpan.FromSeconds(1));
+        using var first = await SendAsync(client, false, "\"Id\":7007,\"CreatedDate\":\"2000-02-29\",\"ModifiedDate\":\"2000-02-29\",");
+        Assert.Equal(HttpStatusCode.Created, first.StatusCode);
+        var firstWire = await first.Content.ReadAsStringAsync();
+        var created = JsonSerializer.Deserialize<PurchaseOrderResponse>(firstWire)!;
+        var id = created.Id;
+        Assert.Equal("shipping", created.SupplierContactPerson);
+        Assert.Equal("shipping", created.ShippingContactPerson);
+        Assert.NotEqual(7007, id);
+        Assert.Equal(Now(), created.CreatedDate);
+        Assert.Equal(Now(), created.ModifiedDate);
+        Assert.NotNull(first.Headers.Location);
+        using var location = await client.GetAsync(first.Headers.Location);
+        Assert.Equal(HttpStatusCode.OK, location.StatusCode);
+        Assert.Equal(id, (await location.Content.ReadFromJsonAsync<PurchaseOrderResponse>())!.Id);
+        await using (var scope = branch.Services.CreateAsyncScope())
+        {
+            var row = await scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>()
+                .PurchaseOrders.AsNoTracking().SingleAsync(value => value.Id == id);
+            Assert.Equal("shipping", row.SupplierContactPerson);
+            Assert.Equal("shipping", row.ShippingContactPerson);
+        }
+        var journal = await HeaderReceiptAsync(branch, keyDigest);
+        if (durable && withKey)
+        {
+            Assert.NotNull(journal);
+            using var record = JsonDocument.Parse(journal);
+            Assert.Equal(1, record.RootElement.GetProperty("CanonicalVersion").GetInt32());
+            Assert.Equal(1, record.RootElement.GetProperty("ResponseVersion").GetInt32());
+            Assert.Equal(id, record.RootElement.GetProperty("EntityId").GetInt32());
+            var original = new UpsertPurchaseOrderRequest(7002, "supplier", 7003, "shipping", null, null, null,
+                7003, null, null, null, null, null, null, null, 123, "true");
+            var canonical = JsonSerializer.SerializeToUtf8Bytes(original, new JsonSerializerOptions { PropertyNamingPolicy = null });
+            var tagged = new byte[canonical.Length + 2];
+            tagged[0] = 1;
+            tagged[1] = 2;
+            canonical.CopyTo(tagged, 2);
+            Assert.Equal("\\x" + Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(tagged)).ToLowerInvariant(),
+                record.RootElement.GetProperty("PayloadDigest").GetString());
+            Assert.Equal("\\x" + Convert.ToHexString(Encoding.UTF8.GetBytes(firstWire)).ToLowerInvariant(),
+                record.RootElement.GetProperty("ResponseBody").GetString());
+            Assert.Equal("\\x" + Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(firstWire))).ToLowerInvariant(),
+                record.RootElement.GetProperty("ResponseDigest").GetString());
+        }
+        else Assert.Null(journal);
+        var journalDigest = ReceiptDigest(journal);
+        if (withKey)
+        {
+            fixture.Clock.Advance(TimeSpan.FromSeconds(1));
+            using var replay = await SendAsync(client, false, "\"iD\":42,\"createddate\":\"1970-01-01T00:00:00Z\",\"modifieddate\":\"\",");
+            Assert.Equal(HttpStatusCode.Created, replay.StatusCode);
+            Assert.Equal(firstWire, await replay.Content.ReadAsStringAsync());
+            Assert.Equal(first.Headers.Location, replay.Headers.Location);
+            Assert.Equal(journalDigest, ReceiptDigest(await HeaderReceiptAsync(branch, keyDigest)));
+        }
+        fixture.Clock.Advance(TimeSpan.FromSeconds(1));
+        using var putBody = new StringContent("{\"Id\":7007,\"CreatedDate\":\"2000-02-29\",\"ModifiedDate\":\"2000-02-29\","
+            + "\"SupplierId\":7002,\"ShippingAddressId\":7003,\"BillingAddressId\":7003,\"EmployeeId\":123,"
+            + "\"SupplierContactPerson\":\"put-supplier\",\"ShippingContactPerson\":\"put-shipping\",\"Notes\":\"put\"}", Encoding.UTF8, "application/json");
+        using var put = await client.PutAsync("/PurchaseOrders/" + id, putBody);
+        Assert.Equal(HttpStatusCode.NoContent, put.StatusCode);
+        using var read = await client.GetAsync("/PurchaseOrders/" + id);
+        var updated = (await read.Content.ReadFromJsonAsync<PurchaseOrderResponse>())!;
+        Assert.Equal("put-supplier", updated.SupplierContactPerson);
+        Assert.Equal("put-shipping", updated.ShippingContactPerson);
+        Assert.Equal(created.CreatedDate, updated.CreatedDate);
+        Assert.Equal(Now(), updated.ModifiedDate);
+        Assert.Equal(journalDigest, ReceiptDigest(await HeaderReceiptAsync(branch, keyDigest)));
+        if (withKey)
+        {
+            fixture.Clock.Advance(TimeSpan.FromSeconds(1));
+            using var lateReplay = await SendAsync(client, false, "\"Id\":-17,\"CreatedDate\":null,\"ModifiedDate\":null,");
+            Assert.Equal(HttpStatusCode.Created, lateReplay.StatusCode);
+            Assert.Equal(firstWire, await lateReplay.Content.ReadAsStringAsync());
+            using var fresh = await client.GetAsync("/PurchaseOrders/" + id);
+            Assert.Equal(updated, await fresh.Content.ReadFromJsonAsync<PurchaseOrderResponse>());
+            Assert.Equal(journalDigest, ReceiptDigest(await HeaderReceiptAsync(branch, keyDigest)));
+        }
+        Assert.Equal(before, await SnapshotAsync(id));
+    }
+
+    private static string? ReceiptDigest(string? raw)
+        => raw is null ? null : Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(raw)));
+
+    private static async Task<string?> HeaderReceiptAsync(ProcurementRuntimeFactory factory, byte[] keyDigest)
+    {
+        await using var scope = factory.Services.CreateAsyncScope();
+        var database = scope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>();
+        return await database.Database.SqlQueryRaw<string>(
+            "SELECT row_to_json(receipt)::text AS \"Value\" FROM \"PurchaseOrderCreateReceipt\" AS receipt WHERE \"Operation\" = 2 AND \"KeyDigest\" = {0}",
+            new object[] { keyDigest }).SingleOrDefaultAsync();
+    }
+
     private sealed class PublicProjection
     {
         public int Id { get; set; }

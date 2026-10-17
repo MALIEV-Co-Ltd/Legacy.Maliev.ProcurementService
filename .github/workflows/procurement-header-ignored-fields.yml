@@ -1,4 +1,4 @@
-name: Header ignored fields baseline and candidate195
+name: Header ignored fields baseline and candidate199
 
 on:
   pull_request:
@@ -63,7 +63,7 @@ jobs:
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
         with:
           dotnet-version: 10.0.x
-      - name: Bind identical195 harness and exact source inputs
+      - name: Bind identical199 harness and exact source inputs
         timeout-minutes: 2
         run: python3 -B scripts/prepare-header-ignored-fields-baseline.py .header-ignored-fields-baseline docs/procurement-header-ignored-fields-contract.json
       - name: Require source and evidence controls in normal and optimized Python
@@ -84,7 +84,7 @@ jobs:
       - name: Require baseline test resource admission
         timeout-minutes: 1
         run: python3 -B scripts/require-metadata-identity-admission.py header-ignored-fields-results baseline-test
-      - name: Execute baseline195 with owned resource observation
+      - name: Execute baseline199 with owned resource observation
         timeout-minutes: 6
         run: python3 -B scripts/observe-header-ignored-fields-providers.py .header-ignored-fields-baseline header-ignored-fields-results/baseline-header baseline header
       - name: Require exact source-forecast baseline identities and causal failures
@@ -102,10 +102,10 @@ jobs:
       - name: Require candidate test resource admission
         timeout-minutes: 1
         run: python3 -B scripts/require-metadata-identity-admission.py header-ignored-fields-results candidate-test
-      - name: Execute candidate195 with owned resource observation
+      - name: Execute candidate199 with owned resource observation
         timeout-minutes: 6
         run: python3 -B scripts/observe-header-ignored-fields-providers.py . header-ignored-fields-results/candidate-header candidate header
-      - name: Require exact195 passes and shared actual baseline identities
+      - name: Require exact199 passes and shared actual baseline identities
         timeout-minutes: 2
         run: python3 -B scripts/verify-header-ignored-fields-results.py header-ignored-fields-results/candidate-header candidate header "$(cat header-ignored-fields-results/candidate-header/test-exit-code.txt)" header-ignored-fields-results/baseline-header
       - name: Require unchanged source admission and normal disposal proof

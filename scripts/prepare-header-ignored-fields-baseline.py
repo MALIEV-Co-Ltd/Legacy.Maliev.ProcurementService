@@ -1,4 +1,4 @@
-"""Bind exact header195 source/actual phase proofs; no original binary or deployment claim."""
+"""Bind exact header199 source/actual phase proofs; no original binary or deployment claim."""
 import datetime
 import fnmatch
 import hashlib
@@ -14,6 +14,8 @@ import tempfile
 BASE = "44c79ed24c142883563e037bbb5be724ea87322a"
 BASE_TREE = "869dab0b2a715def4a9c5613346d698a2943838e"
 HEADER = "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs"
+REPOSITORY = "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs"
+MIGRATION_TEST = "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementPostgresMigrationTests.cs"
 TEST = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementHeaderIgnoredFieldsTests.cs"
 FIXTURE = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs"
 TEST_PROJECT = "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj"
@@ -92,7 +94,7 @@ def require_phase(output, phase, family, budget):
     proof_raw = read_bounded(directory / "header-ignored-fields-proof.json", MAX_JSON_BYTES, local)
     receipt_raw = read_bounded(directory / "provider-observation.json", MAX_JSON_BYTES, local)
     proof, receipt = decode_json(proof_raw), decode_json(receipt_raw)
-    wanted = (96, 99, 1) if phase == "baseline" else (195, 0, 0)
+    wanted = (59, 140, 1) if phase == "baseline" else (199, 0, 0)
     require(type(receipt.get("exitCode")) is int
             and (proof.get("passed"), proof.get("failed"), receipt.get("exitCode")) == wanted
             and proof.get("skipped") == 0 and proof.get("phase") == receipt.get("phase") == phase
@@ -183,8 +185,8 @@ def prepare(baseline, manifest_path, verify_only=False):
             "Manifest differs from candidate HEAD")
     manifest = decode_json(raw_manifest)
     require(manifest["base"] == BASE and manifest["baseTree"] == BASE_TREE
-            and manifest["expectedTotalCases"] == 195 and set(manifest["profiles"]) == {"header"},
-            "Wrong exact195 source baseline")
+            and manifest["expectedTotalCases"] == 199 and set(manifest["profiles"]) == {"header"},
+            "Wrong exact199 source baseline")
     require(git(baseline, "rev-parse", "HEAD").decode().strip() == BASE
             and git(baseline, "rev-parse", "HEAD^{tree}").decode().strip() == BASE_TREE,
             "Wrong immutable baseline head/tree")
@@ -192,19 +194,24 @@ def prepare(baseline, manifest_path, verify_only=False):
         require(not git(root, "diff", "--name-only") and not git(root, "diff", "--cached", "--name-only"),
                 "Tracked source changed")
     require(manifest.get("runtimeBindingFormat") == "git-blob-record-v1"
-            and set(manifest["runtimePostimages"]) == {HEADER},
-            "Only the reviewed header converter may change runtime")
+            and set(manifest["runtimePostimages"]) == {HEADER, REPOSITORY},
+            "Only reviewed header converter and POST repository may change runtime")
     require(tracked_inputs(baseline) == manifest["baseInputs"]
             and tracked_inputs(candidate) == manifest["reviewedInputs"], "Frozen72 input inventory differs")
     differences = {path for path in manifest["baseInputs"]
                    if manifest["baseInputs"][path] != manifest["reviewedInputs"].get(path)}
-    require(differences == {HEADER} and set(manifest["baseInputs"]) == set(manifest["reviewedInputs"]),
-            "Exactly one runtime input may change")
+    require(differences == {HEADER, REPOSITORY} and set(manifest["baseInputs"]) == set(manifest["reviewedInputs"]),
+            "Exactly two runtime inputs may change")
     postimage = git_blob_record(manifest["runtimePostimages"][HEADER])
     require(blob(candidate, HEADER) == postimage
             and manifest["reviewedInputs"][HEADER] == "100644 blob " + postimage
             and manifest["baseInputs"][HEADER] == "100644 blob 8d6d8eb2c232a76bae57d6419a69da37b687b36d",
             "Header source postimage/preimage differs")
+    repository_postimage = git_blob_record(manifest["runtimePostimages"][REPOSITORY])
+    require(blob(candidate, REPOSITORY) == repository_postimage
+            and manifest["reviewedInputs"][REPOSITORY] == "100644 blob " + repository_postimage
+            and manifest["baseInputs"][REPOSITORY] == "100644 blob e3e6d902b10d7b985f12bb5d852982313cb13884",
+            "POST repository source pre/postimage differs")
     for path in manifest["reviewedInputs"]:
         metadata = manifest["reviewedInputs"][path]
         require(re.fullmatch(r"100644 blob [0-9a-f]{40}", metadata) is not None
@@ -215,16 +222,16 @@ def prepare(baseline, manifest_path, verify_only=False):
                 and read_bounded(candidate / path, MAX_SOURCE_BYTES, budget)
                 == read_bounded(baseline / path, MAX_SOURCE_BYTES, budget)
                 == git(baseline, "show", BASE + ":" + path), "Frozen public fixture/build source differs")
-    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {HEADER},
+    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {HEADER, REPOSITORY},
             "Unexpected production source/build drift")
     require(not git(candidate, "ls-files", "--others", "--exclude-standard", "--", *PROJECTS,
                     "Legacy.Maliev.ProcurementService.Tests"), "Untracked compiled inputs forbidden")
     compiled = manifest["compiledTestPostimages"]
-    require(set(compiled) == {TEST, OLD135, OPENAPI, AUTH_TEST}, "Wrong closed compiled test roster")
+    require(set(compiled) == {TEST, OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST}, "Wrong closed compiled test roster")
     for path, record in compiled.items():
         require(blob(candidate, path) == git_blob_record(record), "Reviewed compiled test source differs")
     expected_changes = {TEST}
-    for path in (OLD135, OPENAPI, AUTH_TEST):
+    for path in (OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST):
         if git(baseline, "rev-parse", BASE + ":" + path).decode().strip() != git_blob_record(compiled[path]):
             expected_changes.add(path)
     require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--",
@@ -243,7 +250,7 @@ def prepare(baseline, manifest_path, verify_only=False):
                 "Wrong immutable public dependency")
     profile = manifest["profiles"]["header"]
     require(profile["testPath"] == TEST and profile["testBlob"] == git_blob_record(compiled[TEST]),
-            "Wrong original195 harness source")
+            "Wrong original199 harness source")
     raw = read_bounded(candidate / TEST, MAX_SOURCE_BYTES, budget)
     target = baseline / TEST
     if not verify_only:
@@ -251,7 +258,7 @@ def prepare(baseline, manifest_path, verify_only=False):
         target.write_bytes(raw)
     require(read_bounded(target, MAX_SOURCE_BYTES, budget) == raw, "Actual baseline/candidate harness differs")
     require(set(git(baseline, "ls-files", "--others", "--exclude-standard").decode().splitlines()) == {TEST},
-            "Only the new195 harness may overlay baseline")
+            "Only the new199 harness may overlay baseline")
     output = candidate / "header-ignored-fields-results"
     admissions = require_admissions(output, verify_only)
     proof = {"schemaVersion": 1, "base": BASE, "baselineTree": BASE_TREE,

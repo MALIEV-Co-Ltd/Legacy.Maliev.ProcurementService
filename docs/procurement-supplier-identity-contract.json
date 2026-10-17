@@ -989,6 +989,9 @@
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
       "gitBlob": "b21e6fe697acdeb945dc0acbd3c80dee22a23a02"
+    },
+    "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": {
+      "gitBlob": "49461d4f6a13cba8b347001c24920006a5fd5eaf"
     }
   },
   "publicFixture": {
@@ -1182,5 +1185,17 @@
       "gitBlob": "b21e6fe697acdeb945dc0acbd3c80dee22a23a02"
     },
     "status": "NOT RUN; fresh hosted historical differential gates required"
+  },
+  "postContactSourceAdvance": {
+    "issue": 70,
+    "sourceController": {
+      "gitBlob": "273a4724d46bd95c16a0613cfac59954e4c2b035"
+    },
+    "scope": "POST-only original shipping-to-supplier contact copy; PUT/sharedMap/rawcanonical/durablecode unchanged",
+    "runtimePostimage": {
+      "path": "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs",
+      "gitBlob": "49461d4f6a13cba8b347001c24920006a5fd5eaf"
+    },
+    "status": "SOURCE ONLY; new hosted checks NOT RUN"
   }
 }

@@ -182,6 +182,8 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
     public async Task<PurchaseOrderResponse> CreatePurchaseOrderAsync(UpsertPurchaseOrderRequest request, CancellationToken cancellationToken)
     {
         var entity = Map(new PurchaseOrder(), request); var now = Now(); entity.CreatedDate = now; entity.ModifiedDate = now;
+        // Original POST copies shipping contact; PUT retains the independent supplier contact.
+        entity.SupplierContactPerson = request.ShippingContactPerson;
         dbContext.PurchaseOrders.Add(entity); await dbContext.SaveChangesAsync(cancellationToken); return ToResponse(entity);
     }
     /// <inheritdoc />

@@ -72,6 +72,11 @@ def verify_failure(error, case, profile):
                 and re.search(r"^Expected:\s*" + re.escape(failure["expected"]) + r"\s*$", message, re.MULTILINE)
                 and re.search(r"^Actual:\s*" + re.escape(failure["actual"]) + r"\s*$", message, re.MULTILINE),
                 "Baseline is not the exact status assertion caused by ignored input")
+    elif failure["kind"] == "post-contact":
+        require("Assert.Equal() Failure: Strings differ" in message
+                and re.search(r'^Expected:\s*"shipping"\s*$', message, re.MULTILINE)
+                and re.search(r'^Actual:\s*"supplier"\s*$', message, re.MULTILINE),
+                "Baseline must fail the original POST contact mapping assertion")
     else:
         require(failure["kind"] == "throws"
                 and "Assert.Throws() Failure: No exception was thrown" in message
@@ -83,7 +88,7 @@ def verify_failure(error, case, profile):
     require(re.search(frame, stack, re.MULTILINE), "Baseline is detached from its frozen assertion site")
 
 
-# Candidate assembly shape comes from the accepted44c witness;195 roster is a source forecast.
+# Candidate assembly shape comes from the accepted44c witness;199 roster is a source forecast.
 # Baseline inserts only the reviewed workflow's immutable checkout directory.
 ASSEMBLY_WORKSPACE = "/home/runner/work/Legacy.Maliev.ProcurementService/Legacy.Maliev.ProcurementService"
 ASSEMBLY_SUFFIX = "Legacy.Maliev.ProcurementService.Tests/bin/Release/net10.0/Legacy.Maliev.ProcurementService.Tests.dll"
@@ -108,17 +113,17 @@ def verify(directory, manifest, phase, family, exit_code, baseline_directory=Non
     require(phase in ("baseline", "candidate") and family == "header", "Unknown phase/family")
     require(type(exit_code) is int and exit_code == (1 if phase == "baseline" else 0), "Wrong actual test process exit")
     profile = manifest["profiles"][family]
-    count = 195
+    count = 199
     require(set(manifest["profiles"]) == {"header"} and profile["testClass"] ==
             "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementHeaderIgnoredFieldsTests",
             "Wrong immutable test class")
     cases = profile["cases"]
     require(profile["expectedCases"] == count and len(cases) == count
-            and manifest["expectedTotalCases"] == 195
+            and manifest["expectedTotalCases"] == 199
             and len({case["name"] for case in cases}) == count, "Frozen profile roster cardinality")
     passed = profile["baselinePassed"] if phase == "baseline" else count
     failed = profile["baselineFailed"] if phase == "baseline" else 0
-    require((profile["baselinePassed"], profile["baselineFailed"]) == (96, 99),
+    require((profile["baselinePassed"], profile["baselineFailed"]) == (59, 140),
             "Wrong frozen source-forecast outcomes; actual mismatches need review")
     expected = {case["name"]: case for case in cases}
     paths = reports(directory, "*.trx", 1)

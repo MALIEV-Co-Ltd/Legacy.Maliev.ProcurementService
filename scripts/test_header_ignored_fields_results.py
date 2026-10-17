@@ -79,6 +79,8 @@ class IdentityResultControls(unittest.TestCase):
                 error = ET.SubElement(ET.SubElement(row, NS + "Output"), NS + "ErrorInfo")
                 if failure["kind"] == "status":
                     message = "Assert.Equal() Failure: Values differ\nExpected: " + failure["expected"] + "\nActual:   " + failure["actual"]
+                elif failure["kind"] == "post-contact":
+                    message = 'Assert.Equal() Failure: Strings differ\nExpected: "shipping"\nActual:   "supplier"'
                 else:
                     message = "Assert.Throws() Failure: No exception was thrown\nExpected: typeof(System.Text.Json.JsonException)"
                 ET.SubElement(error, NS + "Message").text = message
@@ -106,7 +108,7 @@ class IdentityResultControls(unittest.TestCase):
         return doc.find("./" + "/".join(NS + part for part in path.split("/")))
 
     def test_exact_metadata_family_and_shared_actual_identity_join(self):
-        for family, passed, failed in (("header",96,99),):
+        for family, passed, failed in (("header",59,140),):
             with self.subTest(family=family):
                 self.fixtures(family)
                 self.assertEqual((passed,failed), (self.check_baseline()["passed"],self.check_baseline()["failed"]))
@@ -403,7 +405,7 @@ class SourceAndOwnershipControls(unittest.TestCase):
         directory.mkdir()
         raw = b"synthetic raw identity document"
         digest = hashlib.sha256(raw).hexdigest()
-        proof = {"phase":"candidate","family":"header","passed":195,"failed":0,"skipped":0,"trxSha256":digest}
+        proof = {"phase":"candidate","family":"header","passed":199,"failed":0,"skipped":0,"trxSha256":digest}
         receipt["rawTrxSha256"] = digest
         (directory/"results.trx").write_bytes(raw)
         (directory/"header-ignored-fields-proof.json").write_text(json.dumps(proof))
@@ -430,20 +432,20 @@ class SourceAndOwnershipControls(unittest.TestCase):
                     with self.assertRaises(ValueError): self.phase(pathlib.Path(directory),receipt)
                 else: self.assertTrue(self.phase(pathlib.Path(directory),receipt)["normalDisposal"])
 
-    def test_reviewed195_harness_and_exact72_single_runtime_delta(self):
+    def test_reviewed199_harness_and_exact72_single_runtime_delta(self):
         self.assertEqual({"header"}, set(CONTRACT["profiles"]))
-        self.assertEqual(195, CONTRACT["expectedTotalCases"])
+        self.assertEqual(199, CONTRACT["expectedTotalCases"])
         profile = CONTRACT["profiles"]["header"]
-        self.assertEqual((195, 96, 99), (profile["expectedCases"], profile["baselinePassed"], profile["baselineFailed"]))
+        self.assertEqual((199, 59, 140), (profile["expectedCases"], profile["baselinePassed"], profile["baselineFailed"]))
         raw = (HERE.parent / profile["testPath"]).read_bytes()
         self.assertEqual(profile["testBlob"], hashlib.sha1(("blob " + str(len(raw)) + "\0").encode() + raw).hexdigest())
         self.assertEqual(72, len(CONTRACT["baseInputs"]))
         self.assertEqual(set(CONTRACT["baseInputs"]), set(CONTRACT["reviewedInputs"]))
-        self.assertEqual({prep.HEADER}, {p for p in CONTRACT["baseInputs"]
+        self.assertEqual({prep.HEADER, prep.REPOSITORY}, {p for p in CONTRACT["baseInputs"]
                          if CONTRACT["baseInputs"][p] != CONTRACT["reviewedInputs"][p]})
-        self.assertEqual({prep.HEADER}, set(CONTRACT["runtimePostimages"]))
+        self.assertEqual({prep.HEADER, prep.REPOSITORY}, set(CONTRACT["runtimePostimages"]))
         self.assertEqual("44c79ed24c142883563e037bbb5be724ea87322a", prep.BASE)
-        self.assertEqual({prep.TEST, prep.OLD135, prep.OPENAPI, prep.AUTH_TEST}, set(CONTRACT["compiledTestPostimages"]))
+        self.assertEqual({prep.TEST, prep.OLD135, prep.OPENAPI, prep.AUTH_TEST, prep.MIGRATION_TEST}, set(CONTRACT["compiledTestPostimages"]))
 
     def test_exact_approved_observer_with_only_class_family_purpose_delta(self):
         original = (HERE / "observe-metadata-identity-providers.py").read_text(encoding="utf-8")
@@ -451,7 +453,7 @@ class SourceAndOwnershipControls(unittest.TestCase):
                                     "profiles = {'header': 'ProcurementHeaderIgnoredFieldsTests'}")
         expected = expected.replace("Unknown metadata identity family", "Unknown header ignored fields family")
         expected = expected.replace("Five-operation metadata identity isolated171",
-                                    "Two-operation header ignored fields isolated195")
+                                    "Two-operation header ignored fields isolated199")
         self.assertEqual(expected, (HERE / "observe-header-ignored-fields-providers.py").read_text(encoding="utf-8"))
 
     def test_closed_typed_source_objects_reject_missing_extra_malformed_and_wrong_inputs(self):
@@ -473,12 +475,15 @@ class SourceAndOwnershipControls(unittest.TestCase):
     def test_all_typed_field_causal_frames_are_bound_to_actual_source_lines(self):
         source = (HERE.parent / CONTRACT["profiles"]["header"]["testPath"]).read_text(encoding="utf-8").splitlines()
         failures = [case for case in CONTRACT["profiles"]["header"]["cases"] if case["baselineOutcome"] == "Failed"]
-        self.assertEqual(99, len(failures))
+        self.assertEqual(140, len(failures))
         for case in failures:
             line = source[case["sourceLine"]-1]
             if case["failure"]["kind"] == "status":
                 self.assertEqual("AssertRefusedAsync", case["failureMethod"])
                 self.assertIn("Assert.Equal(status, response.StatusCode)", line)
+            elif case["failure"]["kind"] == "post-contact":
+                self.assertIn("SupplierContactPerson", line)
+                self.assertIn("Assert.Equal", line)
             else:
                 self.assertIn("Assert.Throws<JsonException>", line)
 
@@ -495,9 +500,10 @@ class SourceAndOwnershipControls(unittest.TestCase):
             "IgnoredFields_AddNoClrRequestOrResponseWriteProperties":1,
             "CurrentCulture_CannotChangePublicInvariantIgnoredDateParsing":2,
             "MalformedIgnoredFields_PreserveExistingWholeHeaderSyntaxFailure":6,
+            "PostContact_AllCreateBranchesAndReplay_PreservePutAndCanonicalReceipt":4,
         }
         self.assertEqual(expected, dict(collections.Counter(c["method"] for c in CONTRACT["profiles"]["header"]["cases"])))
-        self.assertEqual(195, len({c["name"] for c in CONTRACT["profiles"]["header"]["cases"]}))
+        self.assertEqual(199, len({c["name"] for c in CONTRACT["profiles"]["header"]["cases"]}))
 
 
 class HostedAdmissionControls(unittest.TestCase):
@@ -609,3 +615,20 @@ class EvidenceReadBoundsControls(unittest.TestCase):
                 with self.assertRaises(ValueError): guard.verify(control.baseline,control.manifest,"baseline","header",1)
                 parser.assert_not_called()
         finally: control.doCleanups()
+
+class Retained195AndSourceContactControls(unittest.TestCase):
+    def test_retained195_names_and_measured_contact_failures_are_not_reclassified_as_passes(self):
+        cases = CONTRACT["profiles"]["header"]["cases"]
+        old = [case for case in cases if case["method"] != "PostContact_AllCreateBranchesAndReplay_PreservePutAndCanonicalReceipt"]
+        self.assertEqual(set(CONTRACT["retained195CaseNames"]), {case["name"] for case in old})
+        self.assertEqual((195,59,136), (len(old),sum(case["baselineOutcome"]=="Passed" for case in old),
+                                          sum(case["baselineOutcome"]=="Failed" for case in old)))
+        self.assertEqual(37,sum(case.get("failure",{}).get("kind")=="post-contact" for case in old))
+
+    def test_four_new_branch_cases_remain_unexecuted_source_forecasts_with_own_causal_site(self):
+        rows = [case for case in CONTRACT["profiles"]["header"]["cases"]
+                if case["method"] == "PostContact_AllCreateBranchesAndReplay_PreservePutAndCanonicalReceipt"]
+        self.assertEqual(4,len(rows))
+        self.assertTrue(CONTRACT["newFourSourceForecastOnly"])
+        self.assertEqual({324},{case["sourceLine"] for case in rows})
+        self.assertTrue(all(case["baselineOutcome"]=="Failed" and case["failure"]["kind"]=="post-contact" for case in rows))

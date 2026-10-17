@@ -141,7 +141,7 @@ def observe(workspace, output, phase, family):
     receipt = {'phase':phase, 'family':family, 'startedAtUtc':observed_at, 'timeoutSeconds':300,
                'command':command, 'workspace':str(workspace.resolve()), 'resources':[],
                'owningRun':os.environ.get('GITHUB_RUN_ID'), 'owningAttempt':os.environ.get('GITHUB_RUN_ATTEMPT'),
-               'purpose':'Two-operation header ignored fields isolated195 baseline/candidate phase', 'persistentData':False,
+               'purpose':'Two-operation header ignored fields isolated199 baseline/candidate phase', 'persistentData':False,
                'hostedJobLeaseMinutes':45, 'normalFixtureDisposalProven':False}
     try:
         require(phase in ('baseline', 'candidate'), 'Unknown phase')

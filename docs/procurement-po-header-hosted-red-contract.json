@@ -21,7 +21,7 @@
       "sha256": "08acc76e39ad164565efdd4d61690c84fda773fd2067535812b95ece0d72fdbc"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": {
-      "sha256": "aee3b6cac1c8b57ae85221049bfe0be44c76a464601876076a931d0f74249737"
+      "sha256": "3860df546dbbae4154e06cf08273049e6e2733ce392b36ed2aa285a7edcac9f7"
     },
     "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": {
       "sha256": "d29189ed0f2caf97153aa534bbb3f708c18d300c428e72389b78310466726845"
@@ -336,7 +336,24 @@
   "headerIgnoredFieldBindingAdvance": {
     "issue": 70,
     "base": "44c79ed24c142883563e037bbb5be724ea87322a",
-    "scope": "3ignoredproperties only; old135obsolete fixtureline intentionally corrected; strictnative9method/cases unchanged",
-    "status": "NOT RUN"
+    "scope": "Three ignored input fields + explicit POST shipping-contact expected projection; same135 identities/native9 assertion sites; exact2Header/test binding changes only",
+    "status": "NOT RUN",
+    "bindingFormat": "sha256-record-v1",
+    "preimages": {
+      "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
+        "sha256": "d889daf8f8c8adeb10291476b592184f8a1551f170bc8a527888ff4f6c7bec0e"
+      },
+      "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": {
+        "sha256": "444a71c704d94fc5d8e5b4eaa100d06b0fe3e5e2ff544b4af31e0e94b62d1c9e"
+      }
+    },
+    "postimages": {
+      "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
+        "sha256": "08acc76e39ad164565efdd4d61690c84fda773fd2067535812b95ece0d72fdbc"
+      },
+      "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": {
+        "sha256": "3860df546dbbae4154e06cf08273049e6e2733ce392b36ed2aa285a7edcac9f7"
+      }
+    }
   }
 }

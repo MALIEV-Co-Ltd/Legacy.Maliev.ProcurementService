@@ -17,6 +17,7 @@ API_PROJECT = "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementSer
 CONVERTER = "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs"
 METADATA_IDENTITY = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs"
 HEADER = "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs"
+REPOSITORY = "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs"
 FIXTURE = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs"
 TEST_PROJECT = "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj"
 TESTS = {"metadata": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredBodyIdTests.cs"}
@@ -92,8 +93,8 @@ def runtime_bindings(manifest):
     require(manifest.get("runtimeBindingFormat") == "git-blob-record-v1",
             "Require the reviewed Git blob provenance format")
     value = manifest["runtimePostimages"]
-    require(isinstance(value, dict) and set(value) == {PROGRAM, CONVERTER, METADATA_IDENTITY, HEADER},
-            "Require exactly the four reviewed changed runtime inputs")
+    require(isinstance(value, dict) and set(value) == {PROGRAM, CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY},
+            "Require exactly the five reviewed changed runtime inputs")
     return {path: git_blob_record(record) for path, record in value.items()}
 
 
@@ -190,6 +191,7 @@ def require_header_harness_bindings(candidate, manifest):
     expected = {
         "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementHeaderIgnoredFieldsTests.cs",
         "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs",
+        "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementPostgresMigrationTests.cs",
     }
     require(isinstance(bindings, dict) and set(bindings) == expected, "Wrong reviewed header harness roster")
     for path, record in bindings.items():
@@ -223,7 +225,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     require(not git(candidate, "ls-files", "--others", "--exclude-standard", "--", *directories,
                     "Legacy.Maliev.ProcurementService.Tests"), "Untracked compiled inputs forbidden")
     runtime = manifest["runtimePostimages"]
-    allowed = {PROGRAM, CONVERTER, METADATA_IDENTITY, HEADER}
+    allowed = {PROGRAM, CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY}
     require(set(runtime) == allowed, "Wrong exact runtime input roster")
     require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *directories).decode().splitlines()) == allowed,
             "Unexpected production source/build drift")

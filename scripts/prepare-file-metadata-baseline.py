@@ -13,6 +13,7 @@ PROGRAM = "Legacy.Maliev.ProcurementService.Api/Program.cs"
 CONVERTER = "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs"
 METADATA_IDENTITY = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs"
 HEADER = "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs"
+REPOSITORY = "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs"
 API_PROJECT = "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj"
 SUPPLIER_CONVERTER = "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs"
 FIXTURE = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs"
@@ -77,8 +78,8 @@ def git_blob_record(value):
 
 
 def require_runtime_roster(value):
-    require(isinstance(value, dict) and set(value) == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER, METADATA_IDENTITY, HEADER},
-            "Runtime postimage roster must equal the six reviewed current inputs")
+    require(isinstance(value, dict) and set(value) == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY},
+            "Runtime postimage roster must equal the seven reviewed current inputs")
     for record in value.values():
         git_blob_record(record)
 
@@ -160,7 +161,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     changed = set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--",
                       "Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Application",
                       "Legacy.Maliev.ProcurementService.Data", "Legacy.Maliev.ProcurementService.Domain").decode().splitlines())
-    require(changed == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER, METADATA_IDENTITY, HEADER}, "Unexpected production source changes")
+    require(changed == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY}, "Unexpected production source changes")
     require_runtime_postimages(candidate, manifest)
     for path in ("scripts/observe-supplier-address-providers.py", "scripts/supplier_address_owned_processes.py"):
         require(blob(candidate, path) == git(baseline, "rev-parse", BASE + ":" + path).decode().strip(),
