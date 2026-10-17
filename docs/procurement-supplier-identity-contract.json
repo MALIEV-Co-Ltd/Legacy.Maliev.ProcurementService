@@ -982,7 +982,7 @@
       "gitBlob": "87fd40bbe9072c8da0cc3567020d2872b05a107d"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
-      "gitBlob": "2646aec8eb8e6ff44e48b52b7a47fed5b4a6fac2"
+      "gitBlob": "112e92787f4c07d47cf0caa404abb392a3d8563b"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
       "gitBlob": "3aca6cb413f13945efc28e9e2cebeafbe351d8f3"

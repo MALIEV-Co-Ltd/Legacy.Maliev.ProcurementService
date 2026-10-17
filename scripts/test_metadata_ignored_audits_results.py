@@ -445,7 +445,7 @@ class SourceAndOwnershipControls(unittest.TestCase):
                          if CONTRACT["baseInputs"][p] != CONTRACT["reviewedInputs"][p]})
         self.assertEqual({prep.CONVERTER}, set(CONTRACT["runtimePostimages"]))
         self.assertEqual("665f796eab8a6eea37fd1189d3c0821fc1dc5fa9", prep.BASE)
-        self.assertEqual({prep.TEST, prep.AUTH_TEST, prep.FILE_HARNESS}, set(CONTRACT["compiledTestPostimages"]))
+        self.assertEqual({prep.TEST, prep.AUTH_TEST, prep.FILE_HARNESS, prep.COUNTRY_TEST}, set(CONTRACT["compiledTestPostimages"]))
 
     def test_exact_approved_observer_with_only_class_family_purpose_delta(self):
         original = (HERE / "observe-metadata-identity-providers.py").read_text(encoding="utf-8")
