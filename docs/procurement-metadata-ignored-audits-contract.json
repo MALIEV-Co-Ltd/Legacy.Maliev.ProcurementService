@@ -3235,7 +3235,7 @@
       "gitBlob": "ffb85569c189055a9fb8a2ae66aaa8cd6d3c8005"
     },
     "scripts/prepare-metadata-ignored-audits-baseline.py": {
-      "gitBlob": "c14e69fb7e6ef495181fcbe3894854681492c439"
+      "gitBlob": "97beb6e35cd6778167f99bf0f208761aafd35219"
     },
     "scripts/observe-metadata-ignored-audits-providers.py": {
       "gitBlob": "c187747f8d602bb015602e4acfbf8bab80a03b37"
@@ -3244,7 +3244,7 @@
       "gitBlob": "2a5864e3f15f97ffd6b8eb5335dda36cc575780e"
     },
     "scripts/test_metadata_ignored_audits_results.py": {
-      "gitBlob": "2d000581bf914702a6026b4b07c035579e94dfdb"
+      "gitBlob": "e79626c4659f44d19cb161dd8444aa0e45647741"
     },
     "scripts/require-metadata-identity-admission.py": {
       "gitBlob": "0c91e5b94fa2ddaeb5e602ebfa68e242efd81a7a"

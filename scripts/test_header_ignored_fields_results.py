@@ -446,6 +446,7 @@ class SourceAndOwnershipControls(unittest.TestCase):
                          CONTRACT["joinTestProject"]["gitBlob"])
         self.assertEqual("1badd76f0348d4ab34e776719eefad6dea41afbd",
                          CONTRACT["compiledTestPostimages"][prep.AUTH_TEST]["gitBlob"])
+        self.assertEqual("Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj", prep.BUILD_PROJECT)
         for path, expected in prep.SOURCE_POSTIMAGES.items():
             self.assertEqual(expected, CONTRACT["runtimePostimages"][path]["gitBlob"])
             self.assertEqual("100644 blob " + expected, CONTRACT["reviewedInputs"][path])

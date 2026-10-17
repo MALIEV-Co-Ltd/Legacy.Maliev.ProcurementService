@@ -26,8 +26,8 @@ AUTH_TEST = "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTe
 SOURCE_FORMATTER = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs"
 SOURCE_MODELS = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs"
 PROGRAM = "Legacy.Maliev.ProcurementService.Api/Program.cs"
-API_PROJECT = "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj"
-SOURCE_RUNTIME = {PROGRAM, API_PROJECT, SOURCE_FORMATTER, SOURCE_MODELS}
+BUILD_PROJECT = "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj"
+SOURCE_RUNTIME = {PROGRAM, BUILD_PROJECT, SOURCE_FORMATTER, SOURCE_MODELS}
 SOURCE_TESTS = {
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataOriginalModels.cs",
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceOracle.cs",
@@ -46,13 +46,13 @@ SOURCE_PREIMAGES = {
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs": None,
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs": None,
     "Legacy.Maliev.ProcurementService.Api/Program.cs": "0259b5722072609bb7c356bd1c9a5f49fd2d0caa",
-    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7",
+    BUILD_PROJECT: "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7",
 }
 SOURCE_POSTIMAGES = {
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs": "942a1b8f8f18ea3a9727691a05a784aec688614d",
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs": "e352494ce31eb5bead53a78cc4c950a7bae3e54e",
     "Legacy.Maliev.ProcurementService.Api/Program.cs": "70310b7db68e08366ee3c723211cdd3910c03f9f",
-    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": "30c131eb10c554b445e878c0b148cbe79d8c7cd3",
+    BUILD_PROJECT: "30c131eb10c554b445e878c0b148cbe79d8c7cd3",
 }
 
 PROJECTS = tuple("Legacy.Maliev.ProcurementService." + part for part in ("Api", "Application", "Data", "Domain"))
@@ -247,7 +247,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     require(manifest["joinTestProject"] == {"path": TEST_PROJECT, "gitBlob": "af7ca6ae938ae85cac598a75852e38863fa6912a"}
             and manifest["reviewedInputs"][TEST_PROJECT] == "100644 blob af7ca6ae938ae85cac598a75852e38863fa6912a"
             and manifest["baseInputs"][TEST_PROJECT] == "100644 blob 69b4ebf74c1a85d0949321360e81105db0f671a6"
-            and manifest["buildProject"] == {"path": API_PROJECT, "gitBlob": SOURCE_POSTIMAGES[API_PROJECT]},
+            and manifest["buildProject"] == {"path": BUILD_PROJECT, "gitBlob": SOURCE_POSTIMAGES[BUILD_PROJECT]},
             "Only exact candidate source-family project references allowed")
     postimage = git_blob_record(manifest["runtimePostimages"][CONVERTER])
     require(blob(candidate, CONVERTER) == postimage

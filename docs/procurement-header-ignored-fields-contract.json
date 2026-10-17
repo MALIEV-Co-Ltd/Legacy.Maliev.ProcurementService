@@ -2218,7 +2218,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-header-ignored-fields-baseline.py": {
-      "gitBlob": "9721229c5e0738b3ab367b4f1d4467605485110e"
+      "gitBlob": "0ae8a6ff715307961bd4b161a30958f7ff9c1d80"
     },
     "scripts/verify-header-ignored-fields-results.py": {
       "gitBlob": "009579c8ec2790bd0d0338a4fd61cb083cfdbcd6"
@@ -2227,7 +2227,7 @@
       "gitBlob": "9e3ce41ef9d13090b0b38dc694b8c03b557c51e9"
     },
     "scripts/test_header_ignored_fields_results.py": {
-      "gitBlob": "15e59d3654570466d4893c3283a012af7c989248"
+      "gitBlob": "e309efb6ca28e9fc713df8efe08900eae3c8a7c7"
     },
     ".github/workflows/procurement-header-ignored-fields.yml": {
       "gitBlob": "4bfecc0451accbf0a32e0b1a376a200a23dc90f5"
