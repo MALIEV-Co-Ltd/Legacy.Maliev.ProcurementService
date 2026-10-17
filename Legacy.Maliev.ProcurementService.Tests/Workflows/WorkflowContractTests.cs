@@ -23,6 +23,12 @@ public sealed class WorkflowContractTests
         WorkflowContractValidator.Validate(Workflow);
         foreach (var (original, replacement) in new[]
         {
+            ("ref: 54ac1012748ba3ab0c68e51511eca081cbcf1e70", "ref: main"),
+            ("path: .proc61-gitleaks-scan", "path: .foreign-scan"),
+            ("fetch-depth: 1", "fetch-depth: 0"),
+            ("name: Temporarily diagnose PR61 gitleaks provenance privately", "name: Temporarily diagnose PR61 gitleaks provenance privately\n        if: false"),
+            ("run: bash scripts/run_proc61_gitleaks_diagnostic.sh", "run: echo skipped"),
+            ("timeout-minutes: 45", "timeout-minutes: 60"),
             ("--no-restore -warnaserror", "--no-restore"),
             ("-p:UseLocalMalievDependencies=true", "-p:UseLocalMalievDependencies=false"),
             ("export GITHUB_ACTIONS=false", "export GITHUB_ACTIONS=true"),
@@ -442,6 +448,8 @@ internal static partial class WorkflowContractValidator
         var steps = RequireSequence(validateJob, "steps");
         if (!historicalFixture)
         {
+            RequireScalarValue(validateJob, "timeout-minutes", "45");
+            steps = ValidateTemporaryGitleaksDiagnosticGroup(steps);
             steps = ValidateHeaderProofGroup(steps);
             ValidateFocusedWorkflowGroup(steps);
             steps = new YamlSequenceNode(steps.Children.Where((_, index) => index is < 3 or > 7));
@@ -532,6 +540,33 @@ internal static partial class WorkflowContractValidator
                 ["solution"] = "Legacy.Maliev.ProcurementService.slnx",
                 ["use-local-maliev-dependencies"] = "true",
             });
+    }
+
+
+    private static YamlSequenceNode ValidateTemporaryGitleaksDiagnosticGroup(YamlSequenceNode steps)
+    {
+        if (steps.Children.Count != 20)
+            throw new InvalidOperationException("Temporary PR61 diagnostic must preserve all eighteen original validation steps.");
+        const string expectedSource = """
+            - name: Check out exact tested PR61 scanner provenance
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+              with:
+                repository: MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService
+                ref: 54ac1012748ba3ab0c68e51511eca081cbcf1e70
+                path: .proc61-gitleaks-scan
+                fetch-depth: 1
+                persist-credentials: false
+            - name: Temporarily diagnose PR61 gitleaks provenance privately
+              shell: bash
+              timeout-minutes: 6
+              run: bash scripts/run_proc61_gitleaks_diagnostic.sh
+            """;
+        var expected = new YamlStream();
+        expected.Load(new StringReader(expectedSource));
+        var proof = (YamlSequenceNode)expected.Documents.Single().RootNode;
+        for (var index = 0; index < proof.Children.Count; index++)
+            RequireExactProofNode(steps.Children[index + 15], proof.Children[index]);
+        return new YamlSequenceNode(steps.Children.Where((_, index) => index is not (15 or 16)));
     }
 
 
