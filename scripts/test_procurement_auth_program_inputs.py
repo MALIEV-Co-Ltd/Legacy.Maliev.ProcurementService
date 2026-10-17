@@ -270,7 +270,7 @@ class RuntimeInputs(unittest.TestCase):
         import json
         manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
         for field, value in (("acceptedBase", "main"), ("previousProcurement", "main"),
-                             ("inputCount", 71), ("unchangedInputCount", 69),
+                             ("inputCount", 71), ("unchangedInputCount", 68),
                              ("reviewedProcurement", "main"), ("reviewedTree", "0"*40)):
             with self.subTest(field=field):
                 changed = copy.deepcopy(manifest)
@@ -325,16 +325,21 @@ class RuntimeInputs(unittest.TestCase):
         self.assertEqual((72,71),(change["inputCount"],change["unchangedInputCount"]))
         self.assertEqual({"Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs"},
                          set(change["changedInputs"]))
-        current = manifest["intentionalSourceChanges"]
+        current = manifest["previousCountryIdIntentionalSourceChanges"]
         self.assertEqual((72,71),(current["inputCount"],current["unchangedInputCount"]))
         self.assertEqual(set(change["changedInputs"]),set(current["changedInputs"]))
+        successor = manifest["intentionalSourceChanges"]
+        self.assertEqual((74,69),(successor["inputCount"],successor["unchangedInputCount"]))
+        self.assertEqual(set(json.loads('["Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs","Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs","Legacy.Maliev.ProcurementService.Api/Program.cs","Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj","Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj"]')),set(successor["changedInputs"]))
+        added = {path for path, binding in successor["changedInputs"].items() if binding["previousMetadata"] is None}
+        self.assertEqual(2,len(added))
         guard.require_historical_graph(manifest)
 
     def test_supplier_audit_witness_custody_cannot_be_rebound(self):
         import copy
         import json
         manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
-        for witness in ("latestAcceptedSupplierAuditGraph", "latestAcceptedMetadataAuditGraph"):
+        for witness in ("latestAcceptedSupplierAuditGraph", "latestAcceptedMetadataAuditGraph", "latestAcceptedCountryIdGraph"):
             for field in ("path","sha256","gitBlob","procurement","inputCount","acceptedMain","acceptedReceipt"):
                 changed = copy.deepcopy(manifest)
                 changed[witness][field] = "drift"

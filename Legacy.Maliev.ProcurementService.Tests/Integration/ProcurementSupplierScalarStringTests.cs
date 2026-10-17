@@ -172,6 +172,28 @@ public sealed class ProcurementSupplierScalarStringTests(ProcurementRuntimeFixtu
     [InlineData(true, "tru")]
     public async Task InvalidSupplierScalarShapeOrJson_IsBadRequestWithoutAnyGraphChange(bool update, string token)
     {
+        if (token == "01")
+        {
+            // Retain the historical case identities; the complete original body
+            // reader accepts this octal-style number and preserves its string lexeme.
+            Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<UpsertSupplierRequest>(Payload(token)));
+            using var oracle = new ProcurementMetadataSourceOracle();
+            using var originalResponse = await oracle.SendAsync("supplier", Payload(token));
+            Assert.Equal(HttpStatusCode.OK, originalResponse.StatusCode);
+            Assert.Equal(1, oracle.State.Entries);
+            Assert.Equal(0, oracle.State.BinderCalls);
+            Assert.Null(oracle.State.Unexpected);
+            var original = Assert.IsType<global::Maliev.SupplierService.Data.Database.SupplierContext.Supplier>(oracle.State.Captured);
+            Assert.Equal(Enumerable.Repeat("01", Fields.Length), new[]
+            {
+                original.Name, original.Website, original.TaxNumber, original.Email,
+                original.Note, original.Telephone, original.Mobile, original.Fax,
+            });
+            // The existing accepted case checks exact POST/PUT status, all eight
+            // string values, native readback, audit timestamps, FKs and sibling graphs.
+            await SupplierPostAndPut_SourceScalarText_PreservesLexemeAndStringResponse(update, token, "01");
+            return;
+        }
         using var client = Writer();
         var id = update ? await CreateControlAsync(client) : 0;
         var before = await SnapshotAsync();

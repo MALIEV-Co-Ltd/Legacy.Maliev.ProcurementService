@@ -9,7 +9,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-address-country-id.json"
+MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-source-body-input.json"
 HISTORICAL_PATH = "tools/ProcurementAuthProgram.Tests/public-graph.json"
 HISTORICAL_SHA256 = "205063c79697948343ba659b13757b68ef4814d1b62861484a1dd90c0b8e7d41"
 PREVIOUS_ACCEPTED_PATH = "tools/ProcurementAuthProgram.Tests/public-graph-child-replay.json"
@@ -346,7 +346,7 @@ def require_previous_metadata_audit_graph(manifest):
         raise ValueError("Metadata audit custody does not qualify production or whole-source closure")
 
 
-def require_historical_graph(manifest):
+def require_previous_country_id_graph(manifest):
     custody = manifest["latestAcceptedMetadataAuditGraph"]
     path = "tools/ProcurementAuthProgram.Tests/public-graph-metadata-ignored-audits.json"
     digest = "3ca45a0827fea6653f6fd0e4d3966f363bb013e418fe20e627c82016d0fd6f97"
@@ -404,6 +404,56 @@ def require_historical_graph(manifest):
     if any(manifest[field] is not False for field in
            ("productionEnrollmentProven", "productionIamBridgeProven", "wholeInitialSourceParityClosed")):
         raise ValueError("Address country custody does not qualify production or whole-source closure")
+
+
+def require_historical_graph(manifest):
+    custody = manifest["latestAcceptedCountryIdGraph"]
+    expected_custody = json.loads('{"path":"tools/ProcurementAuthProgram.Tests/public-graph-address-country-id.json","sha256":"4a7deb0c024900377795e20f2b0521cffd0f045913dfbf1f97e05a1bf966e9f3","gitBlob":"e433e128dac8a930b2e8b01f9639ec92f848aa4d","procurement":"d997f2a527a478110ac3bd96c915f4d0f6ab734a","inputCount":72,"acceptedMain":"646055868161c8f19e6b6daa278b01019146ac9a","acceptedReceipt":"5f443a04fbcd41dc003cbb0cd95059c7a5e88bd9"}')
+    if custody != expected_custody:
+        raise ValueError("Accepted country72 source custody must remain exact")
+    with (ROOT / expected_custody["path"]).open("rb") as stream:
+        raw = stream.read(2 * 1024 * 1024 + 1)
+    if not 0 < len(raw) <= 2 * 1024 * 1024 or hashlib.sha256(raw).hexdigest() != expected_custody["sha256"]:
+        raise ValueError("Accepted country72 witness differs or exceeds bounded reader")
+    previous = json.loads(raw)
+    require_previous_country_id_graph(previous)
+    for field in previous:
+        if field not in ("graphId", "references", "intentionalSourceChanges") and manifest[field] != previous[field]:
+            raise ValueError("Retained country72 witness differs: " + field)
+    if manifest["previousCountryIdIntentionalSourceChanges"] != previous["intentionalSourceChanges"]:
+        raise ValueError("Previous country72/1/71 source envelope must remain exact")
+    change = manifest["intentionalSourceChanges"]
+    expected_changes = json.loads('{"Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs":{"previousMetadata":null,"reviewedMetadata":"100644 blob 942a1b8f8f18ea3a9727691a05a784aec688614d"},"Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs":{"previousMetadata":null,"reviewedMetadata":"100644 blob e352494ce31eb5bead53a78cc4c950a7bae3e54e"},"Legacy.Maliev.ProcurementService.Api/Program.cs":{"previousMetadata":"100644 blob 0259b5722072609bb7c356bd1c9a5f49fd2d0caa","reviewedMetadata":"100644 blob 70310b7db68e08366ee3c723211cdd3910c03f9f"},"Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj":{"previousMetadata":"100644 blob bd8fdadcbee41805eedd7a43c6eb8a02099e17d7","reviewedMetadata":"100644 blob 30c131eb10c554b445e878c0b148cbe79d8c7cd3"},"Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj":{"previousMetadata":"100644 blob 69b4ebf74c1a85d0949321360e81105db0f671a6","reviewedMetadata":"100644 blob af7ca6ae938ae85cac598a75852e38863fa6912a"}}')
+    if (change["previousProcurement"] != expected_custody["procurement"]
+            or change["acceptedBase"] != "646055868161c8f19e6b6daa278b01019146ac9a"
+            or change["reviewedProcurement"] != "35b6926e4a7abefa9ef701f4178bd6b3093d9648"
+            or change["reviewedTree"] != "273dfa0fadab472a5536079f7cb04231825a16b0"
+            or change["inputCount"] != 74 or change["unchangedInputCount"] != 69
+            or change["unchangedInputSha256"] != "761b4afe866cfafaec1427a0e073571f974391b4119d4810c6d7fd5bde44fe4f"
+            or change["changedInputs"] != expected_changes):
+        raise ValueError("Source body successor requires exact74/5/69 source envelope")
+    previous_inputs = previous["intentionalSourceChanges"]["reviewedInputs"]
+    added = {path for path, binding in expected_changes.items() if binding["previousMetadata"] is None}
+    if len(added) != 2 or set(change["reviewedInputs"]) != set(previous_inputs) | added:
+        raise ValueError("Source body successor requires exactly two reviewed new runtime inputs")
+    for path, binding in expected_changes.items():
+        if (previous_inputs.get(path) != binding["previousMetadata"]
+                or change["reviewedInputs"][path] != binding["reviewedMetadata"]):
+            raise ValueError("Source body delta detached from exact preimage/postimage: " + path)
+    for path, value in previous_inputs.items():
+        if path not in expected_changes and change["reviewedInputs"][path] != value:
+            raise ValueError("Unrelated runtime tuple differs from accepted country72")
+    pins = [entry["commit"] for entry in manifest["references"]
+            if entry["repository"] == "Legacy.Maliev.ProcurementService"]
+    external = lambda graph: {entry["repository"]: entry["commit"] for entry in graph["references"]
+                              if entry["repository"] != "Legacy.Maliev.ProcurementService"}
+    if (pins != ["35b6926e4a7abefa9ef701f4178bd6b3093d9648"] or external(manifest) != external(previous)
+            or manifest["expectedCases"] != previous["expectedCases"]
+            or manifest["expectedMethods"] != previous["expectedMethods"]):
+        raise ValueError("Source body Auth producer, external pins and actual15 identities must remain exact")
+    if any(manifest[field] is not False for field in
+           ("productionEnrollmentProven", "productionIamBridgeProven", "wholeInitialSourceParityClosed")):
+        raise ValueError("Source body custody does not qualify production or whole-source closure")
 
 
 def results(root, manifest):

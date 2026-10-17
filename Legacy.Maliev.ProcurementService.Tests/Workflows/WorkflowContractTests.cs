@@ -16,7 +16,8 @@ public sealed class WorkflowContractTests
     private const string PreviousHeaderContactVersion = "4f655c9394c20e5968d8bf6f1d77fdba3f77c7f4";
     private const string PreviousSupplierAuditVersion = "d159befd91d7bed196d045366870b5bb60c21725";
     private const string PreviousMetadataAuditVersion = "22e307d936993c2976d8f64819d37c5035b4b1de";
-    private const string CurrentProcurementVersion = "d997f2a527a478110ac3bd96c915f4d0f6ab734a";
+    private const string PreviousCountryVersion = "d997f2a527a478110ac3bd96c915f4d0f6ab734a";
+    private const string CurrentProcurementVersion = "35b6926e4a7abefa9ef701f4178bd6b3093d9648";
     private static readonly string Workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "_build-and-test.yml"));
     private static readonly string ApiProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Api.csproj"));
@@ -29,6 +30,10 @@ public sealed class WorkflowContractTests
         WorkflowContractValidator.Validate(Workflow);
         foreach (var (original, replacement) in new[]
         {
+            ("name: Report redacted secret-scan locations after failure", "name: Omitted secret-scan diagnostic"),
+            ("if: failure()", "if: always()"),
+            ("--redact=100", "--redact=0"),
+            ("stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=60", "stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=60"),
             ("--no-restore -warnaserror", "--no-restore"),
             ("-p:UseLocalMalievDependencies=true", "-p:UseLocalMalievDependencies=false"),
             ("export GITHUB_ACTIONS=false", "export GITHUB_ACTIONS=true"),
@@ -287,6 +292,7 @@ public sealed class WorkflowContractTests
         Assert.NotEqual(PreviousHeaderContactVersion, CurrentProcurementVersion);
         Assert.NotEqual(PreviousSupplierAuditVersion, CurrentProcurementVersion);
         Assert.NotEqual(PreviousMetadataAuditVersion, CurrentProcurementVersion);
+        Assert.NotEqual(PreviousCountryVersion, CurrentProcurementVersion);
         var source = File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml"));
         ValidateAuthProgramJoin(source);
         Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(
@@ -299,6 +305,8 @@ public sealed class WorkflowContractTests
             source.Replace(CurrentProcurementVersion, PreviousSupplierAuditVersion, StringComparison.Ordinal)));
         Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(
             source.Replace(CurrentProcurementVersion, PreviousMetadataAuditVersion, StringComparison.Ordinal)));
+        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(
+            source.Replace(CurrentProcurementVersion, PreviousCountryVersion, StringComparison.Ordinal)));
     }
 
     [Theory]
@@ -560,6 +568,96 @@ internal static partial class WorkflowContractValidator
 
     private static YamlSequenceNode ValidateHeaderProofGroup(YamlSequenceNode steps)
     {
+        if (steps.Children.Count != 19)
+            throw new InvalidOperationException("Primary validation must retain the exact failure-only redacted diagnostic.");
+        const string diagnosticSource = """
+            - name: Report redacted secret-scan locations after failure
+              if: failure()
+              timeout-minutes: 2
+              run: |
+                python3 -B - <<'PY'
+                import json
+                import os
+                import pathlib
+                import re
+                import shutil
+                import subprocess
+                import tempfile
+            
+                def refuse(category):
+                    print(json.dumps({"category": category}))
+                    raise SystemExit(1)
+            
+                binary = shutil.which("gitleaks")
+                go = shutil.which("go")
+                if not binary or not go:
+                    refuse("secret-scan-diagnostic-installed-binary-unavailable")
+                try:
+                    identity = subprocess.run([go, "version", "-m", binary], check=False,
+                        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=10)
+                except (OSError, subprocess.TimeoutExpired):
+                    refuse("secret-scan-diagnostic-binary-identity-unavailable")
+                module = [line.split() for line in identity.stdout.splitlines() if line.split()[:1] == [b"mod"]]
+                expected_binary = pathlib.Path.home() / "go" / "bin" / "gitleaks"
+                if (identity.returncode != 0 or len(identity.stdout) > 65536
+                        or pathlib.Path(binary).resolve() != expected_binary.resolve()
+                        or len(module) != 1 or len(module[0]) < 3
+                        or module[0][1:3] != [b"github.com/zricethezav/gitleaks/v8", b"v8.30.0"]):
+                    refuse("secret-scan-diagnostic-binary-identity-unknown")
+                root = os.environ.get("RUNNER_TEMP")
+                if not root or not pathlib.Path(root).is_dir():
+                    refuse("secret-scan-diagnostic-private-directory-unavailable")
+                try:
+                    with tempfile.TemporaryDirectory(prefix="procurement-secret-locations-", dir=root) as directory:
+                        os.chmod(directory, 0o700)
+                        report = pathlib.Path(directory) / "report.json"
+                        descriptor = os.open(report, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                        os.close(descriptor)
+                        try:
+                            result = subprocess.run([binary, "git", "--redact=100", "--exit-code", "1",
+                                "--report-format", "json", "--report-path", str(report)],
+                                check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=60)
+                            if result.returncode not in (0, 1):
+                                refuse("secret-scan-diagnostic-scan-unavailable")
+                            with report.open("rb") as stream:
+                                raw = stream.read(1024 * 1024 + 1)
+                            if not 0 < len(raw) <= 1024 * 1024:
+                                refuse("secret-scan-diagnostic-report-size-invalid")
+                            rows = json.loads(raw)
+                            if not isinstance(rows, list) or len(rows) > 100:
+                                refuse("secret-scan-diagnostic-report-roster-invalid")
+                            if (result.returncode == 1 and not rows) or (result.returncode == 0 and rows):
+                                refuse("secret-scan-diagnostic-report-outcome-invalid")
+                            locations = []
+                            for row in rows:
+                                if not isinstance(row, dict):
+                                    refuse("secret-scan-diagnostic-report-row-invalid")
+                                rule, file = row.get("RuleID"), row.get("File")
+                                start, end = row.get("StartLine"), row.get("EndLine")
+                                if (not isinstance(rule, str) or not re.fullmatch(r"[a-z0-9][a-z0-9._-]{0,127}", rule)
+                                        or not isinstance(file, str) or not 0 < len(file) <= 1024
+                                        or any(ord(char) < 32 or ord(char) == 127 for char in file)
+                                        or "\\" in file or pathlib.PurePosixPath(file).is_absolute()
+                                        or any(part in ("", ".", "..") for part in file.split("/"))
+                                        or type(start) is not int or type(end) is not int
+                                        or not 1 <= start <= end <= 10000000):
+                                    refuse("secret-scan-diagnostic-location-invalid")
+                                locations.append({"category": "secret-scan-location", "RuleID": rule,
+                                    "file": file, "StartLine": start, "EndLine": end})
+                            for location in locations:
+                                print(json.dumps(location, ensure_ascii=True))
+                        finally:
+                            report.unlink(missing_ok=True)
+                except (OSError, ValueError, subprocess.TimeoutExpired):
+                    refuse("secret-scan-diagnostic-report-unavailable")
+                PY
+
+            """;
+        var diagnostic = new YamlStream();
+        diagnostic.Load(new StringReader(diagnosticSource));
+        var diagnosticSteps = (YamlSequenceNode)diagnostic.Documents.Single().RootNode;
+        RequireExactProofNode(steps.Children[16], diagnosticSteps.Children.Single());
+        steps = new YamlSequenceNode(steps.Children.Where((_, index) => index != 16));
         if (steps.Children.Count != 18)
             throw new InvalidOperationException("Primary validation must retain exactly seven ordered header proof steps.");
         const string expectedSource = """
