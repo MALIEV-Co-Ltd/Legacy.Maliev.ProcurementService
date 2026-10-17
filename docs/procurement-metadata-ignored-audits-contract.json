@@ -7,7 +7,7 @@
     "audits": {
       "testClass": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMetadataIgnoredAuditDateTests",
       "testPath": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredAuditDateTests.cs",
-      "testBlob": "f5ce0a72cf550eace02689a7c37ff1bed7dc2548",
+      "testBlob": "16109c5013df74ad4c27f14b128287ceb649efb1",
       "expectedCases": 332,
       "baselinePassed": 169,
       "baselineFailed": 163,
@@ -3175,10 +3175,13 @@
   },
   "compiledTestPostimages": {
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredAuditDateTests.cs": {
-      "gitBlob": "f5ce0a72cf550eace02689a7c37ff1bed7dc2548"
+      "gitBlob": "16109c5013df74ad4c27f14b128287ceb649efb1"
     },
     "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs": {
       "gitBlob": "36019ac73ad9bc4f9f627e8fe2ddbcb8caa49867"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs": {
+      "gitBlob": "a67b02f189ef4fddaa42e3bddec015b3bfe4d05c"
     }
   },
   "holds": {
@@ -3205,7 +3208,7 @@
       "gitBlob": "ffb85569c189055a9fb8a2ae66aaa8cd6d3c8005"
     },
     "scripts/prepare-metadata-ignored-audits-baseline.py": {
-      "gitBlob": "7abf6f3f543f684c7220472dba4cc45b5f985e27"
+      "gitBlob": "7824df7bc6780fbd820f06e1fad5f6e81d18e3d5"
     },
     "scripts/observe-metadata-ignored-audits-providers.py": {
       "gitBlob": "c187747f8d602bb015602e4acfbf8bab80a03b37"
@@ -3214,7 +3217,7 @@
       "gitBlob": "2a5864e3f15f97ffd6b8eb5335dda36cc575780e"
     },
     "scripts/test_metadata_ignored_audits_results.py": {
-      "gitBlob": "fb9ff32a8406225b7553754c05a915c977daa53a"
+      "gitBlob": "a7bb336928760122bfda8ee6ae1709393aed4860"
     },
     "scripts/require-metadata-identity-admission.py": {
       "gitBlob": "0c91e5b94fa2ddaeb5e602ebfa68e242efd81a7a"

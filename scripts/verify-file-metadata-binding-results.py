@@ -70,8 +70,43 @@ def read_trx(path):
     return root, hashlib.sha256(raw).hexdigest()
 
 
+def failed_case_diagnostics(directory, manifest):
+    reports = bounded_paths(directory, "*.trx", 1)
+    require(len(reports) == 1, "Exactly one diagnostic phase TRX required")
+    root, _ = read_trx(reports[0])
+    rows = root.findall("./" + NS + "Results/" + NS + "UnitTestResult")
+    require(len(rows) <= 108, "Diagnostic row bound exceeded")
+    expected = {case["name"]: case for case in manifest["candidate"]}
+    allowed_methods = {case["method"] for case in manifest["candidate"]} | {"Bind"}
+    frames = (r"^[ \t]*at " + re.escape(manifest["testClass"])
+              + r"\.(?P<method>" + "|".join(re.escape(method) for method in sorted(allowed_methods))
+              + r")\([^\r\n]*\) in [^\r\n]*[/\\]PurchaseOrderFileMetadataBindingTests\.cs:line (?P<line>[0-9]{1,7})\s*$")
+    categories = (("json", "System.Text.Json.JsonException"),
+                  ("assert-equal", "Assert.Equal() Failure"), ("assert-throws", "Assert.Throws() Failure"))
+    result = []
+    for row in rows:
+        if row.get("outcome") == "Passed":
+            continue
+        case = expected.get(row.get("testName"))
+        errors = row.findall("./" + NS + "Output/" + NS + "ErrorInfo")
+        message = "".join((node.findtext(NS + "Message") or "")[:4096] for node in errors[:1])
+        stack = "".join((node.findtext(NS + "StackTrace") or "")[:16384] for node in errors[:1])
+        causal = [{"method":match.group("method"), "line":int(match.group("line"))}
+                  for match in list(re.finditer(frames, stack, re.MULTILINE))[:16]]
+        result.append({"case":case["name"] if case is not None else "unrecognized",
+                       "testId":row.get("testId") if canonical(row.get("testId")) else None,
+                       "failureCategory":next((name for name, marker in categories if marker in message), "other"),
+                       "sourceFrames":causal})
+    return result
+
+
 def verify(directory, manifest, phase, exit_code, baseline_directory=None, record_proof=True):
     require(phase in ("baseline", "candidate"), "Unknown phase")
+    if exit_code != (1 if phase == "baseline" else 0):
+        try:
+            print(json.dumps({"failedCaseDiagnostics":failed_case_diagnostics(directory, manifest)}))
+        except (ValueError, OSError, ET.ParseError, UnicodeError) as diagnostic_error:
+            print(json.dumps({"failedCaseDiagnosticsUnavailable":type(diagnostic_error).__name__}))
     require(exit_code == (1 if phase == "baseline" else 0), "Wrong phase test exit")
     cases = manifest["baseline"]["cases"] if phase == "baseline" else manifest["candidate"]
     count = 16 if phase == "baseline" else 108

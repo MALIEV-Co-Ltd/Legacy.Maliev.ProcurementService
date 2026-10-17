@@ -722,14 +722,14 @@
       },
       {
         "method": "Bind",
-        "line": 372
+        "line": 375
       }
     ],
     "frameworkFrames": "diagnostic only"
   },
   "harness": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs",
-    "gitBlob": "c54d89262a63f04683d09df15a6814a2cbbdcff9",
+    "gitBlob": "a67b02f189ef4fddaa42e3bddec015b3bfe4d05c",
     "baselineOverlay": "Same test file only; no new converter file or Program change in immutable baseline"
   },
   "currentParentPolicy": "Unchanged;24 differential representation cases plus7 HTTP retention cases",

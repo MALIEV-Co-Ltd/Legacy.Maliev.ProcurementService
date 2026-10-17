@@ -140,28 +140,28 @@ public sealed class ProcurementMetadataIgnoredAuditDateTests(ProcurementRuntimeF
         var legacy = new Newtonsoft.Json.JsonSerializerSettings { Culture = CultureInfo.InvariantCulture, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore };
         var native = NativeMvcOptions();
         foreach (var contract in Contracts)
-        foreach (var field in Fields)
-        {
-            var type = RequestType(contract);
-            foreach (var token in ValidDates)
+            foreach (var field in Fields)
             {
-                using var reader = new Newtonsoft.Json.JsonTextReader(new StringReader(token)) { Culture = CultureInfo.InvariantCulture };
-                object? expected = reader.ReadAsDateTime();
-                var body = PlainPayload(contract, "\"" + field + "\":" + token + ",");
-                var projected = Newtonsoft.Json.JsonConvert.DeserializeObject<PublicAuditProjection>(body, legacy)!;
-                Assert.Equal(expected, typeof(PublicAuditProjection).GetProperty(field)!.GetValue(projected));
-                Assert.NotNull(JsonSerializer.Deserialize(body, type, native));
-                Assert.NotNull(JsonSerializer.Deserialize(body, type, Options));
+                var type = RequestType(contract);
+                foreach (var token in ValidDates)
+                {
+                    using var reader = new Newtonsoft.Json.JsonTextReader(new StringReader(token)) { Culture = CultureInfo.InvariantCulture };
+                    object? expected = reader.ReadAsDateTime();
+                    var body = PlainPayload(contract, "\"" + field + "\":" + token + ",");
+                    var projected = Newtonsoft.Json.JsonConvert.DeserializeObject<PublicAuditProjection>(body, legacy)!;
+                    Assert.Equal(expected, typeof(PublicAuditProjection).GetProperty(field)!.GetValue(projected));
+                    Assert.NotNull(JsonSerializer.Deserialize(body, type, native));
+                    Assert.NotNull(JsonSerializer.Deserialize(body, type, Options));
+                }
+                foreach (var token in InvalidDates)
+                {
+                    var body = PlainPayload(contract, "\"" + field + "\":" + token + ",");
+                    var sourceError = Record.Exception(() => Newtonsoft.Json.JsonConvert.DeserializeObject<PublicAuditProjection>(body, legacy));
+                    Assert.True(sourceError is Newtonsoft.Json.JsonException or ArgumentOutOfRangeException);
+                    Assert.NotNull(JsonSerializer.Deserialize(body, type, native));
+                    Assert.Throws<JsonException>(() => JsonSerializer.Deserialize(body, type, Options));
+                }
             }
-            foreach (var token in InvalidDates)
-            {
-                var body = PlainPayload(contract, "\"" + field + "\":" + token + ",");
-                var sourceError = Record.Exception(() => Newtonsoft.Json.JsonConvert.DeserializeObject<PublicAuditProjection>(body, legacy));
-                Assert.True(sourceError is Newtonsoft.Json.JsonException or ArgumentOutOfRangeException);
-                Assert.NotNull(JsonSerializer.Deserialize(body, type, native));
-                Assert.Throws<JsonException>(() => JsonSerializer.Deserialize(body, type, Options));
-            }
-        }
     }
 
     [Theory]
@@ -176,13 +176,13 @@ public sealed class ProcurementMetadataIgnoredAuditDateTests(ProcurementRuntimeF
             using var reader = new Newtonsoft.Json.JsonTextReader(new StringReader("\"02/03/2000\"")) { Culture = CultureInfo.InvariantCulture };
             Assert.Equal(new DateTime(2000, 2, 3), reader.ReadAsDateTime());
             foreach (var contract in Contracts)
-            foreach (var field in Fields)
-            {
-                foreach (var token in ValidDates)
-                    Assert.NotNull(JsonSerializer.Deserialize(PlainPayload(contract, "\"" + field + "\":" + token + ","), RequestType(contract), Options));
-                foreach (var token in InvalidDates)
-                    Assert.Throws<JsonException>(() => JsonSerializer.Deserialize(PlainPayload(contract, "\"" + field + "\":" + token + ","), RequestType(contract), Options));
-            }
+                foreach (var field in Fields)
+                {
+                    foreach (var token in ValidDates)
+                        Assert.NotNull(JsonSerializer.Deserialize(PlainPayload(contract, "\"" + field + "\":" + token + ","), RequestType(contract), Options));
+                    foreach (var token in InvalidDates)
+                        Assert.Throws<JsonException>(() => JsonSerializer.Deserialize(PlainPayload(contract, "\"" + field + "\":" + token + ","), RequestType(contract), Options));
+                }
         }
         finally { CultureInfo.CurrentCulture = previous; }
     }

@@ -25,6 +25,7 @@ FIXTURE = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntime
 TEST_PROJECT = "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj"
 OLD135 = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs"
 OPENAPI = "Legacy.Maliev.ProcurementService.Tests/Controllers/ProcurementOpenApiHttpContractTests.cs"
+FILE_HARNESS = "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs"
 AUTH_TEST = "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs"
 PROJECTS = tuple("Legacy.Maliev.ProcurementService." + part for part in ("Api", "Application", "Data", "Domain"))
 PATTERNS = ("directory.build.*", "directory.packages.*", "global.json", "nuget.config", "*.slnx")
@@ -236,11 +237,11 @@ def prepare(baseline, manifest_path, verify_only=False):
     require(not git(candidate, "ls-files", "--others", "--exclude-standard", "--", *PROJECTS,
                     "Legacy.Maliev.ProcurementService.Tests"), "Untracked compiled inputs forbidden")
     compiled = manifest["compiledTestPostimages"]
-    require(set(compiled) == {TEST, OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST, NEW_AUDIT, NEW_METADATA_AUDIT}, "Wrong closed compiled test roster")
+    require(set(compiled) == {TEST, OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST, NEW_AUDIT, NEW_METADATA_AUDIT, FILE_HARNESS}, "Wrong closed compiled test roster")
     for path, record in compiled.items():
         require(blob(candidate, path) == git_blob_record(record), "Reviewed compiled test source differs")
     expected_changes = {TEST}
-    for path in (OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST, NEW_AUDIT, NEW_METADATA_AUDIT):
+    for path in (OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST, NEW_AUDIT, NEW_METADATA_AUDIT, FILE_HARNESS):
         if path in (NEW_AUDIT, NEW_METADATA_AUDIT) or git(baseline, "rev-parse", BASE + ":" + path).decode().strip() != git_blob_record(compiled[path]):
             expected_changes.add(path)
     require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--",
