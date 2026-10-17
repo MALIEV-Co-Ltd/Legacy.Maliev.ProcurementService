@@ -270,7 +270,7 @@ class RuntimeInputs(unittest.TestCase):
         import json
         manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
         for field, value in (("acceptedBase", "main"), ("previousProcurement", "main"),
-                             ("inputCount", 71), ("unchangedInputCount", 70),
+                             ("inputCount", 71), ("unchangedInputCount", 69),
                              ("reviewedProcurement", "main"), ("reviewedTree", "0"*40)):
             with self.subTest(field=field):
                 changed = copy.deepcopy(manifest)
@@ -281,6 +281,20 @@ class RuntimeInputs(unittest.TestCase):
         changed["previousMetadataIdentityIntentionalSourceChanges"]["unchangedInputCount"] = 1
         with self.assertRaises(ValueError):
             guard.require_historical_graph(changed)
+
+
+
+    def test_exact_two_source_changes_preserve_seventy_other_runtime_inputs(self):
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        change = manifest["intentionalSourceChanges"]
+        self.assertEqual(72,change["inputCount"])
+        self.assertEqual(70,change["unchangedInputCount"])
+        self.assertEqual({
+            "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs",
+            "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs",
+        },set(change["changedInputs"]))
+        guard.require_historical_graph(manifest)
 
 
 

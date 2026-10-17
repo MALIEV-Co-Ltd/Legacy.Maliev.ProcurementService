@@ -55,11 +55,11 @@ jobs:
           ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
           path: .joined-public/Legacy.Maliev.CompatibilityContracts
           persist-credentials: false
-      - name: Check out reviewed header ignored-fields producer
+      - name: Check out reviewed source-contact and ignored-fields producer
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService
-          ref: 9e8f243f9813b7b2b232fe2525a2fba819a6c97c
+          ref: 4f655c9394c20e5968d8bf6f1d77fdba3f77c7f4
           path: .joined-public/Legacy.Maliev.ProcurementService
           persist-credentials: false
       - name: Verify immutable producer graph and actual runtime inputs

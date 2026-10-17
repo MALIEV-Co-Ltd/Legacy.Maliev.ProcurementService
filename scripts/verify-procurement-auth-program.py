@@ -9,7 +9,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-header-ignored-fields.json"
+MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-header-contact-ignored-fields.json"
 HISTORICAL_PATH = "tools/ProcurementAuthProgram.Tests/public-graph.json"
 HISTORICAL_SHA256 = "205063c79697948343ba659b13757b68ef4814d1b62861484a1dd90c0b8e7d41"
 PREVIOUS_ACCEPTED_PATH = "tools/ProcurementAuthProgram.Tests/public-graph-child-replay.json"
@@ -198,12 +198,13 @@ def require_historical_graph(manifest):
     if manifest["previousMetadataIdentityIntentionalSourceChanges"] != previous["intentionalSourceChanges"]:
         raise ValueError("Previous metadata-identity72 source envelope must remain exact")
     change = manifest["intentionalSourceChanges"]
-    paths = {"Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs"}
+    paths = {"Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs",
+             "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs"}
     if (change["previousProcurement"] != custody["procurement"]
             or change["acceptedBase"] != "44c79ed24c142883563e037bbb5be724ea87322a"
-            or change["inputCount"] != 72 or change["unchangedInputCount"] != 71
+            or change["inputCount"] != 72 or change["unchangedInputCount"] != 70
             or set(change["changedInputs"]) != paths):
-        raise ValueError("Header successor requires exact72/1/71 source envelope")
+        raise ValueError("Header successor requires exact72/2/70 source envelope")
     previous_inputs = previous["intentionalSourceChanges"]["reviewedInputs"]
     if set(change["reviewedInputs"]) != set(previous_inputs):
         raise ValueError("Header successor cannot add or remove runtime/build/fixture inputs")
@@ -215,9 +216,9 @@ def require_historical_graph(manifest):
             raise ValueError("Unrelated runtime tuple differs from accepted metadata72")
     pins = [entry["commit"] for entry in manifest["references"]
             if entry["repository"] == "Legacy.Maliev.ProcurementService"]
-    if (pins != ["9e8f243f9813b7b2b232fe2525a2fba819a6c97c"]
-            or change["reviewedProcurement"] != "9e8f243f9813b7b2b232fe2525a2fba819a6c97c"
-            or change["reviewedTree"] != "a90a1636c4421a8bc6c2ee56e87e408df1391926"):
+    if (pins != ["4f655c9394c20e5968d8bf6f1d77fdba3f77c7f4"]
+            or change["reviewedProcurement"] != "4f655c9394c20e5968d8bf6f1d77fdba3f77c7f4"
+            or change["reviewedTree"] != "00c881d326b1db9daff8be047e5e078f14ee9ade"):
         raise ValueError("Header Auth successor requires exact independently reviewed producer")
     external = lambda graph: {entry["repository"]: entry["commit"] for entry in graph["references"]
                               if entry["repository"] != "Legacy.Maliev.ProcurementService"}
