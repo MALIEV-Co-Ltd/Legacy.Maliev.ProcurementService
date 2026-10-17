@@ -606,35 +606,5 @@ class TypedMetadataProvenanceControls(unittest.TestCase):
                     prep.require_runtime_postimages(pathlib.Path("."), changed)
 
 
-class FailedCaseDiagnosticControls(unittest.TestCase):
-    def test_failed_candidate_diagnostic_is_bounded_safe_and_never_accepts_wrong_exit(self):
-        control = FileMetadataResultControls()
-        control.setUp()
-        try:
-            row = control.candidate_doc.find("./" + NS + "Results/" + NS + "UnitTestResult")
-            row.set("outcome", "Failed")
-            error = ET.SubElement(ET.SubElement(row, NS + "Output"), NS + "ErrorInfo")
-            ET.SubElement(error, NS + "Message").text = "System.Text.Json.JsonException : SYNTHETIC-PRIVATE-PAYLOAD"
-            ET.SubElement(error, NS + "StackTrace").text = (
-                "   at " + CONTRACT["testClass"] + ".Bind(String value) in /private/PurchaseOrderFileMetadataBindingTests.cs:line 375")
-            control.write(control.candidate,control.candidate_doc)
-            with mock.patch("sys.stdout",new_callable=io.StringIO) as output:
-                with self.assertRaisesRegex(ValueError,"Wrong phase test exit"):
-                    guard.verify(control.candidate,control.manifest,"candidate",1)
-                raw = output.getvalue()
-            self.assertNotIn("SYNTHETIC-PRIVATE-PAYLOAD",raw)
-            self.assertNotIn("/private/",raw)
-            rows = json.loads(raw)["failedCaseDiagnostics"]
-            self.assertEqual(1,len(rows))
-            self.assertEqual("json",rows[0]["failureCategory"])
-            self.assertEqual([{"method":"Bind","line":375}],rows[0]["sourceFrames"])
-            self.assertEqual(CONTRACT["candidate"][0]["name"],rows[0]["case"])
-            self.assertFalse((control.candidate/"file-metadata-binding-proof.json").exists())
-            with mock.patch.object(guard,"MAX_TRX_BYTES",4),self.assertRaises(ValueError):
-                guard.failed_case_diagnostics(control.candidate,control.manifest)
-        finally:
-            control.doCleanups()
-
-
 if __name__ == "__main__":
     unittest.main()

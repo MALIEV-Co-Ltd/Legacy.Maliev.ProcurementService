@@ -24,8 +24,6 @@ TEST_PROJECT = "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.Procurement
 TESTS = {"metadata": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredBodyIdTests.cs"}
 SCRIPT_PATHS = {
     "scripts/prepare-metadata-identity-baseline.py",
-    "scripts/verify-file-metadata-binding-results.py",
-    "scripts/test_file_metadata_binding_results.py",
     "scripts/verify-metadata-identity-results.py",
     "scripts/observe-metadata-identity-providers.py",
     "scripts/test_metadata_identity_results.py",
@@ -236,7 +234,7 @@ def prepare(baseline, manifest_path, verify_only=False):
             "Unexpected production source/build drift")
     require_runtime_postimages(candidate, manifest)
     for path in ("scripts/observe-supplier-address-providers.py", "scripts/supplier_address_owned_processes.py",
-                 "scripts/observe-file-metadata-providers.py",
+                 "scripts/observe-file-metadata-providers.py", "scripts/verify-file-metadata-binding-results.py",
                  "scripts/verify-supplier-address-causal-results.py"):
         require(blob(candidate, path) == git(baseline, "rev-parse", BASE + ":" + path).decode().strip(),
                 "Accepted causal/ownership implementation changed")

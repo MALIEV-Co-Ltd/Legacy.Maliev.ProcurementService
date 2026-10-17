@@ -1715,7 +1715,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-metadata-identity-baseline.py": {
-      "gitBlob": "81806bf47c79affb5be4ea252e041b6c2ce0b1a7"
+      "gitBlob": "9c9450cf2227a5ba02333a00a976c009fc6d0c35"
     },
     "scripts/verify-metadata-identity-results.py": {
       "gitBlob": "a1cb8d97044e6c4aa9da33549e967551074b616d"
@@ -1731,12 +1731,6 @@
     },
     ".github/workflows/procurement-metadata-identity.yml": {
       "gitBlob": "def71e595a946d1ff7a7fe74fcc0ba640916872f"
-    },
-    "scripts/verify-file-metadata-binding-results.py": {
-      "gitBlob": "3da4c04da388402edecbfda5d83bb41eb5eebfb0"
-    },
-    "scripts/test_file_metadata_binding_results.py": {
-      "gitBlob": "6225af80d10023863f5c13ba3d510e5eff71ed7c"
     }
   },
   "authEnrollmentTestBinding": {
