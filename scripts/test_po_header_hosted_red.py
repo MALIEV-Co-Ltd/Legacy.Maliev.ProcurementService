@@ -424,8 +424,12 @@ class CandidateSourceCustodyTests(unittest.TestCase):
         metadata_identity = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs"
         self.assertEqual(9, len(current))
         self.assertEqual({metadata_identity}, set(current) - set(retained_supplier))
+        changed_header = RED.require_header_binding_advance(CONTRACT, RED.candidate_digests(CONTRACT))
         for relative in retained_supplier:
-            if relative in {program, converter}:
+            if relative in changed_header:
+                self.assertEqual(RED.binding_digest(retained_supplier[relative]),
+                                 RED.binding_digest(CONTRACT["previousHeaderIgnoredFieldBindings"][relative]))
+            elif relative in {program, converter}:
                 self.assertNotEqual(RED.binding_digest(retained_supplier[relative]), RED.binding_digest(current[relative]))
             else:
                 self.assertEqual(RED.binding_digest(retained_supplier[relative]), RED.binding_digest(current[relative]))
@@ -501,6 +505,38 @@ class TypedCandidateProvenanceControls(unittest.TestCase):
                 changed["candidateBindings"].pop(next(iter(changed["candidateBindings"])))
             else:
                 changed["candidateBindings"]["unreviewed"] = {"sha256": "a" * 64}
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                RED.candidate_digests(changed)
+
+    def test_exact_header_successor_rejects_every_preimage_postimage_and_unrelated_drift(self):
+        import copy
+        current = RED.candidate_digests(CONTRACT)
+        RED.require_header_binding_advance(CONTRACT, current)
+        for section in ("preimages", "postimages"):
+            for path in CONTRACT["headerIgnoredFieldBindingAdvance"][section]:
+                changed = copy.deepcopy(CONTRACT)
+                changed["headerIgnoredFieldBindingAdvance"][section][path] = {"sha256":"0"*64}
+                with self.subTest(section=section,path=path), self.assertRaises(ValueError):
+                    RED.require_header_binding_advance(changed, current)
+        for path in current:
+            changed = dict(current)
+            changed[path] = "0"*64
+            with self.subTest(path=path), self.assertRaises(ValueError):
+                RED.require_header_binding_advance(CONTRACT, changed)
+
+    def test_header_successor_requires_closed_two_binding_roster_format_and_generation(self):
+        import copy
+        for mutation in ("missing", "extra", "format", "issue", "base", "scalar"):
+            changed = copy.deepcopy(CONTRACT)
+            advance = changed["headerIgnoredFieldBindingAdvance"]
+            if mutation == "missing": advance["postimages"].pop(next(iter(advance["postimages"])))
+            elif mutation == "extra": advance["postimages"]["foreign"] = {"sha256":"0"*64}
+            elif mutation == "format": advance["bindingFormat"] = "git-blob-record-v1"
+            elif mutation == "issue": advance["issue"] = 68
+            elif mutation == "base": advance["base"] = "main"
+            else:
+                path = next(iter(advance["preimages"]))
+                advance["preimages"][path] = advance["preimages"][path]["sha256"]
             with self.subTest(mutation=mutation), self.assertRaises(ValueError):
                 RED.candidate_digests(changed)
 

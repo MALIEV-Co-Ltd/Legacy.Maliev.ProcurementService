@@ -63,13 +63,43 @@ def binding_digest(value):
     return value["sha256"]
 
 
+def require_header_binding_advance(contract, current):
+    header = "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs"
+    tests = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs"
+    expected = {header, tests}
+    prior = contract["previousHeaderIgnoredFieldBindings"]
+    advance = contract["headerIgnoredFieldBindingAdvance"]
+    require(isinstance(prior, dict) and set(prior) == set(current)
+            and isinstance(advance, dict) and advance.get("issue") == 70
+            and advance.get("base") == "44c79ed24c142883563e037bbb5be724ea87322a"
+            and advance.get("bindingFormat") == "sha256-record-v1",
+            "Require exact reviewed header binding generation")
+    pre, post = advance["preimages"], advance["postimages"]
+    require(isinstance(pre, dict) and isinstance(post, dict)
+            and set(pre) == set(post) == expected, "Require only the two reviewed header bindings")
+    old = {path: binding_digest(record) for path, record in prior.items()}
+    known_pre = {
+        header: "d889daf8f8c8adeb10291476b592184f8a1551f170bc8a527888ff4f6c7bec0e",
+        tests: "444a71c704d94fc5d8e5b4eaa100d06b0fe3e5e2ff544b4af31e0e94b62d1c9e",
+    }
+    require({path for path in current if current[path] != old[path]} == expected,
+            "Unrelated header witness source binding changed")
+    for path in expected:
+        require(binding_digest(pre[path]) == old[path] == known_pre[path]
+                and binding_digest(post[path]) == current[path],
+                "Header successor detached from exact pre/postimage")
+    return expected
+
+
 def candidate_digests(contract):
     require(contract.get("candidateBindingFormat") == "sha256-record-v1",
             "Require the reviewed SHA256 provenance format")
     bindings = contract["candidateBindings"]
     require(isinstance(bindings, dict) and len(bindings) == 9,
             "Require all nine reviewed current source bindings")
-    return {relative: binding_digest(record) for relative, record in bindings.items()}
+    current = {relative: binding_digest(record) for relative, record in bindings.items()}
+    require_header_binding_advance(contract, current)
+    return current
 
 
 def candidate_sources(root, contract):

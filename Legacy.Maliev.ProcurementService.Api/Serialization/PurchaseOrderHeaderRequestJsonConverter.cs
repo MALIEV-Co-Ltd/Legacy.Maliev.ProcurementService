@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Legacy.Maliev.ProcurementService.Application.Models;
@@ -8,6 +9,8 @@ namespace Legacy.Maliev.ProcurementService.Api.Serialization;
 /// <summary>Reads the consumed purchase-order header with ordered primitive and null-ignore semantics.</summary>
 public sealed class PurchaseOrderHeaderRequestJsonConverter : JsonConverter<UpsertPurchaseOrderRequest>
 {
+    private static readonly IgnoredBodyInt32JsonConverter BodyIdentityReader = new();
+
     /// <inheritdoc />
     public override UpsertPurchaseOrderRequest Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -37,7 +40,19 @@ public sealed class PurchaseOrderHeaderRequestJsonConverter : JsonConverter<Upse
         // later nulls skip assignment, and a later valid value cannot hide an earlier error.
         foreach (var property in document.RootElement.EnumerateObject())
         {
-            if (string.Equals(property.Name, "SupplierId", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(property.Name, "Id", StringComparison.OrdinalIgnoreCase))
+            {
+                // The source model binds Id:int before both controllers discard it.
+                // Validate every occurrence with the already reviewed public typed reader;
+                // never place the body identity on the consumed request or persisted graph.
+                var identity = new Utf8JsonReader(Encoding.UTF8.GetBytes(property.Value.GetRawText()));
+                identity.Read();
+                _ = BodyIdentityReader.Read(ref identity, typeof(int?), options);
+            }
+            else if (string.Equals(property.Name, "CreatedDate", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(property.Name, "ModifiedDate", StringComparison.OrdinalIgnoreCase))
+                ReadIgnoredAuditDate(property.Value);
+            else if (string.Equals(property.Name, "SupplierId", StringComparison.OrdinalIgnoreCase))
                 supplierId = ReadReference(property.Value) ?? supplierId;
             else if (string.Equals(property.Name, "SupplierContactPerson", StringComparison.OrdinalIgnoreCase))
                 supplierContactPerson = ReadText(property.Value) ?? supplierContactPerson;
@@ -78,6 +93,22 @@ public sealed class PurchaseOrderHeaderRequestJsonConverter : JsonConverter<Upse
             shippingTelephone, shippingMobile, shippingFax, billingAddressId,
             billingContactPerson, billingTelephone, billingMobile, billingFax,
             fob, terms, shippingMethod, employeeId, notes);
+    }
+
+    private static void ReadIgnoredAuditDate(JsonElement value)
+    {
+        // Only compatibility with the pinned public reader is claimed.
+        // The effective historical deployed Newtonsoft binary remains unknown.
+        using var text = new StringReader(value.GetRawText());
+        using var legacy = new Newtonsoft.Json.JsonTextReader(text) { Culture = CultureInfo.InvariantCulture };
+        try
+        {
+            _ = legacy.ReadAsDateTime();
+        }
+        catch (Exception exception) when (exception is Newtonsoft.Json.JsonException or ArgumentOutOfRangeException)
+        {
+            throw new JsonException("The ignored audit date has an invalid legacy type.", exception);
+        }
     }
 
     private static string? ReadText(JsonElement value)

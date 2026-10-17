@@ -9,7 +9,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-metadata-ignored-identity.json"
+MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-header-contact-ignored-fields.json"
 HISTORICAL_PATH = "tools/ProcurementAuthProgram.Tests/public-graph.json"
 HISTORICAL_SHA256 = "205063c79697948343ba659b13757b68ef4814d1b62861484a1dd90c0b8e7d41"
 PREVIOUS_ACCEPTED_PATH = "tools/ProcurementAuthProgram.Tests/public-graph-child-replay.json"
@@ -71,7 +71,7 @@ def inputs(root, manifest):
     print(json.dumps({"graphId": manifest["graphId"], "references": manifest["references"], "identicalRuntimeBuildFixtureInputs": len(reviewed)}))
 
 
-def require_historical_graph(manifest):
+def require_previous_metadata_graph(manifest):
     custody = manifest["historicalGraph"]
     historical_bytes = (ROOT / HISTORICAL_PATH).read_bytes()
     if custody["path"] != HISTORICAL_PATH or custody["sha256"] != HISTORICAL_SHA256 or hashlib.sha256(historical_bytes).hexdigest() != HISTORICAL_SHA256:
@@ -172,6 +172,63 @@ def require_historical_graph(manifest):
         raise ValueError("External producer pins and actual Auth execution identities must remain unchanged")
     if any(manifest[field] is not False for field in ("productionEnrollmentProven", "productionIamBridgeProven", "wholeInitialSourceParityClosed")):
         raise ValueError("Source custody does not qualify production authority or whole-source closure")
+
+
+def require_historical_graph(manifest):
+    custody = manifest["latestAcceptedMetadataIdentityGraph"]
+    path = "tools/ProcurementAuthProgram.Tests/public-graph-metadata-ignored-identity.json"
+    digest = "3ebc8ce7a0a5ba574a59ce17d7d0799886eecb02ce4c59dae9f8d74b671d2f2e"
+    with (ROOT / path).open("rb") as stream:
+        raw = stream.read(2 * 1024 * 1024 + 1)
+    if not 0 < len(raw) <= 2 * 1024 * 1024:
+        raise ValueError("Accepted metadata-identity72 witness exceeds bounded reader")
+    if (set(custody) != {"path", "sha256", "gitBlob", "procurement", "inputCount"}
+            or custody["path"] != path or custody["sha256"] != digest
+            or custody["gitBlob"] != "d5ec8073e418e461e61e0fffc5dda47318b95861"
+            or custody["procurement"] != "56a6b8d8576b71cfd8e76216118684839c8ea102"
+            or custody["inputCount"] != 72 or hashlib.sha256(raw).hexdigest() != digest):
+        raise ValueError("Accepted metadata-identity72 witness custody must remain exact")
+    previous = json.loads(raw)
+    require_previous_metadata_graph(previous)
+    for field in ("historicalGraph", "previousAcceptedGraph", "latestAcceptedSupplierGraph",
+                  "latestAcceptedBucketGraph", "latestAcceptedPurchaseOrderAddressGraph",
+                  "latestAcceptedFileMetadataGraph", "latestAcceptedSupplierIdentityGraph"):
+        if manifest[field] != previous[field]:
+            raise ValueError("Retained historical witness must remain exact: " + field)
+    if manifest["previousMetadataIdentityIntentionalSourceChanges"] != previous["intentionalSourceChanges"]:
+        raise ValueError("Previous metadata-identity72 source envelope must remain exact")
+    change = manifest["intentionalSourceChanges"]
+    paths = {"Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs",
+             "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs"}
+    if (change["previousProcurement"] != custody["procurement"]
+            or change["acceptedBase"] != "44c79ed24c142883563e037bbb5be724ea87322a"
+            or change["inputCount"] != 72 or change["unchangedInputCount"] != 70
+            or set(change["changedInputs"]) != paths):
+        raise ValueError("Header successor requires exact72/2/70 source envelope")
+    previous_inputs = previous["intentionalSourceChanges"]["reviewedInputs"]
+    if set(change["reviewedInputs"]) != set(previous_inputs):
+        raise ValueError("Header successor cannot add or remove runtime/build/fixture inputs")
+    for path, binding in change["changedInputs"].items():
+        if binding["previousMetadata"] != previous_inputs[path]:
+            raise ValueError("Header source delta is detached from exact metadata72 preimage")
+    for path, metadata in change["reviewedInputs"].items():
+        if path not in paths and previous_inputs[path] != metadata:
+            raise ValueError("Unrelated runtime tuple differs from accepted metadata72")
+    pins = [entry["commit"] for entry in manifest["references"]
+            if entry["repository"] == "Legacy.Maliev.ProcurementService"]
+    if (pins != ["4f655c9394c20e5968d8bf6f1d77fdba3f77c7f4"]
+            or change["reviewedProcurement"] != "4f655c9394c20e5968d8bf6f1d77fdba3f77c7f4"
+            or change["reviewedTree"] != "00c881d326b1db9daff8be047e5e078f14ee9ade"):
+        raise ValueError("Header Auth successor requires exact independently reviewed producer")
+    external = lambda graph: {entry["repository"]: entry["commit"] for entry in graph["references"]
+                              if entry["repository"] != "Legacy.Maliev.ProcurementService"}
+    if (external(manifest) != external(previous)
+            or manifest["expectedCases"] != previous["expectedCases"]
+            or manifest["expectedMethods"] != previous["expectedMethods"]):
+        raise ValueError("External pins and all actual15 Auth identities must remain unchanged")
+    if any(manifest[field] is not False for field in
+           ("productionEnrollmentProven", "productionIamBridgeProven", "wholeInitialSourceParityClosed")):
+        raise ValueError("Header custody does not qualify production authority or whole-source closure")
 
 
 def results(root, manifest):
