@@ -1345,7 +1345,7 @@
       "gitBlob": "e312dfb12b4522139b23033f59d74f93ca2732dc"
     },
     "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs": {
-      "gitBlob": "2302854b1c32d2a07f8e942cc0bbdacbfeace430"
+      "gitBlob": "fccdd60c3c9e5ae7619db81acfb401447d3c64f3"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredAuditDateTests.cs": {
       "gitBlob": "16109c5013df74ad4c27f14b128287ceb649efb1"
@@ -1390,7 +1390,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-supplier-ignored-audits-baseline.py": {
-      "gitBlob": "92c763728c4e7b7ae808bb9d7a0883b288134399"
+      "gitBlob": "5d7fb09481c53e6405d7c71742c8efd8d3a12854"
     },
     "scripts/verify-supplier-ignored-audits-results.py": {
       "gitBlob": "2b718a0b66baeab9ee321f23482df27addabd9f3"

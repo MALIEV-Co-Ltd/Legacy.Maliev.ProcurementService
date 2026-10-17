@@ -2164,7 +2164,7 @@
       "gitBlob": "eb9a3cc0f299279ad4db1f305dd86519d69f5429"
     },
     "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs": {
-      "gitBlob": "2302854b1c32d2a07f8e942cc0bbdacbfeace430"
+      "gitBlob": "fccdd60c3c9e5ae7619db81acfb401447d3c64f3"
     },
     "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementPostgresMigrationTests.cs": {
       "gitBlob": "c8c60dc1cf1fd050536bdffd35328605a9fe4147"
@@ -2218,7 +2218,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-header-ignored-fields-baseline.py": {
-      "gitBlob": "7a6bcbe07ed93fa3ae8c96c2e13d8f585161e5b2"
+      "gitBlob": "5a57e655ea664a522f2bffe30f8ee8738fa4736a"
     },
     "scripts/verify-header-ignored-fields-results.py": {
       "gitBlob": "009579c8ec2790bd0d0338a4fd61cb083cfdbcd6"
