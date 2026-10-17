@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using OriginalSupplier = Maliev.SupplierService.Data.Database.SupplierContext.Supplier;
@@ -27,13 +28,14 @@ namespace Legacy.Maliev.ProcurementService.Tests.Integration;
 // No EF/SDK executes here.
 internal sealed class ProcurementMetadataSourceOracle : IDisposable
 {
-    private readonly TestServer server;
+    private readonly IHost host;
     public SourceAdmissionState State { get; } = new();
     public HttpClient Client { get; }
 
     public ProcurementMetadataSourceOracle()
     {
-        server = new TestServer(new WebHostBuilder()
+        host = new HostBuilder().ConfigureWebHost(builder => builder
+            .UseTestServer()
             .ConfigureServices(services =>
             {
                 services.AddSingleton(State);
@@ -68,8 +70,21 @@ internal sealed class ProcurementMetadataSourceOracle : IDisposable
                 });
                 app.UseRouting();
                 app.UseEndpoints(endpoints => endpoints.MapControllers());
-            }));
-        Client = server.CreateClient();
+            })).Build();
+        try
+        {
+            host.Start();
+            Client = host.GetTestClient();
+        }
+        catch (Exception startupFailure)
+        {
+            try { host.Dispose(); }
+            catch (Exception cleanupFailure)
+            {
+                throw new AggregateException("Source oracle startup and cleanup failed.", startupFailure, cleanupFailure);
+            }
+            throw;
+        }
     }
 
     public async Task<HttpResponseMessage> SendAsync(string contract, string body, Encoding? encoding = null)
@@ -81,7 +96,7 @@ internal sealed class ProcurementMetadataSourceOracle : IDisposable
     public void Dispose()
     {
         Client.Dispose();
-        server.Dispose();
+        host.Dispose();
     }
 
     private sealed class OriginalControllerFeature : IApplicationFeatureProvider<ControllerFeature>

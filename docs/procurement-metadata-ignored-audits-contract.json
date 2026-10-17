@@ -3202,7 +3202,7 @@
       "gitBlob": "0f1751b705cf1b41fd3e7a489534eacece6e3e64"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceOracle.cs": {
-      "gitBlob": "f1902ac6792913111c5155d9a5a33bab4a171cb0"
+      "gitBlob": "26950761aedd6be196e09f04a02ab99565f5dcf6"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceProtocolTests.cs": {
       "gitBlob": "fb62db7d2b764a57c9826a0a6155b0551506691a"
@@ -3235,7 +3235,7 @@
       "gitBlob": "ffb85569c189055a9fb8a2ae66aaa8cd6d3c8005"
     },
     "scripts/prepare-metadata-ignored-audits-baseline.py": {
-      "gitBlob": "ea8d4d6d7dcb832574b72f7404177c0a217e4466"
+      "gitBlob": "4246db6ab9330a1d23d8bceba2b42d6adae97dff"
     },
     "scripts/observe-metadata-ignored-audits-providers.py": {
       "gitBlob": "c187747f8d602bb015602e4acfbf8bab80a03b37"
