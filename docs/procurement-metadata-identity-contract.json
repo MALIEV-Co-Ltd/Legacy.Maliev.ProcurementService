@@ -1735,7 +1735,7 @@
   },
   "authEnrollmentTestBinding": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs",
-    "gitBlob": "fecfd84045501579e8bdc926538f3066d745c6f0"
+    "gitBlob": "410add7cdedf10e1fe6c20a6bfd4c33d40635be8"
   },
   "candidateBoundaryHarness": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Controllers/ProcurementOpenApiHttpContractTests.cs",
