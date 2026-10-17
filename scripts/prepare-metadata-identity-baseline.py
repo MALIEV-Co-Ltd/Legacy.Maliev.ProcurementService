@@ -194,6 +194,7 @@ def require_header_harness_bindings(candidate, manifest):
         "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs",
         "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementPostgresMigrationTests.cs",
         "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierIgnoredAuditTests.cs",
+        "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredAuditDateTests.cs",
     }
     require(isinstance(bindings, dict) and set(bindings) == expected, "Wrong reviewed header harness roster")
     for path, record in bindings.items():

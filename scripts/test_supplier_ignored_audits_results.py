@@ -441,11 +441,11 @@ class SourceAndOwnershipControls(unittest.TestCase):
         self.assertEqual(profile["testBlob"], hashlib.sha1(("blob " + str(len(raw)) + "\0").encode() + raw).hexdigest())
         self.assertEqual(72, len(CONTRACT["baseInputs"]))
         self.assertEqual(set(CONTRACT["baseInputs"]), set(CONTRACT["reviewedInputs"]))
-        self.assertEqual({prep.CONVERTER}, {p for p in CONTRACT["baseInputs"]
+        self.assertEqual({prep.CONVERTER, prep.METADATA_SEAM}, {p for p in CONTRACT["baseInputs"]
                          if CONTRACT["baseInputs"][p] != CONTRACT["reviewedInputs"][p]})
-        self.assertEqual({prep.CONVERTER}, set(CONTRACT["runtimePostimages"]))
+        self.assertEqual({prep.CONVERTER, prep.METADATA_SEAM}, set(CONTRACT["runtimePostimages"]))
         self.assertEqual("1ab8e59d4941ba9caad9c50ca67ad54b2ddf6b79", prep.BASE)
-        self.assertEqual({prep.TEST, prep.AUTH_TEST}, set(CONTRACT["compiledTestPostimages"]))
+        self.assertEqual({prep.TEST, prep.AUTH_TEST, prep.NEW_METADATA_AUDIT}, set(CONTRACT["compiledTestPostimages"]))
 
     def test_exact_approved_observer_with_only_class_family_purpose_delta(self):
         original = (HERE / "observe-metadata-identity-providers.py").read_text(encoding="utf-8")

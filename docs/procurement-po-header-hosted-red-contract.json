@@ -36,7 +36,7 @@
       "sha256": "f3a83e73608ab207e41e3b9e7d3c47fb5da0c08232ce7ec786043574cf5e8f9b"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
-      "sha256": "77710ac49252bcf82ca56792418a0ae57d26b5f8d84be58b6abe235441717509"
+      "sha256": "758b99c2bba630978087272bb2800553c6502df92baadf26339845e842c8c6da"
     }
   },
   "expectedCounters": {
@@ -397,6 +397,50 @@
     "postimages": {
       "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
         "sha256": "f3a83e73608ab207e41e3b9e7d3c47fb5da0c08232ce7ec786043574cf5e8f9b"
+      }
+    }
+  },
+  "previousMetadataAuditCandidateBindings": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+      "sha256": "9448746c2f26f65d90622afe3b1271327031cece0a21c7b9c0faa9b56fbe83ee"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
+      "sha256": "e7dae18e5cc6095eda6444239532455e85c8de3c359dc0514797cccf478e80f0"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
+      "sha256": "08acc76e39ad164565efdd4d61690c84fda773fd2067535812b95ece0d72fdbc"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": {
+      "sha256": "3860df546dbbae4154e06cf08273049e6e2733ce392b36ed2aa285a7edcac9f7"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": {
+      "sha256": "d29189ed0f2caf97153aa534bbb3f708c18d300c428e72389b78310466726845"
+    },
+    "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs": {
+      "sha256": "cb0e10f9eecf82f64fb389929c0c53a82b8461d3af918572fece2f4dbe51d679"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+      "sha256": "8b979fcda8bd10fb806389e1e0e4181adbe4c390fc55e902f1b36e445efe6469"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "sha256": "f3a83e73608ab207e41e3b9e7d3c47fb5da0c08232ce7ec786043574cf5e8f9b"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
+      "sha256": "77710ac49252bcf82ca56792418a0ae57d26b5f8d84be58b6abe235441717509"
+    }
+  },
+  "metadataAuditBindingAdvance": {
+    "issue": 74,
+    "base": "665f796eab8a6eea37fd1189d3c0821fc1dc5fa9",
+    "bindingFormat": "sha256-record-v1",
+    "preimages": {
+      "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
+        "sha256": "77710ac49252bcf82ca56792418a0ae57d26b5f8d84be58b6abe235441717509"
+      }
+    },
+    "postimages": {
+      "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
+        "sha256": "758b99c2bba630978087272bb2800553c6502df92baadf26339845e842c8c6da"
       }
     }
   }

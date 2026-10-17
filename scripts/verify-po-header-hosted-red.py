@@ -91,7 +91,7 @@ def require_previous_header_binding_advance(contract, current):
     return expected
 
 
-def require_header_binding_advance(contract, current):
+def require_previous_supplier_audit_binding_advance(contract, current):
     supplier = "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs"
     retained = contract["previousSupplierAuditCandidateBindings"]
     require(isinstance(retained, dict) and set(retained) == set(current) and len(retained) == 9,
@@ -117,6 +117,34 @@ def require_header_binding_advance(contract, current):
             == "f3a83e73608ab207e41e3b9e7d3c47fb5da0c08232ce7ec786043574cf5e8f9b",
             "Supplier audit successor detached from exact pre/postimage")
     return header_changes | {supplier}
+
+
+def require_header_binding_advance(contract, current):
+    metadata = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs"
+    retained = contract["previousMetadataAuditCandidateBindings"]
+    require(isinstance(retained, dict) and set(retained) == set(current) and len(retained) == 9,
+            "Retain all nine accepted Supplier audit header source bindings")
+    old = {path: binding_digest(record) for path, record in retained.items()}
+    retained_changes = require_previous_supplier_audit_binding_advance(contract, old)
+    advance = contract["metadataAuditBindingAdvance"]
+    require(isinstance(advance, dict)
+            and set(advance) == {"issue", "base", "bindingFormat", "preimages", "postimages"}
+            and advance["issue"] == 74
+            and advance["base"] == "665f796eab8a6eea37fd1189d3c0821fc1dc5fa9"
+            and advance["bindingFormat"] == "sha256-record-v1",
+            "Require reviewed metadata audit binding generation")
+    pre, post = advance["preimages"], advance["postimages"]
+    require(isinstance(pre, dict) and isinstance(post, dict)
+            and set(pre) == set(post) == {metadata},
+            "Metadata audit advance requires only one explicit binding")
+    require({path for path in current if current[path] != old[path]} == {metadata},
+            "Unrelated accepted Supplier audit source binding changed")
+    require(binding_digest(pre[metadata]) == old[metadata]
+            == "77710ac49252bcf82ca56792418a0ae57d26b5f8d84be58b6abe235441717509"
+            and binding_digest(post[metadata]) == current[metadata]
+            == "758b99c2bba630978087272bb2800553c6502df92baadf26339845e842c8c6da",
+            "Metadata audit successor detached from exact pre/postimage")
+    return retained_changes | {metadata}
 
 
 def candidate_digests(contract):

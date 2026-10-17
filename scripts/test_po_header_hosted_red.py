@@ -545,10 +545,10 @@ class SupplierAuditCandidateCustodyControls(unittest.TestCase):
     def test_supplier_audit_successor_retains_previous_header_witness_and_exact_third_delta(self):
         old = {path: RED.binding_digest(record) for path,record in CONTRACT["previousSupplierAuditCandidateBindings"].items()}
         header = RED.require_previous_header_binding_advance(CONTRACT, old)
-        current = RED.candidate_digests(CONTRACT)
+        current = {path: RED.binding_digest(record) for path,record in CONTRACT["previousMetadataAuditCandidateBindings"].items()}
         supplier = "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs"
         self.assertEqual({supplier},{path for path in current if current[path] != old[path]})
-        self.assertEqual(header | {supplier}, RED.require_header_binding_advance(CONTRACT,current))
+        self.assertEqual(header | {supplier}, RED.require_previous_supplier_audit_binding_advance(CONTRACT,current))
 
     def test_supplier_audit_binding_rejects_every_custody_preimage_postimage_and_roster_drift(self):
         import copy
@@ -572,6 +572,41 @@ class SupplierAuditCandidateCustodyControls(unittest.TestCase):
         for path in current:
             changed = copy.deepcopy(CONTRACT)
             changed["previousSupplierAuditCandidateBindings"][path] = {"sha256":"0"*64}
+            with self.subTest(path=path),self.assertRaises(ValueError):
+                RED.require_header_binding_advance(changed,current)
+
+
+class MetadataAuditCandidateCustodyControls(unittest.TestCase):
+    def test_metadata_audit_successor_retains_previous_supplier_witness_and_exact_fourth_delta(self):
+        old = {path: RED.binding_digest(record) for path,record in CONTRACT["previousMetadataAuditCandidateBindings"].items()}
+        previous = RED.require_previous_supplier_audit_binding_advance(CONTRACT, old)
+        current = RED.candidate_digests(CONTRACT)
+        metadata = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs"
+        self.assertEqual({metadata},{path for path in current if current[path] != old[path]})
+        self.assertEqual(previous | {metadata}, RED.require_header_binding_advance(CONTRACT,current))
+
+    def test_metadata_audit_binding_rejects_every_custody_preimage_postimage_and_roster_drift(self):
+        import copy
+        current = RED.candidate_digests(CONTRACT)
+        for field in ("issue","base","bindingFormat"):
+            changed = copy.deepcopy(CONTRACT)
+            changed["metadataAuditBindingAdvance"][field] = "drift"
+            with self.subTest(field=field),self.assertRaises(ValueError):
+                RED.require_header_binding_advance(changed,current)
+        for section in ("preimages","postimages"):
+            for mutation in ("missing","extra","wrong","scalar"):
+                changed = copy.deepcopy(CONTRACT)
+                binding = changed["metadataAuditBindingAdvance"][section]
+                path = next(iter(binding))
+                if mutation == "missing": binding.pop(path)
+                elif mutation == "extra": binding["foreign"] = {"sha256":"0"*64}
+                elif mutation == "wrong": binding[path] = {"sha256":"0"*64}
+                else: binding[path] = binding[path]["sha256"]
+                with self.subTest(section=section,mutation=mutation),self.assertRaises(ValueError):
+                    RED.require_header_binding_advance(changed,current)
+        for path in current:
+            changed = copy.deepcopy(CONTRACT)
+            changed["previousMetadataAuditCandidateBindings"][path] = {"sha256":"0"*64}
             with self.subTest(path=path),self.assertRaises(ValueError):
                 RED.require_header_binding_advance(changed,current)
 

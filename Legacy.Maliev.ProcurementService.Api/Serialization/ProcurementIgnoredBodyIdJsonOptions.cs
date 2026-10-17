@@ -10,10 +10,10 @@ using Microsoft.Extensions.Options;
 
 namespace Legacy.Maliev.ProcurementService.Api.Serialization;
 
-/// <summary>Configures source-compatible ignored body identities on the three metadata request contracts.</summary>
+/// <summary>Configures source-compatible discarded identities and audit dates on three metadata request contracts.</summary>
 public sealed class ProcurementIgnoredBodyIdJsonOptions : IConfigureOptions<JsonOptions>
 {
-    /// <summary>Preserves native object traversal while validating identities discarded by the source controllers.</summary>
+    /// <summary>Preserves native object traversal while validating identity and audit inputs discarded by source controllers.</summary>
     /// <param name="options">The MVC JSON options.</param>
     public void Configure(JsonOptions options)
     {
@@ -29,6 +29,7 @@ public sealed class ProcurementIgnoredBodyIdJsonOptions : IConfigureOptions<Json
 public sealed class ProcurementIgnoredBodyIdJsonTypeInfoResolver(IJsonTypeInfoResolver inner) : IJsonTypeInfoResolver
 {
     private static readonly JsonConverter<int?> IdentityReader = new IgnoredBodyInt32JsonConverter();
+    private static readonly JsonConverter<DateTime?> AuditReader = new IgnoredBodyNullableDateTimeJsonConverter();
     private static readonly JsonConverter<string> FileTextReader = new PurchaseOrderFileMetadataRequestJsonConverter();
 
     /// <summary>The original resolver retained for native object metadata composition.</summary>
@@ -44,8 +45,10 @@ public sealed class ProcurementIgnoredBodyIdJsonTypeInfoResolver(IJsonTypeInfoRe
             return metadata;
         if (metadata is null || metadata.Kind != JsonTypeInfoKind.Object)
             throw new InvalidOperationException("Native metadata request object contract is required.");
-        if (metadata.Properties.Any(property => string.Equals(property.Name, "Id", StringComparison.OrdinalIgnoreCase)))
-            throw new InvalidOperationException("Ignored body identity must not replace a consumed property.");
+        if (metadata.Properties.Any(property => string.Equals(property.Name, "Id", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(property.Name, "CreatedDate", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(property.Name, "ModifiedDate", StringComparison.OrdinalIgnoreCase)))
+            throw new InvalidOperationException("Discarded body fields must not replace consumed properties.");
 
         if (type == typeof(UpsertPurchaseOrderFileRequest))
         {
@@ -75,6 +78,15 @@ public sealed class ProcurementIgnoredBodyIdJsonTypeInfoResolver(IJsonTypeInfoRe
         identity.Get = static _ => null;
         identity.ShouldSerialize = static (_, _) => false;
         metadata.Properties.Add(identity);
+        foreach (var name in new[] { "CreatedDate", "ModifiedDate" })
+        {
+            var audit = metadata.CreateJsonPropertyInfo(typeof(DateTime?), name);
+            audit.CustomConverter = AuditReader;
+            audit.Set = static (_, _) => { };
+            audit.Get = static _ => null;
+            audit.ShouldSerialize = static (_, _) => false;
+            metadata.Properties.Add(audit);
+        }
         return metadata;
     }
 }
@@ -117,4 +129,29 @@ internal sealed class IgnoredBodyInt32JsonConverter : JsonConverter<int?>
 
     public override void Write(Utf8JsonWriter writer, int? value, JsonSerializerOptions options)
         => throw new NotSupportedException("Ignored body identities must never be serialized.");
+}
+
+internal sealed class IgnoredBodyNullableDateTimeJsonConverter : JsonConverter<DateTime?>
+{
+    public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null) return null;
+        if (reader.TokenType != JsonTokenType.String)
+            throw new JsonException("The discarded audit date has an invalid legacy type.");
+        using var text = new StringReader(JsonSerializer.Serialize(reader.GetString()));
+        using var legacy = new Newtonsoft.Json.JsonTextReader(text) { Culture = CultureInfo.InvariantCulture };
+        try
+        {
+            // Pinned public reader compatibility; the historical deployed binary is unknown.
+            return legacy.ReadAsDateTime();
+        }
+        catch (Exception exception) when (exception is Newtonsoft.Json.JsonException or ArgumentOutOfRangeException)
+        {
+            // Native object traversal supplies Path/line/position; no payload is echoed.
+            throw new JsonException("The discarded audit date has an invalid legacy type.", exception);
+        }
+    }
+
+    public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
+        => throw new NotSupportedException("Discarded audit inputs must never be serialized.");
 }

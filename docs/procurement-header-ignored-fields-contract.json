@@ -2124,6 +2124,9 @@
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
       "gitBlob": "87fd40bbe9072c8da0cc3567020d2872b05a107d"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
+      "gitBlob": "2646aec8eb8e6ff44e48b52b7a47fed5b4a6fac2"
     }
   },
   "publicFixture": {
@@ -2156,6 +2159,9 @@
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierIgnoredAuditTests.cs": {
       "gitBlob": "e312dfb12b4522139b23033f59d74f93ca2732dc"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredAuditDateTests.cs": {
+      "gitBlob": "f5ce0a72cf550eace02689a7c37ff1bed7dc2548"
     }
   },
   "retainedSourceProposal": {
@@ -2182,7 +2188,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-header-ignored-fields-baseline.py": {
-      "gitBlob": "ada795d855a00f79cd1810c1ff475d595820517c"
+      "gitBlob": "c103d654c1c1a7b3fadead2b81cadd90faf67d0a"
     },
     "scripts/verify-header-ignored-fields-results.py": {
       "gitBlob": "009579c8ec2790bd0d0338a4fd61cb083cfdbcd6"
@@ -2191,7 +2197,7 @@
       "gitBlob": "9e3ce41ef9d13090b0b38dc694b8c03b557c51e9"
     },
     "scripts/test_header_ignored_fields_results.py": {
-      "gitBlob": "12a845d8e2cfd549a21586d28bc09a8b79e4547f"
+      "gitBlob": "66c8304fa9767b1bad5e6ef6d37eb4a009d1ba84"
     },
     ".github/workflows/procurement-header-ignored-fields.yml": {
       "gitBlob": "4bfecc0451accbf0a32e0b1a376a200a23dc90f5"
@@ -2292,7 +2298,7 @@
     "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": "100644 blob bd8fdadcbee41805eedd7a43c6eb8a02099e17d7",
     "Legacy.Maliev.ProcurementService.Api/Program.cs": "100644 blob 0259b5722072609bb7c356bd1c9a5f49fd2d0caa",
     "Legacy.Maliev.ProcurementService.Api/Properties/launchSettings.json": "100644 blob 5b49ab6aa8f800b7ed4a376abb9ccf0942625251",
-    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": "100644 blob be119d54a90a0772444b9f61f97be53a779610ba",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": "100644 blob 2646aec8eb8e6ff44e48b52b7a47fed5b4a6fac2",
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": "100644 blob 3aca6cb413f13945efc28e9e2cebeafbe351d8f3",
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": "100644 blob b21e6fe697acdeb945dc0acbd3c80dee22a23a02",
     "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": "100644 blob 87fd40bbe9072c8da0cc3567020d2872b05a107d",

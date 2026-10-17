@@ -1508,7 +1508,7 @@
   "runtimeBindingFormat": "git-blob-record-v1",
   "runtimePostimages": {
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
-      "gitBlob": "be119d54a90a0772444b9f61f97be53a779610ba"
+      "gitBlob": "2646aec8eb8e6ff44e48b52b7a47fed5b4a6fac2"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
       "gitBlob": "3aca6cb413f13945efc28e9e2cebeafbe351d8f3"
@@ -1715,7 +1715,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-metadata-identity-baseline.py": {
-      "gitBlob": "00f0dc43c387589dc20057102cf2cc5e12e5d6ec"
+      "gitBlob": "9c9450cf2227a5ba02333a00a976c009fc6d0c35"
     },
     "scripts/verify-metadata-identity-results.py": {
       "gitBlob": "a1cb8d97044e6c4aa9da33549e967551074b616d"
@@ -1828,6 +1828,9 @@
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierIgnoredAuditTests.cs": {
       "gitBlob": "e312dfb12b4522139b23033f59d74f93ca2732dc"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredAuditDateTests.cs": {
+      "gitBlob": "f5ce0a72cf550eace02689a7c37ff1bed7dc2548"
     }
   },
   "postContactSourceAdvance": {
