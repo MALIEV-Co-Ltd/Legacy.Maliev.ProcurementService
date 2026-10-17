@@ -55,9 +55,26 @@ def hosted_context():
     return root, json.loads(contract_bytes), contract_bytes
 
 
+def binding_digest(value):
+    require(isinstance(value, dict) and set(value) == {"sha256"}
+            and isinstance(value["sha256"], str)
+            and re.fullmatch(r"[0-9a-f]{64}", value["sha256"]) is not None,
+            "Require one explicit public SHA256 provenance record")
+    return value["sha256"]
+
+
+def candidate_digests(contract):
+    require(contract.get("candidateBindingFormat") == "sha256-record-v1",
+            "Require the reviewed SHA256 provenance format")
+    bindings = contract["candidateBindings"]
+    require(isinstance(bindings, dict) and len(bindings) == 8,
+            "Require all eight reviewed current source bindings")
+    return {relative: binding_digest(record) for relative, record in bindings.items()}
+
+
 def candidate_sources(root, contract):
     sources = {}
-    for relative, expected in contract["candidateBindings"].items():
+    for relative, expected in candidate_digests(contract).items():
         data = git(root, "show", "HEAD:" + relative)
         require(digest(data) == expected, "Reviewed candidate HEAD source changed: " + relative)
         sources[relative] = data
@@ -67,13 +84,14 @@ def candidate_sources(root, contract):
 def restore(root, contract, sources, evidence, head):
     settle_command_groups(evidence)
     require(git(root, "rev-parse", "HEAD").decode().strip() == head, "HEAD changed during RED control")
+    reviewed_digests = candidate_digests(contract)
     for relative in (contract["baseline"]["programPath"], contract["baseline"]["absentPath"]):
         safe_path(root, relative).write_bytes(sources[relative])
     restored = {}
-    for relative, expected in contract["candidateBindings"].items():
+    for relative, expected in reviewed_digests.items():
         actual = digest(safe_path(root, relative).read_bytes())
         require(actual == expected, "Candidate restoration mismatch: " + relative)
-        restored[relative] = actual
+        restored[relative] = {"sha256": actual}
     require(not git(root, "status", "--porcelain", "--untracked-files=no").strip(),
             "Tracked checkout still differs after candidate restoration")
     save(evidence / "restoration.json", {"head": head, "restored": restored, "trackedClean": True})

@@ -405,12 +405,20 @@ class CandidateSourceCustodyTests(unittest.TestCase):
         converter = "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs"
         previous = CONTRACT["previousCandidateBindings"]
         self.assertEqual(5, len(previous))
-        self.assertEqual(6, len(CONTRACT["candidateBindings"]))
-        self.assertNotEqual(previous[program], CONTRACT["candidateBindings"][program])
-        self.assertEqual({converter}, set(CONTRACT["candidateBindings"]) - set(previous))
+        self.assertEqual(8, len(CONTRACT["candidateBindings"]))
+        self.assertNotEqual(previous[program], RED.binding_digest(CONTRACT["candidateBindings"][program]))
+        supplier = "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs"
+        project = "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj"
+        self.assertEqual({converter, supplier, project}, set(CONTRACT["candidateBindings"]) - set(previous))
+        retained = CONTRACT["previousFileMetadataCandidateBindings"]
+        self.assertEqual(6, len(retained))
+        self.assertEqual({supplier, project}, set(CONTRACT["candidateBindings"]) - set(retained))
+        for relative in retained:
+            if relative != program:
+                self.assertEqual(retained[relative], RED.binding_digest(CONTRACT["candidateBindings"][relative]))
         for relative in previous:
             if relative != program:
-                self.assertEqual(previous[relative], CONTRACT["candidateBindings"][relative])
+                self.assertEqual(previous[relative], RED.binding_digest(CONTRACT["candidateBindings"][relative]))
         self.assertEqual("19d17888cd77004b42f290a3c0daad454dfd4b5e", CONTRACT["baseline"]["programBlob"])
         self.assertEqual("afa62156da9a55476326bd9bfe1295a345f6fed72bfaaa437a5427ca93cbfef7", CONTRACT["baseline"]["programSha256"])
         sources = self.sources()
@@ -457,6 +465,34 @@ class CandidateSourceCustodyTests(unittest.TestCase):
                             RED.restore(root, CONTRACT, sources, evidence, "synthetic-head")
                         self.assertFalse((evidence / "restoration.json").exists())
                     settle.assert_called_once_with(evidence)
+
+
+
+class TypedCandidateProvenanceControls(unittest.TestCase):
+    def test_explicit_digest_records_reject_scalar_extra_or_wrong_algorithm(self):
+        for record in CONTRACT["candidateBindings"].values():
+            self.assertEqual(record["sha256"], RED.binding_digest(record))
+            for invalid in (record["sha256"], None, {}, {"gitBlob": "a" * 40},
+                            {"sha256": record["sha256"], "extra": True},
+                            {"sha256": "a" * 63}, {"sha256": "G" * 64},
+                            {"sha256": record["sha256"].upper()}, {"sha256": 7}):
+                with self.subTest(invalid_type=type(invalid).__name__), self.assertRaises(ValueError):
+                    RED.binding_digest(invalid)
+
+    def test_missing_format_or_wrong_current_roster_is_refused(self):
+        import copy
+        for mutation in ("missing-format", "wrong-format", "missing-record", "extra-record"):
+            changed = copy.deepcopy(CONTRACT)
+            if mutation == "missing-format":
+                del changed["candidateBindingFormat"]
+            elif mutation == "wrong-format":
+                changed["candidateBindingFormat"] = "unreviewed"
+            elif mutation == "missing-record":
+                changed["candidateBindings"].pop(next(iter(changed["candidateBindings"])))
+            else:
+                changed["candidateBindings"]["unreviewed"] = {"sha256": "a" * 64}
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                RED.candidate_digests(changed)
 
 
 if __name__ == "__main__":

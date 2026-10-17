@@ -158,5 +158,18 @@ public sealed class ProcurementOpenApiHttpContractTests(ProcurementRuntimeFixtur
         Assert.Equal(@"^-?(?:0|[1-9]\d*)$", fileOwner["pattern"]!.GetValue<string>());
         AssertPrimitiveSchema(document, fileProperties["Bucket"]!.AsObject(), new[] { "string" }, nullable: false);
         AssertPrimitiveSchema(document, fileProperties["ObjectName"]!.AsObject(), new[] { "string" }, nullable: false);
+
+        var supplierRequestFields = new[] { "Email", "Fax", "Mobile", "Name", "Note", "TaxNumber", "Telephone", "Website" };
+        var supplierCreate = Resolve(document, Path(document, "/Suppliers")["post"]!["requestBody"]!["content"]!["application/json"]!["schema"]!.AsObject());
+        var supplierUpdate = Resolve(document, Path(document, "/Suppliers/{supplierId}")["put"]!["requestBody"]!["content"]!["application/json"]!["schema"]!.AsObject());
+        foreach (var profile in new[] { supplierCreate, supplierUpdate })
+        {
+            Assert.Equal("object", profile["type"]!.GetValue<string>());
+            Assert.Null(profile["allOf"]);
+            Assert.Null(profile["anyOf"]);
+            Assert.Null(profile["oneOf"]);
+            Assert.Equal(supplierRequestFields, profile["properties"]!.AsObject().Select(property => property.Key).Order(StringComparer.Ordinal));
+        }
+        Assert.True(JsonNode.DeepEquals(supplierCreate, supplierUpdate));
     }
 }

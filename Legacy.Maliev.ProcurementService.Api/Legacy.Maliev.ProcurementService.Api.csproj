@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <ProjectReference Include="..\Legacy.Maliev.ProcurementService.Application\Legacy.Maliev.ProcurementService.Application.csproj" />
     <ProjectReference Include="..\Legacy.Maliev.ProcurementService.Data\Legacy.Maliev.ProcurementService.Data.csproj" />
   </ItemGroup>

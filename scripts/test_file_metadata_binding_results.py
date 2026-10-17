@@ -548,5 +548,63 @@ class FileMetadataBoundedReaderControls(unittest.TestCase):
             parser.assert_not_called()
 
 
+class MetadataRuntimeEnvelopeControls(unittest.TestCase):
+    def test_exact_reviewed_four_input_envelope_passes(self):
+        prep.require_runtime_roster(CONTRACT["implementationRuntime"])
+
+    def test_each_missing_or_foreign_runtime_input_is_refused(self):
+        original = CONTRACT["implementationRuntime"]
+        for path in (*original, "Legacy.Maliev.ProcurementService.Data/Unreviewed.cs"):
+            with self.subTest(path=path):
+                changed = dict(original)
+                if path in changed:
+                    del changed[path]
+                else:
+                    changed[path] = "unreviewed"
+                with self.assertRaises(ValueError):
+                    prep.require_runtime_roster(changed)
+
+
+
+class TypedMetadataProvenanceControls(unittest.TestCase):
+    def test_closed_git_blob_record_shape_and_exact_digest_are_required(self):
+        for record in CONTRACT["implementationRuntime"].values():
+            self.assertEqual(record["gitBlob"], prep.git_blob_record(record))
+            for invalid in (record["gitBlob"], None, {}, {"sha256": "a" * 64},
+                            {"gitBlob": record["gitBlob"], "extra": True},
+                            {"gitBlob": "a" * 39}, {"gitBlob": "G" * 40},
+                            {"gitBlob": record["gitBlob"].upper()}, {"gitBlob": 7}):
+                with self.subTest(invalid_type=type(invalid).__name__), self.assertRaises(ValueError):
+                    prep.git_blob_record(invalid)
+
+    def test_missing_or_wrong_format_and_runtime_roster_are_refused(self):
+        for mutation in ("missing-format", "wrong-format", "missing-record", "extra-record", "wrong-record"):
+            changed = copy.deepcopy(CONTRACT)
+            if mutation == "missing-format":
+                del changed["runtimeBindingFormat"]
+            elif mutation == "wrong-format":
+                changed["runtimeBindingFormat"] = "unreviewed"
+            elif mutation == "missing-record":
+                changed["implementationRuntime"].pop(next(iter(changed["implementationRuntime"])))
+            elif mutation == "wrong-record":
+                changed["implementationRuntime"][next(iter(changed["implementationRuntime"]))] = {"gitBlob": "not-a-blob"}
+            else:
+                changed["implementationRuntime"]["unreviewed"] = {"gitBlob": "a" * 40}
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                prep.runtime_bindings(changed)
+
+
+
+    def test_every_validly_shaped_but_wrong_git_object_is_refused(self):
+        actual = {path: record["gitBlob"] for path, record in CONTRACT["implementationRuntime"].items()}
+        with mock.patch.object(prep, "blob", side_effect=lambda root, path: actual[path]):
+            prep.require_runtime_postimages(pathlib.Path("."), CONTRACT)
+            for path in actual:
+                changed = copy.deepcopy(CONTRACT)
+                changed["implementationRuntime"][path] = {"gitBlob": "0" * 40}
+                with self.subTest(path=path), self.assertRaises(ValueError):
+                    prep.require_runtime_postimages(pathlib.Path("."), changed)
+
+
 if __name__ == "__main__":
     unittest.main()
