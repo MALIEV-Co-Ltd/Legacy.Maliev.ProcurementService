@@ -2121,6 +2121,9 @@
     },
     "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": {
       "gitBlob": "49461d4f6a13cba8b347001c24920006a5fd5eaf"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "gitBlob": "87fd40bbe9072c8da0cc3567020d2872b05a107d"
     }
   },
   "publicFixture": {
@@ -2146,10 +2149,13 @@
       "gitBlob": "eb9a3cc0f299279ad4db1f305dd86519d69f5429"
     },
     "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs": {
-      "gitBlob": "fecfd84045501579e8bdc926538f3066d745c6f0"
+      "gitBlob": "410add7cdedf10e1fe6c20a6bfd4c33d40635be8"
     },
     "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementPostgresMigrationTests.cs": {
       "gitBlob": "c8c60dc1cf1fd050536bdffd35328605a9fe4147"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierIgnoredAuditTests.cs": {
+      "gitBlob": "e312dfb12b4522139b23033f59d74f93ca2732dc"
     }
   },
   "retainedSourceProposal": {
@@ -2176,7 +2182,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-header-ignored-fields-baseline.py": {
-      "gitBlob": "07f4ccf1190fee06acc43500e549b80d559f6a71"
+      "gitBlob": "ada795d855a00f79cd1810c1ff475d595820517c"
     },
     "scripts/verify-header-ignored-fields-results.py": {
       "gitBlob": "009579c8ec2790bd0d0338a4fd61cb083cfdbcd6"
@@ -2185,7 +2191,7 @@
       "gitBlob": "9e3ce41ef9d13090b0b38dc694b8c03b557c51e9"
     },
     "scripts/test_header_ignored_fields_results.py": {
-      "gitBlob": "5a81bc69471bf4b87fc777f73e4bfc9b79cfae56"
+      "gitBlob": "12a845d8e2cfd549a21586d28bc09a8b79e4547f"
     },
     ".github/workflows/procurement-header-ignored-fields.yml": {
       "gitBlob": "4bfecc0451accbf0a32e0b1a376a200a23dc90f5"
@@ -2289,7 +2295,7 @@
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": "100644 blob be119d54a90a0772444b9f61f97be53a779610ba",
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": "100644 blob 3aca6cb413f13945efc28e9e2cebeafbe351d8f3",
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": "100644 blob b21e6fe697acdeb945dc0acbd3c80dee22a23a02",
-    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": "100644 blob bcb6cdab502c0b0e62835399afc774c31f57d3bd",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": "100644 blob 87fd40bbe9072c8da0cc3567020d2872b05a107d",
     "Legacy.Maliev.ProcurementService.Api/appsettings.Development.json": "100644 blob 0c208ae9181e5e5717e47ec1bd59368aebc6066e",
     "Legacy.Maliev.ProcurementService.Api/appsettings.json": "100644 blob b057873ee272efdfc5311a0179a6214f4e1768b7",
     "Legacy.Maliev.ProcurementService.Application/Interfaces/IDurableProcurementChildCreates.cs": "100644 blob b3cda03315eb9e70d9264a5a50fbdbfeef6c3705",

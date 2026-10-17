@@ -14,6 +14,8 @@ import tempfile
 BASE = "44c79ed24c142883563e037bbb5be724ea87322a"
 BASE_TREE = "869dab0b2a715def4a9c5613346d698a2943838e"
 HEADER = "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs"
+SUPPLIER = "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs"
+NEW_AUDIT = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierIgnoredAuditTests.cs"
 REPOSITORY = "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs"
 MIGRATION_TEST = "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementPostgresMigrationTests.cs"
 TEST = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementHeaderIgnoredFieldsTests.cs"
@@ -194,14 +196,14 @@ def prepare(baseline, manifest_path, verify_only=False):
         require(not git(root, "diff", "--name-only") and not git(root, "diff", "--cached", "--name-only"),
                 "Tracked source changed")
     require(manifest.get("runtimeBindingFormat") == "git-blob-record-v1"
-            and set(manifest["runtimePostimages"]) == {HEADER, REPOSITORY},
-            "Only reviewed header converter and POST repository may change runtime")
+            and set(manifest["runtimePostimages"]) == {HEADER, REPOSITORY, SUPPLIER},
+            "Only reviewed header, POST repository, and Supplier audit converter may change runtime")
     require(tracked_inputs(baseline) == manifest["baseInputs"]
             and tracked_inputs(candidate) == manifest["reviewedInputs"], "Frozen72 input inventory differs")
     differences = {path for path in manifest["baseInputs"]
                    if manifest["baseInputs"][path] != manifest["reviewedInputs"].get(path)}
-    require(differences == {HEADER, REPOSITORY} and set(manifest["baseInputs"]) == set(manifest["reviewedInputs"]),
-            "Exactly two runtime inputs may change")
+    require(differences == {HEADER, REPOSITORY, SUPPLIER} and set(manifest["baseInputs"]) == set(manifest["reviewedInputs"]),
+            "Exactly three reviewed runtime inputs may change")
     postimage = git_blob_record(manifest["runtimePostimages"][HEADER])
     require(blob(candidate, HEADER) == postimage
             and manifest["reviewedInputs"][HEADER] == "100644 blob " + postimage
@@ -222,17 +224,17 @@ def prepare(baseline, manifest_path, verify_only=False):
                 and read_bounded(candidate / path, MAX_SOURCE_BYTES, budget)
                 == read_bounded(baseline / path, MAX_SOURCE_BYTES, budget)
                 == git(baseline, "show", BASE + ":" + path), "Frozen public fixture/build source differs")
-    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {HEADER, REPOSITORY},
+    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {HEADER, REPOSITORY, SUPPLIER},
             "Unexpected production source/build drift")
     require(not git(candidate, "ls-files", "--others", "--exclude-standard", "--", *PROJECTS,
                     "Legacy.Maliev.ProcurementService.Tests"), "Untracked compiled inputs forbidden")
     compiled = manifest["compiledTestPostimages"]
-    require(set(compiled) == {TEST, OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST}, "Wrong closed compiled test roster")
+    require(set(compiled) == {TEST, OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST, NEW_AUDIT}, "Wrong closed compiled test roster")
     for path, record in compiled.items():
         require(blob(candidate, path) == git_blob_record(record), "Reviewed compiled test source differs")
     expected_changes = {TEST}
-    for path in (OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST):
-        if git(baseline, "rev-parse", BASE + ":" + path).decode().strip() != git_blob_record(compiled[path]):
+    for path in (OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST, NEW_AUDIT):
+        if path == NEW_AUDIT or git(baseline, "rev-parse", BASE + ":" + path).decode().strip() != git_blob_record(compiled[path]):
             expected_changes.add(path)
     require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--",
                     "Legacy.Maliev.ProcurementService.Tests").decode().splitlines()) == expected_changes,

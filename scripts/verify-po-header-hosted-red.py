@@ -63,7 +63,7 @@ def binding_digest(value):
     return value["sha256"]
 
 
-def require_header_binding_advance(contract, current):
+def require_previous_header_binding_advance(contract, current):
     header = "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs"
     tests = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs"
     expected = {header, tests}
@@ -89,6 +89,34 @@ def require_header_binding_advance(contract, current):
                 and binding_digest(post[path]) == current[path],
                 "Header successor detached from exact pre/postimage")
     return expected
+
+
+def require_header_binding_advance(contract, current):
+    supplier = "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs"
+    retained = contract["previousSupplierAuditCandidateBindings"]
+    require(isinstance(retained, dict) and set(retained) == set(current) and len(retained) == 9,
+            "Retain all nine accepted header source bindings")
+    old = {path: binding_digest(record) for path, record in retained.items()}
+    header_changes = require_previous_header_binding_advance(contract, old)
+    advance = contract["supplierAuditBindingAdvance"]
+    require(isinstance(advance, dict)
+            and set(advance) == {"issue", "base", "bindingFormat", "preimages", "postimages"}
+            and advance["issue"] == 72
+            and advance["base"] == "1ab8e59d4941ba9caad9c50ca67ad54b2ddf6b79"
+            and advance["bindingFormat"] == "sha256-record-v1",
+            "Require reviewed Supplier audit binding generation")
+    pre, post = advance["preimages"], advance["postimages"]
+    require(isinstance(pre, dict) and isinstance(post, dict)
+            and set(pre) == set(post) == {supplier},
+            "Supplier audit advance requires only one explicit binding")
+    require({path for path in current if current[path] != old[path]} == {supplier},
+            "Unrelated accepted header source binding changed")
+    require(binding_digest(pre[supplier]) == old[supplier]
+            == "6ea1dce207535603db4cc4cb367ac60ba5c1179bc77d0c05ddabaffa22397d55"
+            and binding_digest(post[supplier]) == current[supplier]
+            == "f3a83e73608ab207e41e3b9e7d3c47fb5da0c08232ce7ec786043574cf5e8f9b",
+            "Supplier audit successor detached from exact pre/postimage")
+    return header_changes | {supplier}
 
 
 def candidate_digests(contract):
