@@ -129,8 +129,11 @@ public sealed class ProcurementSourceBodyAdmissionTests(ProcurementRuntimeFixtur
         Assert.Equal(update ? HttpStatusCode.NoContent : HttpStatusCode.Created, response.StatusCode);
         var id = operation switch
         {
-            "supplier_put" => 7002, "supplier_address_put" => 7001,
-            "order_address_put" => 7003, "file_put" => 7006, _ => 0,
+            "supplier_put" => 7002,
+            "supplier_address_put" => 7001,
+            "order_address_put" => 7003,
+            "file_put" => 7006,
+            _ => 0,
         };
         if (!update)
         {
@@ -338,9 +341,11 @@ public sealed class ProcurementSourceBodyAdmissionTests(ProcurementRuntimeFixtur
             var route = System.Text.RegularExpressions.Regex.Replace(pattern, @"\{([^}:]+)(?::[^}]+)?\}", match =>
                 match.Groups[1].Value.ToLowerInvariant() switch
                 {
-                    "version" => "1", "supplierid" => "7002",
+                    "version" => "1",
+                    "supplierid" => "7002",
                     "addressid" => type == typeof(UpsertSupplierAddressRequest) ? "7001" : "7003",
-                    "id" => "7006", _ => throw new InvalidOperationException("Unexpected owned route parameter."),
+                    "id" => "7006",
+                    _ => throw new InvalidOperationException("Unexpected owned route parameter."),
                 });
             using var request = new HttpRequestMessage(new HttpMethod(Assert.Single(endpoint.Metadata.GetMetadata<HttpMethodMetadata>()!.HttpMethods)), "/" + route.TrimStart('/'));
             request.Content = new StringContent(ProcurementMetadataVectors.Body(contract, "\"$ref\":1,"), Encoding.UTF8, "application/json");
@@ -601,8 +606,11 @@ public sealed class ProcurementSourceBodyAdmissionTests(ProcurementRuntimeFixtur
     {
         var id = operation switch
         {
-            "supplier_put" => 7002, "supplier_address_put" => 7001,
-            "order_address_put" => 7003, "file_put" => 7006, _ => 0,
+            "supplier_put" => 7002,
+            "supplier_address_put" => 7001,
+            "order_address_put" => 7003,
+            "file_put" => 7006,
+            _ => 0,
         };
         if (id == 0)
         {
@@ -654,12 +662,15 @@ public sealed class ProcurementSourceBodyAdmissionTests(ProcurementRuntimeFixtur
     {
         "supplier_post" or "supplier_put" => "supplier",
         "supplier_address_post" or "supplier_address_put" => "supplier-address",
-        "order_address_post" or "order_address_put" => "order-address", _ => "file",
+        "order_address_post" or "order_address_put" => "order-address",
+        _ => "file",
     };
     private static Type RequestType(string contract) => contract switch
     {
-        "supplier" => typeof(UpsertSupplierRequest), "supplier-address" => typeof(UpsertSupplierAddressRequest),
-        "order-address" => typeof(UpsertPurchaseOrderAddressRequest), _ => typeof(UpsertPurchaseOrderFileRequest),
+        "supplier" => typeof(UpsertSupplierRequest),
+        "supplier-address" => typeof(UpsertSupplierAddressRequest),
+        "order-address" => typeof(UpsertPurchaseOrderAddressRequest),
+        _ => typeof(UpsertPurchaseOrderFileRequest),
     };
     private static HttpRequestMessage Request(string operation, bool missing = false)
     {
@@ -668,9 +679,12 @@ public sealed class ProcurementSourceBodyAdmissionTests(ProcurementRuntimeFixtur
         var file = missing ? 999999 : 7006;
         var path = operation switch
         {
-            "supplier_post" => "/suppliers", "supplier_put" => $"/suppliers/{absent}",
-            "supplier_address_post" => $"/suppliers/{absent}/addresses", "supplier_address_put" => $"/suppliers/addresses/{address}",
-            "order_address_post" => "/purchaseorders/addresses", "order_address_put" => $"/purchaseorders/addresses/{address}",
+            "supplier_post" => "/suppliers",
+            "supplier_put" => $"/suppliers/{absent}",
+            "supplier_address_post" => $"/suppliers/{absent}/addresses",
+            "supplier_address_put" => $"/suppliers/addresses/{address}",
+            "order_address_post" => "/purchaseorders/addresses",
+            "order_address_put" => $"/purchaseorders/addresses/{address}",
             _ => $"/purchaseorders/files/{file}",
         };
         return new HttpRequestMessage(operation.EndsWith("put", StringComparison.Ordinal) ? HttpMethod.Put : HttpMethod.Post, path);

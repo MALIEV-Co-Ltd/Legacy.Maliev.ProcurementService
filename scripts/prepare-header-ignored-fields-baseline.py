@@ -35,16 +35,18 @@ PROGRAM = "Legacy.Maliev.ProcurementService.Api/Program.cs"
 BUILD_PROJECT = "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj"
 SOURCE_RUNTIME = {PROGRAM, BUILD_PROJECT, SOURCE_FORMATTER, SOURCE_MODELS}
 SOURCE_TESTS = {
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs",
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataOriginalModels.cs",
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceOracle.cs",
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceProtocolTests.cs",
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSourceBodyAdmissionTests.cs",
 }
 SOURCE_COMPILED_POSTIMAGES = {
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs": "fbca0d7eb799d53f79f6950909fc14c83f493d31",
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataOriginalModels.cs": "0f1751b705cf1b41fd3e7a489534eacece6e3e64",
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceOracle.cs": "26950761aedd6be196e09f04a02ab99565f5dcf6",
-    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceProtocolTests.cs": "fb62db7d2b764a57c9826a0a6155b0551506691a",
-    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSourceBodyAdmissionTests.cs": "ceef7551b156887efb2d01dca366e262bc56c43a",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceProtocolTests.cs": "16ce05f77ec4d3ca655046dbc76fbdfa0d92edad",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSourceBodyAdmissionTests.cs": "0ead4f73792f03a1f037a10e6a3ec0c32860934a",
     "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs": "7ad16b28e7b6b0129ec1423af4eb77e1d1f9a874",
     "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs": "1badd76f0348d4ab34e776719eefad6dea41afbd",
 }
@@ -288,6 +290,10 @@ def prepare(baseline, manifest_path, verify_only=False):
             "Unexpected production source/build drift")
     require(not git(candidate, "ls-files", "--others", "--exclude-standard", "--", *PROJECTS,
                     "Legacy.Maliev.ProcurementService.Tests"), "Untracked compiled inputs forbidden")
+    retained_scalar = manifest["previousSourceBodySupplierScalarHarness"]
+    require(retained_scalar == {"path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs", "gitBlob": "1d9b4bb47360e4ba9b8f2864a03f63a2533b29a5"}
+            and blob(baseline, retained_scalar["path"]) == retained_scalar["gitBlob"],
+            "Retained scalar lexical baseline must remain unchanged")
     compiled = manifest["compiledTestPostimages"]
     require(set(compiled) == {TEST, OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST, NEW_AUDIT, NEW_METADATA_AUDIT, FILE_HARNESS, COUNTRY_TEST} | SOURCE_TESTS, "Wrong closed compiled test roster")
     for path, expected in SOURCE_COMPILED_POSTIMAGES.items():

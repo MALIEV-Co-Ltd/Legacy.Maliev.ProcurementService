@@ -3205,10 +3205,13 @@
       "gitBlob": "26950761aedd6be196e09f04a02ab99565f5dcf6"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceProtocolTests.cs": {
-      "gitBlob": "fb62db7d2b764a57c9826a0a6155b0551506691a"
+      "gitBlob": "16ce05f77ec4d3ca655046dbc76fbdfa0d92edad"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSourceBodyAdmissionTests.cs": {
-      "gitBlob": "ceef7551b156887efb2d01dca366e262bc56c43a"
+      "gitBlob": "0ead4f73792f03a1f037a10e6a3ec0c32860934a"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs": {
+      "gitBlob": "fbca0d7eb799d53f79f6950909fc14c83f493d31"
     }
   },
   "holds": {
@@ -3235,7 +3238,7 @@
       "gitBlob": "ffb85569c189055a9fb8a2ae66aaa8cd6d3c8005"
     },
     "scripts/prepare-metadata-ignored-audits-baseline.py": {
-      "gitBlob": "97beb6e35cd6778167f99bf0f208761aafd35219"
+      "gitBlob": "3a0e8d26a33200a015741bfa9d154a66197610e8"
     },
     "scripts/observe-metadata-ignored-audits-providers.py": {
       "gitBlob": "c187747f8d602bb015602e4acfbf8bab80a03b37"
@@ -3431,5 +3434,9 @@
     "sourceCases": 136
   },
   "nativeMalformedBaselineUnmeasured": true,
-  "characterizationRequirement": "169P163F is an UNEXECUTED source forecast, including12 native malformed-path cases expected to preserve native behavior. All identities/counters/causal frames fail closed. Any mismatch requires actual artifact diagnosis before acceptance; no baseline pass is claimed."
+  "characterizationRequirement": "169P163F is an UNEXECUTED source forecast, including12 native malformed-path cases expected to preserve native behavior. All identities/counters/causal frames fail closed. Any mismatch requires actual artifact diagnosis before acceptance; no baseline pass is claimed.",
+  "previousSourceBodySupplierScalarHarness": {
+    "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs",
+    "gitBlob": "1d9b4bb47360e4ba9b8f2864a03f63a2533b29a5"
+  }
 }

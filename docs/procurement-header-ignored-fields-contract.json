@@ -2188,10 +2188,13 @@
       "gitBlob": "26950761aedd6be196e09f04a02ab99565f5dcf6"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceProtocolTests.cs": {
-      "gitBlob": "fb62db7d2b764a57c9826a0a6155b0551506691a"
+      "gitBlob": "16ce05f77ec4d3ca655046dbc76fbdfa0d92edad"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSourceBodyAdmissionTests.cs": {
-      "gitBlob": "ceef7551b156887efb2d01dca366e262bc56c43a"
+      "gitBlob": "0ead4f73792f03a1f037a10e6a3ec0c32860934a"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs": {
+      "gitBlob": "fbca0d7eb799d53f79f6950909fc14c83f493d31"
     }
   },
   "retainedSourceProposal": {
@@ -2218,7 +2221,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-header-ignored-fields-baseline.py": {
-      "gitBlob": "0ae8a6ff715307961bd4b161a30958f7ff9c1d80"
+      "gitBlob": "6909fd5f92622231220d744f979944c66beddb8f"
     },
     "scripts/verify-header-ignored-fields-results.py": {
       "gitBlob": "009579c8ec2790bd0d0338a4fd61cb083cfdbcd6"
@@ -2613,5 +2616,9 @@
     "contactFailures": 37,
     "trxSha256": "5b40d060d714f7a85edb1fd7abd446aeb174d6b3967f401b1e38a175192b6402",
     "strictGatePassed": false
+  },
+  "previousSourceBodySupplierScalarHarness": {
+    "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs",
+    "gitBlob": "1d9b4bb47360e4ba9b8f2864a03f63a2533b29a5"
   }
 }

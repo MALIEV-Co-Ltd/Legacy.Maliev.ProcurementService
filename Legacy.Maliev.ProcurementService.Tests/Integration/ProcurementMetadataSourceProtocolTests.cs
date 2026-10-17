@@ -44,12 +44,17 @@ internal static class ProcurementMetadataVectors
     public static string Body(string contract, string prefix = "", string suffix = "") => "{" + prefix + Members(contract) + suffix + "}";
     public static string ScalarName(string contract) => contract switch
     {
-        "supplier" => "Name", "supplier-address" => "Address1", "order-address" => "AddressLine1", _ => "Bucket",
+        "supplier" => "Name",
+        "supplier-address" => "Address1",
+        "order-address" => "AddressLine1",
+        _ => "Bucket",
     };
     public static Type OriginalType(string contract) => contract switch
     {
-        "supplier" => typeof(OriginalSupplier), "supplier-address" => typeof(OriginalSupplierAddress),
-        "order-address" => typeof(OriginalOrderAddress), _ => typeof(OriginalFile),
+        "supplier" => typeof(OriginalSupplier),
+        "supplier-address" => typeof(OriginalSupplierAddress),
+        "order-address" => typeof(OriginalOrderAddress),
+        _ => typeof(OriginalFile),
     };
 }
 

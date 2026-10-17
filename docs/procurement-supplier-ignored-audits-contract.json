@@ -1363,10 +1363,13 @@
       "gitBlob": "26950761aedd6be196e09f04a02ab99565f5dcf6"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceProtocolTests.cs": {
-      "gitBlob": "fb62db7d2b764a57c9826a0a6155b0551506691a"
+      "gitBlob": "16ce05f77ec4d3ca655046dbc76fbdfa0d92edad"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSourceBodyAdmissionTests.cs": {
-      "gitBlob": "ceef7551b156887efb2d01dca366e262bc56c43a"
+      "gitBlob": "0ead4f73792f03a1f037a10e6a3ec0c32860934a"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs": {
+      "gitBlob": "fbca0d7eb799d53f79f6950909fc14c83f493d31"
     }
   },
   "holds": {
@@ -1390,7 +1393,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-supplier-ignored-audits-baseline.py": {
-      "gitBlob": "abe2495bfe1e730268b8aeec473152a6a38640eb"
+      "gitBlob": "2debf665bb549c72b30463de7ea3cba16b8c56d4"
     },
     "scripts/verify-supplier-ignored-audits-results.py": {
       "gitBlob": "2b718a0b66baeab9ee321f23482df27addabd9f3"
@@ -1587,5 +1590,9 @@
     "main": "1ab8e59d4941ba9caad9c50ca67ad54b2ddf6b79",
     "receipt": "ac486eabf27e3e8c86e41b45327d2bc628a8319f",
     "retainedCases": 199
+  },
+  "previousSourceBodySupplierScalarHarness": {
+    "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs",
+    "gitBlob": "1d9b4bb47360e4ba9b8f2864a03f63a2533b29a5"
   }
 }

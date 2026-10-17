@@ -269,10 +269,15 @@ def prepare(baseline, manifest_path, verify_only=False):
             "Original OpenAPI baseline must remain unchanged")
     allowed_tests = set(TESTS.values()) | {old_harness["path"], boundary["path"], TEST_PROJECT}
     source_harnesses = manifest["candidateSourceBodyHarnesses"]
-    require(set(source_harnesses) == {"Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataOriginalModels.cs","Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceOracle.cs","Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceProtocolTests.cs","Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSourceBodyAdmissionTests.cs"},
+    require(set(source_harnesses) == {"Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataOriginalModels.cs","Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceOracle.cs","Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceProtocolTests.cs","Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSourceBodyAdmissionTests.cs",
+            "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs"},
             "Wrong source-body compiled harness roster")
     for path, record in source_harnesses.items():
         require(blob(candidate, path) == git_blob_record(record), "Source-body compiled harness differs")
+    retained_scalar = manifest["previousSourceBodySupplierScalarHarness"]
+    require(retained_scalar == {"path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs", "gitBlob": "1d9b4bb47360e4ba9b8f2864a03f63a2533b29a5"}
+            and blob(baseline, retained_scalar["path"]) == retained_scalar["gitBlob"],
+            "Retained scalar lexical baseline must remain unchanged")
     allowed_tests.update(source_harnesses)
     allowed_tests.update(require_header_harness_bindings(candidate, manifest))
     auth = manifest.get("authEnrollmentTestBinding")
