@@ -201,5 +201,24 @@ class RuntimeInputs(unittest.TestCase):
                     guard.require_source_change(reviewed, mutated)
 
 
+    def test_current_graph_rejects_file_metadata_witness_custody_drift(self):
+        import copy
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        for field in ("path", "sha256", "procurement"):
+            with self.subTest(field=field):
+                mutated = copy.deepcopy(manifest)
+                mutated["latestAcceptedFileMetadataGraph"][field] = "drift"
+                with self.assertRaises(ValueError):
+                    guard.require_historical_graph(mutated)
+
+    def test_current_graph_rejects_file_metadata_witness_input_count_drift(self):
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        manifest["latestAcceptedFileMetadataGraph"]["inputCount"] = 69
+        with self.assertRaises(ValueError):
+            guard.require_historical_graph(manifest)
+
+
 if __name__ == "__main__":
     unittest.main()

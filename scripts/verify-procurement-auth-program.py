@@ -9,7 +9,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-file-metadata-binding.json"
+MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-supplier-ignored-identity.json"
 HISTORICAL_PATH = "tools/ProcurementAuthProgram.Tests/public-graph.json"
 HISTORICAL_SHA256 = "205063c79697948343ba659b13757b68ef4814d1b62861484a1dd90c0b8e7d41"
 PREVIOUS_ACCEPTED_PATH = "tools/ProcurementAuthProgram.Tests/public-graph-child-replay.json"
@@ -115,6 +115,19 @@ def require_historical_graph(manifest):
     address_pin = next(entry["commit"] for entry in address_graph["references"] if entry["repository"] == "Legacy.Maliev.ProcurementService")
     if address_custody["procurement"] != "abcbd59573d615642777a74564e348167016dc97" or address_pin != address_custody["procurement"] or address_custody["inputCount"] != 69 or address_graph["intentionalSourceChanges"]["inputCount"] != 69:
         raise ValueError("Accepted purchase-order address/header69 witness must remain exact")
+    metadata_custody = manifest["latestAcceptedFileMetadataGraph"]
+    metadata_path = "tools/ProcurementAuthProgram.Tests/public-graph-file-metadata-binding.json"
+    metadata_sha = "47c06849201f62ac58d01da3043eebe0e07a2b6ba64b20c586fee882d3dee1dd"
+    with (ROOT / metadata_path).open("rb") as stream:
+        metadata_bytes = stream.read(2 * 1024 * 1024 + 1)
+    if not 0 < len(metadata_bytes) <= 2 * 1024 * 1024:
+        raise ValueError("Accepted file-metadata70 witness exceeds the bounded reader")
+    if metadata_custody["path"] != metadata_path or metadata_custody["sha256"] != metadata_sha or hashlib.sha256(metadata_bytes).hexdigest() != metadata_sha:
+        raise ValueError("Accepted file-metadata70 graph custody must remain exact")
+    metadata_graph = json.loads(metadata_bytes)
+    metadata_pin = next(entry["commit"] for entry in metadata_graph["references"] if entry["repository"] == "Legacy.Maliev.ProcurementService")
+    if metadata_custody["procurement"] != "effa0ffbe129c29bbb5ac2a974b15eed63f07464" or metadata_pin != metadata_custody["procurement"] or metadata_custody["inputCount"] != 70 or metadata_graph["intentionalSourceChanges"]["inputCount"] != 70:
+        raise ValueError("Accepted file-metadata70 witness must remain exact")
     external = lambda graph: {entry["repository"]: entry["commit"] for entry in graph["references"] if entry["repository"] != "Legacy.Maliev.ProcurementService"}
     if external(manifest) != external(historical) or manifest["expectedCases"] != historical["expectedCases"] or manifest["expectedMethods"] != historical["expectedMethods"]:
         raise ValueError("External producer pins and actual Auth execution identities must remain unchanged")
