@@ -46,7 +46,7 @@ SOURCE_COMPILED_POSTIMAGES = {
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceProtocolTests.cs": "fb62db7d2b764a57c9826a0a6155b0551506691a",
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSourceBodyAdmissionTests.cs": "ceef7551b156887efb2d01dca366e262bc56c43a",
     "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs": "7ad16b28e7b6b0129ec1423af4eb77e1d1f9a874",
-    "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs": "fccdd60c3c9e5ae7619db81acfb401447d3c64f3",
+    "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs": "1badd76f0348d4ab34e776719eefad6dea41afbd",
 }
 SOURCE_PREIMAGES = {
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs": None,

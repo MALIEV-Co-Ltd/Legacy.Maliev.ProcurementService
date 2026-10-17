@@ -651,6 +651,7 @@ internal static partial class WorkflowContractValidator
                 except (OSError, ValueError, subprocess.TimeoutExpired):
                     refuse("secret-scan-diagnostic-report-unavailable")
                 PY
+
             """;
         var diagnostic = new YamlStream();
         diagnostic.Load(new StringReader(diagnosticSource));
