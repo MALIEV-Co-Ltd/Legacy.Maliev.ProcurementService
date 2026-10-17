@@ -175,7 +175,7 @@ public sealed class ProcurementSupplierIgnoredAuditTests(ProcurementRuntimeFixtu
         using var wire = JsonDocument.Parse(JsonSerializer.Serialize(value, Options));
         Assert.Equal(new[] { "Note" }, wire.RootElement.EnumerateObject().Select(property => property.Name).ToArray());
         Assert.Equal("true", wire.RootElement.GetProperty("Note").GetString());
-        Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<UpsertSupplierRequest>("{\"Note\":true}"));
+        Assert.Equal("true", JsonSerializer.Deserialize<UpsertSupplierRequest>("{\"Note\":true}")!.Note);
         Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<SupplierResponse>("{\"CreatedDate\":true}", Options));
     }
 

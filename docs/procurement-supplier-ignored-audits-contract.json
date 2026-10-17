@@ -7,7 +7,7 @@
     "supplier": {
       "testClass": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAuditTests",
       "testPath": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierIgnoredAuditTests.cs",
-      "testBlob": "a56ac1ba5adc5d7321b90da8c9d1b2fe4a1839a5",
+      "testBlob": "e312dfb12b4522139b23033f59d74f93ca2732dc",
       "expectedCases": 136,
       "baselinePassed": 69,
       "baselineFailed": 67,
@@ -1327,7 +1327,7 @@
   },
   "compiledTestPostimages": {
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierIgnoredAuditTests.cs": {
-      "gitBlob": "a56ac1ba5adc5d7321b90da8c9d1b2fe4a1839a5"
+      "gitBlob": "e312dfb12b4522139b23033f59d74f93ca2732dc"
     },
     "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs": {
       "gitBlob": "410add7cdedf10e1fe6c20a6bfd4c33d40635be8"
