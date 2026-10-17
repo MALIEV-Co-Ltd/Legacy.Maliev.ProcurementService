@@ -420,11 +420,16 @@ class CandidateSourceCustodyTests(unittest.TestCase):
         for relative in previous:
             if relative != program:
                 self.assertEqual(previous[relative], RED.binding_digest(retained_supplier[relative]))
-        current = CONTRACT["candidateBindings"]
+        current = CONTRACT["previousSourceBodyCandidateBindings"]
         metadata_identity = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs"
         self.assertEqual(9, len(current))
         self.assertEqual({metadata_identity}, set(current) - set(retained_supplier))
-        changed_header = RED.require_header_binding_advance(CONTRACT, RED.candidate_digests(CONTRACT))
+        changed_header = RED.require_country_id_binding_advance(CONTRACT,
+            {path: RED.binding_digest(record) for path, record in current.items()})
+        successor = RED.candidate_digests(CONTRACT)
+        self.assertEqual(11, len(successor))
+        self.assertEqual(5, len(CONTRACT["sourceBodyBindingAdvance"]["postimages"]))
+        RED.require_header_binding_advance(CONTRACT, successor)
         for relative in retained_supplier:
             if relative in changed_header:
                 self.assertEqual(RED.binding_digest(retained_supplier[relative]),

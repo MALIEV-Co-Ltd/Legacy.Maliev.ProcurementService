@@ -28,6 +28,39 @@ OPENAPI = "Legacy.Maliev.ProcurementService.Tests/Controllers/ProcurementOpenApi
 FILE_HARNESS = "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs"
 COUNTRY_TEST = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementAddressCountryIdBindingTests.cs"
 AUTH_TEST = "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs"
+
+SOURCE_FORMATTER = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs"
+SOURCE_MODELS = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs"
+PROGRAM = "Legacy.Maliev.ProcurementService.Api/Program.cs"
+API_PROJECT = "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj"
+SOURCE_RUNTIME = {PROGRAM, API_PROJECT, SOURCE_FORMATTER, SOURCE_MODELS}
+SOURCE_TESTS = {
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataOriginalModels.cs",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceOracle.cs",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceProtocolTests.cs",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSourceBodyAdmissionTests.cs",
+}
+SOURCE_COMPILED_POSTIMAGES = {
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataOriginalModels.cs": "0f1751b705cf1b41fd3e7a489534eacece6e3e64",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceOracle.cs": "f1902ac6792913111c5155d9a5a33bab4a171cb0",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceProtocolTests.cs": "fb62db7d2b764a57c9826a0a6155b0551506691a",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSourceBodyAdmissionTests.cs": "ceef7551b156887efb2d01dca366e262bc56c43a",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs": "7ad16b28e7b6b0129ec1423af4eb77e1d1f9a874",
+    "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs": "2302854b1c32d2a07f8e942cc0bbdacbfeace430",
+}
+SOURCE_PREIMAGES = {
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs": None,
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs": None,
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": "0259b5722072609bb7c356bd1c9a5f49fd2d0caa",
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7",
+}
+SOURCE_POSTIMAGES = {
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs": "942a1b8f8f18ea3a9727691a05a784aec688614d",
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs": "e352494ce31eb5bead53a78cc4c950a7bae3e54e",
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": "70310b7db68e08366ee3c723211cdd3910c03f9f",
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": "30c131eb10c554b445e878c0b148cbe79d8c7cd3",
+}
+
 PROJECTS = tuple("Legacy.Maliev.ProcurementService." + part for part in ("Api", "Application", "Data", "Domain"))
 PATTERNS = ("directory.build.*", "directory.packages.*", "global.json", "nuget.config", "*.slnx")
 SCRIPT_PATHS = {
@@ -168,7 +201,7 @@ def require_admissions(output, after):
     return receipts
 
 
-def tracked_inputs(root):
+def tracked_inputs(root, expected_count=72):
     selected = {}
     for record in git(root, "ls-tree", "-r", "-z", "HEAD").split(b"\0"):
         if not record:
@@ -179,7 +212,8 @@ def tracked_inputs(root):
             "/" not in path and any(fnmatch.fnmatchcase(path.lower(), pattern) for pattern in PATTERNS)
         ):
             selected[path] = metadata.decode("ascii", errors="strict")
-    require(len(selected) == 72, "Exact reviewed72 runtime/build/public fixture inputs required")
+    require(expected_count in (72, 74) and len(selected) == expected_count,
+            "Exact phase runtime/build/public fixture inputs required")
     return selected
 
 
@@ -200,14 +234,27 @@ def prepare(baseline, manifest_path, verify_only=False):
         require(not git(root, "diff", "--name-only") and not git(root, "diff", "--cached", "--name-only"),
                 "Tracked source changed")
     require(manifest.get("runtimeBindingFormat") == "git-blob-record-v1"
-            and set(manifest["runtimePostimages"]) == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM},
+            and set(manifest["runtimePostimages"]) == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME,
             "Only reviewed header, POST repository, and Supplier audit converter may change runtime")
     require(tracked_inputs(baseline) == manifest["baseInputs"]
-            and tracked_inputs(candidate) == manifest["reviewedInputs"], "Frozen72 input inventory differs")
-    differences = {path for path in manifest["baseInputs"]
-                   if manifest["baseInputs"][path] != manifest["reviewedInputs"].get(path)}
-    require(differences == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} and set(manifest["baseInputs"]) == set(manifest["reviewedInputs"]),
-            "Exactly four reviewed runtime inputs may change")
+            and tracked_inputs(candidate, 74) == manifest["reviewedInputs"], "Frozen72 baseline/reviewed74 input inventory differs")
+    differences = {path for path in set(manifest["baseInputs"]) | set(manifest["reviewedInputs"])
+                   if manifest["baseInputs"].get(path) != manifest["reviewedInputs"].get(path)}
+    require(differences == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME | {TEST_PROJECT}
+            and set(manifest["reviewedInputs"]) - set(manifest["baseInputs"]) == {SOURCE_FORMATTER, SOURCE_MODELS}
+            and not set(manifest["baseInputs"]) - set(manifest["reviewedInputs"]),
+            "Only exact reviewed source-family runtime/build transition may change inputs")
+    for path, expected in SOURCE_POSTIMAGES.items():
+        require(git_blob_record(manifest["runtimePostimages"][path]) == expected
+                and manifest["reviewedInputs"][path] == "100644 blob " + expected
+                and manifest["baseInputs"].get(path) == (
+                    "100644 blob " + SOURCE_PREIMAGES[path] if SOURCE_PREIMAGES[path] else None),
+                "Exact source-family runtime pre/postimage differs")
+    require(manifest["joinTestProject"] == {"path": TEST_PROJECT, "gitBlob": "af7ca6ae938ae85cac598a75852e38863fa6912a"}
+            and manifest["reviewedInputs"][TEST_PROJECT] == "100644 blob af7ca6ae938ae85cac598a75852e38863fa6912a"
+            and manifest["baseInputs"][TEST_PROJECT] == "100644 blob 69b4ebf74c1a85d0949321360e81105db0f671a6"
+            and manifest["buildProject"] == {"path": API_PROJECT, "gitBlob": SOURCE_POSTIMAGES[API_PROJECT]},
+            "Only exact candidate source-family project references allowed")
     postimage = git_blob_record(manifest["runtimePostimages"][HEADER])
     require(blob(candidate, HEADER) == postimage
             and manifest["reviewedInputs"][HEADER] == "100644 blob " + postimage
@@ -227,21 +274,28 @@ def prepare(baseline, manifest_path, verify_only=False):
         metadata = manifest["reviewedInputs"][path]
         require(re.fullmatch(r"100644 blob [0-9a-f]{40}", metadata) is not None
                 and blob(candidate, path) == metadata.split()[-1], "Compiled input changed after checkout")
-    for key, path in (("publicFixture", FIXTURE), ("joinTestProject", TEST_PROJECT)):
-        binding = manifest[key]
-        require(binding["path"] == path and blob(candidate, path) == binding["gitBlob"]
-                and read_bounded(candidate / path, MAX_SOURCE_BYTES, budget)
-                == read_bounded(baseline / path, MAX_SOURCE_BYTES, budget)
-                == git(baseline, "show", BASE + ":" + path), "Frozen public fixture/build source differs")
-    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM},
+    binding = manifest["publicFixture"]
+    require(binding["path"] == FIXTURE and blob(candidate, FIXTURE) == binding["gitBlob"]
+            and read_bounded(candidate / FIXTURE, MAX_SOURCE_BYTES, budget)
+            == read_bounded(baseline / FIXTURE, MAX_SOURCE_BYTES, budget)
+            == git(baseline, "show", BASE + ":" + FIXTURE), "Frozen public fixture differs")
+    require(blob(candidate, TEST_PROJECT) == manifest["joinTestProject"]["gitBlob"]
+            and blob(baseline, TEST_PROJECT) == manifest["baseInputs"][TEST_PROJECT].split()[-1]
+            and read_bounded(baseline / TEST_PROJECT, MAX_SOURCE_BYTES, budget)
+            == git(baseline, "show", BASE + ":" + TEST_PROJECT),
+            "Candidate-only project transition changed historical baseline project")
+    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME,
             "Unexpected production source/build drift")
     require(not git(candidate, "ls-files", "--others", "--exclude-standard", "--", *PROJECTS,
                     "Legacy.Maliev.ProcurementService.Tests"), "Untracked compiled inputs forbidden")
     compiled = manifest["compiledTestPostimages"]
-    require(set(compiled) == {TEST, OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST, NEW_AUDIT, NEW_METADATA_AUDIT, FILE_HARNESS, COUNTRY_TEST}, "Wrong closed compiled test roster")
+    require(set(compiled) == {TEST, OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST, NEW_AUDIT, NEW_METADATA_AUDIT, FILE_HARNESS, COUNTRY_TEST} | SOURCE_TESTS, "Wrong closed compiled test roster")
+    for path, expected in SOURCE_COMPILED_POSTIMAGES.items():
+        require(git_blob_record(compiled[path]) == expected,
+                "Exact reviewed source-family compiled successor differs")
     for path, record in compiled.items():
         require(blob(candidate, path) == git_blob_record(record), "Reviewed compiled test source differs")
-    expected_changes = {TEST}
+    expected_changes = {TEST, TEST_PROJECT} | SOURCE_TESTS
     for path in (OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST, NEW_AUDIT, NEW_METADATA_AUDIT, FILE_HARNESS, COUNTRY_TEST):
         if path in (NEW_AUDIT, NEW_METADATA_AUDIT, COUNTRY_TEST) or git(baseline, "rev-parse", BASE + ":" + path).decode().strip() != git_blob_record(compiled[path]):
             expected_changes.add(path)
@@ -276,7 +330,7 @@ def prepare(baseline, manifest_path, verify_only=False):
              "candidateCommit": git(candidate, "rev-parse", "HEAD").decode().strip(),
              "runtimePostimages": manifest["runtimePostimages"], "harnessSha256": hashlib.sha256(raw).hexdigest(),
              "manifestSha256": hashlib.sha256(raw_manifest).hexdigest(), "onlyOverlay": TEST,
-             "reviewedRuntimeBuildFixtureInputs": 72, "verifiedAfterExecution": verify_only,
+             "reviewedRuntimeBuildFixtureInputs": 74, "verifiedAfterExecution": verify_only,
              "admissions": admissions, "owningRun": os.environ.get("GITHUB_RUN_ID"),
              "owningAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"), "wholeSourceModelParity": False}
     output.mkdir(exist_ok=True)

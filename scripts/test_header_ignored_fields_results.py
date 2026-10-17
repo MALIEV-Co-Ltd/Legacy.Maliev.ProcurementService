@@ -440,12 +440,27 @@ class SourceAndOwnershipControls(unittest.TestCase):
         raw = (HERE.parent / profile["testPath"]).read_bytes()
         self.assertEqual(profile["testBlob"], hashlib.sha1(("blob " + str(len(raw)) + "\0").encode() + raw).hexdigest())
         self.assertEqual(72, len(CONTRACT["baseInputs"]))
-        self.assertEqual(set(CONTRACT["baseInputs"]), set(CONTRACT["reviewedInputs"]))
-        self.assertEqual({prep.HEADER, prep.REPOSITORY, prep.SUPPLIER, prep.METADATA_SEAM}, {p for p in CONTRACT["baseInputs"]
-                         if CONTRACT["baseInputs"][p] != CONTRACT["reviewedInputs"][p]})
-        self.assertEqual({prep.HEADER, prep.REPOSITORY, prep.SUPPLIER, prep.METADATA_SEAM}, set(CONTRACT["runtimePostimages"]))
+        self.assertEqual("69b4ebf74c1a85d0949321360e81105db0f671a6",
+                         CONTRACT["baseInputs"][prep.TEST_PROJECT].split()[-1])
+        self.assertEqual("af7ca6ae938ae85cac598a75852e38863fa6912a",
+                         CONTRACT["joinTestProject"]["gitBlob"])
+        self.assertEqual("2302854b1c32d2a07f8e942cc0bbdacbfeace430",
+                         CONTRACT["compiledTestPostimages"][prep.AUTH_TEST]["gitBlob"])
+        for path, expected in prep.SOURCE_POSTIMAGES.items():
+            self.assertEqual(expected, CONTRACT["runtimePostimages"][path]["gitBlob"])
+            self.assertEqual("100644 blob " + expected, CONTRACT["reviewedInputs"][path])
+            self.assertEqual("100644 blob " + prep.SOURCE_PREIMAGES[path]
+                             if prep.SOURCE_PREIMAGES[path] else None, CONTRACT["baseInputs"].get(path))
+        self.assertEqual(74, len(CONTRACT["reviewedInputs"]))
+        self.assertEqual({prep.SOURCE_FORMATTER, prep.SOURCE_MODELS},
+                         set(CONTRACT["reviewedInputs"]) - set(CONTRACT["baseInputs"]))
+        self.assertFalse(set(CONTRACT["baseInputs"]) - set(CONTRACT["reviewedInputs"]))
+        self.assertEqual({prep.HEADER, prep.REPOSITORY, prep.SUPPLIER, prep.METADATA_SEAM} | prep.SOURCE_RUNTIME | {prep.TEST_PROJECT},
+                         {p for p in set(CONTRACT["baseInputs"]) | set(CONTRACT["reviewedInputs"])
+                          if CONTRACT["baseInputs"].get(p) != CONTRACT["reviewedInputs"].get(p)})
+        self.assertEqual({prep.HEADER, prep.REPOSITORY, prep.SUPPLIER, prep.METADATA_SEAM} | prep.SOURCE_RUNTIME, set(CONTRACT["runtimePostimages"]))
         self.assertEqual("44c79ed24c142883563e037bbb5be724ea87322a", prep.BASE)
-        self.assertEqual({prep.TEST, prep.OLD135, prep.OPENAPI, prep.AUTH_TEST, prep.MIGRATION_TEST, prep.NEW_AUDIT, prep.NEW_METADATA_AUDIT, prep.FILE_HARNESS, prep.COUNTRY_TEST}, set(CONTRACT["compiledTestPostimages"]))
+        self.assertEqual({prep.TEST, prep.OLD135, prep.OPENAPI, prep.AUTH_TEST, prep.MIGRATION_TEST, prep.NEW_AUDIT, prep.NEW_METADATA_AUDIT, prep.FILE_HARNESS, prep.COUNTRY_TEST} | prep.SOURCE_TESTS, set(CONTRACT["compiledTestPostimages"]))
 
     def test_exact_approved_observer_with_only_class_family_purpose_delta(self):
         original = (HERE / "observe-metadata-identity-providers.py").read_text(encoding="utf-8")

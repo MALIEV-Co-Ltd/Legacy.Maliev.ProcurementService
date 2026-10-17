@@ -147,7 +147,7 @@ def require_previous_metadata_audit_binding_advance(contract, current):
     return retained_changes | {metadata}
 
 
-def require_header_binding_advance(contract, current):
+def require_country_id_binding_advance(contract, current):
     metadata = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs"
     retained = contract["previousCountryIdCandidateBindings"]
     require(isinstance(retained, dict) and set(retained) == set(current) and len(retained) == 9,
@@ -175,12 +175,48 @@ def require_header_binding_advance(contract, current):
     return retained_changes | {metadata}
 
 
+def require_header_binding_advance(contract, current):
+    retained = contract["previousSourceBodyCandidateBindings"]
+    require(isinstance(retained, dict) and len(retained) == 9,
+            "Retain all nine accepted country source bindings")
+    old = {path: binding_digest(record) for path, record in retained.items()}
+    retained_changes = require_country_id_binding_advance(contract, old)
+    advance = contract["sourceBodyBindingAdvance"]
+    changed = {
+        "Legacy.Maliev.ProcurementService.Api/Program.cs",
+        "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj",
+        "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj",
+    }
+    added = {
+        "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs",
+        "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs",
+    }
+    require(isinstance(advance, dict)
+            and set(advance) == {"issue", "base", "bindingFormat", "preimages", "postimages"}
+            and advance["issue"] == 78
+            and advance["base"] == "646055868161c8f19e6b6daa278b01019146ac9a"
+            and advance["bindingFormat"] == "sha256-record-v1",
+            "Require reviewed source-body input binding generation")
+    pre, post = advance["preimages"], advance["postimages"]
+    require(isinstance(pre, dict) and isinstance(post, dict)
+            and set(pre) == changed and set(post) == changed | added
+            and set(current) == set(old) | added,
+            "Source-body advance requires only three changed and two added bindings")
+    require({path for path in old if current[path] != old[path]} == changed,
+            "Unrelated accepted country source binding changed")
+    for path in changed:
+        require(binding_digest(pre[path]) == old[path], "Source-body preimage detached")
+    for path in changed | added:
+        require(binding_digest(post[path]) == current[path], "Source-body postimage detached")
+    return retained_changes | changed | added
+
+
 def candidate_digests(contract):
     require(contract.get("candidateBindingFormat") == "sha256-record-v1",
             "Require the reviewed SHA256 provenance format")
     bindings = contract["candidateBindings"]
-    require(isinstance(bindings, dict) and len(bindings) == 9,
-            "Require all nine reviewed current source bindings")
+    require(isinstance(bindings, dict) and len(bindings) == 11,
+            "Require all eleven reviewed current source bindings")
     current = {relative: binding_digest(record) for relative, record in bindings.items()}
     require_header_binding_advance(contract, current)
     return current

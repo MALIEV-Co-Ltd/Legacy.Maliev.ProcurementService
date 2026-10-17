@@ -37,6 +37,8 @@ MAX_SOURCE_BYTES = 1024 * 1024
 MAX_TRX_BYTES = 16 * 1024 * 1024
 MAX_PHASE_BYTES = 20 * 1024 * 1024
 MAX_OPERATION_BYTES = 96 * 1024 * 1024
+SOURCE_FORMATTER = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs"
+SOURCE_MODELS = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs"
 
 
 def require(value, message):
@@ -94,8 +96,8 @@ def runtime_bindings(manifest):
     require(manifest.get("runtimeBindingFormat") == "git-blob-record-v1",
             "Require the reviewed Git blob provenance format")
     value = manifest["runtimePostimages"]
-    require(isinstance(value, dict) and set(value) == {PROGRAM, CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SUPPLIER},
-            "Require exactly the five reviewed changed runtime inputs")
+    require(isinstance(value, dict) and set(value) == {PROGRAM, API_PROJECT, CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SUPPLIER, SOURCE_FORMATTER, SOURCE_MODELS},
+            "Require exactly the nine reviewed changed runtime inputs")
     return {path: git_blob_record(record) for path, record in value.items()}
 
 
@@ -219,17 +221,23 @@ def prepare(baseline, manifest_path, verify_only=False):
             "Tracked baseline source changed")
     require(not (baseline / METADATA_IDENTITY).exists(), "Candidate native metadata helper leaked into immutable baseline")
     for path, binding in ((FIXTURE, manifest["publicFixture"]), (TEST_PROJECT, manifest["joinTestProject"]), (API_PROJECT, manifest["buildProject"])):
-        require(binding["path"] == path and blob(candidate, path) == binding["gitBlob"], "Frozen fixture/build input differs")
-        require(read_bounded(candidate / path, MAX_SOURCE_BYTES, budget)
-                == read_bounded(baseline / path, MAX_SOURCE_BYTES, budget)
-                == git(baseline, "show", BASE + ":" + path), "Public fixture/build inputs differ across phases")
+        candidate_binding = (manifest["candidateJoinTestProject"] if path == TEST_PROJECT
+                             else manifest["candidateBuildProject"] if path == API_PROJECT else binding)
+        require(binding["path"] == candidate_binding["path"] == path
+                and blob(candidate, path) == candidate_binding["gitBlob"], "Frozen candidate fixture/build input differs")
+        baseline_raw = read_bounded(baseline / path, MAX_SOURCE_BYTES, budget)
+        require(baseline_raw == git(baseline, "show", BASE + ":" + path)
+                and blob(baseline, path) == binding["gitBlob"], "Immutable baseline fixture/build input differs")
+        if path == FIXTURE:
+            require(read_bounded(candidate / path, MAX_SOURCE_BYTES, budget) == baseline_raw,
+                    "Public fixture differs across phases")
     require(not git(candidate, "diff", "--name-only") and not git(candidate, "diff", "--cached", "--name-only"), "Tracked candidate changed")
     directories = ("Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Application",
                    "Legacy.Maliev.ProcurementService.Data", "Legacy.Maliev.ProcurementService.Domain")
     require(not git(candidate, "ls-files", "--others", "--exclude-standard", "--", *directories,
                     "Legacy.Maliev.ProcurementService.Tests"), "Untracked compiled inputs forbidden")
     runtime = manifest["runtimePostimages"]
-    allowed = {PROGRAM, CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SUPPLIER}
+    allowed = {PROGRAM, API_PROJECT, CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SUPPLIER, SOURCE_FORMATTER, SOURCE_MODELS}
     require(set(runtime) == allowed, "Wrong exact runtime input roster")
     require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *directories).decode().splitlines()) == allowed,
             "Unexpected production source/build drift")
@@ -259,7 +267,13 @@ def prepare(baseline, manifest_path, verify_only=False):
     require(blob(baseline, boundary["path"])
             == git(baseline, "rev-parse", BASE + ":" + boundary["path"]).decode().strip(),
             "Original OpenAPI baseline must remain unchanged")
-    allowed_tests = set(TESTS.values()) | {old_harness["path"], boundary["path"]}
+    allowed_tests = set(TESTS.values()) | {old_harness["path"], boundary["path"], TEST_PROJECT}
+    source_harnesses = manifest["candidateSourceBodyHarnesses"]
+    require(set(source_harnesses) == {"Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataOriginalModels.cs","Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceOracle.cs","Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceProtocolTests.cs","Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSourceBodyAdmissionTests.cs"},
+            "Wrong source-body compiled harness roster")
+    for path, record in source_harnesses.items():
+        require(blob(candidate, path) == git_blob_record(record), "Source-body compiled harness differs")
+    allowed_tests.update(source_harnesses)
     allowed_tests.update(require_header_harness_bindings(candidate, manifest))
     auth = manifest.get("authEnrollmentTestBinding")
     if auth is not None:
