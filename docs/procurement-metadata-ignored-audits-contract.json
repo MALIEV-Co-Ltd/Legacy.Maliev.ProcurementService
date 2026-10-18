@@ -3265,7 +3265,7 @@
       "gitBlob": "2a5864e3f15f97ffd6b8eb5335dda36cc575780e"
     },
     "scripts/test_metadata_ignored_audits_results.py": {
-      "gitBlob": "6c7ebdb7a5c149685e8425cb24c652a2252cef32"
+      "gitBlob": "45d547f1b4a4be2fd848f5c395b3c16bcb87ca88"
     },
     "scripts/require-metadata-identity-admission.py": {
       "gitBlob": "0c91e5b94fa2ddaeb5e602ebfa68e242efd81a7a"

@@ -1420,7 +1420,7 @@
       "gitBlob": "d35a08ddc313367c2a549ec770bb42127f209698"
     },
     "scripts/test_supplier_ignored_audits_results.py": {
-      "gitBlob": "ae818e57ac6898c9a0ee33c6c2f0cf3d2c9d7c1c"
+      "gitBlob": "f754b86e82315caabe21781588f0cd05e37d4c32"
     },
     ".github/workflows/procurement-supplier-ignored-audits.yml": {
       "gitBlob": "2a274d3e9c0272a76cdf5516e034a5b314ff2223"

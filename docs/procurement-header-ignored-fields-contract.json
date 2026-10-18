@@ -2245,7 +2245,7 @@
       "gitBlob": "9e3ce41ef9d13090b0b38dc694b8c03b557c51e9"
     },
     "scripts/test_header_ignored_fields_results.py": {
-      "gitBlob": "318dce87f3bca3c701a6904bbfe9e5979fc47ae4"
+      "gitBlob": "d78d56cd2af773ca58da4857586d73d5477584d0"
     },
     ".github/workflows/procurement-header-ignored-fields.yml": {
       "gitBlob": "4bfecc0451accbf0a32e0b1a376a200a23dc90f5"
