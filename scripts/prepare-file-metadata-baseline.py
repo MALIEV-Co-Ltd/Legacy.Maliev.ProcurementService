@@ -21,6 +21,12 @@ TEST = "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMeta
 SOURCE_FORMATTER = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs"
 SOURCE_MODELS = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs"
 
+SUPPLIER_QUERY_RUNTIME = {
+    "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs": "7d5f584a13022c56b13e4517748cc772658ba74c",
+    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14",
+    "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": "f116b6f1f0258f2f3bfd0eb35190bd14a64c06f4",
+}
+
 
 def require(value, message):
     if not value:
@@ -80,8 +86,8 @@ def git_blob_record(value):
 
 
 def require_runtime_roster(value):
-    require(isinstance(value, dict) and set(value) == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SOURCE_FORMATTER, SOURCE_MODELS},
-            "Runtime postimage roster must equal the nine reviewed current inputs")
+    require(isinstance(value, dict) and set(value) == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME),
+            "Runtime postimage roster must equal the eleven reviewed current inputs")
     for record in value.values():
         git_blob_record(record)
 
@@ -95,6 +101,9 @@ def runtime_bindings(manifest):
 
 
 def require_runtime_postimages(candidate, manifest):
+    for path, expected in SUPPLIER_QUERY_RUNTIME.items():
+        require(git_blob_record(manifest["implementationRuntime"][path]) == expected,
+                "Exact Supplier omitted-size runtime successor differs: " + path)
     for path, expected in runtime_bindings(manifest).items():
         require(blob(candidate, path) == expected, "Candidate runtime postimage differs: " + path)
 
@@ -163,7 +172,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     changed = set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--",
                       "Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Application",
                       "Legacy.Maliev.ProcurementService.Data", "Legacy.Maliev.ProcurementService.Domain").decode().splitlines())
-    require(changed == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SOURCE_FORMATTER, SOURCE_MODELS}, "Unexpected production source changes")
+    require(changed == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME), "Unexpected production source changes")
     require_runtime_postimages(candidate, manifest)
     for path in ("scripts/observe-supplier-address-providers.py", "scripts/supplier_address_owned_processes.py"):
         require(blob(candidate, path) == git(baseline, "rev-parse", BASE + ":" + path).decode().strip(),

@@ -40,6 +40,14 @@ MAX_OPERATION_BYTES = 96 * 1024 * 1024
 SOURCE_FORMATTER = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs"
 SOURCE_MODELS = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs"
 
+SUPPLIER_QUERY_RUNTIME = {
+    "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs": "7d5f584a13022c56b13e4517748cc772658ba74c",
+    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14",
+    "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": "f116b6f1f0258f2f3bfd0eb35190bd14a64c06f4",
+}
+SUPPLIER_QUERY_TEST = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs"
+SUPPLIER_QUERY_TEST_BLOB = "d64f561c450d565dafb3bb076b9c1dacbb423570"
+
 
 def require(value, message):
     if not value:
@@ -96,12 +104,15 @@ def runtime_bindings(manifest):
     require(manifest.get("runtimeBindingFormat") == "git-blob-record-v1",
             "Require the reviewed Git blob provenance format")
     value = manifest["runtimePostimages"]
-    require(isinstance(value, dict) and set(value) == {PROGRAM, API_PROJECT, CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SUPPLIER, SOURCE_FORMATTER, SOURCE_MODELS},
-            "Require exactly the nine reviewed changed runtime inputs")
+    require(isinstance(value, dict) and set(value) == {PROGRAM, API_PROJECT, CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SUPPLIER, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME),
+            "Require exactly the eleven reviewed changed runtime inputs")
     return {path: git_blob_record(record) for path, record in value.items()}
 
 
 def require_runtime_postimages(candidate, manifest):
+    for path, expected in SUPPLIER_QUERY_RUNTIME.items():
+        require(git_blob_record(manifest["runtimePostimages"][path]) == expected,
+                "Exact Supplier omitted-size runtime successor differs: " + path)
     for path, expected in runtime_bindings(manifest).items():
         require(blob(candidate, path) == expected, "Wrong reviewed runtime postimage: " + path)
 
@@ -237,7 +248,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     require(not git(candidate, "ls-files", "--others", "--exclude-standard", "--", *directories,
                     "Legacy.Maliev.ProcurementService.Tests"), "Untracked compiled inputs forbidden")
     runtime = manifest["runtimePostimages"]
-    allowed = {PROGRAM, API_PROJECT, CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SUPPLIER, SOURCE_FORMATTER, SOURCE_MODELS}
+    allowed = {PROGRAM, API_PROJECT, CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SUPPLIER, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME)
     require(set(runtime) == allowed, "Wrong exact runtime input roster")
     require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *directories).decode().splitlines()) == allowed,
             "Unexpected production source/build drift")
@@ -287,6 +298,10 @@ def prepare(baseline, manifest_path, verify_only=False):
                 and blob(candidate, auth["path"]) == git_blob_record({"gitBlob": auth["gitBlob"]}),
                 "Wrong separately reviewed Auth workflow-test successor")
         allowed_tests.add(auth["path"])
+    require(manifest["supplierOmittedSizeHarness"] == {"path": SUPPLIER_QUERY_TEST, "gitBlob": SUPPLIER_QUERY_TEST_BLOB}
+            and blob(candidate, SUPPLIER_QUERY_TEST) == SUPPLIER_QUERY_TEST_BLOB,
+            "Exact Supplier omitted-size compiled successor differs")
+    allowed_tests.add(SUPPLIER_QUERY_TEST)
     require(compiled_tests == allowed_tests, "Unexpected compiled test drift")
     require(blob(baseline, old_harness["path"])
             == git(baseline, "rev-parse", BASE + ":" + old_harness["path"]).decode().strip(),

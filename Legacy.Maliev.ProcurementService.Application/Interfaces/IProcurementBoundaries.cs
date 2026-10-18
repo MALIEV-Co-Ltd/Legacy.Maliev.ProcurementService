@@ -78,7 +78,7 @@ public interface ISupplierRepository
     /// <summary>Gets a supplier.</summary>
     Task<SupplierResponse?> GetSupplierAsync(int id, CancellationToken cancellationToken);
     /// <summary>Gets a supplier page.</summary>
-    Task<PaginatedResponse<SupplierResponse>?> GetSuppliersAsync(SupplierSortType? sort, string? search, int pageIndex, int pageSize, CancellationToken cancellationToken);
+    Task<PaginatedResponse<SupplierResponse>?> GetSuppliersAsync(SupplierSortType? sort, string? search, int pageIndex, int? pageSize, CancellationToken cancellationToken);
     /// <summary>Updates a supplier.</summary>
     Task<bool> UpdateSupplierAsync(int id, UpsertSupplierRequest request, CancellationToken cancellationToken);
     /// <summary>Creates and attaches an address.</summary>

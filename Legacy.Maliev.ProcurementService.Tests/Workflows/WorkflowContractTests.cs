@@ -17,7 +17,7 @@ public sealed class WorkflowContractTests
     private const string PreviousSupplierAuditVersion = "d159befd91d7bed196d045366870b5bb60c21725";
     private const string PreviousMetadataAuditVersion = "22e307d936993c2976d8f64819d37c5035b4b1de";
     private const string PreviousCountryVersion = "d997f2a527a478110ac3bd96c915f4d0f6ab734a";
-    private const string CurrentProcurementVersion = "35b6926e4a7abefa9ef701f4178bd6b3093d9648";
+    private const string CurrentProcurementVersion = "e45300a59be9804775761bd3ba7826406da534d8";
     private static readonly string Workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "_build-and-test.yml"));
     private static readonly string ApiProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Api.csproj"));

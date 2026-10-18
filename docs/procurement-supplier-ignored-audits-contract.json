@@ -1326,6 +1326,15 @@
     },
     "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
       "gitBlob": "30c131eb10c554b445e878c0b148cbe79d8c7cd3"
+    },
+    "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs": {
+      "gitBlob": "7d5f584a13022c56b13e4517748cc772658ba74c"
+    },
+    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": {
+      "gitBlob": "4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14"
+    },
+    "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": {
+      "gitBlob": "f116b6f1f0258f2f3bfd0eb35190bd14a64c06f4"
     }
   },
   "publicFixture": {
@@ -1345,7 +1354,7 @@
       "gitBlob": "e312dfb12b4522139b23033f59d74f93ca2732dc"
     },
     "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs": {
-      "gitBlob": "1badd76f0348d4ab34e776719eefad6dea41afbd"
+      "gitBlob": "133875aa827a87ebcfdc775a63d2702fb3846c4d"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredAuditDateTests.cs": {
       "gitBlob": "16109c5013df74ad4c27f14b128287ceb649efb1"
@@ -1370,6 +1379,9 @@
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs": {
       "gitBlob": "19b545ae0a96fdc1541b74cd23c75e07d79c460c"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs": {
+      "gitBlob": "d64f561c450d565dafb3bb076b9c1dacbb423570"
     }
   },
   "holds": {
@@ -1393,7 +1405,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-supplier-ignored-audits-baseline.py": {
-      "gitBlob": "acb6414fdd727791b1c947ecba3aef82a805fead"
+      "gitBlob": "5804fae102381172fd42d0fdd30fa618b2ec8c58"
     },
     "scripts/verify-supplier-ignored-audits-results.py": {
       "gitBlob": "2b718a0b66baeab9ee321f23482df27addabd9f3"
@@ -1402,7 +1414,7 @@
       "gitBlob": "d35a08ddc313367c2a549ec770bb42127f209698"
     },
     "scripts/test_supplier_ignored_audits_results.py": {
-      "gitBlob": "ed05e7412036164e248a53083b3a84f1d04b30a2"
+      "gitBlob": "ae818e57ac6898c9a0ee33c6c2f0cf3d2c9d7c1c"
     },
     ".github/workflows/procurement-supplier-ignored-audits.yml": {
       "gitBlob": "2a274d3e9c0272a76cdf5516e034a5b314ff2223"
@@ -1511,7 +1523,7 @@
     "Legacy.Maliev.ProcurementService.Api/appsettings.json": "100644 blob b057873ee272efdfc5311a0179a6214f4e1768b7",
     "Legacy.Maliev.ProcurementService.Application/Interfaces/IDurableProcurementChildCreates.cs": "100644 blob b3cda03315eb9e70d9264a5a50fbdbfeef6c3705",
     "Legacy.Maliev.ProcurementService.Application/Interfaces/IDurableProcurementCreates.cs": "100644 blob b91e35948db367bb5279029e5838a0e87617041c",
-    "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs": "100644 blob 90c2628be1aceef0178533add09fdea7efa4c42a",
+    "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs": "100644 blob 7d5f584a13022c56b13e4517748cc772658ba74c",
     "Legacy.Maliev.ProcurementService.Application/Legacy.Maliev.ProcurementService.Application.csproj": "100644 blob 8f5ac62cbd3b2f8cf8370a899a575e25d4a07dab",
     "Legacy.Maliev.ProcurementService.Application/Models/DurableCreateModels.cs": "100644 blob 6fce05a93ea834e1fc661e0938456e92b908a003",
     "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs": "100644 blob f20b6e2ac31e8a4e91567fca14cf6af449e3b3f0",
@@ -1519,7 +1531,7 @@
     "Legacy.Maliev.ProcurementService.Application/Models/PurchaseOrderAddressScalarStringJsonConverter.cs": "100644 blob cdbfc2e43f4d8575006df249836145cf7ecb50d6",
     "Legacy.Maliev.ProcurementService.Application/Models/SupplierAddressScalarStringJsonConverter.cs": "100644 blob a450e196d981d66aef98b6a5970e6f1f53bcef67",
     "Legacy.Maliev.ProcurementService.Application/Models/SupplierScalarStringJsonConverter.cs": "100644 blob 25834e7c9705786777a707734b914fbf99987cfc",
-    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "100644 blob 9b17fd46fce25162e30854210a1f945a1f9d6f48",
+    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "100644 blob 4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14",
     "Legacy.Maliev.ProcurementService.Data/ChildReceiptRecords.cs": "100644 blob 8974e76d5c72762828a0d32624a09faaafe8dda4",
     "Legacy.Maliev.ProcurementService.Data/CreateReceiptRecord.cs": "100644 blob 7df3a2a661854d928fb4ac6363596546419ffeb3",
     "Legacy.Maliev.ProcurementService.Data/DistributedProcurementCache.cs": "100644 blob cd88f078148dadf470850b383874f2453c3ab146",
@@ -1549,7 +1561,7 @@
     "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/SupplierDbContextModelSnapshot.cs": "100644 blob e77cced2826569ba96cb46d659e0fb90be8ceb0e",
     "Legacy.Maliev.ProcurementService.Data/ProcurementDbContextFactories.cs": "100644 blob 0eadcec30749cdccde9c4a8eae39e5f9c9a0ec80",
     "Legacy.Maliev.ProcurementService.Data/ProcurementDbContexts.cs": "100644 blob 1a8487f24a647a186258d487b84e1cc08fa7d83b",
-    "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": "100644 blob 49461d4f6a13cba8b347001c24920006a5fd5eaf",
+    "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": "100644 blob f116b6f1f0258f2f3bfd0eb35190bd14a64c06f4",
     "Legacy.Maliev.ProcurementService.Data/PurchaseOrderFileSourceConstraints.cs": "100644 blob c182f47f50e92fd3225c08d14bcb505e49d73ad5",
     "Legacy.Maliev.ProcurementService.Data/ReceiptReadiness.cs": "100644 blob 7e252a2a88928f12d421b10fe7cf831146268b9d",
     "Legacy.Maliev.ProcurementService.Domain/Legacy.Maliev.ProcurementService.Domain.csproj": "100644 blob 51addf44ecf979d69d9d77527d402f14c06a4fa5",

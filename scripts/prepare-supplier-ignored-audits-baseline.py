@@ -42,7 +42,7 @@ SOURCE_COMPILED_POSTIMAGES = {
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataSourceProtocolTests.cs": "16ce05f77ec4d3ca655046dbc76fbdfa0d92edad",
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSourceBodyAdmissionTests.cs": "0ead4f73792f03a1f037a10e6a3ec0c32860934a",
     "Legacy.Maliev.ProcurementService.Tests/Integration/PurchaseOrderFileMetadataBindingTests.cs": "7ad16b28e7b6b0129ec1423af4eb77e1d1f9a874",
-    "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs": "1badd76f0348d4ab34e776719eefad6dea41afbd",
+    "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs": "133875aa827a87ebcfdc775a63d2702fb3846c4d",
 }
 SOURCE_PREIMAGES = {
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs": None,
@@ -72,6 +72,14 @@ MAX_SOURCE_BYTES = 1024 * 1024
 MAX_TRX_BYTES = 16 * 1024 * 1024
 MAX_PHASE_BYTES = 20 * 1024 * 1024
 MAX_OPERATION_BYTES = 96 * 1024 * 1024
+
+SUPPLIER_QUERY_RUNTIME = {
+    "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs": "7d5f584a13022c56b13e4517748cc772658ba74c",
+    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14",
+    "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": "f116b6f1f0258f2f3bfd0eb35190bd14a64c06f4",
+}
+SUPPLIER_QUERY_TEST = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs"
+SUPPLIER_QUERY_TEST_BLOB = "d64f561c450d565dafb3bb076b9c1dacbb423570"
 
 
 def require(value, message):
@@ -230,13 +238,13 @@ def prepare(baseline, manifest_path, verify_only=False):
         require(not git(root, "diff", "--name-only") and not git(root, "diff", "--cached", "--name-only"),
                 "Tracked source changed")
     require(manifest.get("runtimeBindingFormat") == "git-blob-record-v1"
-            and set(manifest["runtimePostimages"]) == {CONVERTER, METADATA_SEAM} | SOURCE_RUNTIME,
+            and set(manifest["runtimePostimages"]) == {CONVERTER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME),
             "Only reviewed Supplier request converter may change runtime")
     require(tracked_inputs(baseline) == manifest["baseInputs"]
             and tracked_inputs(candidate, 74) == manifest["reviewedInputs"], "Frozen72 baseline/reviewed74 input inventory differs")
     differences = {path for path in set(manifest["baseInputs"]) | set(manifest["reviewedInputs"])
                    if manifest["baseInputs"].get(path) != manifest["reviewedInputs"].get(path)}
-    require(differences == {CONVERTER, METADATA_SEAM} | SOURCE_RUNTIME | {TEST_PROJECT}
+    require(differences == {CONVERTER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME) | {TEST_PROJECT}
             and set(manifest["reviewedInputs"]) - set(manifest["baseInputs"]) == {SOURCE_FORMATTER, SOURCE_MODELS}
             and not set(manifest["baseInputs"]) - set(manifest["reviewedInputs"]),
             "Only exact reviewed source-family runtime/build transition may change inputs")
@@ -265,6 +273,12 @@ def prepare(baseline, manifest_path, verify_only=False):
         metadata = manifest["reviewedInputs"][path]
         require(re.fullmatch(r"100644 blob [0-9a-f]{40}", metadata) is not None
                 and blob(candidate, path) == metadata.split()[-1], "Compiled input changed after checkout")
+    for path, expected in SUPPLIER_QUERY_RUNTIME.items():
+        require(git_blob_record(manifest["runtimePostimages"][path]) == expected
+                and manifest["reviewedInputs"][path] == "100644 blob " + expected,
+                "Exact Supplier omitted-size runtime successor differs: " + path)
+    require(git_blob_record(manifest["compiledTestPostimages"][SUPPLIER_QUERY_TEST]) == SUPPLIER_QUERY_TEST_BLOB,
+            "Exact Supplier omitted-size compiled successor differs")
     binding = manifest["publicFixture"]
     require(binding["path"] == FIXTURE and blob(candidate, FIXTURE) == binding["gitBlob"]
             and read_bounded(candidate / FIXTURE, MAX_SOURCE_BYTES, budget)
@@ -275,7 +289,7 @@ def prepare(baseline, manifest_path, verify_only=False):
             and read_bounded(baseline / TEST_PROJECT, MAX_SOURCE_BYTES, budget)
             == git(baseline, "show", BASE + ":" + TEST_PROJECT),
             "Candidate-only project transition changed historical baseline project")
-    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {CONVERTER, METADATA_SEAM} | SOURCE_RUNTIME,
+    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {CONVERTER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME),
             "Unexpected production source/build drift")
     require(not git(candidate, "ls-files", "--others", "--exclude-standard", "--", *PROJECTS,
                     "Legacy.Maliev.ProcurementService.Tests"), "Untracked compiled inputs forbidden")
@@ -284,13 +298,13 @@ def prepare(baseline, manifest_path, verify_only=False):
             and blob(baseline, retained_scalar["path"]) == retained_scalar["gitBlob"],
             "Retained scalar lexical baseline must remain unchanged")
     compiled = manifest["compiledTestPostimages"]
-    require(set(compiled) == {TEST, AUTH_TEST, NEW_METADATA_AUDIT, FILE_HARNESS, COUNTRY_TEST} | SOURCE_TESTS, "Wrong closed compiled test roster")
+    require(set(compiled) == {TEST, AUTH_TEST, NEW_METADATA_AUDIT, FILE_HARNESS, COUNTRY_TEST} | SOURCE_TESTS | {SUPPLIER_QUERY_TEST}, "Wrong closed compiled test roster")
     for path, expected in SOURCE_COMPILED_POSTIMAGES.items():
         require(git_blob_record(compiled[path]) == expected,
                 "Exact reviewed source-family compiled successor differs")
     for path, record in compiled.items():
         require(blob(candidate, path) == git_blob_record(record), "Reviewed compiled test source differs")
-    expected_changes = {TEST, TEST_PROJECT} | SOURCE_TESTS
+    expected_changes = {TEST, TEST_PROJECT} | SOURCE_TESTS | {SUPPLIER_QUERY_TEST}
     for path in (AUTH_TEST, NEW_METADATA_AUDIT, FILE_HARNESS, COUNTRY_TEST):
         if path in (NEW_METADATA_AUDIT, COUNTRY_TEST) or git(baseline, "rev-parse", BASE + ":" + path).decode().strip() != git_blob_record(compiled[path]):
             expected_changes.add(path)
