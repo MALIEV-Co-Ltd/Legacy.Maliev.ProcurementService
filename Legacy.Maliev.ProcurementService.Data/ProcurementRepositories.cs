@@ -28,7 +28,7 @@ public sealed class SupplierRepository(SupplierDbContext dbContext, TimeProvider
         Project(dbContext.Suppliers.AsNoTracking().Where(value => value.Id == id)).SingleOrDefaultAsync(cancellationToken);
 
     /// <inheritdoc />
-    public async Task<PaginatedResponse<SupplierResponse>?> GetSuppliersAsync(SupplierSortType? sort, string? search, int pageIndex, int pageSize, CancellationToken cancellationToken)
+    public async Task<PaginatedResponse<SupplierResponse>?> GetSuppliersAsync(SupplierSortType? sort, string? search, int pageIndex, int? pageSize, CancellationToken cancellationToken)
     {
         IQueryable<Supplier> query = dbContext.Suppliers.AsNoTracking();
         if (!string.IsNullOrEmpty(search))
@@ -60,9 +60,10 @@ public sealed class SupplierRepository(SupplierDbContext dbContext, TimeProvider
         };
         var total = await query.CountAsync(cancellationToken);
         if (total == 0) return null;
-        var items = await Project(query).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+        var effectivePageSize = pageSize ?? total;
+        var items = await Project(query).Skip((pageIndex - 1) * effectivePageSize).Take(effectivePageSize).ToListAsync(cancellationToken);
         if (items.Count == 0) return null;
-        return new(items, pageIndex, (int)Math.Ceiling(total / (double)pageSize), total);
+        return new(items, pageIndex, (int)Math.Ceiling(total / (double)effectivePageSize), total);
     }
 
     /// <inheritdoc />

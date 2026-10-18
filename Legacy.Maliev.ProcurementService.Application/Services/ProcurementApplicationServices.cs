@@ -23,7 +23,7 @@ public sealed class ProcurementApplicationService(
         suppliers.GetSupplierAsync(id, cancellationToken);
     /// <inheritdoc />
     public Task<PaginatedResponse<SupplierResponse>?> GetSuppliersAsync(SupplierSortType? sort, string? search, int? index, int? size, CancellationToken cancellationToken) =>
-        suppliers.GetSuppliersAsync(sort, search, Math.Max(index ?? 1, 1), Math.Clamp(size ?? 50, 1, 250), cancellationToken);
+        suppliers.GetSuppliersAsync(sort, search, Math.Max(index ?? 1, 1), size is null ? null : Math.Clamp(size.Value, 1, 250), cancellationToken);
     /// <inheritdoc />
     public async Task<bool> UpdateSupplierAsync(int id, UpsertSupplierRequest request, CancellationToken cancellationToken)
     {
