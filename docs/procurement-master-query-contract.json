@@ -9,7 +9,7 @@
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct": 6,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierOmittedSize_ReturnsAllMatchesAndWholePascalPager": 2,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierExplicitSize10_RetainsRequestedSecondPage": 1,
-    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierExplicitUpperBoundAndIndexFloor_RemainUnchanged": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierExplicitPositiveSize_RetainsIndexFloor": 1,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierOmittedSize_RetainsReadAuthorization": 2,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierOmittedSize_NoMatchesStillReturnNotFound": 1
   }

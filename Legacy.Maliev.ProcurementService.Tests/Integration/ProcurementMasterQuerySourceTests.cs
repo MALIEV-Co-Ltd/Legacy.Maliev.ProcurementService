@@ -202,13 +202,13 @@ public sealed class ProcurementMasterQuerySourceTests(ProcurementRuntimeFixture 
     }
 
     [Fact]
-    public async Task SupplierExplicitUpperBoundAndIndexFloor_RemainUnchanged()
+    public async Task SupplierExplicitPositiveSize_RetainsIndexFloor()
     {
         await SeedSupplierOmittedSizeRowsAsync(251, false);
         var before = await SupplierOmittedSizeSnapshotAsync();
         using var client = fixture.Client(ProcurementPermissions.SuppliersRead);
         using var response = await client.GetAsync("/Suppliers?size=251&index=0");
-        await AssertSupplierOmittedSizePageAsync(response, Enumerable.Range(1, 250), 1, 251, 2, true, false);
+        await AssertSupplierOmittedSizePageAsync(response, Enumerable.Range(1, 251), 1, 251, 1, false, false);
         Assert.Equal(before, await SupplierOmittedSizeSnapshotAsync());
     }
 
