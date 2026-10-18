@@ -202,13 +202,13 @@ public sealed class ProcurementMasterQuerySourceTests(ProcurementRuntimeFixture 
     }
 
     [Fact]
-    public async Task SupplierExplicitUpperBoundAndIndexFloor_RemainUnchanged()
+    public async Task SupplierExplicitPositiveSize_RetainsIndexFloor()
     {
         await SeedSupplierOmittedSizeRowsAsync(251, false);
         var before = await SupplierOmittedSizeSnapshotAsync();
         using var client = fixture.Client(ProcurementPermissions.SuppliersRead);
         using var response = await client.GetAsync("/Suppliers?size=251&index=0");
-        await AssertSupplierOmittedSizePageAsync(response, Enumerable.Range(1, 250), 1, 251, 2, true, false);
+        await AssertSupplierOmittedSizePageAsync(response, Enumerable.Range(1, 251), 1, 251, 1, false, false);
         Assert.Equal(before, await SupplierOmittedSizeSnapshotAsync());
     }
 
@@ -236,6 +236,130 @@ public sealed class ProcurementMasterQuerySourceTests(ProcurementRuntimeFixture 
         using var response = await client.GetAsync("/Suppliers?search=absent");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.Equal(before, await SupplierOmittedSizeSnapshotAsync());
+    }
+
+    // Follow-up source policy: explicit positive sizes have no 250-row cap; zero has no items.
+    // The accepted omitted-size cases above remain unchanged in this tests-first baseline.
+    [Theory]
+    [InlineData(251, false)]
+    [InlineData(251, true)]
+    [InlineData(1000, false)]
+    [InlineData(1000, true)]
+    [InlineData(int.MaxValue, false)]
+    [InlineData(int.MaxValue, true)]
+    public async Task SupplierExplicitSourceParity_PositiveSizeReturnsRequestedPages(int size, bool filtered)
+    {
+        await SeedSupplierOmittedSizeRowsAsync(1000, filtered);
+        var before = await SupplierOmittedSizeSnapshotAsync();
+        using var client = fixture.Client(ProcurementPermissions.SuppliersRead);
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        try
+        {
+            int pages = size == 251 ? 4 : 1;
+            var actualIds = new List<int>();
+            for (int index = 1; index <= pages; index++)
+            {
+                string query = $"/Suppliers?size={size}&index={index}" + (filtered ? "&search=match" : "");
+                using var response = await client.GetAsync(query, timeout.Token);
+                int first = (index - 1) * size + 1;
+                int count = Math.Min(size, 1001 - first);
+                await AssertSupplierOmittedSizePageAsync(response, Enumerable.Range(first, count),
+                    index, 1000, pages, index < pages, index > 1);
+                var page = (await response.Content.ReadFromJsonAsync<PaginatedResponse<SupplierResponse>>(timeout.Token))!;
+                actualIds.AddRange(page.Items.Select(item => item.Id));
+            }
+            Assert.Equal(Enumerable.Range(1, 1000), actualIds);
+            Assert.Equal(1000, actualIds.Distinct().Count());
+            using var exhausted = await client.GetAsync(
+                $"/Suppliers?size={size}&index={pages + 1}" + (filtered ? "&search=match" : ""), timeout.Token);
+            Assert.Equal(HttpStatusCode.NotFound, exhausted.StatusCode);
+        }
+        finally
+        {
+            Assert.Equal(before, await SupplierOmittedSizeSnapshotAsync());
+        }
+    }
+
+    [Theory]
+    [InlineData("populated", 0)]
+    [InlineData("populated", 1)]
+    [InlineData("populated", int.MaxValue)]
+    [InlineData("filtered", 0)]
+    [InlineData("filtered", 1)]
+    [InlineData("absent", 0)]
+    [InlineData("absent", 1)]
+    [InlineData("empty", 0)]
+    [InlineData("empty", 1)]
+    public async Task SupplierExplicitSourceParity_ZeroSizeReturnsNotFound(string cohort, int index)
+    {
+        await SeedSupplierOmittedSizeRowsAsync(cohort == "empty" ? 0 : 3, cohort == "filtered");
+        var before = await SupplierOmittedSizeSnapshotAsync();
+        using var client = fixture.Client(ProcurementPermissions.SuppliersRead);
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        try
+        {
+            string filter = cohort == "filtered" ? "&search=match"
+                : cohort == "absent" ? "&search=absent-witness" : "";
+            using var response = await client.GetAsync($"/Suppliers?size=0&index={index}{filter}", timeout.Token);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+        finally
+        {
+            Assert.Equal(before, await SupplierOmittedSizeSnapshotAsync());
+        }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task SupplierExplicitSourceParity_RetainsReadAuthorization(bool anonymous)
+    {
+        await SeedSupplierOmittedSizeRowsAsync(3, false);
+        var before = await SupplierOmittedSizeSnapshotAsync();
+        using var client = anonymous
+            ? fixture.Factory.CreateClient()
+            : fixture.Client(ProcurementPermissions.SuppliersUpdate);
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        try
+        {
+            foreach (int size in new[] { 0, 251, 1000, int.MaxValue })
+            {
+                foreach (string filter in new[] { "", "&search=match" })
+                {
+                    using var response = await client.GetAsync($"/Suppliers?size={size}{filter}", timeout.Token);
+                    Assert.Equal(anonymous ? HttpStatusCode.Unauthorized : HttpStatusCode.Forbidden, response.StatusCode);
+                }
+            }
+        }
+        finally
+        {
+            Assert.Equal(before, await SupplierOmittedSizeSnapshotAsync());
+        }
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(int.MinValue)]
+    public async Task SupplierExplicitSourceParity_RetainsNegativeSizeAndIndexFloors(int size)
+    {
+        await SeedSupplierOmittedSizeRowsAsync(3, false);
+        var before = await SupplierOmittedSizeSnapshotAsync();
+        using var client = fixture.Client(ProcurementPermissions.SuppliersRead);
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        try
+        {
+            foreach (int index in new[] { 0, -1, 1 })
+            {
+                using var response = await client.GetAsync($"/Suppliers?size={size}&index={index}", timeout.Token);
+                await AssertSupplierOmittedSizePageAsync(response, new[] { 1 }, 1, 3, 3, true, false);
+            }
+            using var missing = await client.GetAsync($"/Suppliers?size={size}&search=absent-witness", timeout.Token);
+            Assert.Equal(HttpStatusCode.NotFound, missing.StatusCode);
+        }
+        finally
+        {
+            Assert.Equal(before, await SupplierOmittedSizeSnapshotAsync());
+        }
     }
 
     private async Task SeedSupplierOmittedSizeRowsAsync(int count, bool includeNonmatching)

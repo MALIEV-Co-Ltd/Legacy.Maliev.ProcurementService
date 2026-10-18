@@ -1384,6 +1384,31 @@
   },
   "supplierOmittedSizeHarness": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs",
-    "gitBlob": "d64f561c450d565dafb3bb076b9c1dacbb423570"
+    "gitBlob": "e29fcc568be0d5b378c9a941484f9bda26d64b31"
+  },
+  "supplierExplicitSizeConsumer": {
+    "sourceBase": "75482b3aa7423024bf7443d6131fdbee925f069d",
+    "producerCommit": "e45300a59be9804775761bd3ba7826406da534d8",
+    "inputCount": 74,
+    "changedInputs": {
+      "Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs": {
+        "previousMetadata": "100644 blob f7549641da035088c553d07e42202c73ea881512",
+        "reviewedMetadata": "100644 blob aa83c9ddc65ccac0bfc90974f64a817ad8cbbc68"
+      },
+      "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": {
+        "previousMetadata": "100644 blob 4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14",
+        "reviewedMetadata": "100644 blob 28204fc1402f836d1da3ae94542bb5ce249b1c1b"
+      }
+    },
+    "unchangedInputCount": 72,
+    "unchangedInputSha256": "8b6ab924bb164895e958f297de204214b27a9ee44d97865906ddd3d6b6054bfd",
+    "producerHarness": {
+      "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs",
+      "gitBlob": "d64f561c450d565dafb3bb076b9c1dacbb423570"
+    },
+    "consumerHarness": {
+      "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs",
+      "gitBlob": "e29fcc568be0d5b378c9a941484f9bda26d64b31"
+    }
   }
 }

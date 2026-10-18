@@ -80,12 +80,15 @@ MAX_PHASE_BYTES = 20 * 1024 * 1024
 MAX_OPERATION_BYTES = 96 * 1024 * 1024
 
 SUPPLIER_QUERY_RUNTIME = {
+    "Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs": "aa83c9ddc65ccac0bfc90974f64a817ad8cbbc68",
     "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs": "7d5f584a13022c56b13e4517748cc772658ba74c",
-    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14",
+    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "28204fc1402f836d1da3ae94542bb5ce249b1c1b",
     "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": "f116b6f1f0258f2f3bfd0eb35190bd14a64c06f4",
 }
 SUPPLIER_QUERY_TEST = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs"
-SUPPLIER_QUERY_TEST_BLOB = "d64f561c450d565dafb3bb076b9c1dacbb423570"
+SUPPLIER_QUERY_TEST_BLOB = "e29fcc568be0d5b378c9a941484f9bda26d64b31"
+SUPPLIER_LIST_POLICY_TEST = "Legacy.Maliev.ProcurementService.Tests/Application/ProcurementApplicationServiceTests.cs"
+SUPPLIER_LIST_POLICY_TEST_BLOB = "e50a343850c2ef2357e9eb0d29c7ee74c5855717"
 
 
 def require(value, message):
@@ -290,6 +293,12 @@ def prepare(baseline, manifest_path, verify_only=False):
                 "Exact Supplier omitted-size runtime successor differs: " + path)
     require(git_blob_record(manifest["compiledTestPostimages"][SUPPLIER_QUERY_TEST]) == SUPPLIER_QUERY_TEST_BLOB,
             "Exact Supplier omitted-size compiled successor differs")
+    require(git_blob_record(manifest["compiledTestPostimages"][SUPPLIER_LIST_POLICY_TEST]) == SUPPLIER_LIST_POLICY_TEST_BLOB
+            and blob(candidate, SUPPLIER_LIST_POLICY_TEST) == SUPPLIER_LIST_POLICY_TEST_BLOB,
+            "Exact Supplier list policy compiled successor differs")
+    require(blob(baseline, SUPPLIER_LIST_POLICY_TEST) == "903380e4866eae014aeff5770a12355b948f1d84"
+            and git(baseline, "rev-parse", BASE + ":" + SUPPLIER_LIST_POLICY_TEST).decode().strip() == "903380e4866eae014aeff5770a12355b948f1d84",
+            "Frozen Supplier list policy baseline differs")
     binding = manifest["publicFixture"]
     require(binding["path"] == FIXTURE and blob(candidate, FIXTURE) == binding["gitBlob"]
             and read_bounded(candidate / FIXTURE, MAX_SOURCE_BYTES, budget)
@@ -309,13 +318,13 @@ def prepare(baseline, manifest_path, verify_only=False):
             and blob(baseline, retained_scalar["path"]) == retained_scalar["gitBlob"],
             "Retained scalar lexical baseline must remain unchanged")
     compiled = manifest["compiledTestPostimages"]
-    require(set(compiled) == {TEST, OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST, NEW_AUDIT, NEW_METADATA_AUDIT, FILE_HARNESS, COUNTRY_TEST} | SOURCE_TESTS | {SUPPLIER_QUERY_TEST}, "Wrong closed compiled test roster")
+    require(set(compiled) == {TEST, OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST, NEW_AUDIT, NEW_METADATA_AUDIT, FILE_HARNESS, COUNTRY_TEST} | SOURCE_TESTS | {SUPPLIER_QUERY_TEST, SUPPLIER_LIST_POLICY_TEST}, "Wrong closed compiled test roster")
     for path, expected in SOURCE_COMPILED_POSTIMAGES.items():
         require(git_blob_record(compiled[path]) == expected,
                 "Exact reviewed source-family compiled successor differs")
     for path, record in compiled.items():
         require(blob(candidate, path) == git_blob_record(record), "Reviewed compiled test source differs")
-    expected_changes = {TEST, TEST_PROJECT} | SOURCE_TESTS | {SUPPLIER_QUERY_TEST}
+    expected_changes = {TEST, TEST_PROJECT} | SOURCE_TESTS | {SUPPLIER_QUERY_TEST, SUPPLIER_LIST_POLICY_TEST}
     for path in (OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST, NEW_AUDIT, NEW_METADATA_AUDIT, FILE_HARNESS, COUNTRY_TEST):
         if path in (NEW_AUDIT, NEW_METADATA_AUDIT, COUNTRY_TEST) or git(baseline, "rev-parse", BASE + ":" + path).decode().strip() != git_blob_record(compiled[path]):
             expected_changes.add(path)

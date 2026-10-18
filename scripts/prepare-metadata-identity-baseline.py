@@ -41,12 +41,15 @@ SOURCE_FORMATTER = "Legacy.Maliev.ProcurementService.Api/Serialization/Procureme
 SOURCE_MODELS = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs"
 
 SUPPLIER_QUERY_RUNTIME = {
+    "Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs": "aa83c9ddc65ccac0bfc90974f64a817ad8cbbc68",
     "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs": "7d5f584a13022c56b13e4517748cc772658ba74c",
-    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14",
+    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "28204fc1402f836d1da3ae94542bb5ce249b1c1b",
     "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": "f116b6f1f0258f2f3bfd0eb35190bd14a64c06f4",
 }
 SUPPLIER_QUERY_TEST = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs"
-SUPPLIER_QUERY_TEST_BLOB = "d64f561c450d565dafb3bb076b9c1dacbb423570"
+SUPPLIER_QUERY_TEST_BLOB = "e29fcc568be0d5b378c9a941484f9bda26d64b31"
+SUPPLIER_LIST_POLICY_TEST = "Legacy.Maliev.ProcurementService.Tests/Application/ProcurementApplicationServiceTests.cs"
+SUPPLIER_LIST_POLICY_TEST_BLOB = "e50a343850c2ef2357e9eb0d29c7ee74c5855717"
 
 
 def require(value, message):
@@ -105,7 +108,7 @@ def runtime_bindings(manifest):
             "Require the reviewed Git blob provenance format")
     value = manifest["runtimePostimages"]
     require(isinstance(value, dict) and set(value) == {PROGRAM, API_PROJECT, CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SUPPLIER, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME),
-            "Require exactly the eleven reviewed changed runtime inputs")
+            "Require exactly the twelve reviewed changed runtime inputs")
     return {path: git_blob_record(record) for path, record in value.items()}
 
 
@@ -301,7 +304,14 @@ def prepare(baseline, manifest_path, verify_only=False):
     require(manifest["supplierOmittedSizeHarness"] == {"path": SUPPLIER_QUERY_TEST, "gitBlob": SUPPLIER_QUERY_TEST_BLOB}
             and blob(candidate, SUPPLIER_QUERY_TEST) == SUPPLIER_QUERY_TEST_BLOB,
             "Exact Supplier omitted-size compiled successor differs")
+    require(manifest["supplierListPolicyHarness"] == {"path": SUPPLIER_LIST_POLICY_TEST, "gitBlob": SUPPLIER_LIST_POLICY_TEST_BLOB}
+            and blob(candidate, SUPPLIER_LIST_POLICY_TEST) == SUPPLIER_LIST_POLICY_TEST_BLOB,
+            "Exact Supplier list policy compiled successor differs")
+    require(blob(baseline, SUPPLIER_LIST_POLICY_TEST) == "903380e4866eae014aeff5770a12355b948f1d84"
+            and git(baseline, "rev-parse", BASE + ":" + SUPPLIER_LIST_POLICY_TEST).decode().strip() == "903380e4866eae014aeff5770a12355b948f1d84",
+            "Frozen Supplier list policy baseline differs")
     allowed_tests.add(SUPPLIER_QUERY_TEST)
+    allowed_tests.add(SUPPLIER_LIST_POLICY_TEST)
     require(compiled_tests == allowed_tests, "Unexpected compiled test drift")
     require(blob(baseline, old_harness["path"])
             == git(baseline, "rev-parse", BASE + ":" + old_harness["path"]).decode().strip(),

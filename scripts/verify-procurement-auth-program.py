@@ -58,6 +58,44 @@ def require_source_change(reviewed, manifest):
         raise ValueError("Unrelated runtime/build/public fixture drift outside reviewed source string changes")
 
 
+def require_consumer_binding(manifest):
+    expected = json.loads('{"sourceBase":"75482b3aa7423024bf7443d6131fdbee925f069d","producerCommit":"e45300a59be9804775761bd3ba7826406da534d8","inputCount":74,"changedInputs":{"Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs":{"previousMetadata":"100644 blob f7549641da035088c553d07e42202c73ea881512","reviewedMetadata":"100644 blob aa83c9ddc65ccac0bfc90974f64a817ad8cbbc68"},"Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs":{"previousMetadata":"100644 blob 4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14","reviewedMetadata":"100644 blob 28204fc1402f836d1da3ae94542bb5ce249b1c1b"}},"unchangedInputCount":72,"unchangedInputSha256":"8b6ab924bb164895e958f297de204214b27a9ee44d97865906ddd3d6b6054bfd","producerHarness":{"path":"Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs","gitBlob":"d64f561c450d565dafb3bb076b9c1dacbb423570"},"consumerHarness":{"path":"Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs","gitBlob":"e29fcc568be0d5b378c9a941484f9bda26d64b31"}}')
+    if manifest.get("supplierExplicitSizeConsumer") != expected or manifest["supplierOmittedSizeHarness"] != expected["consumerHarness"]:
+        raise ValueError("Supplier explicit-size consumer requires the exact reviewed custody")
+    return expected
+
+
+def require_consumer_inputs(current, producer, manifest):
+    binding = require_consumer_binding(manifest)
+    require_source_change(producer, manifest)
+    expected = dict(producer)
+    for path, change in binding["changedInputs"].items():
+        if expected.get(path) != change["previousMetadata"]:
+            raise ValueError("Supplier explicit-size producer preimage differs")
+        expected[path] = change["reviewedMetadata"]
+    unchanged = {path: metadata for path, metadata in producer.items() if path not in binding["changedInputs"]}
+    digest = hashlib.sha256(json.dumps(unchanged, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    if len(producer) != binding["inputCount"] or len(unchanged) != binding["unchangedInputCount"] or digest != binding["unchangedInputSha256"]:
+        raise ValueError("Supplier explicit-size retained inventory differs")
+    require_equal(current, expected)
+
+
+def require_harness_custody(local, producer, manifest):
+    binding = require_consumer_binding(manifest)
+    if (local.resolve() != ROOT.resolve()
+            or producer.resolve() != (ROOT / ".joined-public/Legacy.Maliev.ProcurementService").resolve()
+            or local.resolve() == producer.resolve()):
+        raise ValueError("Supplier harness roots differ from the owned join")
+    head = subprocess.check_output(["git", "-C", str(producer), "rev-parse", "HEAD"], text=True, timeout=15).strip()
+    if head != binding["producerCommit"]:
+        raise ValueError("Supplier immutable producer HEAD differs")
+    for repository, harness in ((local, binding["consumerHarness"]), (producer, binding["producerHarness"])):
+        for arguments in (("rev-parse", "HEAD:" + harness["path"]), ("hash-object", harness["path"])):
+            actual = subprocess.check_output(["git", "-C", str(repository), *arguments], text=True, timeout=15).strip()
+            if actual != harness["gitBlob"]:
+                raise ValueError("Exact Supplier per-root harness differs")
+
+
 def inputs(root, manifest):
     require_historical_graph(manifest)
     for entry in manifest["references"]:
@@ -65,15 +103,10 @@ def inputs(root, manifest):
         actual = subprocess.check_output(["git", "-C", str(root / repository), "rev-parse", "HEAD"], text=True).strip()
         if actual != expected:
             raise ValueError("Producer checkout does not equal the immutable graph pin: " + repository)
-    reviewed = tracked_inputs(root / "Legacy.Maliev.ProcurementService")
-    require_equal(tracked_inputs(ROOT), reviewed)
-    require_source_change(reviewed, manifest)
-    harness = manifest["supplierOmittedSizeHarness"]
-    for repository in (ROOT, root / "Legacy.Maliev.ProcurementService"):
-        for arguments in (("rev-parse", "HEAD:" + harness["path"]), ("hash-object", harness["path"])):
-            actual = subprocess.check_output(["git", "-C", str(repository), *arguments], text=True, timeout=15).strip()
-            if actual != harness["gitBlob"]:
-                raise ValueError("Exact Supplier omitted-size harness differs")
+    producer = root / "Legacy.Maliev.ProcurementService"
+    reviewed = tracked_inputs(producer)
+    require_consumer_inputs(tracked_inputs(ROOT), reviewed, manifest)
+    require_harness_custody(ROOT, producer, manifest)
     print(json.dumps({"graphId": manifest["graphId"], "references": manifest["references"], "identicalRuntimeBuildFixtureInputs": len(reviewed)}))
 
 
@@ -497,8 +530,9 @@ def require_historical_graph(manifest):
             raise ValueError("Supplier omitted-size successor input differs: " + path)
     if manifest["references"] != json.loads('[{"repository":"Legacy.Maliev.AuthService","commit":"b27fbef06a3aa58c1f4fc0e75d7c70b32be76266"},{"repository":"Legacy.Maliev.ServiceDefaults","commit":"ecb05cbbd68717e415f69df2ac488c1d323b1da3"},{"repository":"Legacy.Maliev.CompatibilityContracts","commit":"78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7"},{"repository":"Legacy.Maliev.ProcurementService","commit":"e45300a59be9804775761bd3ba7826406da534d8"}]'):
         raise ValueError("Supplier omitted-size producer and external pins must remain exact")
-    if manifest["supplierOmittedSizeHarness"] != json.loads('{"path":"Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs","gitBlob":"d64f561c450d565dafb3bb076b9c1dacbb423570"}'):
+    if manifest["supplierOmittedSizeHarness"] != json.loads('{"path":"Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs","gitBlob":"e29fcc568be0d5b378c9a941484f9bda26d64b31"}'):
         raise ValueError("Supplier omitted-size harness binding differs")
+    require_consumer_binding(manifest)
     if any(manifest[field] is not False for field in
            ("productionEnrollmentProven", "productionIamBridgeProven", "wholeInitialSourceParityClosed")):
         raise ValueError("Supplier omitted-size custody does not qualify production or whole-source closure")
