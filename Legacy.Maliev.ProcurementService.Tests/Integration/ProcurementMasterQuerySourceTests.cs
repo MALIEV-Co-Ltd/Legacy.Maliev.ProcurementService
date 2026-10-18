@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Legacy.Maliev.ProcurementService.Api.Authorization;
 using Legacy.Maliev.ProcurementService.Application.Models;
 using Legacy.Maliev.ProcurementService.Data;
@@ -168,6 +169,127 @@ public sealed class ProcurementMasterQuerySourceTests(ProcurementRuntimeFixture 
         }
         await using var readScope = historicalFactory.Services.CreateAsyncScope();
         Assert.Equal(3, await readScope.ServiceProvider.GetRequiredService<PurchaseOrderDbContext>().PurchaseOrders.CountAsync());
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task SupplierOmittedSize_ReturnsAllMatchesAndWholePascalPager(bool filtered)
+    {
+        await SeedSupplierOmittedSizeRowsAsync(51, filtered);
+        var before = await SupplierOmittedSizeSnapshotAsync();
+        using var client = fixture.Client(ProcurementPermissions.SuppliersRead);
+        using var response = await client.GetAsync(filtered
+            ? "/Suppliers?search=match"
+            : "/Suppliers");
+        await AssertSupplierOmittedSizePageAsync(response, Enumerable.Range(1, 51), 1, 51, 1, false, false);
+        using var nullSize = await client.GetAsync(filtered
+            ? "/Suppliers?search=match&size="
+            : "/Suppliers?size=");
+        await AssertSupplierOmittedSizePageAsync(nullSize, Enumerable.Range(1, 51), 1, 51, 1, false, false);
+        Assert.Equal(before, await SupplierOmittedSizeSnapshotAsync());
+    }
+
+    [Fact]
+    public async Task SupplierExplicitSize10_RetainsRequestedSecondPage()
+    {
+        await SeedSupplierOmittedSizeRowsAsync(51, false);
+        var before = await SupplierOmittedSizeSnapshotAsync();
+        using var client = fixture.Client(ProcurementPermissions.SuppliersRead);
+        using var response = await client.GetAsync("/Suppliers?size=10&index=2");
+        await AssertSupplierOmittedSizePageAsync(response, Enumerable.Range(11, 10), 2, 51, 6, true, true);
+        Assert.Equal(before, await SupplierOmittedSizeSnapshotAsync());
+    }
+
+    [Fact]
+    public async Task SupplierExplicitUpperBoundAndIndexFloor_RemainUnchanged()
+    {
+        await SeedSupplierOmittedSizeRowsAsync(251, false);
+        var before = await SupplierOmittedSizeSnapshotAsync();
+        using var client = fixture.Client(ProcurementPermissions.SuppliersRead);
+        using var response = await client.GetAsync("/Suppliers?size=251&index=0");
+        await AssertSupplierOmittedSizePageAsync(response, Enumerable.Range(1, 250), 1, 251, 2, true, false);
+        Assert.Equal(before, await SupplierOmittedSizeSnapshotAsync());
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task SupplierOmittedSize_RetainsReadAuthorization(bool anonymous)
+    {
+        await SeedSupplierOmittedSizeRowsAsync(51, false);
+        var before = await SupplierOmittedSizeSnapshotAsync();
+        using var client = anonymous
+            ? fixture.Factory.CreateClient()
+            : fixture.Client(ProcurementPermissions.SuppliersUpdate);
+        using var response = await client.GetAsync("/Suppliers");
+        Assert.Equal(anonymous ? HttpStatusCode.Unauthorized : HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal(before, await SupplierOmittedSizeSnapshotAsync());
+    }
+
+    [Fact]
+    public async Task SupplierOmittedSize_NoMatchesStillReturnNotFound()
+    {
+        await SeedSupplierOmittedSizeRowsAsync(51, false);
+        var before = await SupplierOmittedSizeSnapshotAsync();
+        using var client = fixture.Client(ProcurementPermissions.SuppliersRead);
+        using var response = await client.GetAsync("/Suppliers?search=absent");
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal(before, await SupplierOmittedSizeSnapshotAsync());
+    }
+
+    private async Task SeedSupplierOmittedSizeRowsAsync(int count, bool includeNonmatching)
+    {
+        await using var scope = fixture.Factory.Services.CreateAsyncScope();
+        var database = scope.ServiceProvider.GetRequiredService<SupplierDbContext>();
+        database.Suppliers.AddRange(Enumerable.Range(1, count)
+            .Select(id => new Supplier { Id = id, Name = $"match supplier{id}" }));
+        if (includeNonmatching)
+        {
+            database.Suppliers.AddRange(new Supplier { Id = 1001, Name = "excluded supplier" },
+                new Supplier { Id = 1002, Name = "another excluded supplier" });
+        }
+        await database.SaveChangesAsync();
+    }
+
+    private async Task<string> SupplierOmittedSizeSnapshotAsync()
+    {
+        await using var scope = fixture.Factory.Services.CreateAsyncScope();
+        var database = scope.ServiceProvider.GetRequiredService<SupplierDbContext>();
+        var rows = await database.Suppliers.AsNoTracking().OrderBy(row => row.Id)
+            .Select(row => new
+            {
+                row.Id,
+                row.Name,
+                row.Website,
+                row.TaxNumber,
+                row.Email,
+                row.Note,
+                row.AddressId,
+                row.Telephone,
+                row.Mobile,
+                row.Fax,
+                row.CreatedDate,
+                row.ModifiedDate,
+            }).ToArrayAsync();
+        return JsonSerializer.Serialize(rows);
+    }
+
+    private static async Task AssertSupplierOmittedSizePageAsync(HttpResponseMessage response,
+        IEnumerable<int> expectedIds, int expectedIndex, int expectedRecords, int expectedPages,
+        bool expectedNext, bool expectedPrevious)
+    {
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var page = document.RootElement;
+        Assert.Equal(new[] { "HasNextPage", "HasPreviousPage", "Items", "PageIndex", "TotalPages", "TotalRecords" },
+            page.EnumerateObject().Select(property => property.Name).OrderBy(name => name, StringComparer.Ordinal));
+        Assert.Equal(expectedIds, page.GetProperty("Items").EnumerateArray().Select(item => item.GetProperty("Id").GetInt32()));
+        Assert.Equal(expectedIndex, page.GetProperty("PageIndex").GetInt32());
+        Assert.Equal(expectedRecords, page.GetProperty("TotalRecords").GetInt32());
+        Assert.Equal(expectedPages, page.GetProperty("TotalPages").GetInt32());
+        Assert.Equal(expectedNext, page.GetProperty("HasNextPage").GetBoolean());
+        Assert.Equal(expectedPrevious, page.GetProperty("HasPreviousPage").GetBoolean());
     }
 
     private async Task SeedAsync(bool purchaseOrder, int count, int firstId)

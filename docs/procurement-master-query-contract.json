@@ -1,11 +1,16 @@
 {
   "sourceSha": "5fac706a7983a6d359b39acbd670e6800afe020e",
-  "expectedCases": 19,
+  "expectedCases": 26,
   "expectedMethods": {
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierNumericSearch_SourceMatchesOnlyIdentifier_NotTextContainingSameDigits": 1,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PurchaseOrderNumericSearch_SourceMatchesIdentifierSubstring": 1,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PageBeyondLast_SourceReturnsNotFound": 2,
     "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierSearch_SourceIntegerParsingAndLiteralTextRemainDistinct": 9,
-    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct": 6
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.PurchaseOrderSearch_SourceLowercaseLiteralAndNullNotesRemainDistinct": 6,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierOmittedSize_ReturnsAllMatchesAndWholePascalPager": 2,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierExplicitSize10_RetainsRequestedSecondPage": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierExplicitUpperBoundAndIndexFloor_RemainUnchanged": 1,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierOmittedSize_RetainsReadAuthorization": 2,
+    "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementMasterQuerySourceTests.SupplierOmittedSize_NoMatchesStillReturnNotFound": 1
   }
 }
