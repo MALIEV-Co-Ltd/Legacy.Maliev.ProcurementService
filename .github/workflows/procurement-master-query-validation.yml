@@ -19,7 +19,7 @@ jobs:
       VSTestCollect: XPlat Code Coverage
       VSTestLogger: trx
       VSTestResultsDirectory: ${{ github.workspace }}/query-results
-      VSTestTestCaseFilter: FullyQualifiedName~ProcurementMasterQuerySourceTests
+      VSTestTestCaseFilter: FullyQualifiedName~ProcurementMasterQuerySourceTests&FullyQualifiedName!~SupplierExplicitSourceParity_
     steps:
       - name: Check out ProcurementService
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1

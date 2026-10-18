@@ -1384,6 +1384,6 @@
   },
   "supplierOmittedSizeHarness": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs",
-    "gitBlob": "d64f561c450d565dafb3bb076b9c1dacbb423570"
+    "gitBlob": "10815ed42eae22f404af1b6f66760a25d9674699"
   }
 }
