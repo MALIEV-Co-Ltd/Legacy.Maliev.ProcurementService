@@ -22,8 +22,9 @@ SOURCE_FORMATTER = "Legacy.Maliev.ProcurementService.Api/Serialization/Procureme
 SOURCE_MODELS = "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs"
 
 SUPPLIER_QUERY_RUNTIME = {
+    "Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs": "aa83c9ddc65ccac0bfc90974f64a817ad8cbbc68",
     "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs": "7d5f584a13022c56b13e4517748cc772658ba74c",
-    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14",
+    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "28204fc1402f836d1da3ae94542bb5ce249b1c1b",
     "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": "f116b6f1f0258f2f3bfd0eb35190bd14a64c06f4",
 }
 
@@ -87,7 +88,7 @@ def git_blob_record(value):
 
 def require_runtime_roster(value):
     require(isinstance(value, dict) and set(value) == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME),
-            "Runtime postimage roster must equal the eleven reviewed current inputs")
+            "Runtime postimage roster must equal the twelve reviewed current inputs")
     for record in value.values():
         git_blob_record(record)
 

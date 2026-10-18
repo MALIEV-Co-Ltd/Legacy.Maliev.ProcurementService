@@ -74,12 +74,13 @@ MAX_PHASE_BYTES = 20 * 1024 * 1024
 MAX_OPERATION_BYTES = 96 * 1024 * 1024
 
 SUPPLIER_QUERY_RUNTIME = {
+    "Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs": "aa83c9ddc65ccac0bfc90974f64a817ad8cbbc68",
     "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs": "7d5f584a13022c56b13e4517748cc772658ba74c",
-    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14",
+    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "28204fc1402f836d1da3ae94542bb5ce249b1c1b",
     "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": "f116b6f1f0258f2f3bfd0eb35190bd14a64c06f4",
 }
 SUPPLIER_QUERY_TEST = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs"
-SUPPLIER_QUERY_TEST_BLOB = "10815ed42eae22f404af1b6f66760a25d9674699"
+SUPPLIER_QUERY_TEST_BLOB = "e29fcc568be0d5b378c9a941484f9bda26d64b31"
 
 
 def require(value, message):

@@ -1003,7 +1003,10 @@
       "gitBlob": "7d5f584a13022c56b13e4517748cc772658ba74c"
     },
     "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": {
-      "gitBlob": "4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14"
+      "gitBlob": "28204fc1402f836d1da3ae94542bb5ce249b1c1b"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs": {
+      "gitBlob": "aa83c9ddc65ccac0bfc90974f64a817ad8cbbc68"
     }
   },
   "publicFixture": {

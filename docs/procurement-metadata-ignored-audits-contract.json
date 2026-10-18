@@ -3176,10 +3176,13 @@
       "gitBlob": "7d5f584a13022c56b13e4517748cc772658ba74c"
     },
     "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": {
-      "gitBlob": "4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14"
+      "gitBlob": "28204fc1402f836d1da3ae94542bb5ce249b1c1b"
     },
     "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": {
       "gitBlob": "f116b6f1f0258f2f3bfd0eb35190bd14a64c06f4"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs": {
+      "gitBlob": "aa83c9ddc65ccac0bfc90974f64a817ad8cbbc68"
     }
   },
   "publicFixture": {
@@ -3223,7 +3226,7 @@
       "gitBlob": "19b545ae0a96fdc1541b74cd23c75e07d79c460c"
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs": {
-      "gitBlob": "10815ed42eae22f404af1b6f66760a25d9674699"
+      "gitBlob": "e29fcc568be0d5b378c9a941484f9bda26d64b31"
     }
   },
   "holds": {
@@ -3250,7 +3253,7 @@
       "gitBlob": "ffb85569c189055a9fb8a2ae66aaa8cd6d3c8005"
     },
     "scripts/prepare-metadata-ignored-audits-baseline.py": {
-      "gitBlob": "d1524ea2db2ba087101c6dabb3ef75ab5dd0720c"
+      "gitBlob": "f54e2e65878fdd7651c78c3e52bd4e1791fd0a27"
     },
     "scripts/observe-metadata-ignored-audits-providers.py": {
       "gitBlob": "c187747f8d602bb015602e4acfbf8bab80a03b37"
@@ -3349,7 +3352,7 @@
     "Legacy.Maliev.ProcurementService.Api/Controllers/PurchaseOrderAddressesController.cs": "100644 blob 91b6bf11646f89f5c6736e7f54af964e044ae6ed",
     "Legacy.Maliev.ProcurementService.Api/Controllers/PurchaseOrdersController.cs": "100644 blob 19530897851dcd97dbf52ee71d297f0b4cd0517c",
     "Legacy.Maliev.ProcurementService.Api/Controllers/SupplierAddressesController.cs": "100644 blob 63dfa7c375090e0a1d3dd191f7430b1519c8bdea",
-    "Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs": "100644 blob f7549641da035088c553d07e42202c73ea881512",
+    "Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs": "100644 blob aa83c9ddc65ccac0bfc90974f64a817ad8cbbc68",
     "Legacy.Maliev.ProcurementService.Api/Dockerfile": "100644 blob b2c525d395006937f2faf1dbbe0ffa53b669e6d0",
     "Legacy.Maliev.ProcurementService.Api/DurableChildCreateEndpoint.cs": "100644 blob 84b6da4468a7a22ae10d81aed8b29f6dab15dfaf",
     "Legacy.Maliev.ProcurementService.Api/DurableCreateEndpoint.cs": "100644 blob 4a723a638129fbdb99a17758a06a8cd5c3f026ac",
@@ -3373,7 +3376,7 @@
     "Legacy.Maliev.ProcurementService.Application/Models/PurchaseOrderAddressScalarStringJsonConverter.cs": "100644 blob cdbfc2e43f4d8575006df249836145cf7ecb50d6",
     "Legacy.Maliev.ProcurementService.Application/Models/SupplierAddressScalarStringJsonConverter.cs": "100644 blob a450e196d981d66aef98b6a5970e6f1f53bcef67",
     "Legacy.Maliev.ProcurementService.Application/Models/SupplierScalarStringJsonConverter.cs": "100644 blob 25834e7c9705786777a707734b914fbf99987cfc",
-    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "100644 blob 4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14",
+    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": "100644 blob 28204fc1402f836d1da3ae94542bb5ce249b1c1b",
     "Legacy.Maliev.ProcurementService.Data/ChildReceiptRecords.cs": "100644 blob 8974e76d5c72762828a0d32624a09faaafe8dda4",
     "Legacy.Maliev.ProcurementService.Data/CreateReceiptRecord.cs": "100644 blob 7df3a2a661854d928fb4ac6363596546419ffeb3",
     "Legacy.Maliev.ProcurementService.Data/DistributedProcurementCache.cs": "100644 blob cd88f078148dadf470850b383874f2453c3ab146",
