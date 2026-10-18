@@ -46,7 +46,7 @@ SUPPLIER_QUERY_RUNTIME = {
     "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": "f116b6f1f0258f2f3bfd0eb35190bd14a64c06f4",
 }
 SUPPLIER_QUERY_TEST = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs"
-SUPPLIER_QUERY_TEST_BLOB = "d64f561c450d565dafb3bb076b9c1dacbb423570"
+SUPPLIER_QUERY_TEST_BLOB = "10815ed42eae22f404af1b6f66760a25d9674699"
 
 
 def require(value, message):

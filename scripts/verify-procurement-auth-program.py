@@ -497,7 +497,7 @@ def require_historical_graph(manifest):
             raise ValueError("Supplier omitted-size successor input differs: " + path)
     if manifest["references"] != json.loads('[{"repository":"Legacy.Maliev.AuthService","commit":"b27fbef06a3aa58c1f4fc0e75d7c70b32be76266"},{"repository":"Legacy.Maliev.ServiceDefaults","commit":"ecb05cbbd68717e415f69df2ac488c1d323b1da3"},{"repository":"Legacy.Maliev.CompatibilityContracts","commit":"78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7"},{"repository":"Legacy.Maliev.ProcurementService","commit":"e45300a59be9804775761bd3ba7826406da534d8"}]'):
         raise ValueError("Supplier omitted-size producer and external pins must remain exact")
-    if manifest["supplierOmittedSizeHarness"] != json.loads('{"path":"Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs","gitBlob":"d64f561c450d565dafb3bb076b9c1dacbb423570"}'):
+    if manifest["supplierOmittedSizeHarness"] != json.loads('{"path":"Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs","gitBlob":"10815ed42eae22f404af1b6f66760a25d9674699"}'):
         raise ValueError("Supplier omitted-size harness binding differs")
     if any(manifest[field] is not False for field in
            ("productionEnrollmentProven", "productionIamBridgeProven", "wholeInitialSourceParityClosed")):

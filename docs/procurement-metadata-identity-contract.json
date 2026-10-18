@@ -1730,7 +1730,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-metadata-identity-baseline.py": {
-      "gitBlob": "fd151579c7288ecc3354542eb7b9049443c99351"
+      "gitBlob": "2b01e5e0bfe8c35704d704f7d8aff4412b6fd643"
     },
     "scripts/verify-metadata-identity-results.py": {
       "gitBlob": "a1cb8d97044e6c4aa9da33549e967551074b616d"
@@ -1947,6 +1947,6 @@
   },
   "supplierOmittedSizeHarness": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs",
-    "gitBlob": "d64f561c450d565dafb3bb076b9c1dacbb423570"
+    "gitBlob": "10815ed42eae22f404af1b6f66760a25d9674699"
   }
 }
