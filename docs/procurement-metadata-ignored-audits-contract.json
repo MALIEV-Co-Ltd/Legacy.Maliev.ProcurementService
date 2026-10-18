@@ -3227,6 +3227,9 @@
     },
     "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs": {
       "gitBlob": "e29fcc568be0d5b378c9a941484f9bda26d64b31"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Application/ProcurementApplicationServiceTests.cs": {
+      "gitBlob": "e50a343850c2ef2357e9eb0d29c7ee74c5855717"
     }
   },
   "holds": {
@@ -3253,7 +3256,7 @@
       "gitBlob": "ffb85569c189055a9fb8a2ae66aaa8cd6d3c8005"
     },
     "scripts/prepare-metadata-ignored-audits-baseline.py": {
-      "gitBlob": "f54e2e65878fdd7651c78c3e52bd4e1791fd0a27"
+      "gitBlob": "527d028cadd3ff51b90d6073099e13bd02a677a3"
     },
     "scripts/observe-metadata-ignored-audits-providers.py": {
       "gitBlob": "c187747f8d602bb015602e4acfbf8bab80a03b37"
