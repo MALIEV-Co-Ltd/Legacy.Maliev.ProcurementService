@@ -1520,7 +1520,7 @@
       "gitBlob": "b21e6fe697acdeb945dc0acbd3c80dee22a23a02"
     },
     "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": {
-      "gitBlob": "49461d4f6a13cba8b347001c24920006a5fd5eaf"
+      "gitBlob": "f116b6f1f0258f2f3bfd0eb35190bd14a64c06f4"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
       "gitBlob": "87fd40bbe9072c8da0cc3567020d2872b05a107d"
@@ -1533,6 +1533,12 @@
     },
     "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
       "gitBlob": "30c131eb10c554b445e878c0b148cbe79d8c7cd3"
+    },
+    "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs": {
+      "gitBlob": "7d5f584a13022c56b13e4517748cc772658ba74c"
+    },
+    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": {
+      "gitBlob": "4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14"
     }
   },
   "publicFixture": {
@@ -1724,7 +1730,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-metadata-identity-baseline.py": {
-      "gitBlob": "f83368f1750d710e3f29be8b4c77b69dc107ff15"
+      "gitBlob": "fd151579c7288ecc3354542eb7b9049443c99351"
     },
     "scripts/verify-metadata-identity-results.py": {
       "gitBlob": "a1cb8d97044e6c4aa9da33549e967551074b616d"
@@ -1733,7 +1739,7 @@
       "gitBlob": "bdd2544a6ff844d6500512db9ac255192def30fb"
     },
     "scripts/test_metadata_identity_results.py": {
-      "gitBlob": "2d0ec9bd98a1365752aaa09b589b12d23adce2a5"
+      "gitBlob": "163852125d21e79451ec4ebdd95a34ca15594033"
     },
     "scripts/require-metadata-identity-admission.py": {
       "gitBlob": "0c91e5b94fa2ddaeb5e602ebfa68e242efd81a7a"
@@ -1744,7 +1750,7 @@
   },
   "authEnrollmentTestBinding": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs",
-    "gitBlob": "1badd76f0348d4ab34e776719eefad6dea41afbd"
+    "gitBlob": "133875aa827a87ebcfdc775a63d2702fb3846c4d"
   },
   "candidateBoundaryHarness": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Controllers/ProcurementOpenApiHttpContractTests.cs",
@@ -1938,5 +1944,9 @@
   "previousSourceBodySupplierScalarHarness": {
     "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs",
     "gitBlob": "1d9b4bb47360e4ba9b8f2864a03f63a2533b29a5"
+  },
+  "supplierOmittedSizeHarness": {
+    "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs",
+    "gitBlob": "d64f561c450d565dafb3bb076b9c1dacbb423570"
   }
 }

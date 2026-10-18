@@ -9,7 +9,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-source-body-input.json"
+MANIFEST = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-supplier-omitted-size.json"
 HISTORICAL_PATH = "tools/ProcurementAuthProgram.Tests/public-graph.json"
 HISTORICAL_SHA256 = "205063c79697948343ba659b13757b68ef4814d1b62861484a1dd90c0b8e7d41"
 PREVIOUS_ACCEPTED_PATH = "tools/ProcurementAuthProgram.Tests/public-graph-child-replay.json"
@@ -68,6 +68,12 @@ def inputs(root, manifest):
     reviewed = tracked_inputs(root / "Legacy.Maliev.ProcurementService")
     require_equal(tracked_inputs(ROOT), reviewed)
     require_source_change(reviewed, manifest)
+    harness = manifest["supplierOmittedSizeHarness"]
+    for repository in (ROOT, root / "Legacy.Maliev.ProcurementService"):
+        for arguments in (("rev-parse", "HEAD:" + harness["path"]), ("hash-object", harness["path"])):
+            actual = subprocess.check_output(["git", "-C", str(repository), *arguments], text=True, timeout=15).strip()
+            if actual != harness["gitBlob"]:
+                raise ValueError("Exact Supplier omitted-size harness differs")
     print(json.dumps({"graphId": manifest["graphId"], "references": manifest["references"], "identicalRuntimeBuildFixtureInputs": len(reviewed)}))
 
 
@@ -406,7 +412,7 @@ def require_previous_country_id_graph(manifest):
         raise ValueError("Address country custody does not qualify production or whole-source closure")
 
 
-def require_historical_graph(manifest):
+def require_previous_source_body_graph(manifest):
     custody = manifest["latestAcceptedCountryIdGraph"]
     expected_custody = json.loads('{"path":"tools/ProcurementAuthProgram.Tests/public-graph-address-country-id.json","sha256":"4a7deb0c024900377795e20f2b0521cffd0f045913dfbf1f97e05a1bf966e9f3","gitBlob":"e433e128dac8a930b2e8b01f9639ec92f848aa4d","procurement":"d997f2a527a478110ac3bd96c915f4d0f6ab734a","inputCount":72,"acceptedMain":"646055868161c8f19e6b6daa278b01019146ac9a","acceptedReceipt":"5f443a04fbcd41dc003cbb0cd95059c7a5e88bd9"}')
     if custody != expected_custody:
@@ -454,6 +460,48 @@ def require_historical_graph(manifest):
     if any(manifest[field] is not False for field in
            ("productionEnrollmentProven", "productionIamBridgeProven", "wholeInitialSourceParityClosed")):
         raise ValueError("Source body custody does not qualify production or whole-source closure")
+
+
+def require_historical_graph(manifest):
+    previous_path = ROOT / "tools/ProcurementAuthProgram.Tests/public-graph-source-body-input.json"
+    with previous_path.open("rb") as stream:
+        raw = stream.read(2 * 1024 * 1024 + 1)
+    if not 0 < len(raw) <= 2 * 1024 * 1024:
+        raise ValueError("Retained source-body witness exceeds bounded reader")
+    digest = hashlib.sha1(("blob " + str(len(raw)) + "\0").encode() + raw).hexdigest()
+    if digest != "0a3573be3d7fa1d08a6071b71ed54449c9a3c578":
+        raise ValueError("Retained source-body witness differs")
+    previous = json.loads(raw)
+    require_previous_source_body_graph(previous)
+    for field in previous:
+        if field not in ("graphId", "references", "intentionalSourceChanges") and manifest[field] != previous[field]:
+            raise ValueError("Retained source-body witness differs: " + field)
+    if manifest["previousSourceBodyIntentionalSourceChanges"] != previous["intentionalSourceChanges"]:
+        raise ValueError("Previous source-body74/5/69 envelope must remain exact")
+    change = manifest["intentionalSourceChanges"]
+    expected_changes = json.loads('{"Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs":{"previousMetadata":"100644 blob 90c2628be1aceef0178533add09fdea7efa4c42a","reviewedMetadata":"100644 blob 7d5f584a13022c56b13e4517748cc772658ba74c"},"Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs":{"previousMetadata":"100644 blob 9b17fd46fce25162e30854210a1f945a1f9d6f48","reviewedMetadata":"100644 blob 4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14"},"Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs":{"previousMetadata":"100644 blob 49461d4f6a13cba8b347001c24920006a5fd5eaf","reviewedMetadata":"100644 blob f116b6f1f0258f2f3bfd0eb35190bd14a64c06f4"}}')
+    if (change["previousProcurement"] != "35b6926e4a7abefa9ef701f4178bd6b3093d9648"
+            or change["acceptedBase"] != "9e45066ae682b5cbc54975451a8d12c6f432e862"
+            or change["reviewedProcurement"] != "e45300a59be9804775761bd3ba7826406da534d8"
+            or change["reviewedTree"] != "9d1898c3299fee92d804512deaf88d0f8edaf61d"
+            or change["inputCount"] != 74 or change["unchangedInputCount"] != 71
+            or change["unchangedInputSha256"] != "944d4b12140f370c6b38a6f8fd81302ce5fe92e7cf6b26ba1c24356ff9f204fe"
+            or change["changedInputs"] != expected_changes):
+        raise ValueError("Supplier omitted-size successor requires exact74/3/71 source envelope")
+    previous_inputs = previous["intentionalSourceChanges"]["reviewedInputs"]
+    if set(change["reviewedInputs"]) != set(previous_inputs):
+        raise ValueError("Supplier omitted-size successor cannot add or remove compiled inputs")
+    for path, value in previous_inputs.items():
+        expected = expected_changes[path]["reviewedMetadata"] if path in expected_changes else value
+        if change["reviewedInputs"][path] != expected:
+            raise ValueError("Supplier omitted-size successor input differs: " + path)
+    if manifest["references"] != json.loads('[{"repository":"Legacy.Maliev.AuthService","commit":"b27fbef06a3aa58c1f4fc0e75d7c70b32be76266"},{"repository":"Legacy.Maliev.ServiceDefaults","commit":"ecb05cbbd68717e415f69df2ac488c1d323b1da3"},{"repository":"Legacy.Maliev.CompatibilityContracts","commit":"78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7"},{"repository":"Legacy.Maliev.ProcurementService","commit":"e45300a59be9804775761bd3ba7826406da534d8"}]'):
+        raise ValueError("Supplier omitted-size producer and external pins must remain exact")
+    if manifest["supplierOmittedSizeHarness"] != json.loads('{"path":"Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs","gitBlob":"d64f561c450d565dafb3bb076b9c1dacbb423570"}'):
+        raise ValueError("Supplier omitted-size harness binding differs")
+    if any(manifest[field] is not False for field in
+           ("productionEnrollmentProven", "productionIamBridgeProven", "wholeInitialSourceParityClosed")):
+        raise ValueError("Supplier omitted-size custody does not qualify production or whole-source closure")
 
 
 def results(root, manifest):

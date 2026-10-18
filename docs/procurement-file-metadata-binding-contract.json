@@ -766,13 +766,19 @@
       "gitBlob": "b21e6fe697acdeb945dc0acbd3c80dee22a23a02"
     },
     "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": {
-      "gitBlob": "49461d4f6a13cba8b347001c24920006a5fd5eaf"
+      "gitBlob": "f116b6f1f0258f2f3bfd0eb35190bd14a64c06f4"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs": {
       "gitBlob": "942a1b8f8f18ea3a9727691a05a784aec688614d"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs": {
       "gitBlob": "e352494ce31eb5bead53a78cc4c950a7bae3e54e"
+    },
+    "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs": {
+      "gitBlob": "7d5f584a13022c56b13e4517748cc772658ba74c"
+    },
+    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": {
+      "gitBlob": "4a4a10f303c0ea3345c864330b0e2fa9ae7bbc14"
     }
   },
   "previousAcceptedMetadataRuntime": {

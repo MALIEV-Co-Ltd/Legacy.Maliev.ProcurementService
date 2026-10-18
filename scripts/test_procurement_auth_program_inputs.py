@@ -328,11 +328,14 @@ class RuntimeInputs(unittest.TestCase):
         current = manifest["previousCountryIdIntentionalSourceChanges"]
         self.assertEqual((72,71),(current["inputCount"],current["unchangedInputCount"]))
         self.assertEqual(set(change["changedInputs"]),set(current["changedInputs"]))
-        successor = manifest["intentionalSourceChanges"]
+        successor = manifest["previousSourceBodyIntentionalSourceChanges"]
         self.assertEqual((74,69),(successor["inputCount"],successor["unchangedInputCount"]))
         self.assertEqual(set(json.loads('["Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs","Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs","Legacy.Maliev.ProcurementService.Api/Program.cs","Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj","Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj"]')),set(successor["changedInputs"]))
         added = {path for path, binding in successor["changedInputs"].items() if binding["previousMetadata"] is None}
         self.assertEqual(2,len(added))
+        supplier = manifest["intentionalSourceChanges"]
+        self.assertEqual((74,71),(supplier["inputCount"],supplier["unchangedInputCount"]))
+        self.assertEqual(set(json.loads('["Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs","Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs","Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs"]')),set(supplier["changedInputs"]))
         guard.require_historical_graph(manifest)
 
     def test_supplier_audit_witness_custody_cannot_be_rebound(self):

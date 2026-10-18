@@ -444,7 +444,7 @@ class SourceAndOwnershipControls(unittest.TestCase):
                          CONTRACT["baseInputs"][prep.TEST_PROJECT].split()[-1])
         self.assertEqual("af7ca6ae938ae85cac598a75852e38863fa6912a",
                          CONTRACT["joinTestProject"]["gitBlob"])
-        self.assertEqual("1badd76f0348d4ab34e776719eefad6dea41afbd",
+        self.assertEqual("133875aa827a87ebcfdc775a63d2702fb3846c4d",
                          CONTRACT["compiledTestPostimages"][prep.AUTH_TEST]["gitBlob"])
         self.assertEqual("Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj", prep.BUILD_PROJECT)
         for path, expected in prep.SOURCE_POSTIMAGES.items():
@@ -456,12 +456,12 @@ class SourceAndOwnershipControls(unittest.TestCase):
         self.assertEqual({prep.SOURCE_FORMATTER, prep.SOURCE_MODELS},
                          set(CONTRACT["reviewedInputs"]) - set(CONTRACT["baseInputs"]))
         self.assertFalse(set(CONTRACT["baseInputs"]) - set(CONTRACT["reviewedInputs"]))
-        self.assertEqual({prep.CONVERTER} | prep.SOURCE_RUNTIME | {prep.TEST_PROJECT},
+        self.assertEqual({prep.CONVERTER} | prep.SOURCE_RUNTIME | set(prep.SUPPLIER_QUERY_RUNTIME) | {prep.TEST_PROJECT},
                          {p for p in set(CONTRACT["baseInputs"]) | set(CONTRACT["reviewedInputs"])
                           if CONTRACT["baseInputs"].get(p) != CONTRACT["reviewedInputs"].get(p)})
-        self.assertEqual({prep.CONVERTER} | prep.SOURCE_RUNTIME, set(CONTRACT["runtimePostimages"]))
+        self.assertEqual({prep.CONVERTER} | prep.SOURCE_RUNTIME | set(prep.SUPPLIER_QUERY_RUNTIME), set(CONTRACT["runtimePostimages"]))
         self.assertEqual("665f796eab8a6eea37fd1189d3c0821fc1dc5fa9", prep.BASE)
-        self.assertEqual({prep.TEST, prep.AUTH_TEST, prep.FILE_HARNESS, prep.COUNTRY_TEST} | prep.SOURCE_TESTS, set(CONTRACT["compiledTestPostimages"]))
+        self.assertEqual({prep.TEST, prep.AUTH_TEST, prep.FILE_HARNESS, prep.COUNTRY_TEST} | prep.SOURCE_TESTS | {prep.SUPPLIER_QUERY_TEST}, set(CONTRACT["compiledTestPostimages"]))
 
     def test_exact_approved_observer_with_only_class_family_purpose_delta(self):
         original = (HERE / "observe-metadata-identity-providers.py").read_text(encoding="utf-8")
