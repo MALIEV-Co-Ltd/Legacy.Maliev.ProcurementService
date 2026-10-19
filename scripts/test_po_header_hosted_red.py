@@ -618,5 +618,36 @@ class MetadataAuditCandidateCustodyControls(unittest.TestCase):
                     RED.require_header_binding_advance(changed,current)
 
 
+    def test_exact_observation_successor_preserves_source_body_witness_and_rejects_drift(self):
+        current = RED.candidate_digests(CONTRACT)
+        previous = {path: RED.binding_digest(record)
+                    for path, record in CONTRACT["previousObservationCandidateBindings"].items()}
+        program = "Legacy.Maliev.ProcurementService.Api/Program.cs"
+        self.assertEqual({program}, {path for path in current if current[path] != previous[path]})
+        RED.require_source_body_binding_advance(CONTRACT, previous)
+        RED.require_header_binding_advance(CONTRACT, current)
+        for key in ("issue", "base", "source", "bindingFormat"):
+            changed = copy.deepcopy(CONTRACT)
+            changed["observationBindingAdvance"][key] = "unreviewed"
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                RED.require_header_binding_advance(changed, current)
+        for section in ("preimages", "postimages"):
+            for mutation in ("missing", "extra", "wrong", "scalar"):
+                changed = copy.deepcopy(CONTRACT)
+                records = changed["observationBindingAdvance"][section]
+                if mutation == "missing": records.pop(program)
+                elif mutation == "extra": records["unreviewed"] = {"sha256": "0" * 64}
+                elif mutation == "wrong": records[program] = {"sha256": "0" * 64}
+                else: records[program] = records[program]["sha256"]
+                with self.subTest(section=section, mutation=mutation), self.assertRaises(ValueError):
+                    RED.require_header_binding_advance(changed, current)
+        for path in previous:
+            changed = copy.deepcopy(CONTRACT)
+            changed["previousObservationCandidateBindings"][path] = {"sha256": "0" * 64}
+            with self.subTest(path=path), self.assertRaises(ValueError):
+                RED.require_header_binding_advance(changed, current)
+
+
+
 if __name__ == "__main__":
     unittest.main()

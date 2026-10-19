@@ -650,3 +650,19 @@ class SupplierAuditSourceControls(unittest.TestCase):
         for text in ("SupplierReceiptAsync", 'GetProperty("PayloadDigest")', 'GetProperty("ResponseBody")',
                      'Assert.Equal(created.CreatedDate, updated.CreatedDate)', 'Assert.Equal(journal, await SupplierReceiptAsync'):
             self.assertIn(text,raw)
+
+    def test_exact_observation_harness_successor_rejects_missing_and_unknown_blobs(self):
+        root = pathlib.Path(".")
+        with mock.patch.object(prep, "blob", return_value="bb88cc2a30db74a4f7cd1a972fcb2e81cf9a8218") as read:
+            self.assertEqual("Legacy.Maliev.ProcurementService.Tests/Startup/ProcurementStartupLoggingTests.cs",
+                             prep.require_observation_harness(root))
+            read.assert_called_once_with(root, "Legacy.Maliev.ProcurementService.Tests/Startup/ProcurementStartupLoggingTests.cs")
+        for actual in ("0cae38a4a360010015fbd49dfb5fb5665a934adf", "0" * 40, ""):
+            with self.subTest(actual=actual), mock.patch.object(prep, "blob", return_value=actual):
+                with self.assertRaises(ValueError):
+                    prep.require_observation_harness(root)
+        with mock.patch.object(prep, "blob", side_effect=FileNotFoundError):
+            with self.assertRaises(FileNotFoundError):
+                prep.require_observation_harness(root)
+
+

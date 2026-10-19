@@ -219,6 +219,13 @@ def require_header_harness_bindings(candidate, manifest):
     return expected
 
 
+def require_observation_harness(candidate):
+    path = "Legacy.Maliev.ProcurementService.Tests/Startup/ProcurementStartupLoggingTests.cs"
+    require(blob(candidate, path) == "bb88cc2a30db74a4f7cd1a972fcb2e81cf9a8218",
+            "Exact reviewed source2f60 observation harness successor differs")
+    return path
+
+
 def prepare(baseline, manifest_path, verify_only=False):
     candidate = pathlib.Path(__file__).resolve().parents[1]
     budget = [MAX_OPERATION_BYTES]
@@ -312,6 +319,7 @@ def prepare(baseline, manifest_path, verify_only=False):
             "Frozen Supplier list policy baseline differs")
     allowed_tests.add(SUPPLIER_QUERY_TEST)
     allowed_tests.add(SUPPLIER_LIST_POLICY_TEST)
+    allowed_tests.add(require_observation_harness(candidate))
     require(compiled_tests == allowed_tests, "Unexpected compiled test drift")
     require(blob(baseline, old_harness["path"])
             == git(baseline, "rev-parse", BASE + ":" + old_harness["path"]).decode().strip(),

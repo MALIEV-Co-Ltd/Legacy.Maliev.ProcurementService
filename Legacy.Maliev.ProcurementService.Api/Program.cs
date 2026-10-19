@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.AddPrivateRequestObservation("procurement");
 builder.AddDefaultApiVersioning();
 // These EF diagnostics embed exception text/stacks before the formatter can redact them.
 // Standard middleware retains the actionable correlated, type-only critical failure event.
