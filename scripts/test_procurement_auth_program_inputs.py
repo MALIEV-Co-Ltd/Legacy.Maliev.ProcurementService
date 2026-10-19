@@ -448,5 +448,31 @@ class RuntimeInputs(unittest.TestCase):
                     guard.require_historical_graph(changed)
 
 
+    def test_exact_observation_consumer_transition_rejects_old_missing_and_unknown_program(self):
+        import json
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        producer = manifest["intentionalSourceChanges"]["reviewedInputs"]
+        current = guard.tracked_inputs(guard.ROOT)
+        guard.require_consumer_inputs(current, producer, manifest)
+        program = "Legacy.Maliev.ProcurementService.Api/Program.cs"
+        for metadata in ("100644 blob 70310b7db68e08366ee3c723211cdd3910c03f9f", "100644 blob " + "0" * 40, None):
+            changed = dict(current)
+            if metadata is None:
+                del changed[program]
+            else:
+                changed[program] = metadata
+            with self.subTest(metadata=metadata), self.assertRaises(ValueError):
+                guard.require_consumer_inputs(changed, producer, manifest)
+        for metadata in ("100644 blob a82fb0b60ca92d2df1a39a3b82eaecdeef1f7505", "100644 blob " + "0" * 40, None):
+            changed = dict(producer)
+            if metadata is None:
+                del changed[program]
+            else:
+                changed[program] = metadata
+            with self.subTest(preimage=metadata), self.assertRaises(ValueError):
+                guard.observation_consumer_inputs(changed)
+
+
+
 if __name__ == "__main__":
     unittest.main()

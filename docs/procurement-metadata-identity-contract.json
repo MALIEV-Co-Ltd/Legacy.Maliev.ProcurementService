@@ -1514,7 +1514,7 @@
       "gitBlob": "3aca6cb413f13945efc28e9e2cebeafbe351d8f3"
     },
     "Legacy.Maliev.ProcurementService.Api/Program.cs": {
-      "gitBlob": "70310b7db68e08366ee3c723211cdd3910c03f9f"
+      "gitBlob": "a82fb0b60ca92d2df1a39a3b82eaecdeef1f7505"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
       "gitBlob": "b21e6fe697acdeb945dc0acbd3c80dee22a23a02"
@@ -1733,7 +1733,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-metadata-identity-baseline.py": {
-      "gitBlob": "7907d8abc7ee8b88fc471a8e62bba10754b79f75"
+      "gitBlob": "1d83983b7793a8e4f271db60be6d686fd2c6489a"
     },
     "scripts/verify-metadata-identity-results.py": {
       "gitBlob": "a1cb8d97044e6c4aa9da33549e967551074b616d"
@@ -1742,7 +1742,7 @@
       "gitBlob": "bdd2544a6ff844d6500512db9ac255192def30fb"
     },
     "scripts/test_metadata_identity_results.py": {
-      "gitBlob": "163852125d21e79451ec4ebdd95a34ca15594033"
+      "gitBlob": "ff1bbe97056bab6d1bd60c332d3908b4d9e2459a"
     },
     "scripts/require-metadata-identity-admission.py": {
       "gitBlob": "0c91e5b94fa2ddaeb5e602ebfa68e242efd81a7a"

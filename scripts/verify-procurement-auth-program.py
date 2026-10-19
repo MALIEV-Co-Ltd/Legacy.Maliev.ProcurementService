@@ -65,6 +65,16 @@ def require_consumer_binding(manifest):
     return expected
 
 
+def observation_consumer_inputs(previous):
+    # Issue84 source2f60: current consumer only; every frozen producer/graph remains unchanged.
+    program = "Legacy.Maliev.ProcurementService.Api/Program.cs"
+    if previous.get(program) != "100644 blob 70310b7db68e08366ee3c723211cdd3910c03f9f":
+        raise ValueError("Reviewed observation consumer Program preimage differs")
+    current = dict(previous)
+    current[program] = "100644 blob a82fb0b60ca92d2df1a39a3b82eaecdeef1f7505"
+    return current
+
+
 def require_consumer_inputs(current, producer, manifest):
     binding = require_consumer_binding(manifest)
     require_source_change(producer, manifest)
@@ -77,7 +87,7 @@ def require_consumer_inputs(current, producer, manifest):
     digest = hashlib.sha256(json.dumps(unchanged, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     if len(producer) != binding["inputCount"] or len(unchanged) != binding["unchangedInputCount"] or digest != binding["unchangedInputSha256"]:
         raise ValueError("Supplier explicit-size retained inventory differs")
-    require_equal(current, expected)
+    require_equal(current, observation_consumer_inputs(expected))
 
 
 def require_harness_custody(local, producer, manifest):
