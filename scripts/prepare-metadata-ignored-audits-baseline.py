@@ -51,7 +51,7 @@ SOURCE_PREIMAGES = {
 SOURCE_POSTIMAGES = {
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs": "942a1b8f8f18ea3a9727691a05a784aec688614d",
     "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs": "e352494ce31eb5bead53a78cc4c950a7bae3e54e",
-    "Legacy.Maliev.ProcurementService.Api/Program.cs": "70310b7db68e08366ee3c723211cdd3910c03f9f",
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": "a82fb0b60ca92d2df1a39a3b82eaecdeef1f7505",
     BUILD_PROJECT: "30c131eb10c554b445e878c0b148cbe79d8c7cd3",
 }
 
@@ -222,6 +222,13 @@ def tracked_inputs(root, expected_count=72):
     return selected
 
 
+def require_observation_harness(candidate):
+    path = "Legacy.Maliev.ProcurementService.Tests/Startup/ProcurementStartupLoggingTests.cs"
+    require(blob(candidate, path) == "bb88cc2a30db74a4f7cd1a972fcb2e81cf9a8218",
+            "Exact reviewed source2f60 observation harness successor differs")
+    return path
+
+
 def prepare(baseline, manifest_path, verify_only=False):
     candidate = pathlib.Path(__file__).resolve().parents[1]
     budget = [MAX_OPERATION_BYTES]
@@ -310,6 +317,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     for path in (AUTH_TEST, FILE_HARNESS, COUNTRY_TEST):
         if path == COUNTRY_TEST or git(baseline, "rev-parse", BASE + ":" + path).decode().strip() != git_blob_record(compiled[path]):
             expected_changes.add(path)
+    expected_changes.add(require_observation_harness(candidate))
     require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--",
                     "Legacy.Maliev.ProcurementService.Tests").decode().splitlines()) == expected_changes,
             "Unexpected compiled test drift")

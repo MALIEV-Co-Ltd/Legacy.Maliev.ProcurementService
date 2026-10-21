@@ -748,7 +748,7 @@
   ],
   "implementationRuntime": {
     "Legacy.Maliev.ProcurementService.Api/Program.cs": {
-      "gitBlob": "70310b7db68e08366ee3c723211cdd3910c03f9f"
+      "gitBlob": "a82fb0b60ca92d2df1a39a3b82eaecdeef1f7505"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
       "gitBlob": "3aca6cb413f13945efc28e9e2cebeafbe351d8f3"

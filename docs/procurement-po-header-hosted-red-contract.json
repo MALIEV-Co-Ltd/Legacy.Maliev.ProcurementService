@@ -12,7 +12,7 @@
   },
   "candidateBindings": {
     "Legacy.Maliev.ProcurementService.Api/Program.cs": {
-      "sha256": "434edf5aacd7d30186d7a233480c2f3b1fd190206914be209ba708bae7a84060"
+      "sha256": "a19bf446003715e73ab5161eda4c884e80a06ad2c12d0d23a5be6d670286720e"
     },
     "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
       "sha256": "e7dae18e5cc6095eda6444239532455e85c8de3c359dc0514797cccf478e80f0"
@@ -553,6 +553,57 @@
       },
       "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": {
         "sha256": "2cfb0dfb61be65baad2c1109954b8210b3be8b9d5648b31e5a2fcf38a5bb6d1c"
+      }
+    }
+  },
+  "previousObservationCandidateBindings": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+      "sha256": "434edf5aacd7d30186d7a233480c2f3b1fd190206914be209ba708bae7a84060"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
+      "sha256": "e7dae18e5cc6095eda6444239532455e85c8de3c359dc0514797cccf478e80f0"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
+      "sha256": "08acc76e39ad164565efdd4d61690c84fda773fd2067535812b95ece0d72fdbc"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPurchaseOrderHeaderBindingTests.cs": {
+      "sha256": "3860df546dbbae4154e06cf08273049e6e2733ce392b36ed2aa285a7edcac9f7"
+    },
+    "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": {
+      "sha256": "2cfb0dfb61be65baad2c1109954b8210b3be8b9d5648b31e5a2fcf38a5bb6d1c"
+    },
+    "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs": {
+      "sha256": "cb0e10f9eecf82f64fb389929c0c53a82b8461d3af918572fece2f4dbe51d679"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+      "sha256": "27bbc5f9f020fde78ff975ad1bc653fa117eb822d3e32f981901b0e43cac5126"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "sha256": "f3a83e73608ab207e41e3b9e7d3c47fb5da0c08232ce7ec786043574cf5e8f9b"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
+      "sha256": "77d6145f30de7f47b9248eef11416efad888c315ab55ab572aaff23a8c07fe26"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs": {
+      "sha256": "65a05334d787e1f35031b72df13b59e43f2abd6046eaf898fe3122bf8cda6cc2"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs": {
+      "sha256": "bf51171f980f1e56a7023317c98a2313275d05d976264471d9df7ede65efc96f"
+    }
+  },
+  "observationBindingAdvance": {
+    "issue": 84,
+    "base": "50b359c3669a39e83ba91d8fb7287d3a2873f7be",
+    "source": "2f60d6b077860132db0aa97a5e0508c1d0407bdd",
+    "bindingFormat": "sha256-record-v1",
+    "preimages": {
+      "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+        "sha256": "434edf5aacd7d30186d7a233480c2f3b1fd190206914be209ba708bae7a84060"
+      }
+    },
+    "postimages": {
+      "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+        "sha256": "a19bf446003715e73ab5161eda4c884e80a06ad2c12d0d23a5be6d670286720e"
       }
     }
   }

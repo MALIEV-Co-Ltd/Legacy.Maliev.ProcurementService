@@ -175,7 +175,7 @@ def require_country_id_binding_advance(contract, current):
     return retained_changes | {metadata}
 
 
-def require_header_binding_advance(contract, current):
+def require_source_body_binding_advance(contract, current):
     retained = contract["previousSourceBodyCandidateBindings"]
     require(isinstance(retained, dict) and len(retained) == 9,
             "Retain all nine accepted country source bindings")
@@ -209,6 +209,35 @@ def require_header_binding_advance(contract, current):
     for path in changed | added:
         require(binding_digest(post[path]) == current[path], "Source-body postimage detached")
     return retained_changes | changed | added
+
+
+def require_header_binding_advance(contract, current):
+    # Current-candidate successor only; every prior RED/source-body generation is still checked.
+    retained = contract["previousObservationCandidateBindings"]
+    require(isinstance(retained, dict) and set(retained) == set(current) and len(retained) == 11,
+            "Retain all eleven reviewed source-body candidate bindings")
+    previous = {path: binding_digest(record) for path, record in retained.items()}
+    changes = require_source_body_binding_advance(contract, previous)
+    program = "Legacy.Maliev.ProcurementService.Api/Program.cs"
+    advance = contract["observationBindingAdvance"]
+    require(isinstance(advance, dict)
+            and set(advance) == {"issue", "base", "source", "bindingFormat", "preimages", "postimages"}
+            and advance["issue"] == 84
+            and advance["base"] == "50b359c3669a39e83ba91d8fb7287d3a2873f7be"
+            and advance["source"] == "2f60d6b077860132db0aa97a5e0508c1d0407bdd"
+            and advance["bindingFormat"] == "sha256-record-v1",
+            "Require the exact reviewed observation binding generation")
+    pre, post = advance["preimages"], advance["postimages"]
+    require(isinstance(pre, dict) and isinstance(post, dict)
+            and set(pre) == set(post) == {program},
+            "Observation successor permits only the reviewed Program binding")
+    require(binding_digest(pre[program]) == previous[program]
+            == "434edf5aacd7d30186d7a233480c2f3b1fd190206914be209ba708bae7a84060"
+            and binding_digest(post[program]) == current[program]
+            == "a19bf446003715e73ab5161eda4c884e80a06ad2c12d0d23a5be6d670286720e"
+            and {path for path in current if current[path] != previous[path]} == {program},
+            "Observation successor detached from exact Program pre/postimages")
+    return changes | {program}
 
 
 def candidate_digests(contract):
