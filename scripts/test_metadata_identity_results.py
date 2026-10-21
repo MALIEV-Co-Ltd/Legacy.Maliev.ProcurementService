@@ -8,6 +8,7 @@ import os
 import pathlib
 import tempfile
 import unittest
+from test_procurement_address_null_consumer import AddressNullConsumerControls
 from unittest import mock
 import uuid
 import xml.etree.ElementTree as ET

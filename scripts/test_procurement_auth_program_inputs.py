@@ -2,6 +2,7 @@
 import importlib.util
 import pathlib
 import unittest
+from test_procurement_address_null_consumer import AddressNullConsumerControls
 
 spec = importlib.util.spec_from_file_location("join_guard", pathlib.Path(__file__).with_name("verify-procurement-auth-program.py"))
 guard = importlib.util.module_from_spec(spec)

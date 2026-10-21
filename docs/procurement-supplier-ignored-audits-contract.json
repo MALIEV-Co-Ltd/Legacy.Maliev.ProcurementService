@@ -1411,7 +1411,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-supplier-ignored-audits-baseline.py": {
-      "gitBlob": "61b06fd5624be18dfea14cf605532118cbc04ff6"
+      "gitBlob": "ebc64a8a749fd569a4340d654b67985f5fc14faf"
     },
     "scripts/verify-supplier-ignored-audits-results.py": {
       "gitBlob": "2b718a0b66baeab9ee321f23482df27addabd9f3"
@@ -1420,13 +1420,19 @@
       "gitBlob": "d35a08ddc313367c2a549ec770bb42127f209698"
     },
     "scripts/test_supplier_ignored_audits_results.py": {
-      "gitBlob": "d2addcd28ac0dd3dc4173e4fa6ccb0912d6bbc1d"
+      "gitBlob": "158536eb1a8f2eb7b56dc855ca7479ab60463ed5"
     },
     ".github/workflows/procurement-supplier-ignored-audits.yml": {
       "gitBlob": "2a274d3e9c0272a76cdf5516e034a5b314ff2223"
     },
     "scripts/require-metadata-identity-admission.py": {
       "gitBlob": "0c91e5b94fa2ddaeb5e602ebfa68e242efd81a7a"
+    },
+    "scripts/procurement_address_null_consumer.py": {
+      "gitBlob": "023f5f78a38f827002bfdfa994c142d58e4042d9"
+    },
+    "scripts/test_procurement_address_null_consumer.py": {
+      "gitBlob": "3734cf9ef5eec73ee88abec53393df7a091d73f8"
     }
   },
   "baseInputs": {
