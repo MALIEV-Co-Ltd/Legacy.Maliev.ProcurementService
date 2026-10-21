@@ -1,6 +1,7 @@
 """Bind only the new171 harness to accepted9005; require exact source and normal hosted disposal."""
 import datetime
 import hashlib
+from procurement_address_null_consumer import address_consumer_inputs, require_address_runtime, require_address_test
 import importlib.util
 import json
 import os
@@ -23,6 +24,8 @@ FIXTURE = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntime
 TEST_PROJECT = "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj"
 TESTS = {"metadata": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredBodyIdTests.cs"}
 SCRIPT_PATHS = {
+    "scripts/procurement_address_null_consumer.py",
+    "scripts/test_procurement_address_null_consumer.py",
     "scripts/prepare-metadata-identity-baseline.py",
     "scripts/verify-metadata-identity-results.py",
     "scripts/observe-metadata-identity-providers.py",
@@ -260,7 +263,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     runtime = manifest["runtimePostimages"]
     allowed = {PROGRAM, API_PROJECT, CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SUPPLIER, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME)
     require(set(runtime) == allowed, "Wrong exact runtime input roster")
-    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *directories).decode().splitlines()) == allowed,
+    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *directories).decode().splitlines()) == allowed | require_address_runtime(candidate, blob),
             "Unexpected production source/build drift")
     require_runtime_postimages(candidate, manifest)
     for path in ("scripts/observe-supplier-address-providers.py", "scripts/supplier_address_owned_processes.py",
@@ -320,6 +323,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     allowed_tests.add(SUPPLIER_QUERY_TEST)
     allowed_tests.add(SUPPLIER_LIST_POLICY_TEST)
     allowed_tests.add(require_observation_harness(candidate))
+    allowed_tests.add(require_address_test(candidate, blob))
     require(compiled_tests == allowed_tests, "Unexpected compiled test drift")
     require(blob(baseline, old_harness["path"])
             == git(baseline, "rev-parse", BASE + ":" + old_harness["path"]).decode().strip(),

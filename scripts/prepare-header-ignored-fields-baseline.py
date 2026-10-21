@@ -2,6 +2,7 @@
 import datetime
 import fnmatch
 import hashlib
+from procurement_address_null_consumer import address_consumer_inputs, require_address_runtime, require_address_test
 import importlib.util
 import json
 import os
@@ -66,6 +67,8 @@ SOURCE_POSTIMAGES = {
 PROJECTS = tuple("Legacy.Maliev.ProcurementService." + part for part in ("Api", "Application", "Data", "Domain"))
 PATTERNS = ("directory.build.*", "directory.packages.*", "global.json", "nuget.config", "*.slnx")
 SCRIPT_PATHS = {
+    "scripts/procurement_address_null_consumer.py",
+    "scripts/test_procurement_address_null_consumer.py",
     "scripts/prepare-header-ignored-fields-baseline.py",
     "scripts/verify-header-ignored-fields-results.py",
     "scripts/observe-header-ignored-fields-providers.py",
@@ -257,7 +260,7 @@ def prepare(baseline, manifest_path, verify_only=False):
             and set(manifest["runtimePostimages"]) == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME),
             "Only reviewed header, POST repository, and Supplier audit converter may change runtime")
     require(tracked_inputs(baseline) == manifest["baseInputs"]
-            and tracked_inputs(candidate, 74) == manifest["reviewedInputs"], "Frozen72 baseline/reviewed74 input inventory differs")
+            and tracked_inputs(candidate, 74) == address_consumer_inputs(manifest["reviewedInputs"]), "Frozen72 baseline/reviewed74 input inventory differs")
     differences = {path for path in set(manifest["baseInputs"]) | set(manifest["reviewedInputs"])
                    if manifest["baseInputs"].get(path) != manifest["reviewedInputs"].get(path)}
     require(differences == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME) | {TEST_PROJECT}
@@ -290,8 +293,9 @@ def prepare(baseline, manifest_path, verify_only=False):
             and manifest["reviewedInputs"][METADATA_SEAM] == "100644 blob " + metadata_postimage
             and manifest["baseInputs"][METADATA_SEAM] == "100644 blob be119d54a90a0772444b9f61f97be53a779610ba",
             "Metadata audit seam source postimage/preimage differs")
-    for path in manifest["reviewedInputs"]:
-        metadata = manifest["reviewedInputs"][path]
+    current_inputs = address_consumer_inputs(manifest["reviewedInputs"])
+    for path in current_inputs:
+        metadata = current_inputs[path]
         require(re.fullmatch(r"100644 blob [0-9a-f]{40}", metadata) is not None
                 and blob(candidate, path) == metadata.split()[-1], "Compiled input changed after checkout")
     for path, expected in SUPPLIER_QUERY_RUNTIME.items():
@@ -316,7 +320,7 @@ def prepare(baseline, manifest_path, verify_only=False):
             and read_bounded(baseline / TEST_PROJECT, MAX_SOURCE_BYTES, budget)
             == git(baseline, "show", BASE + ":" + TEST_PROJECT),
             "Candidate-only project transition changed historical baseline project")
-    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME),
+    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME) | require_address_runtime(candidate, blob),
             "Unexpected production source/build drift")
     require(not git(candidate, "ls-files", "--others", "--exclude-standard", "--", *PROJECTS,
                     "Legacy.Maliev.ProcurementService.Tests"), "Untracked compiled inputs forbidden")
@@ -336,6 +340,7 @@ def prepare(baseline, manifest_path, verify_only=False):
         if path in (NEW_AUDIT, NEW_METADATA_AUDIT, COUNTRY_TEST) or git(baseline, "rev-parse", BASE + ":" + path).decode().strip() != git_blob_record(compiled[path]):
             expected_changes.add(path)
     expected_changes.add(require_observation_harness(candidate))
+    expected_changes.add(require_address_test(candidate, blob))
     require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--",
                     "Legacy.Maliev.ProcurementService.Tests").decode().splitlines()) == expected_changes,
             "Unexpected compiled test drift")

@@ -2,6 +2,7 @@
 import collections
 import fnmatch
 import hashlib
+from procurement_address_null_consumer import address_consumer_inputs
 import json
 import pathlib
 import subprocess
@@ -87,7 +88,7 @@ def require_consumer_inputs(current, producer, manifest):
     digest = hashlib.sha256(json.dumps(unchanged, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     if len(producer) != binding["inputCount"] or len(unchanged) != binding["unchangedInputCount"] or digest != binding["unchangedInputSha256"]:
         raise ValueError("Supplier explicit-size retained inventory differs")
-    require_equal(current, observation_consumer_inputs(expected))
+    require_equal(current, address_consumer_inputs(observation_consumer_inputs(expected)))
 
 
 def require_harness_custody(local, producer, manifest):
