@@ -1,3 +1,5 @@
+from test_supplier_parent_audit_harness_consumer import SupplierParentAuditHarnessConsumerTests
+from test_supplier_parent_audit_consumer import SupplierParentAuditConsumerTests
 """Synthetic controls only; fabricated UUIDs are never hosted test evidence."""
 import copy
 import hashlib
@@ -507,7 +509,8 @@ class TypedSupplierProvenanceControls(unittest.TestCase):
 
 
     def test_every_validly_shaped_but_wrong_git_object_is_refused(self):
-        actual = {path: record["gitBlob"] for path, record in CONTRACT["runtimePostimages"].items()}
+        actual = {path: prep.supplier_parent_audit_runtime_blob(path, prep.supplier_mutation_runtime_blob(path, record["gitBlob"]))
+                  for path, record in CONTRACT["runtimePostimages"].items()}
         with mock.patch.object(prep, "blob", side_effect=lambda root, path: actual[path]):
             prep.require_runtime_postimages(pathlib.Path("."), CONTRACT)
             for path in actual:
@@ -515,6 +518,10 @@ class TypedSupplierProvenanceControls(unittest.TestCase):
                 changed["runtimePostimages"][path] = {"gitBlob": "0" * 40}
                 with self.subTest(path=path), self.assertRaises(ValueError):
                     prep.require_runtime_postimages(pathlib.Path("."), changed)
+
+
+# Include current-consumer rejection controls in this workflow-selected module.
+from test_procurement_address_null_consumer import SupplierMutationConsumerControls
 
 
 if __name__ == "__main__":

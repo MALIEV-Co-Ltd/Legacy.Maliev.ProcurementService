@@ -1,3 +1,5 @@
+from test_supplier_parent_audit_harness_consumer import SupplierParentAuditHarnessConsumerTests
+from test_supplier_parent_audit_consumer import SupplierParentAuditConsumerTests
 """Mutation controls for immutable runtime/public-fixture admission."""
 import importlib.util
 import pathlib
@@ -473,6 +475,10 @@ class RuntimeInputs(unittest.TestCase):
             with self.subTest(preimage=metadata), self.assertRaises(ValueError):
                 guard.observation_consumer_inputs(changed)
 
+
+
+# Include current-consumer rejection controls in this workflow-selected module.
+from test_procurement_address_null_consumer import SupplierMutationConsumerControls
 
 
 if __name__ == "__main__":

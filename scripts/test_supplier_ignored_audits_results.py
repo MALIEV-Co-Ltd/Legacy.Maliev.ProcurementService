@@ -1,3 +1,5 @@
+from test_supplier_parent_audit_harness_consumer import SupplierParentAuditHarnessConsumerTests
+from test_supplier_parent_audit_consumer import SupplierParentAuditConsumerTests
 """Synthetic controls only; fabricated UUIDs are never hosted test evidence."""
 import copy
 import hashlib
@@ -722,3 +724,6 @@ class BucketMigrationConsumerControls(unittest.TestCase):
                 with self.assertRaises(FileNotFoundError):
                     prep.require_bucket_test(candidate, baseline)
 
+
+# Include current-consumer rejection controls in this workflow-selected module.
+from test_procurement_address_null_consumer import SupplierMutationConsumerControls

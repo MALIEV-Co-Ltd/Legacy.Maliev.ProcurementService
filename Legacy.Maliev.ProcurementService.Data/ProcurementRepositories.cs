@@ -89,7 +89,6 @@ public sealed class SupplierRepository(SupplierDbContext dbContext, TimeProvider
             context.Addresses.Add(address);
             await context.SaveChangesAsync(cancellationToken);
             supplier.AddressId = address.Id;
-            supplier.ModifiedDate = now;
             await context.SaveChangesAsync(cancellationToken);
             return ToResponse(address);
         }, cancellationToken);
@@ -103,7 +102,6 @@ public sealed class SupplierRepository(SupplierDbContext dbContext, TimeProvider
             var supplier = await LockSupplierAsync(context, supplierId, cancellationToken);
             if (supplier is null || supplier.AddressId != addressId) return false;
             supplier.AddressId = null;
-            supplier.ModifiedDate = Now();
             await context.SaveChangesAsync(cancellationToken);
             var deleted = await context.Addresses.Where(value => value.Id == addressId).ExecuteDeleteAsync(cancellationToken) == 1;
             return deleted;

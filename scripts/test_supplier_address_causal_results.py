@@ -1,3 +1,4 @@
+from test_supplier_parent_audit_harness_consumer import SupplierParentAuditHarnessConsumerTests
 import copy
 import importlib.util
 import json

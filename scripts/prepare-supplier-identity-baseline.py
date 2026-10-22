@@ -1,6 +1,11 @@
 """Bind the original supplier identity harnesses to immutable e885 main."""
 import hashlib
-from procurement_address_null_consumer import address_consumer_inputs, require_address_runtime, require_address_test
+from procurement_address_null_consumer import (address_consumer_inputs, require_address_runtime, require_address_test,
+    supplier_mutation_consumer_inputs, supplier_mutation_runtime_blob, require_supplier_mutation_runtime,
+    require_supplier_mutation_tests, supplier_parent_audit_consumer_inputs,
+    supplier_parent_audit_runtime_blob, require_supplier_parent_audit_runtime,
+    require_supplier_parent_audit_tests, supplier_parent_audit_harness_blob,
+    supplier_parent_audit_original_harness, require_supplier_parent_audit_harnesses)
 import json
 import os
 import pathlib
@@ -94,7 +99,7 @@ def require_runtime_postimages(candidate, manifest):
         require(git_blob_record(manifest["runtimePostimages"][path]) == expected,
                 "Exact Supplier omitted-size runtime successor differs: " + path)
     for path, expected in runtime_bindings(manifest).items():
-        require(blob(candidate, path) == expected, "Wrong reviewed runtime postimage: " + path)
+        require(blob(candidate, path) == supplier_parent_audit_runtime_blob(path, supplier_mutation_runtime_blob(path, expected)), "Wrong reviewed runtime postimage: " + path)
 
 
 def phase_reports(directory):
@@ -177,9 +182,12 @@ def prepare(baseline, manifest_path, verify_only=False):
     runtime = manifest["runtimePostimages"]
     allowed = {PROGRAM, API_PROJECT, CONVERTER, FILE_CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME)
     require(set(runtime) == allowed, "Wrong exact runtime input roster")
-    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *directories).decode().splitlines()) == allowed | require_address_runtime(candidate, blob),
+    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *directories).decode().splitlines()) == allowed | require_supplier_mutation_runtime(candidate, blob) | require_supplier_parent_audit_runtime(candidate, blob),
             "Unexpected production source/build drift")
     require_runtime_postimages(candidate, manifest)
+    require_supplier_mutation_tests(candidate, baseline, blob, git, BASE)
+    require_supplier_parent_audit_tests(candidate, baseline, blob, git, BASE)
+    require_supplier_parent_audit_harnesses(candidate, blob, git)
     for path in ("scripts/observe-supplier-address-providers.py", "scripts/supplier_address_owned_processes.py",
                  "scripts/observe-file-metadata-providers.py", "scripts/verify-file-metadata-binding-results.py",
                  "scripts/verify-supplier-address-causal-results.py"):
@@ -188,13 +196,13 @@ def prepare(baseline, manifest_path, verify_only=False):
     harnesses = {}
     for family, path in TESTS.items():
         profile = manifest["profiles"][family]
-        require(profile["testPath"] == path and blob(candidate, path) == profile["testBlob"], "Original focused harness drift")
-        raw = read_bounded(candidate / path, MAX_SOURCE_BYTES, budget)
+        require(profile["testPath"] == path and blob(candidate, path) == supplier_parent_audit_harness_blob(path, profile["testBlob"]), "Original focused harness drift")
+        raw = supplier_parent_audit_original_harness(path, read_bounded(candidate / path, MAX_SOURCE_BYTES, budget))
         target = baseline / path
         if not verify_only:
             require(not target.exists(), "Baseline harness already exists before overlay")
             target.write_bytes(raw)
-        require(read_bounded(target, MAX_SOURCE_BYTES, budget) == raw, "Baseline/candidate harness differs")
+        require(read_bounded(target, MAX_SOURCE_BYTES, budget) == raw, "Frozen baseline harness differs from reviewed original bytes")
         harnesses[path] = {"gitBlob": profile["testBlob"], "sha256": hashlib.sha256(raw).hexdigest()}
     require(set(git(baseline, "ls-files", "--others", "--exclude-standard").decode().splitlines()) == set(TESTS.values()),
             "Unexpected baseline overlay")
