@@ -1,3 +1,4 @@
+from test_supplier_parent_audit_harness_consumer import SupplierParentAuditHarnessConsumerTests
 from test_supplier_parent_audit_consumer import SupplierParentAuditConsumerTests
 """Synthetic controls only; fabricated UUIDs are never hosted test evidence."""
 import copy
@@ -425,7 +426,9 @@ class SourceAndOwnershipControls(unittest.TestCase):
         for profile in CONTRACT["profiles"].values():
             raw = (HERE.parent/profile["testPath"]).read_bytes()
             header = ("blob " + str(len(raw)) + "\0").encode()
-            self.assertEqual(profile["testBlob"],hashlib.sha1(header+raw).hexdigest())
+            self.assertEqual(prep.supplier_parent_audit_harness_blob(profile["testPath"], profile["testBlob"]), hashlib.sha1(header+raw).hexdigest())
+            original = prep.supplier_parent_audit_original_harness(profile["testPath"], raw)
+            self.assertEqual(profile["testBlob"], hashlib.sha1(("blob " + str(len(original)) + "\0").encode() + original).hexdigest())
         self.assertEqual("9005cfbae5e5ef2b5e4267d1700b343256e7a821",prep.BASE)
 
     def receipt(self):
@@ -575,7 +578,7 @@ class HostedAdmissionControls(unittest.TestCase):
 
 class NewSourceEnvelopeControls(unittest.TestCase):
     def test_reviewed_header_harness_successors_are_closed_typed_and_exact(self):
-        expected = {path: record["gitBlob"] for path, record in CONTRACT["headerIgnoredFieldHarnesses"].items()}
+        expected = {path: prep.supplier_parent_audit_harness_blob(path, record["gitBlob"]) for path, record in CONTRACT["headerIgnoredFieldHarnesses"].items()}
         with mock.patch.object(prep, "blob", side_effect=lambda root, path: expected[path]):
             self.assertEqual(set(expected), prep.require_header_harness_bindings(pathlib.Path("."), CONTRACT))
             for path in expected:

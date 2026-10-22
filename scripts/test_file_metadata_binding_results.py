@@ -1,3 +1,4 @@
+from test_supplier_parent_audit_harness_consumer import SupplierParentAuditHarnessConsumerTests
 from test_supplier_parent_audit_consumer import SupplierParentAuditConsumerTests
 """Synthetic acceptance controls; fixtures are not actual hosted test evidence."""
 import copy

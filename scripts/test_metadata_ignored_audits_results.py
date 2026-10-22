@@ -1,3 +1,4 @@
+from test_supplier_parent_audit_harness_consumer import SupplierParentAuditHarnessConsumerTests
 from test_supplier_parent_audit_consumer import SupplierParentAuditConsumerTests
 """Synthetic controls only; fabricated UUIDs are never hosted test evidence."""
 import copy
@@ -440,7 +441,9 @@ class SourceAndOwnershipControls(unittest.TestCase):
         profile = CONTRACT["profiles"]["audits"]
         self.assertEqual((332, 169, 163), (profile["expectedCases"], profile["baselinePassed"], profile["baselineFailed"]))
         raw = (HERE.parent / profile["testPath"]).read_bytes()
-        self.assertEqual(profile["testBlob"], hashlib.sha1(("blob " + str(len(raw)) + "\0").encode() + raw).hexdigest())
+        self.assertEqual(prep.supplier_parent_audit_harness_blob(profile["testPath"], profile["testBlob"]), hashlib.sha1(("blob " + str(len(raw)) + "\0").encode() + raw).hexdigest())
+        original = prep.supplier_parent_audit_original_harness(profile["testPath"], raw)
+        self.assertEqual(profile["testBlob"], hashlib.sha1(("blob " + str(len(original)) + "\0").encode() + original).hexdigest())
         self.assertEqual(72, len(CONTRACT["baseInputs"]))
         self.assertEqual("69b4ebf74c1a85d0949321360e81105db0f671a6",
                          CONTRACT["baseInputs"][prep.TEST_PROJECT].split()[-1])

@@ -4,7 +4,8 @@ from procurement_address_null_consumer import (address_consumer_inputs, require_
     supplier_mutation_consumer_inputs, supplier_mutation_runtime_blob, require_supplier_mutation_runtime,
     require_supplier_mutation_tests, supplier_parent_audit_consumer_inputs,
     supplier_parent_audit_runtime_blob, require_supplier_parent_audit_runtime,
-    require_supplier_parent_audit_tests)
+    require_supplier_parent_audit_tests, supplier_parent_audit_harness_blob,
+    supplier_parent_audit_original_harness, require_supplier_parent_audit_harnesses)
 import json
 import os
 import pathlib
@@ -182,16 +183,17 @@ def prepare(baseline, manifest_path, verify_only=False):
     require_runtime_postimages(candidate, manifest)
     require_supplier_mutation_tests(candidate, baseline, blob, git, BASE)
     require_supplier_parent_audit_tests(candidate, baseline, blob, git, BASE)
+    require_supplier_parent_audit_harnesses(candidate, blob, git)
     for path in ("scripts/observe-supplier-address-providers.py", "scripts/supplier_address_owned_processes.py"):
         require(blob(candidate, path) == git(baseline, "rev-parse", BASE + ":" + path).decode().strip(),
                 "Reviewed process/provider ownership implementation changed")
-    require(blob(candidate, TEST) == manifest["harness"]["gitBlob"], "Reviewed harness postimage changed")
-    harness = read_bounded(candidate / TEST, MAX_SOURCE_BYTES, budget)
+    require(blob(candidate, TEST) == supplier_parent_audit_harness_blob(TEST, manifest["harness"]["gitBlob"]), "Reviewed harness postimage changed")
+    harness = supplier_parent_audit_original_harness(TEST, read_bounded(candidate / TEST, MAX_SOURCE_BYTES, budget))
     target = baseline / TEST
     if not verify_only:
         require(not target.exists(), "Baseline harness already exists before overlay")
         target.write_bytes(harness)
-    require(read_bounded(target, MAX_SOURCE_BYTES, budget) == harness, "Baseline/candidate harness differs")
+    require(read_bounded(target, MAX_SOURCE_BYTES, budget) == harness, "Frozen baseline harness differs from reviewed original bytes")
     require(set(git(baseline, "ls-files", "--others", "--exclude-standard").decode().splitlines()) == {TEST},
             "Unexpected baseline overlay")
     proof = {"schemaVersion": 1, "base": BASE,

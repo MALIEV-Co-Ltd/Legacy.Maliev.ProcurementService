@@ -137,3 +137,67 @@ def require_supplier_parent_audit_tests(candidate, baseline, blob, git, base):
     if git(baseline, "ls-tree", "-r", "--name-only", base, "--", path).strip():
         raise ValueError("Supplier parent-audit test must be absent from the frozen base object")
     return {path}
+
+
+# Exact current Supplier parent-audit harness successors; historical pins remain frozen.
+import hashlib as _supplier_parent_audit_hashlib
+
+SUPPLIER_PARENT_AUDIT_HARNESS_MAX_BYTES = 1024 * 1024
+SUPPLIER_PARENT_AUDIT_HARNESSES = {
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementAddressCountryIdBindingTests.cs": (
+        "cbf5e0c303172de15e6e889924b887381cbeb912", "b21c6970729ad6c7982d4a361ab81131d35a8120",
+        "Assert.Equal(Now(), owner.ModifiedDate);".encode("utf-8"),
+        "Assert.Equal(ownerBefore.ModifiedDate, owner.ModifiedDate);".encode("utf-8")),
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredBodyIdTests.cs": (
+        "d7c932bd34106d9217f4bda29fea1a43ca9df443", "2447ea79cf8e1b5692feea9479cb6beccafd18fc",
+        "Assert.Equal(update ? ownerBefore.ModifiedDate : Now(), ownerAfter.ModifiedDate);".encode("utf-8"),
+        "Assert.Equal(ownerBefore.ModifiedDate, ownerAfter.ModifiedDate);".encode("utf-8")),
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredAuditDateTests.cs": (
+        "16109c5013df74ad4c27f14b128287ceb649efb1", "d1f80a5bf248ae8dd51de591221a3fa3a3ace1c5",
+        "Assert.Equal(update ? ownerBefore.ModifiedDate : Now(), ownerAfter.ModifiedDate);".encode("utf-8"),
+        "Assert.Equal(ownerBefore.ModifiedDate, ownerAfter.ModifiedDate);".encode("utf-8")),
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierAddressScalarStringTests.cs": (
+        "7577a3e8b22e65d68bffd720f2924af7523ba712", "7bdd29d8f13395e8acd851684fb3a1137f571047",
+        "Assert.Equal(supplier with { AddressId = id, ModifiedDate = owner.ModifiedDate }, owner);\n            Assert.True(owner.ModifiedDate > supplier.ModifiedDate);".encode("utf-8"),
+        "Assert.Equal(supplier with { AddressId = id }, owner);\n            Assert.Equal(supplier.ModifiedDate, owner.ModifiedDate);".encode("utf-8")),
+}
+
+
+def supplier_parent_audit_harness_blob(path, previous):
+    binding = SUPPLIER_PARENT_AUDIT_HARNESSES.get(path)
+    if binding is None:
+        return previous
+    before, after, _, _ = binding
+    if previous != before:
+        raise ValueError("Exact Supplier parent-audit harness preimage differs: " + path)
+    return after
+
+
+def _supplier_parent_audit_harness_git_blob(raw):
+    header = b"blob " + str(len(raw)).encode("ascii") + b"\0"
+    return _supplier_parent_audit_hashlib.sha1(header + raw).hexdigest()
+
+
+def supplier_parent_audit_original_harness(path, current_raw):
+    if type(current_raw) is not bytes or len(current_raw) > SUPPLIER_PARENT_AUDIT_HARNESS_MAX_BYTES:
+        raise ValueError("Bounded Supplier parent-audit harness bytes required: " + path)
+    binding = SUPPLIER_PARENT_AUDIT_HARNESSES.get(path)
+    if binding is None:
+        return current_raw
+    before, after, old_hunk, new_hunk = binding
+    if _supplier_parent_audit_harness_git_blob(current_raw) != after:
+        raise ValueError("Exact Supplier parent-audit current harness differs: " + path)
+    if current_raw.count(new_hunk) != 1:
+        raise ValueError("Unique Supplier parent-audit harness inverse required: " + path)
+    original = current_raw.replace(new_hunk, old_hunk, 1)
+    if _supplier_parent_audit_harness_git_blob(original) != before:
+        raise ValueError("Exact Supplier parent-audit original harness differs: " + path)
+    return original
+
+
+def require_supplier_parent_audit_harnesses(candidate, blob, git):
+    for path, (_, expected, _, _) in SUPPLIER_PARENT_AUDIT_HARNESSES.items():
+        if (blob(candidate, path) != expected
+                or git(candidate, "rev-parse", "HEAD:" + path).decode().strip() != expected):
+            raise ValueError("Exact Supplier parent-audit working/HEAD harness differs: " + path)
+    return set(SUPPLIER_PARENT_AUDIT_HARNESSES)

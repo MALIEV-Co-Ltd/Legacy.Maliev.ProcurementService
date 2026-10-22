@@ -6,7 +6,8 @@ from procurement_address_null_consumer import (address_consumer_inputs, require_
     supplier_mutation_consumer_inputs, supplier_mutation_runtime_blob, require_supplier_mutation_runtime,
     require_supplier_mutation_tests, supplier_parent_audit_consumer_inputs,
     supplier_parent_audit_runtime_blob, require_supplier_parent_audit_runtime,
-    require_supplier_parent_audit_tests)
+    require_supplier_parent_audit_tests, supplier_parent_audit_harness_blob,
+    supplier_parent_audit_original_harness, require_supplier_parent_audit_harnesses)
 import importlib.util
 import json
 import os
@@ -71,6 +72,7 @@ SOURCE_POSTIMAGES = {
 PROJECTS = tuple("Legacy.Maliev.ProcurementService." + part for part in ("Api", "Application", "Data", "Domain"))
 PATTERNS = ("directory.build.*", "directory.packages.*", "global.json", "nuget.config", "*.slnx")
 SCRIPT_PATHS = {
+    "scripts/test_supplier_parent_audit_harness_consumer.py",
     "scripts/test_supplier_parent_audit_consumer.py",
     "scripts/procurement_address_null_consumer.py",
     "scripts/test_procurement_address_null_consumer.py",
@@ -349,7 +351,7 @@ def prepare(baseline, manifest_path, verify_only=False):
         require(git_blob_record(compiled[path]) == expected,
                 "Exact reviewed source-family compiled successor differs")
     for path, record in compiled.items():
-        require(blob(candidate, path) == git_blob_record(record), "Reviewed compiled test source differs")
+        require(blob(candidate, path) == supplier_parent_audit_harness_blob(path, git_blob_record(record)), "Reviewed compiled test source differs")
     expected_changes = {TEST, TEST_PROJECT} | SOURCE_TESTS | {SUPPLIER_QUERY_TEST, SUPPLIER_LIST_POLICY_TEST}
     for path in (OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST, NEW_AUDIT, NEW_METADATA_AUDIT, FILE_HARNESS, COUNTRY_TEST):
         if path in (NEW_AUDIT, NEW_METADATA_AUDIT, COUNTRY_TEST) or git(baseline, "rev-parse", BASE + ":" + path).decode().strip() != git_blob_record(compiled[path]):
@@ -359,6 +361,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     expected_changes.add(require_bucket_test(candidate, baseline))
     expected_changes.update(require_supplier_mutation_tests(candidate, baseline, blob, git, BASE))
     expected_changes.update(require_supplier_parent_audit_tests(candidate, baseline, blob, git, BASE))
+    expected_changes.update(require_supplier_parent_audit_harnesses(candidate, blob, git))
     require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--",
                     "Legacy.Maliev.ProcurementService.Tests").decode().splitlines()) == expected_changes,
             "Unexpected compiled test drift")
@@ -376,12 +379,12 @@ def prepare(baseline, manifest_path, verify_only=False):
     profile = manifest["profiles"]["header"]
     require(profile["testPath"] == TEST and profile["testBlob"] == git_blob_record(compiled[TEST]),
             "Wrong original199 harness source")
-    raw = read_bounded(candidate / TEST, MAX_SOURCE_BYTES, budget)
+    raw = supplier_parent_audit_original_harness(TEST, read_bounded(candidate / TEST, MAX_SOURCE_BYTES, budget))
     target = baseline / TEST
     if not verify_only:
         require(not target.exists(), "Baseline harness exists before overlay")
         target.write_bytes(raw)
-    require(read_bounded(target, MAX_SOURCE_BYTES, budget) == raw, "Actual baseline/candidate harness differs")
+    require(read_bounded(target, MAX_SOURCE_BYTES, budget) == raw, "Frozen baseline harness differs from reviewed original bytes")
     require(set(git(baseline, "ls-files", "--others", "--exclude-standard").decode().splitlines()) == {TEST},
             "Only the new199 harness may overlay baseline")
     output = candidate / "header-ignored-fields-results"

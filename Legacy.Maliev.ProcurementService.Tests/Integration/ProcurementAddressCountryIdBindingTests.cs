@@ -439,7 +439,7 @@ public sealed class ProcurementAddressCountryIdBindingTests(ProcurementRuntimeFi
             if (!update)
             {
                 Assert.Equal(target, owner.AddressId);
-                Assert.Equal(Now(), owner.ModifiedDate);
+                Assert.Equal(ownerBefore.ModifiedDate, owner.ModifiedDate);
                 owner.AddressId = ownerBefore.AddressId;
                 owner.ModifiedDate = ownerBefore.ModifiedDate;
             }

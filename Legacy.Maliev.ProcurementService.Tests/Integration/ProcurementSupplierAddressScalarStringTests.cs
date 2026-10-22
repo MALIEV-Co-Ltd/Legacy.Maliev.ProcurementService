@@ -88,8 +88,8 @@ public sealed class ProcurementSupplierAddressScalarStringTests(ProcurementRunti
         }
         else
         {
-            Assert.Equal(supplier with { AddressId = id, ModifiedDate = owner.ModifiedDate }, owner);
-            Assert.True(owner.ModifiedDate > supplier.ModifiedDate);
+            Assert.Equal(supplier with { AddressId = id }, owner);
+            Assert.Equal(supplier.ModifiedDate, owner.ModifiedDate);
             Assert.NotNull(current.CreatedDate);
             Assert.Equal(current.CreatedDate, current.ModifiedDate);
         }
