@@ -667,3 +667,58 @@ class SupplierAuditSourceControls(unittest.TestCase):
                 prep.require_observation_harness(root)
 
 
+
+class BucketMigrationConsumerControls(unittest.TestCase):
+    def test_exact_reviewed_candidate_and_frozen_baseline_are_admitted(self):
+        candidate, baseline = pathlib.Path("candidate"), pathlib.Path("baseline")
+        values = {candidate: "76a43cbe0d3d8fbb06a5067d8c8c7d3f1292e2e3",
+                  baseline: "c7817e2409b49f32423230199bda79a5e79609cd"}
+        path = "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementSourceStringMigrationTests.cs"
+        with mock.patch.object(prep, "blob", side_effect=lambda root, _: values[root]), \
+                mock.patch.object(prep, "git", side_effect=lambda root, *args: (values[root] + "\n").encode()):
+            self.assertEqual(path, prep.require_bucket_test(candidate, baseline))
+
+    def test_every_old_wrong_or_uncommitted_candidate_is_rejected(self):
+        candidate, baseline = pathlib.Path("candidate"), pathlib.Path("baseline")
+        correct = "76a43cbe0d3d8fbb06a5067d8c8c7d3f1292e2e3"
+        frozen = "c7817e2409b49f32423230199bda79a5e79609cd"
+        for wrong in ("0" * 40, frozen, "c463d2568f6c22e116a3578398dea4a370163b10", ""):
+            for observed_file in (False, True):
+                def blob(root, _):
+                    return (wrong if observed_file else correct) if root == candidate else frozen
+                def git(root, *args):
+                    return (((correct if observed_file else wrong) if root == candidate else frozen) + "\n").encode()
+                with self.subTest(wrong=wrong, observed_file=observed_file), \
+                        mock.patch.object(prep, "blob", side_effect=blob), mock.patch.object(prep, "git", side_effect=git):
+                    with self.assertRaises(ValueError):
+                        prep.require_bucket_test(candidate, baseline)
+
+    def test_changed_or_replaced_historical_baseline_is_rejected(self):
+        candidate, baseline = pathlib.Path("candidate"), pathlib.Path("baseline")
+        correct = "76a43cbe0d3d8fbb06a5067d8c8c7d3f1292e2e3"
+        frozen = "c7817e2409b49f32423230199bda79a5e79609cd"
+        for wrong in ("0" * 40, correct, ""):
+            for observed_file in (False, True):
+                def blob(root, _):
+                    return correct if root == candidate else (wrong if observed_file else frozen)
+                def git(root, *args):
+                    return ((correct if root == candidate else (frozen if observed_file else wrong)) + "\n").encode()
+                with self.subTest(wrong=wrong, observed_file=observed_file), \
+                        mock.patch.object(prep, "blob", side_effect=blob), mock.patch.object(prep, "git", side_effect=git):
+                    with self.assertRaises(ValueError):
+                        prep.require_bucket_test(candidate, baseline)
+
+    def test_missing_candidate_or_baseline_source_is_not_ignored(self):
+        candidate, baseline = pathlib.Path("candidate"), pathlib.Path("baseline")
+        values = {candidate: "76a43cbe0d3d8fbb06a5067d8c8c7d3f1292e2e3",
+                  baseline: "c7817e2409b49f32423230199bda79a5e79609cd"}
+        for missing in (candidate, baseline):
+            def blob(root, _):
+                if root == missing:
+                    raise FileNotFoundError("Synthetic missing compiled source")
+                return values[root]
+            with self.subTest(missing=missing), mock.patch.object(prep, "blob", side_effect=blob), \
+                    mock.patch.object(prep, "git", side_effect=lambda root, *args: (values[root] + "\n").encode()):
+                with self.assertRaises(FileNotFoundError):
+                    prep.require_bucket_test(candidate, baseline)
+

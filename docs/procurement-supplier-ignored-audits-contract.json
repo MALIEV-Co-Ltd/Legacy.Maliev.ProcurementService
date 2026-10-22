@@ -1411,7 +1411,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-supplier-ignored-audits-baseline.py": {
-      "gitBlob": "ebc64a8a749fd569a4340d654b67985f5fc14faf"
+      "gitBlob": "271a8244485f67dc7fc93e35522a82bb711bb0aa"
     },
     "scripts/verify-supplier-ignored-audits-results.py": {
       "gitBlob": "2b718a0b66baeab9ee321f23482df27addabd9f3"
@@ -1420,7 +1420,7 @@
       "gitBlob": "d35a08ddc313367c2a549ec770bb42127f209698"
     },
     "scripts/test_supplier_ignored_audits_results.py": {
-      "gitBlob": "158536eb1a8f2eb7b56dc855ca7479ab60463ed5"
+      "gitBlob": "2c10fca1277c469e35e50e884f0546aefe19b310"
     },
     ".github/workflows/procurement-supplier-ignored-audits.yml": {
       "gitBlob": "2a274d3e9c0272a76cdf5516e034a5b314ff2223"

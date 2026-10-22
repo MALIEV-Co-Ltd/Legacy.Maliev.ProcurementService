@@ -229,6 +229,16 @@ def require_observation_harness(candidate):
     return path
 
 
+
+def require_bucket_test(candidate, baseline):
+    path = "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementSourceStringMigrationTests.cs"
+    require(blob(candidate, path) == git(candidate, "rev-parse", "HEAD:" + path).decode().strip()
+            == "76a43cbe0d3d8fbb06a5067d8c8c7d3f1292e2e3", "Exact reviewed bucket migration test successor differs")
+    require(blob(baseline, path) == git(baseline, "rev-parse", BASE + ":" + path).decode().strip()
+            == "c7817e2409b49f32423230199bda79a5e79609cd", "Frozen bucket migration test baseline differs")
+    return path
+
+
 def prepare(baseline, manifest_path, verify_only=False):
     candidate = pathlib.Path(__file__).resolve().parents[1]
     budget = [MAX_OPERATION_BYTES]
@@ -324,6 +334,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     allowed_tests.add(SUPPLIER_LIST_POLICY_TEST)
     allowed_tests.add(require_observation_harness(candidate))
     allowed_tests.add(require_address_test(candidate, blob))
+    allowed_tests.add(require_bucket_test(candidate, baseline))
     require(compiled_tests == allowed_tests, "Unexpected compiled test drift")
     require(blob(baseline, old_harness["path"])
             == git(baseline, "rev-parse", BASE + ":" + old_harness["path"]).decode().strip(),
