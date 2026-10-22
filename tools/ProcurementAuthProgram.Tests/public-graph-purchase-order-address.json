@@ -1,5 +1,5 @@
 {
-  "graphId": "procurement-purchase-order-address-scalar-text-public-20261011",
+  "graphId": "procurement-po-header-auth-join-reviewed-20261017",
   "references": [
     {
       "repository": "Legacy.Maliev.AuthService",
@@ -15,7 +15,7 @@
     },
     {
       "repository": "Legacy.Maliev.ProcurementService",
-      "commit": "430d2cabbdaa712e3536a119abe88f9167021358"
+      "commit": "abcbd59573d615642777a74564e348167016dc97"
     }
   ],
   "defaultsAdoption": {
@@ -92,10 +92,10 @@
     "unchangedInputSha256": "657ee76ed5af1272c2b21217ebe0145296f6d9aed774e5780422cb4ca5e5142c"
   },
   "intentionalSourceChanges": {
-    "previousProcurement": "232211084ce15682391036fbbbe777c6c723e773",
+    "previousProcurement": "430d2cabbdaa712e3536a119abe88f9167021358",
     "acceptedBase": "3db81d32edf424c712009f7b631d93b0b8724f3d",
-    "reviewedProcurement": "430d2cabbdaa712e3536a119abe88f9167021358",
-    "inputCount": 67,
+    "reviewedProcurement": "abcbd59573d615642777a74564e348167016dc97",
+    "inputCount": 69,
     "changedInputs": {
       "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs": {
         "previousMetadata": "100644 blob 53c78576a1ca7f8ca2ce361446cc6d14f7d4a60c",
@@ -104,13 +104,25 @@
       "Legacy.Maliev.ProcurementService.Application/Models/PurchaseOrderAddressScalarStringJsonConverter.cs": {
         "previousMetadata": null,
         "reviewedMetadata": "100644 blob cdbfc2e43f4d8575006df249836145cf7ecb50d6"
+      },
+      "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+        "previousMetadata": "100644 blob 19d17888cd77004b42f290a3c0daad454dfd4b5e",
+        "reviewedMetadata": "100644 blob 86173d6dcb8f95b1f94cae0969c5e4ffde1fe952"
+      },
+      "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
+        "previousMetadata": null,
+        "reviewedMetadata": "100644 blob 8d6d8eb2c232a76bae57d6419a69da37b687b36d"
+      },
+      "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj": {
+        "previousMetadata": "100644 blob 1d196cdd5f9421fbf99623a59ca3c2db549706b8",
+        "reviewedMetadata": "100644 blob 69b4ebf74c1a85d0949321360e81105db0f671a6"
       }
     },
-    "unchangedInputCount": 65,
-    "unchangedInputSha256": "f83b7cc0ade6e5f92e0fca40188d56f4021cd8072932609bc6a3cf59c982b48c",
+    "unchangedInputCount": 64,
+    "unchangedInputSha256": "05cba85476c3d0eac7a3000effc2594ac093a7ad58134d4df6313475f558fab1",
     "sourceReviewReceiptSha256": "93d63cc7cf9a9a327983c040ccc55f4baca379a53ed325a48e1f4f926c2dfd83",
-    "scope": "Only two reviewed purchase-order address Application inputs; 65 runtime/build/public-fixture inputs unchanged, including bucket guard and supplier converters",
-    "nativeAcceptance": "NOT RUN on successor; new32/full525 forecast with exact493 retention and actualAuth15 plus unchanged gates required",
+    "scope": "Reviewed address model/converter plus purchase-order header Program/converter and join-test project build input; all 64 other runtime/build/public fixture inputs unchanged; external pins and Auth execution identities unchanged",
+    "nativeAcceptance": "NOT RUN on successor; exact headed Auth15 joined execution and unchanged full/source/security gates required",
     "productionEnrollmentProven": false,
     "productionIamBridgeProven": false,
     "wholeInitialSourceParityClosed": false

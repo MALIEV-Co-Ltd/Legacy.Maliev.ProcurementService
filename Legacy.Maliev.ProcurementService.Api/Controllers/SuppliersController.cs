@@ -39,7 +39,7 @@ public sealed class SuppliersController(IProcurementService service, IIdempotenc
         [FromQuery] SupplierSortType? sort, [FromQuery] string? search, [FromQuery] int? index, [FromQuery] int? size, CancellationToken cancellationToken)
     {
         var suppliers = await service.GetSuppliersAsync(sort, search, index, size, cancellationToken);
-        return suppliers is null ? NotFound() : suppliers;
+        return suppliers is null || size == 0 ? NotFound() : suppliers;
     }
 
     /// <summary>Gets one supplier.</summary>

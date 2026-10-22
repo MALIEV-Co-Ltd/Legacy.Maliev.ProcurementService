@@ -10,7 +10,14 @@ public sealed class WorkflowContractTests
     private const string ReviewedProducerVersion = "b27fbef06a3aa58c1f4fc0e75d7c70b32be76266";
     private const string HistoricalProcurementVersion = "c40fd246c17b738879c9345c6bcca44d96faf025";
     private const string PreviousProcurementVersion = "99049bab2c100ffdf6606bf11a2f50980c0cf3cf";
-    private const string CurrentProcurementVersion = "430d2cabbdaa712e3536a119abe88f9167021358";
+    private const string PreviousSupplierIdentityProcurementVersion = "f7f6930a84278c50f878898169123fe7641211ac";
+    private const string PreviousMetadataIdentityProcurementVersion = "56a6b8d8576b71cfd8e76216118684839c8ea102";
+    private const string PreviousHeaderDraftVersion = "9e8f243f9813b7b2b232fe2525a2fba819a6c97c";
+    private const string PreviousHeaderContactVersion = "4f655c9394c20e5968d8bf6f1d77fdba3f77c7f4";
+    private const string PreviousSupplierAuditVersion = "d159befd91d7bed196d045366870b5bb60c21725";
+    private const string PreviousMetadataAuditVersion = "22e307d936993c2976d8f64819d37c5035b4b1de";
+    private const string PreviousCountryVersion = "d997f2a527a478110ac3bd96c915f4d0f6ab734a";
+    private const string CurrentProcurementVersion = "e45300a59be9804775761bd3ba7826406da534d8";
     private static readonly string Workflow = File.ReadAllText(FindRepositoryFile(".github", "workflows", "_build-and-test.yml"));
     private static readonly string ApiProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Api.csproj"));
@@ -23,19 +30,71 @@ public sealed class WorkflowContractTests
         WorkflowContractValidator.Validate(Workflow);
         foreach (var (original, replacement) in new[]
         {
+            ("name: Report redacted secret-scan locations after failure", "name: Omitted secret-scan diagnostic"),
+            ("if: failure()", "if: always()"),
+            ("--redact=100", "--redact=0"),
+            ("stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=60", "stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=60"),
             ("--no-restore -warnaserror", "--no-restore"),
             ("-p:UseLocalMalievDependencies=true", "-p:UseLocalMalievDependencies=false"),
             ("export GITHUB_ACTIONS=false", "export GITHUB_ACTIONS=true"),
             ("name: Set up SDK for mandatory focused workflow checks", "name: Omitted mandatory SDK"),
             ("name: Build before mandatory focused workflow checks", "name: Execute mandatory focused workflow checks"),
             ("name: Execute mandatory focused workflow checks", "name: Execute mandatory focused workflow checks\n        if: false"),
-            ("FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload", "FullyQualifiedName~ReviewedImagePreload"),
+            ("FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload|FullyQualifiedName=Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_SatisfiesStructuralContract", "FullyQualifiedName~ReviewedImagePreload"),
             ("path: focused-workflow-results", "path: runner-results"),
             ("name: Require every focused workflow execution\n        if: always()", "name: Require every focused workflow execution\n        if: success()"),
             ("name: Preserve focused workflow evidence\n        if: always()", "name: Preserve focused workflow evidence\n        if: success()"),
             ("name: Build before mandatory focused workflow checks", "name: Build before mandatory focused workflow checks\n        continue-on-error: true"),
         })
             AssertMutationRejected(original, replacement);
+
+        for (var index = 8; index <= 14; index++)
+        {
+            var proofIndex = index;
+            AssertHeaderMutationRejected(steps => steps.Children.RemoveAt(proofIndex));
+            AssertHeaderMutationRejected(steps =>
+            {
+                var moved = steps.Children[proofIndex];
+                steps.Children.RemoveAt(proofIndex);
+                steps.Children.Insert(15, moved);
+            });
+            foreach (var key in new[] { "if", "continue-on-error", "env" })
+                AssertHeaderMutationRejected(steps =>
+                {
+                    var step = (YamlMappingNode)steps.Children[proofIndex];
+                    step.Children[new YamlScalarNode(key)] = new YamlScalarNode("false");
+                });
+            var yaml = new YamlStream();
+            yaml.Load(new StringReader(Workflow));
+            var jobs = (YamlMappingNode)ReadNode((YamlMappingNode)yaml.Documents.Single().RootNode, "jobs");
+            var originalSteps = (YamlSequenceNode)ReadNode((YamlMappingNode)ReadNode(jobs, "validate"), "steps");
+            var original = (YamlMappingNode)originalSteps.Children[proofIndex];
+            foreach (var entry in original.Children)
+            {
+                var outerKey = ((YamlScalarNode)entry.Key).Value!;
+                if (entry.Value is YamlMappingNode nested)
+                {
+                    foreach (var nestedEntry in nested.Children)
+                    {
+                        var innerKey = ((YamlScalarNode)nestedEntry.Key).Value!;
+                        AssertHeaderMutationRejected(steps =>
+                        {
+                            var step = (YamlMappingNode)steps.Children[proofIndex];
+                            var values = (YamlMappingNode)ReadNode(step, outerKey);
+                            var value = (YamlScalarNode)ReadNode(values, innerKey);
+                            value.Value += " drift";
+                        });
+                    }
+                }
+                else
+                    AssertHeaderMutationRejected(steps =>
+                    {
+                        var step = (YamlMappingNode)steps.Children[proofIndex];
+                        var value = (YamlScalarNode)ReadNode(step, outerKey);
+                        value.Value += " drift";
+                    });
+            }
+        }
     }
 
     [Theory]
@@ -227,7 +286,27 @@ public sealed class WorkflowContractTests
     [Fact]
     public void ActualAuthProgramJoin_RequiresImmutableProducersAndAlwaysRetainedEvidence()
     {
-        ValidateAuthProgramJoin(File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml")));
+        Assert.NotEqual(PreviousSupplierIdentityProcurementVersion, CurrentProcurementVersion);
+        Assert.NotEqual(PreviousMetadataIdentityProcurementVersion, CurrentProcurementVersion);
+        Assert.NotEqual(PreviousHeaderDraftVersion, CurrentProcurementVersion);
+        Assert.NotEqual(PreviousHeaderContactVersion, CurrentProcurementVersion);
+        Assert.NotEqual(PreviousSupplierAuditVersion, CurrentProcurementVersion);
+        Assert.NotEqual(PreviousMetadataAuditVersion, CurrentProcurementVersion);
+        Assert.NotEqual(PreviousCountryVersion, CurrentProcurementVersion);
+        var source = File.ReadAllText(FindRepositoryFile(".github", "workflows", "procurement-auth-program-validation.yml"));
+        ValidateAuthProgramJoin(source);
+        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(
+            source.Replace(CurrentProcurementVersion, PreviousMetadataIdentityProcurementVersion, StringComparison.Ordinal)));
+        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(
+            source.Replace(CurrentProcurementVersion, PreviousHeaderDraftVersion, StringComparison.Ordinal)));
+        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(
+            source.Replace(CurrentProcurementVersion, PreviousHeaderContactVersion, StringComparison.Ordinal)));
+        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(
+            source.Replace(CurrentProcurementVersion, PreviousSupplierAuditVersion, StringComparison.Ordinal)));
+        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(
+            source.Replace(CurrentProcurementVersion, PreviousMetadataAuditVersion, StringComparison.Ordinal)));
+        Assert.Throws<InvalidOperationException>(() => ValidateAuthProgramJoin(
+            source.Replace(CurrentProcurementVersion, PreviousCountryVersion, StringComparison.Ordinal)));
     }
 
     [Theory]
@@ -292,6 +371,19 @@ public sealed class WorkflowContractTests
         if (ReadScalar(results, "if") != "always()" || ReadScalar(artifact, "if") != "always()"
             || ReadScalar((YamlMappingNode)ReadNode(artifact, "with"), "path") != "auth-program-results")
             throw new InvalidOperationException("Joined executions and failure evidence must always be checked/retained.");
+    }
+
+
+    private static void AssertHeaderMutationRejected(Action<YamlSequenceNode> mutation)
+    {
+        var yaml = new YamlStream();
+        yaml.Load(new StringReader(Workflow));
+        var jobs = (YamlMappingNode)ReadNode((YamlMappingNode)yaml.Documents.Single().RootNode, "jobs");
+        var steps = (YamlSequenceNode)ReadNode((YamlMappingNode)ReadNode(jobs, "validate"), "steps");
+        mutation(steps);
+        using var writer = new StringWriter();
+        yaml.Save(writer, assignAnchors: false);
+        Assert.Throws<InvalidOperationException>(() => WorkflowContractValidator.Validate(writer.ToString()));
     }
 
     private static void AssertMutationRejected(string original, string replacement)
@@ -381,6 +473,7 @@ internal static partial class WorkflowContractValidator
         var steps = RequireSequence(validateJob, "steps");
         if (!historicalFixture)
         {
+            steps = ValidateHeaderProofGroup(steps);
             ValidateFocusedWorkflowGroup(steps);
             steps = new YamlSequenceNode(steps.Children.Where((_, index) => index is < 3 or > 7));
         }
@@ -472,6 +565,171 @@ internal static partial class WorkflowContractValidator
             });
     }
 
+
+    private static YamlSequenceNode ValidateHeaderProofGroup(YamlSequenceNode steps)
+    {
+        if (steps.Children.Count != 19)
+            throw new InvalidOperationException("Primary validation must retain the exact failure-only redacted diagnostic.");
+        const string diagnosticSource = """
+            - name: Report redacted secret-scan locations after failure
+              if: failure()
+              timeout-minutes: 2
+              run: |
+                python3 -B - <<'PY'
+                import json
+                import os
+                import pathlib
+                import re
+                import shutil
+                import subprocess
+                import tempfile
+            
+                def refuse(category):
+                    print(json.dumps({"category": category}))
+                    raise SystemExit(1)
+            
+                binary = shutil.which("gitleaks")
+                go = shutil.which("go")
+                if not binary or not go:
+                    refuse("secret-scan-diagnostic-installed-binary-unavailable")
+                try:
+                    identity = subprocess.run([go, "version", "-m", binary], check=False,
+                        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=10)
+                except (OSError, subprocess.TimeoutExpired):
+                    refuse("secret-scan-diagnostic-binary-identity-unavailable")
+                module = [line.split() for line in identity.stdout.splitlines() if line.split()[:1] == [b"mod"]]
+                expected_binary = pathlib.Path.home() / "go" / "bin" / "gitleaks"
+                if (identity.returncode != 0 or len(identity.stdout) > 65536
+                        or pathlib.Path(binary).resolve() != expected_binary.resolve()
+                        or len(module) != 1 or len(module[0]) < 3
+                        or module[0][1:3] != [b"github.com/zricethezav/gitleaks/v8", b"v8.30.0"]):
+                    refuse("secret-scan-diagnostic-binary-identity-unknown")
+                root = os.environ.get("RUNNER_TEMP")
+                if not root or not pathlib.Path(root).is_dir():
+                    refuse("secret-scan-diagnostic-private-directory-unavailable")
+                try:
+                    with tempfile.TemporaryDirectory(prefix="procurement-secret-locations-", dir=root) as directory:
+                        os.chmod(directory, 0o700)
+                        report = pathlib.Path(directory) / "report.json"
+                        descriptor = os.open(report, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                        os.close(descriptor)
+                        try:
+                            result = subprocess.run([binary, "git", "--redact=100", "--exit-code", "1",
+                                "--report-format", "json", "--report-path", str(report)],
+                                check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=60)
+                            if result.returncode not in (0, 1):
+                                refuse("secret-scan-diagnostic-scan-unavailable")
+                            with report.open("rb") as stream:
+                                raw = stream.read(1024 * 1024 + 1)
+                            if not 0 < len(raw) <= 1024 * 1024:
+                                refuse("secret-scan-diagnostic-report-size-invalid")
+                            rows = json.loads(raw)
+                            if not isinstance(rows, list) or len(rows) > 100:
+                                refuse("secret-scan-diagnostic-report-roster-invalid")
+                            if (result.returncode == 1 and not rows) or (result.returncode == 0 and rows):
+                                refuse("secret-scan-diagnostic-report-outcome-invalid")
+                            locations = []
+                            for row in rows:
+                                if not isinstance(row, dict):
+                                    refuse("secret-scan-diagnostic-report-row-invalid")
+                                rule, file = row.get("RuleID"), row.get("File")
+                                start, end = row.get("StartLine"), row.get("EndLine")
+                                if (not isinstance(rule, str) or not re.fullmatch(r"[a-z0-9][a-z0-9._-]{0,127}", rule)
+                                        or not isinstance(file, str) or not 0 < len(file) <= 1024
+                                        or any(ord(char) < 32 or ord(char) == 127 for char in file)
+                                        or "\\" in file or pathlib.PurePosixPath(file).is_absolute()
+                                        or any(part in ("", ".", "..") for part in file.split("/"))
+                                        or type(start) is not int or type(end) is not int
+                                        or not 1 <= start <= end <= 10000000):
+                                    refuse("secret-scan-diagnostic-location-invalid")
+                                locations.append({"category": "secret-scan-location", "RuleID": rule,
+                                    "file": file, "StartLine": start, "EndLine": end})
+                            for location in locations:
+                                print(json.dumps(location, ensure_ascii=True))
+                        finally:
+                            report.unlink(missing_ok=True)
+                except (OSError, ValueError, subprocess.TimeoutExpired):
+                    refuse("secret-scan-diagnostic-report-unavailable")
+                PY
+
+            """;
+        var diagnostic = new YamlStream();
+        diagnostic.Load(new StringReader(diagnosticSource));
+        var diagnosticSteps = (YamlSequenceNode)diagnostic.Documents.Single().RootNode;
+        RequireExactProofNode(steps.Children[16], diagnosticSteps.Children.Single());
+        steps = new YamlSequenceNode(steps.Children.Where((_, index) => index != 16));
+        if (steps.Children.Count != 18)
+            throw new InvalidOperationException("Primary validation must retain exactly seven ordered header proof steps.");
+        const string expectedSource = """
+            - name: Verify PO header RED guard using synthetic TRX
+              timeout-minutes: 1
+              run: python3 -B -m unittest discover -s scripts -p test_po_header_hosted_red.py
+            - name: Prove PO header baseline RED with exact nine-case joins
+              timeout-minutes: 12
+              run: python3 -B scripts/verify-po-header-hosted-red.py run
+            - name: Restore reviewed candidate and require Release zero warnings and errors
+              if: always()
+              timeout-minutes: 6
+              run: python3 -B scripts/verify-po-header-hosted-red.py rebuild
+            - name: Preserve isolated PO header RED and restoration evidence
+              if: always()
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+              with:
+                name: procurement-po-header-red-${{ github.sha }}
+                path: po-header-red-control-results
+                if-no-files-found: error
+                retention-days: 7
+            - name: Verify consumed purchase-order header binding through actual MVC
+              timeout-minutes: 10
+              env:
+                VSTestResultsDirectory: ${{ github.workspace }}/purchase-order-header-results
+              run: |
+                export GITHUB_ACTIONS=false
+                dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter "FullyQualifiedName~ProcurementPurchaseOrderHeaderBindingTests"
+            - name: Require all 135 header binding executions
+              if: always()
+              run: |
+                python3 -B scripts/verify-purchase-order-header-results.py --self-test
+                python3 -B scripts/verify-purchase-order-header-results.py purchase-order-header-results
+            - name: Preserve focused header binding evidence
+              if: always()
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+              with:
+                name: procurement-header-binding-${{ github.sha }}
+                path: purchase-order-header-results
+                if-no-files-found: error
+                retention-days: 7
+            """;
+        var expected = new YamlStream();
+        expected.Load(new StringReader(expectedSource));
+        var proof = (YamlSequenceNode)expected.Documents.Single().RootNode;
+        for (var index = 0; index < proof.Children.Count; index++)
+            RequireExactProofNode(steps.Children[index + 8], proof.Children[index]);
+        return new YamlSequenceNode(steps.Children.Where((_, index) => index is < 8 or > 14));
+    }
+
+    private static void RequireExactProofNode(YamlNode actual, YamlNode expected)
+    {
+        if (actual is YamlScalarNode scalar && expected is YamlScalarNode expectedScalar)
+        {
+            if (scalar.Value != expectedScalar.Value)
+                throw new InvalidOperationException("Header proof values and commands must remain exact.");
+            return;
+        }
+        if (actual is YamlMappingNode mapping && expected is YamlMappingNode expectedMapping
+            && mapping.Children.Count == expectedMapping.Children.Count)
+        {
+            foreach (var entry in expectedMapping.Children)
+            {
+                if (!mapping.Children.TryGetValue(entry.Key, out var value))
+                    throw new InvalidOperationException("Header proof properties must remain exact.");
+                RequireExactProofNode(value, entry.Value);
+            }
+            return;
+        }
+        throw new InvalidOperationException("Header proof structure must remain exact.");
+    }
+
     private static void ValidateFocusedWorkflowGroup(YamlSequenceNode steps)
     {
         if (steps.Children.Count != 11)
@@ -494,7 +752,7 @@ internal static partial class WorkflowContractValidator
         RequireStepKeys(testEnv, "VSTestResultsDirectory");
         RequireScalarValue(testEnv, "VSTestResultsDirectory", "${{ github.workspace }}/focused-workflow-results");
         RequireCommands(test, "export GITHUB_ACTIONS=false\n"
-            + "dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter \"FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload\"");
+            + "dotnet test Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true --filter \"FullyQualifiedName~ActualAuthProgramJoin|FullyQualifiedName~ReviewedImagePreload|FullyQualifiedName=Legacy.Maliev.ProcurementService.Tests.Workflows.WorkflowContractTests.BuildAndTest_SatisfiesStructuralContract\"");
         var gate = RequireMapping(steps.Children[6], "focused gate");
         RequireStepKeys(gate, "name", "if", "run");
         RequireScalarValue(gate, "name", "Require every focused workflow execution");

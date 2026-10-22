@@ -1,4 +1,4 @@
-"""Require the separately executed, frozen 27 workflow regressions and raw evidence."""
+"""Require the separately executed, frozen 28 workflow regressions and raw evidence."""
 import hashlib
 import json
 import pathlib
@@ -9,27 +9,51 @@ import xml.etree.ElementTree as ET
 
 def verify(root, manifest):
     expected = {(v["name"], v["id"]) for v in manifest["cases"]}
-    if manifest["expectedCases"] != 27 or len(expected) != 27 or len(manifest["cases"]) != 27:
-        raise ValueError("The reviewed focused roster must contain exactly 27 distinct identities.")
+    if manifest["expectedCases"] != 28 or len(expected) != 28 or len(manifest["cases"]) != 28:
+        raise ValueError("The reviewed focused roster must contain exactly 28 distinct identities.")
     reports = list(root.rglob("*.trx"))
     if len(reports) != 1:
         raise ValueError("Exactly one separate focused TRX is required.")
     document = ET.parse(reports[0])
-    definitions = document.findall(".//{*}TestDefinitions/{*}UnitTest")
-    entries = document.findall(".//{*}TestEntries/{*}TestEntry")
-    results = document.findall(".//{*}Results/{*}UnitTestResult")
-    counters = document.find(".//{*}Counters")
-    if counters is None or any(int(counters.get(k, "-1")) != 27 for k in ("total", "executed", "passed")):
-        raise ValueError("All 27 focused cases must execute and pass.")
+    run = document.getroot()
+    namespace = "{http://microsoft.com/schemas/VisualStudio/TeamTest/2010}"
+    if run.tag != namespace + "TestRun" or any(
+            not isinstance(node.tag, str) or not node.tag.startswith(namespace) for node in run.iter()):
+        raise ValueError("Only the TeamTest 2010 TestRun namespace is accepted.")
+
+    def direct_singleton(parent, name):
+        direct = parent.findall("./" + namespace + name)
+        global_nodes = list(run.iter(namespace + name))
+        if len(direct) != 1 or len(global_nodes) != 1 or global_nodes[0] is not direct[0]:
+            raise ValueError("TRX containers and summary counters must be unique and direct.")
+        return direct[0]
+
+    definition_container = direct_singleton(run, "TestDefinitions")
+    entry_container = direct_singleton(run, "TestEntries")
+    result_container = direct_singleton(run, "Results")
+    summary = direct_singleton(run, "ResultSummary")
+    counters = direct_singleton(summary, "Counters")
+    if summary.get("outcome") != "Completed":
+        raise ValueError("The focused run must complete without an adverse summary outcome.")
+    if list(run.iter(namespace + "RunInfo")) or list(run.iter(namespace + "ErrorInfo")):
+        raise ValueError("Focused run notices and error evidence are forbidden.")
+    definitions = definition_container.findall("./" + namespace + "UnitTest")
+    entries = entry_container.findall("./" + namespace + "TestEntry")
+    results = result_container.findall("./" + namespace + "UnitTestResult")
+    for name, rows in (("UnitTest", definitions), ("TestEntry", entries), ("UnitTestResult", results)):
+        if len(rows) != 28 or len(list(run.iter(namespace + name))) != 28:
+            raise ValueError("Focused cardinality or direct/global result custody differs.")
     nonpassing = ("failed", "error", "timeout", "aborted", "inconclusive", "passedButRunAborted",
                   "notRunnable", "notExecuted", "disconnected", "warning", "completed", "inProgress", "pending")
-    if any(int(counters.get(k, "-1")) != 0 for k in nonpassing):
-        raise ValueError("Failed or skipped focused cases are forbidden.")
-    if len(definitions) != 27 or len(entries) != 27 or len(results) != 27 or document.findall(".//{*}ErrorInfo"):
-        raise ValueError("Focused cardinality or error evidence differs.")
+    required_counters = {"total": "28", "executed": "28", "passed": "28",
+                         **{name: "0" for name in nonpassing}}
+    if counters.attrib != required_counters:
+        raise ValueError("All 16 focused counters must report exactly 28 passed and no adverse outcome.")
+    if len(list(run.iter(namespace + "Execution"))) != 28:
+        raise ValueError("Every focused definition must own exactly one execution.")
     defs = {v.get("id"): v for v in definitions}
     joins = {v.get("testId"): v.get("executionId") for v in entries}
-    if len(defs) != 27 or len(joins) != 27:
+    if len(defs) != 28 or len(joins) != 28:
         raise ValueError("Duplicate definitions or entries are forbidden.")
     actual, executions = set(), set()
     for result in results:
@@ -44,7 +68,8 @@ def verify(root, manifest):
         definition = defs.get(key[1])
         if key in actual or not execution or execution in executions or definition is None:
             raise ValueError("Duplicate or unbound focused execution.")
-        defined_execution = definition.find("./{*}Execution")
+        defined_executions = definition.findall("./" + namespace + "Execution")
+        defined_execution = defined_executions[0] if len(defined_executions) == 1 else None
         if (result.get("outcome") != "Passed" or definition.get("name") != key[0]
                 or defined_execution is None or defined_execution.get("id") != execution
                 or joins.get(key[1]) != execution):
@@ -57,7 +82,7 @@ def verify(root, manifest):
     digests = {hashlib.sha256(v.read_bytes()).hexdigest() for v in coverage}
     if len(digests) != 1 or not ET.parse(coverage[0]).findall("./packages/package/classes/class/lines/line"):
         raise ValueError("Nonempty raw focused coverage with identical copies is required.")
-    proof = {"passed": 27, "failed": 0, "skipped": 0, "strictTrxJoins": True,
+    proof = {"passed": 28, "failed": 0, "skipped": 0, "strictTrxJoins": True,
              "identities": sorted(actual), "trxSha256": hashlib.sha256(reports[0].read_bytes()).hexdigest(),
              "rawCoverageSha256": next(iter(digests)), "rawCopies": len(coverage), "exclusions": [],
              "fullServiceCoverageAcceptance": False, "productionEnrollmentProven": False}

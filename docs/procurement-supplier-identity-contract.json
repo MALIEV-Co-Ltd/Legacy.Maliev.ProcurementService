@@ -1,0 +1,1272 @@
+{
+  "schemaVersion": 1,
+  "base": "e8850889cb81b5bdf5bac5fdd1c55f2ed08cae8d",
+  "baseTree": "e380830777da16ddd6834642b1df8a6761cf2f87",
+  "profiles": {
+    "id": {
+      "testClass": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+      "testPath": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierIgnoredIdTests.cs",
+      "testBlob": "cfc194be743bada8ebe45f40cec97fc5a1ba6581",
+      "cases": [
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: False, token: \"0\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: False, token: \"-17\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: False, token: \"2147483647\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: False, token: \"-2147483648\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: False, token: \"\\\"42\\\"\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: False, token: \"\\\" +42 \\\"\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: False, token: \"\\\"\\\"\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: False, token: \"null\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: False, token: \"123\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: True, token: \"0\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: True, token: \"-17\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: True, token: \"2147483647\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: True, token: \"-2147483648\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: True, token: \"\\\"42\\\"\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: True, token: \"\\\" +42 \\\"\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: True, token: \"\\\"\\\"\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: True, token: \"null\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved(update: True, token: \"123\")",
+          "method": "ValidBodyId_IsDiscardedAndServerIdentityAndGraphArePreserved",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: False, token: \"1.5\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: False, token: \"1e3\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: False, token: \"true\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: False, token: \"false\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: False, token: \"[]\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: False, token: \"{}\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: False, token: \"2147483648\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: False, token: \"-2147483649\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: False, token: \"\\\"nope\\\"\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: False, token: \"\\\"1.0\\\"\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: False, token: \"\\\"2147483648\\\"\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: False, token: \"\\\"null\\\"\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: True, token: \"1.5\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: True, token: \"1e3\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: True, token: \"true\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: True, token: \"false\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: True, token: \"[]\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: True, token: \"{}\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: True, token: \"2147483648\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: True, token: \"-2147483649\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: True, token: \"\\\"nope\\\"\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: True, token: \"\\\"1.0\\\"\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: True, token: \"\\\"2147483648\\\"\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MalformedBodyId_IsBadRequestWithoutAnyStoredChange(update: True, token: \"\\\"null\\\"\")",
+          "method": "MalformedBodyId_IsBadRequestWithoutAnyStoredChange",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 119
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.EveryDuplicateId_IsValidatedBeforeDiscard(update: False, members: \"\\\"Id\\\":{},\\\"id\\\":1,\", accepted: False)",
+          "method": "EveryDuplicateId_IsValidatedBeforeDiscard",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 136
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.EveryDuplicateId_IsValidatedBeforeDiscard(update: True, members: \"\\\"Id\\\":{},\\\"id\\\":1,\", accepted: False)",
+          "method": "EveryDuplicateId_IsValidatedBeforeDiscard",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 136
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.EveryDuplicateId_IsValidatedBeforeDiscard(update: False, members: \"\\\"Id\\\":1,\\\"id\\\":{},\", accepted: False)",
+          "method": "EveryDuplicateId_IsValidatedBeforeDiscard",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 136
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.EveryDuplicateId_IsValidatedBeforeDiscard(update: True, members: \"\\\"Id\\\":1,\\\"id\\\":{},\", accepted: False)",
+          "method": "EveryDuplicateId_IsValidatedBeforeDiscard",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 136
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.EveryDuplicateId_IsValidatedBeforeDiscard(update: False, members: \"\\\"Id\\\":2147483647,\\\"id\\\":null,\", accepted: True)",
+          "method": "EveryDuplicateId_IsValidatedBeforeDiscard",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.EveryDuplicateId_IsValidatedBeforeDiscard(update: True, members: \"\\\"Id\\\":2147483647,\\\"id\\\":null,\", accepted: True)",
+          "method": "EveryDuplicateId_IsValidatedBeforeDiscard",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.OmittedIdAndUnknownMembers_KeepExistingRequestShape(update: False)",
+          "method": "OmittedIdAndUnknownMembers_KeepExistingRequestShape",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.OmittedIdAndUnknownMembers_KeepExistingRequestShape(update: True)",
+          "method": "OmittedIdAndUnknownMembers_KeepExistingRequestShape",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.AuthenticationAndPermissionStillPrecedeBodyBinding(update: False, anonymous: True)",
+          "method": "AuthenticationAndPermissionStillPrecedeBodyBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.AuthenticationAndPermissionStillPrecedeBodyBinding(update: True, anonymous: True)",
+          "method": "AuthenticationAndPermissionStillPrecedeBodyBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.AuthenticationAndPermissionStillPrecedeBodyBinding(update: False, anonymous: False)",
+          "method": "AuthenticationAndPermissionStillPrecedeBodyBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.AuthenticationAndPermissionStillPrecedeBodyBinding(update: True, anonymous: False)",
+          "method": "AuthenticationAndPermissionStillPrecedeBodyBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests.MvcConverter_IsRequestOnlyAndKeepsEightPropertyWriteShape",
+          "method": "MvcConverter_IsRequestOnlyAndKeepsEightPropertyWriteShape",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "converter",
+            "expected": "SupplierIgnoredIdJsonConverter"
+          },
+          "sourceLine": 180
+        }
+      ],
+      "expectedCases": 55,
+      "baselinePassed": 26,
+      "baselineFailed": 29
+    },
+    "address": {
+      "testClass": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+      "testPath": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierIgnoredAddressIdTests.cs",
+      "testBlob": "2cacdd316933b7f2ae287531b185518c9720e5c0",
+      "cases": [
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: False, token: \"0\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: False, token: \"7001\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: False, token: \"7007\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: False, token: \"9000\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: False, token: \"-17\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: False, token: \"2147483647\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: False, token: \"-2147483648\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: False, token: \"\\\"7007\\\"\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: False, token: \"\\\" +7007 \\\"\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: False, token: \"\\\"\\\"\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: False, token: \"null\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: True, token: \"0\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: True, token: \"7001\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: True, token: \"7007\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: True, token: \"9000\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: True, token: \"-17\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: True, token: \"2147483647\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: True, token: \"-2147483648\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: True, token: \"\\\"7007\\\"\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: True, token: \"\\\" +7007 \\\"\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: True, token: \"\\\"\\\"\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink(update: True, token: \"null\")",
+          "method": "ValidBodyAddressId_CannotAttachReplaceOrClearTheOwnedLink",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: False, token: \"1.5\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: False, token: \"1e3\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: False, token: \"true\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: False, token: \"{}\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: False, token: \"[]\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: False, token: \"2147483648\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: False, token: \"-2147483649\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: False, token: \"\\\"nope\\\"\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: False, token: \"\\\"2147483648\\\"\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: True, token: \"1.5\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: True, token: \"1e3\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: True, token: \"true\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: True, token: \"{}\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: True, token: \"[]\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: True, token: \"2147483648\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: True, token: \"-2147483649\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: True, token: \"\\\"nope\\\"\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite(update: True, token: \"\\\"2147483648\\\"\")",
+          "method": "MalformedBodyAddressId_IsRejectedBeforeAnyStoredWrite",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 131
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.EveryDuplicateAddressId_IsValidatedThenDiscarded(update: False, members: \"\\\"AddressId\\\":{},\\\"addressid\\\":7007,\", accepted: False)",
+          "method": "EveryDuplicateAddressId_IsValidatedThenDiscarded",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 149
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.EveryDuplicateAddressId_IsValidatedThenDiscarded(update: True, members: \"\\\"AddressId\\\":{},\\\"addressid\\\":7007,\", accepted: False)",
+          "method": "EveryDuplicateAddressId_IsValidatedThenDiscarded",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 149
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.EveryDuplicateAddressId_IsValidatedThenDiscarded(update: False, members: \"\\\"AddressId\\\":7007,\\\"addressid\\\":{},\", accepted: False)",
+          "method": "EveryDuplicateAddressId_IsValidatedThenDiscarded",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "Created"
+          },
+          "sourceLine": 149
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.EveryDuplicateAddressId_IsValidatedThenDiscarded(update: True, members: \"\\\"AddressId\\\":7007,\\\"addressid\\\":{},\", accepted: False)",
+          "method": "EveryDuplicateAddressId_IsValidatedThenDiscarded",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Failed",
+          "failure": {
+            "kind": "status",
+            "expected": "BadRequest",
+            "actual": "NoContent"
+          },
+          "sourceLine": 149
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.EveryDuplicateAddressId_IsValidatedThenDiscarded(update: False, members: \"\\\"AddressId\\\":7007,\\\"addressid\\\":null,\", accepted: True)",
+          "method": "EveryDuplicateAddressId_IsValidatedThenDiscarded",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.EveryDuplicateAddressId_IsValidatedThenDiscarded(update: True, members: \"\\\"AddressId\\\":7007,\\\"addressid\\\":null,\", accepted: True)",
+          "method": "EveryDuplicateAddressId_IsValidatedThenDiscarded",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.OmittedAddressId_RemainsAbsentFromTheEightFieldRequest(update: False)",
+          "method": "OmittedAddressId_RemainsAbsentFromTheEightFieldRequest",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.OmittedAddressId_RemainsAbsentFromTheEightFieldRequest(update: True)",
+          "method": "OmittedAddressId_RemainsAbsentFromTheEightFieldRequest",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.AuthenticationAndPermissionStillPrecedeAddressIdBinding(update: False, anonymous: True)",
+          "method": "AuthenticationAndPermissionStillPrecedeAddressIdBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.AuthenticationAndPermissionStillPrecedeAddressIdBinding(update: True, anonymous: True)",
+          "method": "AuthenticationAndPermissionStillPrecedeAddressIdBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.AuthenticationAndPermissionStillPrecedeAddressIdBinding(update: False, anonymous: False)",
+          "method": "AuthenticationAndPermissionStillPrecedeAddressIdBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        },
+        {
+          "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests.AuthenticationAndPermissionStillPrecedeAddressIdBinding(update: True, anonymous: False)",
+          "method": "AuthenticationAndPermissionStillPrecedeAddressIdBinding",
+          "class": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests",
+          "baselineOutcome": "Passed"
+        }
+      ],
+      "expectedCases": 52,
+      "baselinePassed": 30,
+      "baselineFailed": 22
+    }
+  },
+  "runtimePostimages": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+      "gitBlob": "a82fb0b60ca92d2df1a39a3b82eaecdeef1f7505"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+      "gitBlob": "30c131eb10c554b445e878c0b148cbe79d8c7cd3"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "gitBlob": "87fd40bbe9072c8da0cc3567020d2872b05a107d"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
+      "gitBlob": "112e92787f4c07d47cf0caa404abb392a3d8563b"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
+      "gitBlob": "3aca6cb413f13945efc28e9e2cebeafbe351d8f3"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
+      "gitBlob": "b21e6fe697acdeb945dc0acbd3c80dee22a23a02"
+    },
+    "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": {
+      "gitBlob": "f116b6f1f0258f2f3bfd0eb35190bd14a64c06f4"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs": {
+      "gitBlob": "942a1b8f8f18ea3a9727691a05a784aec688614d"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs": {
+      "gitBlob": "e352494ce31eb5bead53a78cc4c950a7bae3e54e"
+    },
+    "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs": {
+      "gitBlob": "7d5f584a13022c56b13e4517748cc772658ba74c"
+    },
+    "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs": {
+      "gitBlob": "28204fc1402f836d1da3ae94542bb5ce249b1c1b"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs": {
+      "gitBlob": "aa83c9ddc65ccac0bfc90974f64a817ad8cbbc68"
+    }
+  },
+  "publicFixture": {
+    "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs",
+    "gitBlob": "13bef56d1b51a1df43fffe2e48967bd4e6f16ba2"
+  },
+  "joinTestProject": {
+    "path": "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj",
+    "gitBlob": "69b4ebf74c1a85d0949321360e81105db0f671a6"
+  },
+  "expectedTotalCases": 107,
+  "baselineExpectations": "Frozen expectations from existing assertions/currentignoredmemberbaseline, NOT executed; actualstrictcases/errors/frames/nativeexitproofrequired.",
+  "oracle": {
+    "runtime": "ExistingreviewedNewtonsoft13.0.3publicReadAsInt32,request-localonly",
+    "historicalEffectiveBinary": "UNKNOWN"
+  },
+  "scope": {
+    "wholeSourceModelParity": false,
+    "productionEnrollmentProven": false,
+    "financial": "STOPPED",
+    "commentTracking": "BLOCKED",
+    "deployment": false
+  },
+  "sourceObligations": [
+    {
+      "sha": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "parents": [],
+      "role": "Originalbehaviororigin/initialcontrollerassociation",
+      "tree": "c89be4bafc07cf297c8def7d562b74130e9dc94f",
+      "paths": [
+        {
+          "path": "Maliev.SupplierService.Data/Database/SupplierContext/Supplier.cs",
+          "blob": "889f0ddf257f19dfde25648fba74690e63ca3f95"
+        },
+        {
+          "path": "Maliev.SupplierService.Api/Controllers/SuppliersController.cs",
+          "blob": "bc52a62384e725e287d1d998ac7f9454d0227791"
+        },
+        {
+          "path": "Maliev.SupplierService.Api/Startup.cs",
+          "blob": "2bc9f4e117297dcccdd129a231e77a9aeccc2287"
+        }
+      ],
+      "boundedDisposition": "OnlySupplier POST/PUT ignoredIdInt32/AddressIdNullableInt32 bindingobligations; no wholeinitialsourceclosure"
+    },
+    {
+      "sha": "72eb9f1949176392141951d35e6e06f7c30af4c2",
+      "parents": [
+        "023aa2f143fa5a8f557d72c1302b9add64792d6a"
+      ],
+      "role": "Canonical ledger selected Procurement owner obligation; bounded Supplier.cs and Startup source inputs only",
+      "paths": [
+        {
+          "path": "Maliev.SupplierService.Data/Database/SupplierContext/Supplier.cs",
+          "blob": "794bf5a84486752d390a3d9532479fe50fa5eb8d"
+        }
+      ],
+      "boundedDisposition": "Id int and AddressId nullable int ignored input binding only; whole source remains PARTIAL; historical effective Newtonsoft binary UNKNOWN"
+    },
+    {
+      "sha": "135e526d0dab85c415b3afdcefd7b70fe2c82e2f",
+      "parents": [
+        "eb11c81a6c759e1d4bcd1a1b3b28dc5f30cc02cb"
+      ],
+      "role": "Retainedverification snapshot; NOTanadditionalnewbehaviorchangeorwholeSHAclosure",
+      "tree": "ede0ac6e596e0df22f3a53398dd439c17acd20a3",
+      "paths": [
+        {
+          "path": "Maliev.SupplierService.Data/Database/SupplierContext/Supplier.cs",
+          "blob": "794bf5a84486752d390a3d9532479fe50fa5eb8d"
+        },
+        {
+          "path": "Maliev.SupplierService.Api/Controllers/SuppliersController.cs",
+          "blob": "bc52a62384e725e287d1d998ac7f9454d0227791"
+        },
+        {
+          "path": "Maliev.SupplierService.Api/Startup.cs",
+          "blob": "bc6dd9c1eb9061a53c5343964eb03ec84118d7c6"
+        }
+      ],
+      "boundedDisposition": "Samecontrollerblobandsametwointegerpropertydeclarationsatdistinctverifiedmodel/startupblobs;NullValueHandling.Ignore retained;historicalresolvedNewtonsoftbinaryUNKNOWN"
+    }
+  ],
+  "canonicalLedger": {
+    "repository": "Legacy.Maliev.MigrationTracking",
+    "commit": "f75b4d5fa9a236844b9a30f4d0b4fd32ec0eb1f8",
+    "ledgerBlob": "de39715b6f88e0191c031ab929b02b873c1f39c8",
+    "resolutionsBlob": "c13967ebe5d167898a02f34c83c25d6e70238f5c",
+    "selectedOwnerStatus": "pending",
+    "snapshot135": "Verification only; no extra Procurement ledger obligation",
+    "wholeSourceDisposition": "PARTIAL; unchanged",
+    "globalCountsRecomputed": false
+  },
+  "assemblyBindings": {
+    "candidate": {
+      "codeBase": "/home/runner/work/Legacy.Maliev.ProcurementService/Legacy.Maliev.ProcurementService/Legacy.Maliev.ProcurementService.Tests/bin/Release/net10.0/Legacy.Maliev.ProcurementService.Tests.dll",
+      "storage": "/home/runner/work/legacy.maliev.procurementservice/legacy.maliev.procurementservice/legacy.maliev.procurementservice.tests/bin/release/net10.0/legacy.maliev.procurementservice.tests.dll",
+      "adapterTypeName": "executor://xunit/VsTestRunner3/netcore/"
+    },
+    "baseline": {
+      "codeBase": "/home/runner/work/Legacy.Maliev.ProcurementService/Legacy.Maliev.ProcurementService/.supplier-identity-baseline/Legacy.Maliev.ProcurementService.Tests/bin/Release/net10.0/Legacy.Maliev.ProcurementService.Tests.dll",
+      "storage": "/home/runner/work/legacy.maliev.procurementservice/legacy.maliev.procurementservice/.supplier-identity-baseline/legacy.maliev.procurementservice.tests/bin/release/net10.0/legacy.maliev.procurementservice.tests.dll",
+      "adapterTypeName": "executor://xunit/VsTestRunner3/netcore/"
+    }
+  },
+  "assemblyBindingProvenance": {
+    "source": "Actual107 definition records from retained PR61 hosted artifact, ZIP SHA256 independently matched GitHub digest",
+    "run": 38865647506,
+    "job": 116857738516,
+    "artifactId": 12031295899,
+    "zipSha256": "dd581b1c60c6ae30d9a790eb9ec88c73cc10881a7cd4ca5084af979977de8968",
+    "rawTrx": [
+      {
+        "path": "supplier-ignored-address-id.trx",
+        "bytes": 353414,
+        "sha256": "2c5319a670f1d3e970350305f8392db09acf75406badaa0ec10c15cc63fcba1e",
+        "definitions": 52,
+        "assemblyRows": [
+          {
+            "storage": "/home/runner/work/legacy.maliev.procurementservice/legacy.maliev.procurementservice/legacy.maliev.procurementservice.tests/bin/release/net10.0/legacy.maliev.procurementservice.tests.dll",
+            "codeBase": "/home/runner/work/Legacy.Maliev.ProcurementService/Legacy.Maliev.ProcurementService/Legacy.Maliev.ProcurementService.Tests/bin/Release/net10.0/Legacy.Maliev.ProcurementService.Tests.dll",
+            "adapterTypeName": "executor://xunit/VsTestRunner3/netcore/",
+            "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredAddressIdTests"
+          }
+        ]
+      },
+      {
+        "path": "supplier-ignored-id.trx",
+        "bytes": 304158,
+        "sha256": "cb31788b1ee38adfaaffe2bd3b685856655d7968b4647a040661c98238c27d89",
+        "definitions": 55,
+        "assemblyRows": [
+          {
+            "storage": "/home/runner/work/legacy.maliev.procurementservice/legacy.maliev.procurementservice/legacy.maliev.procurementservice.tests/bin/release/net10.0/legacy.maliev.procurementservice.tests.dll",
+            "codeBase": "/home/runner/work/Legacy.Maliev.ProcurementService/Legacy.Maliev.ProcurementService/Legacy.Maliev.ProcurementService.Tests/bin/Release/net10.0/Legacy.Maliev.ProcurementService.Tests.dll",
+            "adapterTypeName": "executor://xunit/VsTestRunner3/netcore/",
+            "className": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierIgnoredIdTests"
+          }
+        ]
+      }
+    ],
+    "candidate": "Exact observed absolute codeBase/storage/adapter; no path fallback",
+    "baseline": "Exact observed workspace root and Release DLL suffix plus source-pinned workflow checkout .supplier-identity-baseline; new execution NOT RUN",
+    "historicalEvidenceDoesNotQualifyNewCandidate": true
+  },
+  "runtimeBindingFormat": "git-blob-record-v1",
+  "previousAcceptedSupplierRuntime": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+      "gitBlob": "1086ad175dd885789ea4deec794c8d916c88360e"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+      "gitBlob": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "gitBlob": "bcb6cdab502c0b0e62835399afc774c31f57d3bd"
+    }
+  },
+  "metadataIdentityBuildAdvance": {
+    "base": "9005cfbae5e5ef2b5e4267d1700b343256e7a821",
+    "scope": "Explicit separate MVC IConfigureOptions action + Program/native helper/file reader envelope; original107/e885 remain unchanged.",
+    "nativeAcceptance": "NOT RUN; original107 causal/source/resource/full normal hosted checks required"
+  },
+  "unpublishedResolverDesignCorrection": {
+    "heldProducer": "2ab0dc07909a8b690597b54262498afb1b0da5f3",
+    "status": "Unreferenced design superseded; no runtime acceptance or source closure",
+    "cause": "Framework resolver wrappers invalidate chain-based oracle; native options now independently constructed."
+  },
+  "previousHeaderIgnoredFieldRuntime": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+      "gitBlob": "0259b5722072609bb7c356bd1c9a5f49fd2d0caa"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+      "gitBlob": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "gitBlob": "bcb6cdab502c0b0e62835399afc774c31f57d3bd"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
+      "gitBlob": "be119d54a90a0772444b9f61f97be53a779610ba"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
+      "gitBlob": "3aca6cb413f13945efc28e9e2cebeafbe351d8f3"
+    }
+  },
+  "headerIgnoredFieldBuildAdvance": {
+    "issue": 70,
+    "base": "44c79ed24c142883563e037bbb5be724ea87322a",
+    "scope": "Only header ignored Id/CreatedDate/ModifiedDate validation;17consumedfields unchanged",
+    "runtimePostimage": {
+      "path": "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs",
+      "gitBlob": "b21e6fe697acdeb945dc0acbd3c80dee22a23a02"
+    },
+    "status": "NOT RUN; fresh hosted historical differential gates required"
+  },
+  "postContactSourceAdvance": {
+    "issue": 70,
+    "sourceController": {
+      "gitBlob": "273a4724d46bd95c16a0613cfac59954e4c2b035"
+    },
+    "scope": "POST-only original shipping-to-supplier contact copy; PUT/sharedMap/rawcanonical/durablecode unchanged",
+    "runtimePostimage": {
+      "path": "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs",
+      "gitBlob": "49461d4f6a13cba8b347001c24920006a5fd5eaf"
+    },
+    "status": "SOURCE ONLY; new hosted checks NOT RUN"
+  },
+  "previousSourceBodyInputRuntime": {
+    "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+      "gitBlob": "0259b5722072609bb7c356bd1c9a5f49fd2d0caa"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+      "gitBlob": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/SupplierIgnoredIdJsonConverter.cs": {
+      "gitBlob": "87fd40bbe9072c8da0cc3567020d2872b05a107d"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementIgnoredBodyIdJsonOptions.cs": {
+      "gitBlob": "112e92787f4c07d47cf0caa404abb392a3d8563b"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderFileMetadataRequestJsonConverter.cs": {
+      "gitBlob": "3aca6cb413f13945efc28e9e2cebeafbe351d8f3"
+    },
+    "Legacy.Maliev.ProcurementService.Api/Serialization/PurchaseOrderHeaderRequestJsonConverter.cs": {
+      "gitBlob": "b21e6fe697acdeb945dc0acbd3c80dee22a23a02"
+    },
+    "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": {
+      "gitBlob": "49461d4f6a13cba8b347001c24920006a5fd5eaf"
+    }
+  },
+  "sourceBodyInputBindingAdvance": {
+    "issue": 78,
+    "base": "646055868161c8f19e6b6daa278b01019146ac9a",
+    "sourceProducer": "35b6926e4a7abefa9ef701f4178bd6b3093d9648",
+    "bindingFormat": "git-blob-record-v1",
+    "preimages": {
+      "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+        "gitBlob": "0259b5722072609bb7c356bd1c9a5f49fd2d0caa"
+      },
+      "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+        "gitBlob": "bd8fdadcbee41805eedd7a43c6eb8a02099e17d7"
+      }
+    },
+    "postimages": {
+      "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementSourceBodyInputFormatter.cs": {
+        "gitBlob": "942a1b8f8f18ea3a9727691a05a784aec688614d"
+      },
+      "Legacy.Maliev.ProcurementService.Api/Serialization/ProcurementOriginalBodyModels.cs": {
+        "gitBlob": "e352494ce31eb5bead53a78cc4c950a7bae3e54e"
+      },
+      "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+        "gitBlob": "70310b7db68e08366ee3c723211cdd3910c03f9f"
+      },
+      "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj": {
+        "gitBlob": "30c131eb10c554b445e878c0b148cbe79d8c7cd3"
+      }
+    },
+    "status": "SOURCE ONLY; NOT RUN; all immutable baselines, exact cases, native outcomes, admission, disposal and hosted gates remain required"
+  },
+  "candidateJoinTestProject": {
+    "path": "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj",
+    "gitBlob": "af7ca6ae938ae85cac598a75852e38863fa6912a"
+  }
+}

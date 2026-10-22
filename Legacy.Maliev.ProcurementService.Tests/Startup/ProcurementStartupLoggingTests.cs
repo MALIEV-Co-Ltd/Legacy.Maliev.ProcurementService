@@ -197,9 +197,115 @@ public sealed class ProcurementStartupLoggingTests(ProcurementLoggingPostgresFix
         Assert.False(File.Exists(Path.Combine(root.FullName, "Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Api.xml")));
     }
 
-    private ProcurementFactory Factory(bool stubService = false) => new(fixture.SupplierConnection, fixture.OrderConnection, stubService);
 
-    private sealed class ProcurementFactory(string supplierConnection, string orderConnection, bool stubService) : WebApplicationFactory<Program>
+    [Fact]
+    public async Task ProductionHealthIdentity_AndSyntheticProbePreserveQuietPrivateSourceContract()
+    {
+        const string nonce = "0123456789abcdef0123456789abcdef";
+        using var factory = Factory(stubService: true, healthOnly: true);
+        using var client = factory.CreateClient();
+        factory.Logs.Lines.Clear();
+        var liveness = await SendObservationAsync(factory, "/procurement/liveness");
+        Assert.Equal(200, liveness.Response.StatusCode);
+        var marker = liveness.Response.Headers["X-Maliev-Health-Instance"].ToString();
+        Assert.Matches("^[a-f0-9]{32}$", marker);
+        Assert.Equal("no-store", liveness.Response.Headers.CacheControl.ToString());
+        Assert.False(liveness.Response.Headers.ContainsKey("X-Maliev-Diagnostic-Id"));
+        var readiness = await SendObservationAsync(factory, "/procurement/readiness");
+        Assert.Equal(200, readiness.Response.StatusCode);
+        Assert.Equal(marker, readiness.Response.Headers["X-Maliev-Health-Instance"].ToString());
+        Assert.Equal("no-store", readiness.Response.Headers.CacheControl.ToString());
+        var repeated = await SendObservationAsync(factory, "/procurement/liveness");
+        Assert.Equal(marker, repeated.Response.Headers["X-Maliev-Health-Instance"].ToString());
+        Assert.Empty(factory.Logs.Lines);
+
+        using var independent = Factory(stubService: true, healthOnly: true);
+        using var independentClient = independent.CreateClient();
+        var other = await SendObservationAsync(independent, "/procurement/liveness");
+        var otherMarker = other.Response.Headers["X-Maliev-Health-Instance"].ToString();
+        Assert.Matches("^[a-f0-9]{32}$", otherMarker);
+        Assert.NotEqual(marker, otherMarker);
+
+        var admitted = await SendObservationAsync(factory, "/internal/diagnostics/observability", nonce: nonce);
+        Assert.Equal(500, admitted.Response.StatusCode);
+        Assert.Equal(marker, admitted.Response.Headers["X-Maliev-Health-Instance"].ToString());
+        Assert.Equal(nonce, admitted.Response.Headers["X-Maliev-Diagnostic-Id"].ToString());
+        Assert.Equal("no-store", admitted.Response.Headers.CacheControl.ToString());
+        Assert.Equal("noindex", admitted.Response.Headers["X-Robots-Tag"].ToString());
+        var events = factory.Logs.Lines.Select(line =>
+        {
+            using var document = JsonDocument.Parse(line);
+            return document.RootElement.Clone();
+        }).ToArray();
+        Assert.Equal(3, events.Length);
+        Assert.Equal(new[] { "CRITICAL", "ERROR", "WARNING" },
+            events.Select(value => value.GetProperty("severity").GetString()).OrderBy(value => value));
+        Assert.All(events, value =>
+        {
+            Assert.Contains(value.GetProperty("Scopes").EnumerateArray(), scope =>
+                scope.ValueKind == JsonValueKind.Object
+                && scope.TryGetProperty("Synthetic", out var synthetic) && synthetic.ValueKind == JsonValueKind.True
+                && scope.TryGetProperty("DiagnosticId", out var diagnostic) && diagnostic.GetString() == nonce);
+            Assert.DoesNotContain(Sensitive, value.GetRawText(), StringComparison.Ordinal);
+        });
+        factory.Logs.Lines.Clear();
+        var throttled = await SendObservationAsync(factory, "/internal/diagnostics/observability", nonce: nonce);
+        Assert.Equal(429, throttled.Response.StatusCode);
+        Assert.False(throttled.Response.Headers.ContainsKey("X-Maliev-Health-Instance"));
+        Assert.False(throttled.Response.Headers.ContainsKey("X-Maliev-Diagnostic-Id"));
+        Assert.Equal("no-store", throttled.Response.Headers.CacheControl.ToString());
+        Assert.Empty(factory.Logs.Lines);
+    }
+
+    [Theory]
+    [InlineData("/procurement/liveness", "POST")]
+    [InlineData("/procurement/readiness", "HEAD")]
+    [InlineData("/procurement/aspire-liveness", "GET")]
+    [InlineData("/procurement/private/readiness", "GET")]
+    [InlineData("/liveness", "GET")]
+    public async Task ProductionHealthIdentity_OnlyRegisteredNativeGetHealthExposesIdentity(string path, string method)
+    {
+        using var factory = Factory(stubService: true, healthOnly: true);
+        using var client = factory.CreateClient();
+        var response = await SendObservationAsync(factory, path, method);
+        Assert.False(response.Response.Headers.ContainsKey("X-Maliev-Health-Instance"));
+        Assert.False(response.Response.Headers.ContainsKey("X-Maliev-Diagnostic-Id"));
+    }
+
+    [Theory]
+    [InlineData("GET", "203.0.113.8", "0123456789abcdef0123456789abcdef")]
+    [InlineData("POST", "127.0.0.1", "0123456789abcdef0123456789abcdef")]
+    [InlineData("GET", "127.0.0.1", "invalid")]
+    public async Task ProductionSyntheticProbe_UnadmittedRequestRemainsPrivate(string method, string peer, string nonce)
+    {
+        using var factory = Factory(stubService: true, healthOnly: true);
+        using var client = factory.CreateClient();
+        factory.Logs.Lines.Clear();
+        var response = await SendObservationAsync(factory, "/internal/diagnostics/observability", method, peer, nonce);
+        Assert.Equal(404, response.Response.StatusCode);
+        Assert.Equal("no-store", response.Response.Headers.CacheControl.ToString());
+        Assert.Equal("noindex", response.Response.Headers["X-Robots-Tag"].ToString());
+        Assert.False(response.Response.Headers.ContainsKey("X-Maliev-Health-Instance"));
+        Assert.False(response.Response.Headers.ContainsKey("X-Maliev-Diagnostic-Id"));
+        Assert.Empty(factory.Logs.Lines);
+    }
+
+    private static Task<HttpContext> SendObservationAsync(ProcurementFactory factory,
+        string path, string method = "GET", string peer = "127.0.0.1", string nonce = "0123456789abcdef0123456789abcdef")
+        => factory.Server.SendAsync(context =>
+        {
+            context.Request.Path = path;
+            context.Request.Method = method;
+            context.Request.Scheme = "https";
+            context.Connection.RemoteIpAddress = IPAddress.Parse(peer);
+            context.Request.Headers["X-Maliev-Diagnostic-Id"] = nonce;
+            context.Response.Headers.CacheControl = "public";
+        });
+
+    private ProcurementFactory Factory(bool stubService = false, bool healthOnly = false)
+        => new(fixture.SupplierConnection, fixture.OrderConnection, stubService, healthOnly);
+
+    private sealed class ProcurementFactory(string supplierConnection, string orderConnection, bool stubService, bool healthOnly = false) : WebApplicationFactory<Program>
     {
         private readonly RSA _rsa = RSA.Create(2048);
         public Mock<IProcurementService> Service { get; } = new(MockBehavior.Strict);
@@ -223,6 +329,8 @@ public sealed class ProcurementStartupLoggingTests(ProcurementLoggingPostgresFix
             builder.UseEnvironment("Production");
             builder.ConfigureTestServices(services =>
             {
+                if (healthOnly)
+                    services.Configure<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckServiceOptions>(options => options.Registrations.Clear());
                 if (stubService)
                 {
                     services.RemoveAll<IProcurementService>();
