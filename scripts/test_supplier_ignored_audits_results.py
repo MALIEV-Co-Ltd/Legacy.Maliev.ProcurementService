@@ -722,3 +722,6 @@ class BucketMigrationConsumerControls(unittest.TestCase):
                 with self.assertRaises(FileNotFoundError):
                     prep.require_bucket_test(candidate, baseline)
 
+
+# Include current-consumer rejection controls in this workflow-selected module.
+from test_procurement_address_null_consumer import SupplierMutationConsumerControls

@@ -3256,7 +3256,7 @@
       "gitBlob": "ffb85569c189055a9fb8a2ae66aaa8cd6d3c8005"
     },
     "scripts/prepare-metadata-ignored-audits-baseline.py": {
-      "gitBlob": "75f595b186b6319a0bbeb61ccdb87d1b144b77b9"
+      "gitBlob": "cb23583b1e29759d4938e02cbfafa82291bd382c"
     },
     "scripts/observe-metadata-ignored-audits-providers.py": {
       "gitBlob": "c187747f8d602bb015602e4acfbf8bab80a03b37"
@@ -3265,16 +3265,16 @@
       "gitBlob": "2a5864e3f15f97ffd6b8eb5335dda36cc575780e"
     },
     "scripts/test_metadata_ignored_audits_results.py": {
-      "gitBlob": "f0037a52f2a871227736138ef0debc9906cfe2d2"
+      "gitBlob": "1109366b2f1e49769347cfe14eaa122448fc1535"
     },
     "scripts/require-metadata-identity-admission.py": {
       "gitBlob": "0c91e5b94fa2ddaeb5e602ebfa68e242efd81a7a"
     },
     "scripts/procurement_address_null_consumer.py": {
-      "gitBlob": "023f5f78a38f827002bfdfa994c142d58e4042d9"
+      "gitBlob": "fa783df572b9fd01045352246365d73e6902c24b"
     },
     "scripts/test_procurement_address_null_consumer.py": {
-      "gitBlob": "3734cf9ef5eec73ee88abec53393df7a091d73f8"
+      "gitBlob": "94fc1eb22ae83eb3497988deca48405c2e1fe5a7"
     }
   },
   "baseInputs": {

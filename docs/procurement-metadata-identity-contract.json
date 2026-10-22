@@ -1733,7 +1733,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-metadata-identity-baseline.py": {
-      "gitBlob": "cc9011d33ea2a4dd86845d07c4bce0fee1215f2a"
+      "gitBlob": "18381f3ccdd93b370b8a0417c1656696404d71a1"
     },
     "scripts/verify-metadata-identity-results.py": {
       "gitBlob": "a1cb8d97044e6c4aa9da33549e967551074b616d"
@@ -1742,7 +1742,7 @@
       "gitBlob": "bdd2544a6ff844d6500512db9ac255192def30fb"
     },
     "scripts/test_metadata_identity_results.py": {
-      "gitBlob": "dabc9417d8bc8efb0e89d62251215cd2fd68d3c2"
+      "gitBlob": "bcafcd4133a79a3da6de26895696c379818e10b4"
     },
     "scripts/require-metadata-identity-admission.py": {
       "gitBlob": "0c91e5b94fa2ddaeb5e602ebfa68e242efd81a7a"
@@ -1751,10 +1751,10 @@
       "gitBlob": "def71e595a946d1ff7a7fe74fcc0ba640916872f"
     },
     "scripts/procurement_address_null_consumer.py": {
-      "gitBlob": "023f5f78a38f827002bfdfa994c142d58e4042d9"
+      "gitBlob": "fa783df572b9fd01045352246365d73e6902c24b"
     },
     "scripts/test_procurement_address_null_consumer.py": {
-      "gitBlob": "3734cf9ef5eec73ee88abec53393df7a091d73f8"
+      "gitBlob": "94fc1eb22ae83eb3497988deca48405c2e1fe5a7"
     }
   },
   "authEnrollmentTestBinding": {

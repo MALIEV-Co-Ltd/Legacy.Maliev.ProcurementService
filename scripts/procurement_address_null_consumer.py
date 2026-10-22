@@ -31,3 +31,64 @@ def require_address_test(candidate, blob):
     if blob(candidate, ADDRESS_TEST) != ADDRESS_TEST_BLOB:
         raise ValueError("Exact eight-row address null-body test successor differs")
     return ADDRESS_TEST
+
+# Current Supplier mutation successor; the preceding address transition stays frozen.
+SUPPLIER_MUTATION_BINDINGS = {
+    "Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs": (
+        "aa83c9ddc65ccac0bfc90974f64a817ad8cbbc68", "f010e662b533449c49f8080be48ceb0a7dcfdc0f"),
+    "Legacy.Maliev.ProcurementService.Api/Controllers/SupplierAddressesController.cs": (
+        "82e9080b60dd2e89882167ad9e19848d78eef5ee", "2b0028e2498e1255203b17f74a62a9d4023a9c46"),
+}
+SUPPLIER_MUTATION_TESTS = {
+    "Legacy.Maliev.ProcurementService.Tests/Controllers/ProcurementSupplierMutationSourceTests.cs":
+        "8a4f380fdba53512b48bb8e4c864f67ccc84584f",
+    "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierMissingParentHttpTests.cs":
+        "4a816860f2910ade0c0c0d7319314382d7edcc65",
+}
+
+
+def supplier_mutation_consumer_inputs(previous):
+    current = dict(previous)
+    for path, (before, after) in SUPPLIER_MUTATION_BINDINGS.items():
+        if previous.get(path) != "100644 blob " + before:
+            raise ValueError("Exact Supplier mutation consumer preimage differs: " + path)
+        current[path] = "100644 blob " + after
+    return current
+
+
+def supplier_mutation_runtime_blob(path, previous):
+    if path in SUPPLIER_MUTATION_BINDINGS:
+        before, after = SUPPLIER_MUTATION_BINDINGS[path]
+        if previous != before:
+            raise ValueError("Exact Supplier mutation runtime preimage differs: " + path)
+        return after
+    return previous
+
+
+def require_supplier_mutation_runtime(candidate, blob):
+    for path, (_, expected) in SUPPLIER_MUTATION_BINDINGS.items():
+        if blob(candidate, path) != expected:
+            raise ValueError("Exact Supplier mutation runtime successor differs: " + path)
+
+    def previous_blob(root, path):
+        actual = blob(root, path)
+        if path in SUPPLIER_MUTATION_BINDINGS:
+            before, after = SUPPLIER_MUTATION_BINDINGS[path]
+            if actual != after:
+                raise ValueError("Supplier mutation current runtime changed: " + path)
+            return before
+        return actual
+
+    return require_address_runtime(candidate, previous_blob) | set(SUPPLIER_MUTATION_BINDINGS)
+
+
+def require_supplier_mutation_tests(candidate, baseline, blob, git, base):
+    for path, expected in SUPPLIER_MUTATION_TESTS.items():
+        if (blob(candidate, path) != expected
+                or git(candidate, "rev-parse", "HEAD:" + path).decode().strip() != expected):
+            raise ValueError("Exact Supplier mutation working/HEAD test successor differs: " + path)
+        if (baseline / path).exists():
+            raise ValueError("Supplier mutation test must not be present in the frozen baseline: " + path)
+    if git(baseline, "ls-tree", "-r", "--name-only", base, "--", *SUPPLIER_MUTATION_TESTS).strip():
+        raise ValueError("Supplier mutation test must be absent from the frozen base object")
+    return set(SUPPLIER_MUTATION_TESTS)

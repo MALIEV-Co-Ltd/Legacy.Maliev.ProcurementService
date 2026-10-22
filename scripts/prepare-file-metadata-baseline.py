@@ -1,6 +1,8 @@
 """Bind only the new test harness to the immutable file-metadata baseline."""
 import hashlib
-from procurement_address_null_consumer import address_consumer_inputs, require_address_runtime, require_address_test
+from procurement_address_null_consumer import (address_consumer_inputs, require_address_runtime, require_address_test,
+    supplier_mutation_consumer_inputs, supplier_mutation_runtime_blob, require_supplier_mutation_runtime,
+    require_supplier_mutation_tests)
 import json
 import os
 import pathlib
@@ -107,7 +109,7 @@ def require_runtime_postimages(candidate, manifest):
         require(git_blob_record(manifest["implementationRuntime"][path]) == expected,
                 "Exact Supplier omitted-size runtime successor differs: " + path)
     for path, expected in runtime_bindings(manifest).items():
-        require(blob(candidate, path) == expected, "Candidate runtime postimage differs: " + path)
+        require(blob(candidate, path) == supplier_mutation_runtime_blob(path, expected), "Candidate runtime postimage differs: " + path)
 
 
 def require_phase_evidence(output, phase, budget=None):
@@ -174,8 +176,9 @@ def prepare(baseline, manifest_path, verify_only=False):
     changed = set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--",
                       "Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Application",
                       "Legacy.Maliev.ProcurementService.Data", "Legacy.Maliev.ProcurementService.Domain").decode().splitlines())
-    require(changed == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME) | require_address_runtime(candidate, blob), "Unexpected production source changes")
+    require(changed == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME) | require_supplier_mutation_runtime(candidate, blob), "Unexpected production source changes")
     require_runtime_postimages(candidate, manifest)
+    require_supplier_mutation_tests(candidate, baseline, blob, git, BASE)
     for path in ("scripts/observe-supplier-address-providers.py", "scripts/supplier_address_owned_processes.py"):
         require(blob(candidate, path) == git(baseline, "rev-parse", BASE + ":" + path).decode().strip(),
                 "Reviewed process/provider ownership implementation changed")

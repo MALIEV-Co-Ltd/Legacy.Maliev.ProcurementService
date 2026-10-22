@@ -475,5 +475,9 @@ class RuntimeInputs(unittest.TestCase):
 
 
 
+# Include current-consumer rejection controls in this workflow-selected module.
+from test_procurement_address_null_consumer import SupplierMutationConsumerControls
+
+
 if __name__ == "__main__":
     unittest.main()
