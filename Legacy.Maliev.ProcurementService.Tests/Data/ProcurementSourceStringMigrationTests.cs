@@ -198,8 +198,9 @@ public sealed class ProcurementSourceStringMigrationTests : IAsyncLifetime
             await using var command = new NpgsqlCommand(
                 "LOCK TABLE public.\"PurchaseOrderFile\" IN ACCESS SHARE MODE", blocker, transaction);
             await command.ExecuteNonQueryAsync(lifetime.Token);
-            var error = await Assert.ThrowsAsync<PostgresException>(
+            var failure = await Assert.ThrowsAsync<InvalidOperationException>(
                 () => context.Database.MigrateAsync(downgrade ? Previous(true) : StringBoundary(true), lifetime.Token));
+            var error = Assert.IsType<PostgresException>(failure.InnerException);
             Assert.Equal(PostgresErrorCodes.LockNotAvailable, error.SqlState);
             Assert.Equal(before, await BucketStateAsync(context, lifetime.Token));
             await transaction.RollbackAsync(lifetime.Token);
