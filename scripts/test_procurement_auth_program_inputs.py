@@ -1,3 +1,4 @@
+from test_supplier_parent_audit_consumer import SupplierParentAuditConsumerTests
 """Mutation controls for immutable runtime/public-fixture admission."""
 import importlib.util
 import pathlib

@@ -3,7 +3,9 @@ import datetime
 import hashlib
 from procurement_address_null_consumer import (address_consumer_inputs, require_address_runtime, require_address_test,
     supplier_mutation_consumer_inputs, supplier_mutation_runtime_blob, require_supplier_mutation_runtime,
-    require_supplier_mutation_tests)
+    require_supplier_mutation_tests, supplier_parent_audit_consumer_inputs,
+    supplier_parent_audit_runtime_blob, require_supplier_parent_audit_runtime,
+    require_supplier_parent_audit_tests)
 import importlib.util
 import json
 import os
@@ -26,6 +28,7 @@ FIXTURE = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntime
 TEST_PROJECT = "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj"
 TESTS = {"metadata": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredBodyIdTests.cs"}
 SCRIPT_PATHS = {
+    "scripts/test_supplier_parent_audit_consumer.py",
     "scripts/procurement_address_null_consumer.py",
     "scripts/test_procurement_address_null_consumer.py",
     "scripts/prepare-metadata-identity-baseline.py",
@@ -122,7 +125,7 @@ def require_runtime_postimages(candidate, manifest):
         require(git_blob_record(manifest["runtimePostimages"][path]) == expected,
                 "Exact Supplier omitted-size runtime successor differs: " + path)
     for path, expected in runtime_bindings(manifest).items():
-        require(blob(candidate, path) == supplier_mutation_runtime_blob(path, expected), "Wrong reviewed runtime postimage: " + path)
+        require(blob(candidate, path) == supplier_parent_audit_runtime_blob(path, supplier_mutation_runtime_blob(path, expected)), "Wrong reviewed runtime postimage: " + path)
 
 
 def phase_reports(directory):
@@ -275,7 +278,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     runtime = manifest["runtimePostimages"]
     allowed = {PROGRAM, API_PROJECT, CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SUPPLIER, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME)
     require(set(runtime) == allowed, "Wrong exact runtime input roster")
-    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *directories).decode().splitlines()) == allowed | require_supplier_mutation_runtime(candidate, blob),
+    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *directories).decode().splitlines()) == allowed | require_supplier_mutation_runtime(candidate, blob) | require_supplier_parent_audit_runtime(candidate, blob),
             "Unexpected production source/build drift")
     require_runtime_postimages(candidate, manifest)
     for path in ("scripts/observe-supplier-address-providers.py", "scripts/supplier_address_owned_processes.py",
@@ -338,6 +341,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     allowed_tests.add(require_address_test(candidate, blob))
     allowed_tests.add(require_bucket_test(candidate, baseline))
     allowed_tests.update(require_supplier_mutation_tests(candidate, baseline, blob, git, BASE))
+    allowed_tests.update(require_supplier_parent_audit_tests(candidate, baseline, blob, git, BASE))
     require(compiled_tests == allowed_tests, "Unexpected compiled test drift")
     require(blob(baseline, old_harness["path"])
             == git(baseline, "rev-parse", BASE + ":" + old_harness["path"]).decode().strip(),

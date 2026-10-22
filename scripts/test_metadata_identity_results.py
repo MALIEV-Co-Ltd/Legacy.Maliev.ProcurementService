@@ -1,3 +1,4 @@
+from test_supplier_parent_audit_consumer import SupplierParentAuditConsumerTests
 """Synthetic controls only; fabricated UUIDs are never hosted test evidence."""
 import copy
 import hashlib
@@ -510,7 +511,7 @@ class TypedSupplierProvenanceControls(unittest.TestCase):
 
 
     def test_every_validly_shaped_but_wrong_git_object_is_refused(self):
-        actual = {path: prep.supplier_mutation_runtime_blob(path, record["gitBlob"])
+        actual = {path: prep.supplier_parent_audit_runtime_blob(path, prep.supplier_mutation_runtime_blob(path, record["gitBlob"]))
                   for path, record in CONTRACT["runtimePostimages"].items()}
         with mock.patch.object(prep, "blob", side_effect=lambda root, path: actual[path]):
             prep.require_runtime_postimages(pathlib.Path("."), CONTRACT)

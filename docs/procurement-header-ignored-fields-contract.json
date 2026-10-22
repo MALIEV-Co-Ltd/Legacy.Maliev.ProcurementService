@@ -2236,7 +2236,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-header-ignored-fields-baseline.py": {
-      "gitBlob": "c603ed5ad4fbb6f69418390d1d052023dec4ecf9"
+      "gitBlob": "f95d88b0dd125f86a08119d6ce04f5b686fe0d53"
     },
     "scripts/verify-header-ignored-fields-results.py": {
       "gitBlob": "009579c8ec2790bd0d0338a4fd61cb083cfdbcd6"
@@ -2245,7 +2245,7 @@
       "gitBlob": "9e3ce41ef9d13090b0b38dc694b8c03b557c51e9"
     },
     "scripts/test_header_ignored_fields_results.py": {
-      "gitBlob": "b23f7a28306c398c00964d8b6a54dc64c0626faa"
+      "gitBlob": "322ba8703e67b60730342cc808941e21b61aa26c"
     },
     ".github/workflows/procurement-header-ignored-fields.yml": {
       "gitBlob": "4bfecc0451accbf0a32e0b1a376a200a23dc90f5"
@@ -2254,10 +2254,13 @@
       "gitBlob": "0c91e5b94fa2ddaeb5e602ebfa68e242efd81a7a"
     },
     "scripts/procurement_address_null_consumer.py": {
-      "gitBlob": "fa783df572b9fd01045352246365d73e6902c24b"
+      "gitBlob": "12ece82864e6528af492d26b2b337415901bb24e"
     },
     "scripts/test_procurement_address_null_consumer.py": {
-      "gitBlob": "94fc1eb22ae83eb3497988deca48405c2e1fe5a7"
+      "gitBlob": "5db670fbf1e29f9ee9652ab9abafed6403853463"
+    },
+    "scripts/test_supplier_parent_audit_consumer.py": {
+      "gitBlob": "adab41322af29c140e82923e335d0a6399abbb1c"
     }
   },
   "baseInputs": {

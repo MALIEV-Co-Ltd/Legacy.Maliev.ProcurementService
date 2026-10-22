@@ -98,14 +98,18 @@ class AddressNullConsumerControls(unittest.TestCase):
                 self.assertIs(address.require_supplier_mutation_runtime, prep.require_supplier_mutation_runtime)
                 self.assertIs(address.require_supplier_mutation_tests, prep.require_supplier_mutation_tests)
                 self.assertIs(address.require_address_test, prep.require_address_test)
+                self.assertIs(address.require_supplier_parent_audit_runtime, prep.require_supplier_parent_audit_runtime)
+                self.assertIs(address.require_supplier_parent_audit_tests, prep.require_supplier_parent_audit_tests)
                 source = (HERE / filename).read_text(encoding="utf-8")
                 self.assertIn("| require_supplier_mutation_runtime(candidate, blob)", source)
                 self.assertIn("require_supplier_mutation_tests(candidate, baseline, blob, git, BASE)", source)
+                self.assertIn("| require_supplier_parent_audit_runtime(candidate, blob)", source)
+                self.assertIn("require_supplier_parent_audit_tests(candidate, baseline, blob, git, BASE)", source)
                 if filename in PREPARERS[2:]:
                     self.assertIn(".add(require_address_test(candidate, blob))", source)
                 if filename in PREPARERS[3:]:
-                    self.assertIn('tracked_inputs(candidate, 74) == supplier_mutation_consumer_inputs(address_consumer_inputs(manifest["reviewedInputs"]))', source)
-                    self.assertIn('current_inputs = supplier_mutation_consumer_inputs(address_consumer_inputs(manifest["reviewedInputs"]))', source)
+                    self.assertIn('tracked_inputs(candidate, 74) == supplier_parent_audit_consumer_inputs(supplier_mutation_consumer_inputs(address_consumer_inputs(manifest["reviewedInputs"])))', source)
+                    self.assertIn('current_inputs = supplier_parent_audit_consumer_inputs(supplier_mutation_consumer_inputs(address_consumer_inputs(manifest["reviewedInputs"])))', source)
 
 
 

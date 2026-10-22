@@ -4,7 +4,9 @@ import fnmatch
 import hashlib
 from procurement_address_null_consumer import (address_consumer_inputs, require_address_runtime, require_address_test,
     supplier_mutation_consumer_inputs, supplier_mutation_runtime_blob, require_supplier_mutation_runtime,
-    require_supplier_mutation_tests)
+    require_supplier_mutation_tests, supplier_parent_audit_consumer_inputs,
+    supplier_parent_audit_runtime_blob, require_supplier_parent_audit_runtime,
+    require_supplier_parent_audit_tests)
 import importlib.util
 import json
 import os
@@ -69,6 +71,7 @@ SOURCE_POSTIMAGES = {
 PROJECTS = tuple("Legacy.Maliev.ProcurementService." + part for part in ("Api", "Application", "Data", "Domain"))
 PATTERNS = ("directory.build.*", "directory.packages.*", "global.json", "nuget.config", "*.slnx")
 SCRIPT_PATHS = {
+    "scripts/test_supplier_parent_audit_consumer.py",
     "scripts/procurement_address_null_consumer.py",
     "scripts/test_procurement_address_null_consumer.py",
     "scripts/prepare-header-ignored-fields-baseline.py",
@@ -272,7 +275,7 @@ def prepare(baseline, manifest_path, verify_only=False):
             and set(manifest["runtimePostimages"]) == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME),
             "Only reviewed header, POST repository, and Supplier audit converter may change runtime")
     require(tracked_inputs(baseline) == manifest["baseInputs"]
-            and tracked_inputs(candidate, 74) == supplier_mutation_consumer_inputs(address_consumer_inputs(manifest["reviewedInputs"])), "Frozen72 baseline/reviewed74 input inventory differs")
+            and tracked_inputs(candidate, 74) == supplier_parent_audit_consumer_inputs(supplier_mutation_consumer_inputs(address_consumer_inputs(manifest["reviewedInputs"]))), "Frozen72 baseline/reviewed74 input inventory differs")
     differences = {path for path in set(manifest["baseInputs"]) | set(manifest["reviewedInputs"])
                    if manifest["baseInputs"].get(path) != manifest["reviewedInputs"].get(path)}
     require(differences == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME) | {TEST_PROJECT}
@@ -296,7 +299,7 @@ def prepare(baseline, manifest_path, verify_only=False):
             and manifest["baseInputs"][HEADER] == "100644 blob 8d6d8eb2c232a76bae57d6419a69da37b687b36d",
             "Header source postimage/preimage differs")
     repository_postimage = git_blob_record(manifest["runtimePostimages"][REPOSITORY])
-    require(blob(candidate, REPOSITORY) == repository_postimage
+    require(blob(candidate, REPOSITORY) == supplier_parent_audit_runtime_blob(REPOSITORY, repository_postimage)
             and manifest["reviewedInputs"][REPOSITORY] == "100644 blob " + repository_postimage
             and manifest["baseInputs"][REPOSITORY] == "100644 blob e3e6d902b10d7b985f12bb5d852982313cb13884",
             "POST repository source pre/postimage differs")
@@ -305,7 +308,7 @@ def prepare(baseline, manifest_path, verify_only=False):
             and manifest["reviewedInputs"][METADATA_SEAM] == "100644 blob " + metadata_postimage
             and manifest["baseInputs"][METADATA_SEAM] == "100644 blob be119d54a90a0772444b9f61f97be53a779610ba",
             "Metadata audit seam source postimage/preimage differs")
-    current_inputs = supplier_mutation_consumer_inputs(address_consumer_inputs(manifest["reviewedInputs"]))
+    current_inputs = supplier_parent_audit_consumer_inputs(supplier_mutation_consumer_inputs(address_consumer_inputs(manifest["reviewedInputs"])))
     for path in current_inputs:
         metadata = current_inputs[path]
         require(re.fullmatch(r"100644 blob [0-9a-f]{40}", metadata) is not None
@@ -332,7 +335,7 @@ def prepare(baseline, manifest_path, verify_only=False):
             and read_bounded(baseline / TEST_PROJECT, MAX_SOURCE_BYTES, budget)
             == git(baseline, "show", BASE + ":" + TEST_PROJECT),
             "Candidate-only project transition changed historical baseline project")
-    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME) | require_supplier_mutation_runtime(candidate, blob),
+    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME) | require_supplier_mutation_runtime(candidate, blob) | require_supplier_parent_audit_runtime(candidate, blob),
             "Unexpected production source/build drift")
     require(not git(candidate, "ls-files", "--others", "--exclude-standard", "--", *PROJECTS,
                     "Legacy.Maliev.ProcurementService.Tests"), "Untracked compiled inputs forbidden")
@@ -355,6 +358,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     expected_changes.add(require_address_test(candidate, blob))
     expected_changes.add(require_bucket_test(candidate, baseline))
     expected_changes.update(require_supplier_mutation_tests(candidate, baseline, blob, git, BASE))
+    expected_changes.update(require_supplier_parent_audit_tests(candidate, baseline, blob, git, BASE))
     require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--",
                     "Legacy.Maliev.ProcurementService.Tests").decode().splitlines()) == expected_changes,
             "Unexpected compiled test drift")

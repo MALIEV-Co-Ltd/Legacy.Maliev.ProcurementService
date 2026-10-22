@@ -1,3 +1,4 @@
+from test_supplier_parent_audit_consumer import SupplierParentAuditConsumerTests
 """Synthetic acceptance controls; fixtures are not actual hosted test evidence."""
 import copy
 import io
@@ -597,7 +598,7 @@ class TypedMetadataProvenanceControls(unittest.TestCase):
 
 
     def test_every_validly_shaped_but_wrong_git_object_is_refused(self):
-        actual = {path: prep.supplier_mutation_runtime_blob(path, record["gitBlob"])
+        actual = {path: prep.supplier_parent_audit_runtime_blob(path, prep.supplier_mutation_runtime_blob(path, record["gitBlob"]))
                   for path, record in CONTRACT["implementationRuntime"].items()}
         with mock.patch.object(prep, "blob", side_effect=lambda root, path: actual[path]):
             prep.require_runtime_postimages(pathlib.Path("."), CONTRACT)
