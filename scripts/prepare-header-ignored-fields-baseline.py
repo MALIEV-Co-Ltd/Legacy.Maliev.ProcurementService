@@ -1,6 +1,8 @@
 """Bind exact header199 source/actual phase proofs; no original binary or deployment claim."""
 import datetime
 import fnmatch
+from procurement_address_null_consumer import (health_alias_previous_inputs,
+    require_health_alias_runtime, require_health_alias_tests)
 import hashlib
 from procurement_address_null_consumer import (address_consumer_inputs, require_address_runtime, require_address_test,
     supplier_mutation_consumer_inputs, supplier_mutation_runtime_blob, require_supplier_mutation_runtime,
@@ -235,6 +237,8 @@ def tracked_inputs(root, expected_count=72):
             "/" not in path and any(fnmatch.fnmatchcase(path.lower(), pattern) for pattern in PATTERNS)
         ):
             selected[path] = metadata.decode("ascii", errors="strict")
+    if expected_count == 74:
+        selected = health_alias_previous_inputs(selected)
     require(expected_count in (72, 74) and len(selected) == expected_count,
             "Exact phase runtime/build/public fixture inputs required")
     return selected
@@ -337,7 +341,7 @@ def prepare(baseline, manifest_path, verify_only=False):
             and read_bounded(baseline / TEST_PROJECT, MAX_SOURCE_BYTES, budget)
             == git(baseline, "show", BASE + ":" + TEST_PROJECT),
             "Candidate-only project transition changed historical baseline project")
-    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME) | require_supplier_mutation_runtime(candidate, blob) | require_supplier_parent_audit_runtime(candidate, blob),
+    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME) | require_supplier_mutation_runtime(candidate, blob) | require_supplier_parent_audit_runtime(candidate, blob) | require_health_alias_runtime(candidate, blob, git),
             "Unexpected production source/build drift")
     require(not git(candidate, "ls-files", "--others", "--exclude-standard", "--", *PROJECTS,
                     "Legacy.Maliev.ProcurementService.Tests"), "Untracked compiled inputs forbidden")
@@ -361,6 +365,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     expected_changes.add(require_bucket_test(candidate, baseline))
     expected_changes.update(require_supplier_mutation_tests(candidate, baseline, blob, git, BASE))
     expected_changes.update(require_supplier_parent_audit_tests(candidate, baseline, blob, git, BASE))
+    expected_changes.update(require_health_alias_tests(candidate, baseline, blob, git, BASE))
     expected_changes.update(require_supplier_parent_audit_harnesses(candidate, blob, git))
     require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--",
                     "Legacy.Maliev.ProcurementService.Tests").decode().splitlines()) == expected_changes,
