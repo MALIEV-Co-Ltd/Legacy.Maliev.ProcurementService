@@ -201,3 +201,46 @@ def require_supplier_parent_audit_harnesses(candidate, blob, git):
                 or git(candidate, "rev-parse", "HEAD:" + path).decode().strip() != expected):
             raise ValueError("Exact Supplier parent-audit working/HEAD harness differs: " + path)
     return set(SUPPLIER_PARENT_AUDIT_HARNESSES)
+
+
+# Exact health-route additions; historical runtime inventories and baselines stay frozen.
+import stat as _health_alias_stat
+HEALTH_ALIAS_RUNTIME = "Legacy.Maliev.ProcurementService.Api/Controllers/LegacyProcurementHealthController.cs"
+HEALTH_ALIAS_TEST = "Legacy.Maliev.ProcurementService.Tests/Controllers/LegacyProcurementHealthHttpTests.cs"
+HEALTH_ALIAS_BINDINGS = {
+    HEALTH_ALIAS_RUNTIME: "4d81008ab101f21125dc4c6da7146453cc343bbf",
+    HEALTH_ALIAS_TEST: "50a8f89f606f574985eb259648158de75bb62b0e",
+}
+
+
+def health_alias_previous_inputs(current):
+    if current.get(HEALTH_ALIAS_RUNTIME) != "100644 blob " + HEALTH_ALIAS_BINDINGS[HEALTH_ALIAS_RUNTIME]:
+        raise ValueError("Exact added health controller metadata required")
+    previous = dict(current)
+    del previous[HEALTH_ALIAS_RUNTIME]
+    return previous
+
+
+def _require_health_alias_working_head(candidate, path, blob, git):
+    expected = HEALTH_ALIAS_BINDINGS[path]
+    mode = (candidate / path).lstat().st_mode
+    metadata = "100644 blob " + expected + "\t" + path
+    if (not _health_alias_stat.S_ISREG(mode) or mode & 0o111
+            or blob(candidate, path) != expected
+            or git(candidate, "ls-tree", "HEAD", "--", path).decode().strip() != metadata):
+        raise ValueError("Exact regular nonexecutable health alias working/HEAD source differs: " + path)
+
+
+def require_health_alias_runtime(candidate, blob, git):
+    _require_health_alias_working_head(candidate, HEALTH_ALIAS_RUNTIME, blob, git)
+    return {HEALTH_ALIAS_RUNTIME}
+
+
+def require_health_alias_tests(candidate, baseline, blob, git, base):
+    for path in HEALTH_ALIAS_BINDINGS:
+        _require_health_alias_working_head(candidate, path, blob, git)
+        if (baseline / path).exists():
+            raise ValueError("Health aliases must be absent from the frozen working baseline: " + path)
+    if git(baseline, "ls-tree", "-r", "--name-only", base, "--", *HEALTH_ALIAS_BINDINGS).strip():
+        raise ValueError("Health aliases must be absent from the frozen base object")
+    return {HEALTH_ALIAS_TEST}

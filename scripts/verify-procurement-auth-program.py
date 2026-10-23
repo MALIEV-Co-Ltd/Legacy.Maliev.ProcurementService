@@ -1,4 +1,5 @@
 """Require exact producers, unchanged runtime/fixture inputs, and individual joined passes."""
+from procurement_address_null_consumer import health_alias_previous_inputs
 import collections
 import fnmatch
 import hashlib
@@ -88,7 +89,7 @@ def require_consumer_inputs(current, producer, manifest):
     digest = hashlib.sha256(json.dumps(unchanged, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     if len(producer) != binding["inputCount"] or len(unchanged) != binding["unchangedInputCount"] or digest != binding["unchangedInputSha256"]:
         raise ValueError("Supplier explicit-size retained inventory differs")
-    require_equal(current, supplier_parent_audit_consumer_inputs(supplier_mutation_consumer_inputs(address_consumer_inputs(observation_consumer_inputs(expected)))))
+    require_equal(health_alias_previous_inputs(current), supplier_parent_audit_consumer_inputs(supplier_mutation_consumer_inputs(address_consumer_inputs(observation_consumer_inputs(expected)))))
 
 
 def require_harness_custody(local, producer, manifest):
