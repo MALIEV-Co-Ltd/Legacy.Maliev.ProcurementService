@@ -113,7 +113,11 @@ public sealed class WorkflowContractTests
     [InlineData(true)]
     public void ReviewedImagePreload_PreservesValidationAndSeparateEvidence(bool auth)
     {
-        ValidateReviewedPreload(ReadReviewedPreload(auth), auth);
+        var source = ReadReviewedPreload(auth);
+        ValidateReviewedPreload(source, auth);
+        var currentPin = source.Replace("actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02", "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9", StringComparison.Ordinal);
+        Assert.NotEqual(source, currentPin);
+        Assert.Throws<InvalidOperationException>(() => ValidateReviewedPreload(currentPin, auth));
     }
 
     [Theory]
@@ -348,7 +352,7 @@ public sealed class WorkflowContractTests
         {
             if (ReadScalar(job, "timeout-minutes") != "30")
                 throw new InvalidOperationException("Image preload must retain the bounded job deadline.");
-            WorkflowContractValidator.ValidateImagePreloadGroup(steps[7], steps[11], steps[12]);
+            WorkflowContractValidator.ValidateImagePreloadGroup(steps[7], steps[11], steps[12], historicalFixture);
         }
         else if (steps.Length != 10)
         {
@@ -492,7 +496,7 @@ internal static partial class WorkflowContractValidator
         if (steps.Children.Count == 9)
         {
             RequireScalarValue(validateJob, "timeout-minutes", "30");
-            ValidateImagePreloadGroup(steps.Children[3], steps.Children[7], steps.Children[8]);
+            ValidateImagePreloadGroup(steps.Children[3], steps.Children[7], steps.Children[8], historicalFixture);
             steps = new YamlSequenceNode(steps.Children.Where((_, index) => index is not (3 or 7 or 8)));
         }
         if (steps.Children.Count != 6)
@@ -790,7 +794,7 @@ internal static partial class WorkflowContractValidator
             throw new InvalidOperationException("Mandatory focused commands must remain exact and ordered.");
     }
 
-    internal static void ValidateImagePreloadGroup(YamlNode preloadNode, YamlNode cleanupNode, YamlNode custodyNode)
+    internal static void ValidateImagePreloadGroup(YamlNode preloadNode, YamlNode cleanupNode, YamlNode custodyNode, bool historicalFixture)
     {
         var preload = RequireMapping(preloadNode, "reviewed image preload");
         RequireStepKeys(preload, "name", "timeout-minutes", "run");
@@ -814,7 +818,9 @@ internal static partial class WorkflowContractValidator
         RequireStepKeys(custody, "name", "if", "uses", "with");
         RequireScalarValue(custody, "name", "Preserve image custody evidence");
         RequireScalarValue(custody, "if", "always()");
-        RequireScalarValue(custody, "uses", "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9");
+        RequireScalarValue(custody, "uses", historicalFixture
+            ? "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+            : "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9");
         var inputs = RequireMapping(custody, "with");
         RequireStepKeys(inputs, "name", "path", "if-no-files-found", "retention-days");
         RequireScalarValue(inputs, "name", "postgres-preload-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}");
