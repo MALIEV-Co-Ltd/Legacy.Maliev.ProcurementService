@@ -1,3 +1,4 @@
+from procurement_artifact_transport_consumer import current_workflow_binding
 """Bind only the new171 harness to accepted9005; require exact source and normal hosted disposal."""
 import datetime
 from procurement_address_null_consumer import (health_alias_previous_inputs,
@@ -31,6 +32,8 @@ FIXTURE = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntime
 TEST_PROJECT = "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj"
 TESTS = {"metadata": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredBodyIdTests.cs"}
 SCRIPT_PATHS = {
+    "scripts/procurement_artifact_transport_consumer.py",
+    "scripts/test_procurement_artifact_transport_consumer.py",
     "scripts/test_supplier_parent_audit_harness_consumer.py",
     "scripts/test_supplier_parent_audit_consumer.py",
     "scripts/procurement_address_null_consumer.py",
@@ -327,7 +330,8 @@ def prepare(baseline, manifest_path, verify_only=False):
     if auth is not None:
         require(isinstance(auth, dict) and set(auth) == {"path", "gitBlob"}
                 and auth["path"] == "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs"
-                and blob(candidate, auth["path"]) == git_blob_record({"gitBlob": auth["gitBlob"]}),
+                and blob(candidate, auth["path"]) == current_workflow_binding(candidate, auth["path"],
+                    git_blob_record({"gitBlob": auth["gitBlob"]}), blob, git),
                 "Wrong separately reviewed Auth workflow-test successor")
         allowed_tests.add(auth["path"])
     require(manifest["supplierOmittedSizeHarness"] == {"path": SUPPLIER_QUERY_TEST, "gitBlob": SUPPLIER_QUERY_TEST_BLOB}

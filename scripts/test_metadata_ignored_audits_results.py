@@ -1,3 +1,4 @@
+from test_procurement_artifact_transport_consumer import ArtifactTransportConsumerControls
 from test_supplier_parent_audit_harness_consumer import SupplierParentAuditHarnessConsumerTests
 from test_supplier_parent_audit_consumer import SupplierParentAuditConsumerTests
 """Synthetic controls only; fabricated UUIDs are never hosted test evidence."""
