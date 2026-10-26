@@ -1411,7 +1411,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-supplier-ignored-audits-baseline.py": {
-      "gitBlob": "e3be0e7171c0890da77d4b0211418a92d0798858"
+      "gitBlob": "f5413a775d9fba84812d60533391e2d74bf599b7"
     },
     "scripts/verify-supplier-ignored-audits-results.py": {
       "gitBlob": "2b718a0b66baeab9ee321f23482df27addabd9f3"
@@ -1420,7 +1420,7 @@
       "gitBlob": "d35a08ddc313367c2a549ec770bb42127f209698"
     },
     "scripts/test_supplier_ignored_audits_results.py": {
-      "gitBlob": "2148b9898cb85e9b36ee3a19d0604f2136d8de66"
+      "gitBlob": "bc864396d9da3c8d074618b7280f347ea6755932"
     },
     ".github/workflows/procurement-supplier-ignored-audits.yml": {
       "gitBlob": "2a274d3e9c0272a76cdf5516e034a5b314ff2223"
@@ -1439,6 +1439,12 @@
     },
     "scripts/test_supplier_parent_audit_harness_consumer.py": {
       "gitBlob": "40db8787cd5f6d24b726814aef5967a8c047cd1b"
+    },
+    "scripts/procurement_artifact_transport_consumer.py": {
+      "gitBlob": "7b0152fa302b565e3c1dee6f6e9a72f30ef109c5"
+    },
+    "scripts/test_procurement_artifact_transport_consumer.py": {
+      "gitBlob": "f31d246ebe95b6ef82035c3b479068a0188ba0bb"
     }
   },
   "baseInputs": {

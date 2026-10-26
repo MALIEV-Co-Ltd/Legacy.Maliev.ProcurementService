@@ -1,3 +1,4 @@
+from procurement_artifact_transport_consumer import current_workflow_binding
 """Bind exact metadata audit332 source/actual phase proofs; no original binary or deployment claim."""
 import datetime
 import fnmatch
@@ -66,6 +67,8 @@ SOURCE_POSTIMAGES = {
 PROJECTS = tuple("Legacy.Maliev.ProcurementService." + part for part in ("Api", "Application", "Data", "Domain"))
 PATTERNS = ("directory.build.*", "directory.packages.*", "global.json", "nuget.config", "*.slnx")
 SCRIPT_PATHS = {
+    "scripts/procurement_artifact_transport_consumer.py",
+    "scripts/test_procurement_artifact_transport_consumer.py",
     "scripts/test_supplier_parent_audit_harness_consumer.py",
     "scripts/test_supplier_parent_audit_consumer.py",
     "scripts/procurement_address_null_consumer.py",
@@ -337,7 +340,8 @@ def prepare(baseline, manifest_path, verify_only=False):
         require(git_blob_record(compiled[path]) == expected,
                 "Exact reviewed source-family compiled successor differs")
     for path, record in compiled.items():
-        require(blob(candidate, path) == supplier_parent_audit_harness_blob(path, git_blob_record(record)), "Reviewed compiled test source differs")
+        require(blob(candidate, path) == current_workflow_binding(candidate, path,
+                supplier_parent_audit_harness_blob(path, git_blob_record(record)), blob, git), "Reviewed compiled test source differs")
     expected_changes = {TEST, TEST_PROJECT} | SOURCE_TESTS | {SUPPLIER_QUERY_TEST, SUPPLIER_LIST_POLICY_TEST}
     for path in (AUTH_TEST, FILE_HARNESS, COUNTRY_TEST):
         if path == COUNTRY_TEST or git(baseline, "rev-parse", BASE + ":" + path).decode().strip() != git_blob_record(compiled[path]):

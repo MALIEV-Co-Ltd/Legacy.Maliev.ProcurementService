@@ -24,9 +24,20 @@ public sealed class WorkflowContractTests
     private static readonly string DataProject = File.ReadAllText(
         FindRepositoryFile("Legacy.Maliev.ProcurementService.Data", "Legacy.Maliev.ProcurementService.Data.csproj"));
 
+    private static void BuildAndTest_RejectsPreviousUploadArtifactPins()
+    {
+        foreach (var previousPin in new[] { "ea165f8d65b6e75b540449e92b4886f43607fa02", "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a" })
+        {
+            var previous = Workflow.Replace("actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9", "actions/upload-artifact@" + previousPin, StringComparison.Ordinal);
+            Assert.NotEqual(Workflow, previous);
+            Assert.Throws<InvalidOperationException>(() => WorkflowContractValidator.Validate(previous));
+        }
+    }
+
     [Fact]
     public void BuildAndTest_SatisfiesStructuralContract()
     {
+        BuildAndTest_RejectsPreviousUploadArtifactPins();
         WorkflowContractValidator.Validate(Workflow);
         foreach (var (original, replacement) in new[]
         {
@@ -102,7 +113,11 @@ public sealed class WorkflowContractTests
     [InlineData(true)]
     public void ReviewedImagePreload_PreservesValidationAndSeparateEvidence(bool auth)
     {
-        ValidateReviewedPreload(ReadReviewedPreload(auth), auth);
+        var source = ReadReviewedPreload(auth);
+        ValidateReviewedPreload(source, auth);
+        var currentPin = source.Replace("actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02", "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9", StringComparison.Ordinal);
+        Assert.NotEqual(source, currentPin);
+        Assert.Throws<InvalidOperationException>(() => ValidateReviewedPreload(currentPin, auth));
     }
 
     [Theory]
@@ -337,7 +352,7 @@ public sealed class WorkflowContractTests
         {
             if (ReadScalar(job, "timeout-minutes") != "30")
                 throw new InvalidOperationException("Image preload must retain the bounded job deadline.");
-            WorkflowContractValidator.ValidateImagePreloadGroup(steps[7], steps[11], steps[12]);
+            WorkflowContractValidator.ValidateImagePreloadGroup(steps[7], steps[11], steps[12], historicalFixture);
         }
         else if (steps.Length != 10)
         {
@@ -362,8 +377,11 @@ public sealed class WorkflowContractTests
         }
         var results = steps.Single(step => step.Children.TryGetValue(new YamlScalarNode("run"), out var run)
             && ((YamlScalarNode)run).Value == "python3 -B scripts/verify-procurement-auth-program.py results auth-program-results");
+        var artifactReference = historicalFixture
+            ? "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+            : "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9";
         var artifact = steps.Single(step => step.Children.TryGetValue(new YamlScalarNode("uses"), out var uses)
-            && ((YamlScalarNode)uses).Value == "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+            && ((YamlScalarNode)uses).Value == artifactReference
             && step.Children.TryGetValue(new YamlScalarNode("with"), out var settings)
             && settings is YamlMappingNode inputs
             && inputs.Children.TryGetValue(new YamlScalarNode("path"), out var path)
@@ -481,7 +499,7 @@ internal static partial class WorkflowContractValidator
         if (steps.Children.Count == 9)
         {
             RequireScalarValue(validateJob, "timeout-minutes", "30");
-            ValidateImagePreloadGroup(steps.Children[3], steps.Children[7], steps.Children[8]);
+            ValidateImagePreloadGroup(steps.Children[3], steps.Children[7], steps.Children[8], historicalFixture);
             steps = new YamlSequenceNode(steps.Children.Where((_, index) => index is not (3 or 7 or 8)));
         }
         if (steps.Children.Count != 6)
@@ -516,7 +534,9 @@ internal static partial class WorkflowContractValidator
 
         RequireScalarValue(evidence, "name", "Preserve validation evidence");
         RequireScalarValue(evidence, "if", "always()");
-        RequireScalarValue(evidence, "uses", "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+        RequireScalarValue(evidence, "uses", historicalFixture
+            ? "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+            : "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9");
         var evidenceInputs = RequireMapping(evidence, "with");
         if (evidenceInputs.Children.Count != 4)
         {
@@ -673,7 +693,7 @@ internal static partial class WorkflowContractValidator
               run: python3 -B scripts/verify-po-header-hosted-red.py rebuild
             - name: Preserve isolated PO header RED and restoration evidence
               if: always()
-              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+              uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
               with:
                 name: procurement-po-header-red-${{ github.sha }}
                 path: po-header-red-control-results
@@ -693,7 +713,7 @@ internal static partial class WorkflowContractValidator
                 python3 -B scripts/verify-purchase-order-header-results.py purchase-order-header-results
             - name: Preserve focused header binding evidence
               if: always()
-              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+              uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
               with:
                 name: procurement-header-binding-${{ github.sha }}
                 path: purchase-order-header-results
@@ -763,7 +783,7 @@ internal static partial class WorkflowContractValidator
         RequireStepKeys(evidence, "name", "if", "uses", "with");
         RequireScalarValue(evidence, "name", "Preserve focused workflow evidence");
         RequireScalarValue(evidence, "if", "always()");
-        RequireScalarValue(evidence, "uses", "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+        RequireScalarValue(evidence, "uses", "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9");
         var inputs = RequireMapping(evidence, "with");
         RequireStepKeys(inputs, "name", "path", "if-no-files-found", "retention-days");
         RequireScalarValue(inputs, "name", "procurement-focused-workflow-${{ github.sha }}");
@@ -779,7 +799,7 @@ internal static partial class WorkflowContractValidator
             throw new InvalidOperationException("Mandatory focused commands must remain exact and ordered.");
     }
 
-    internal static void ValidateImagePreloadGroup(YamlNode preloadNode, YamlNode cleanupNode, YamlNode custodyNode)
+    internal static void ValidateImagePreloadGroup(YamlNode preloadNode, YamlNode cleanupNode, YamlNode custodyNode, bool historicalFixture)
     {
         var preload = RequireMapping(preloadNode, "reviewed image preload");
         RequireStepKeys(preload, "name", "timeout-minutes", "run");
@@ -803,7 +823,9 @@ internal static partial class WorkflowContractValidator
         RequireStepKeys(custody, "name", "if", "uses", "with");
         RequireScalarValue(custody, "name", "Preserve image custody evidence");
         RequireScalarValue(custody, "if", "always()");
-        RequireScalarValue(custody, "uses", "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+        RequireScalarValue(custody, "uses", historicalFixture
+            ? "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+            : "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9");
         var inputs = RequireMapping(custody, "with");
         RequireStepKeys(inputs, "name", "path", "if-no-files-found", "retention-days");
         RequireScalarValue(inputs, "name", "postgres-preload-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}");
