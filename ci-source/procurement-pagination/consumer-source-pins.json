@@ -1,0 +1,2852 @@
+[
+  {
+    "repository": "Legacy.Maliev.ProcurementService",
+    "commit": "1249989e04040bd1326842ebf2e1f438369cf8c9",
+    "tree": "d1a4593400afdedfa1710fd0995e3afeb8fdc56d",
+    "archive": "Legacy.Maliev.ProcurementService.zip",
+    "archiveSha256": "d2596ed468cc4c3e57154bb07875dd67b3d85e995a2195742e6cba76891e2cea",
+    "files": [
+      {
+        "path": ".dockerignore",
+        "bytes": 335,
+        "sha256": "9dcff9fae6bd9b9bbf1f4ea9593407a8ae5f2191951c46bfebde2e21a2ad5101",
+        "gitBlobOid": "93eb303fe856a3343eccd4a5f81ed67e5b3319da"
+      },
+      {
+        "path": ".gitattributes",
+        "bytes": 39,
+        "sha256": "91c171a7f4e295966f6e40aba83b0a11a56b4c99b59b9c55fcf54f15df207bc0",
+        "gitBlobOid": "eb143e5370a2461f96f4610df1f6e30828c5639f"
+      },
+      {
+        "path": ".github/dependabot.yml",
+        "bytes": 1189,
+        "sha256": "00c0921059adb3657db22507ce2df29e37505fbfebbe7992b9dc697630c384de",
+        "gitBlobOid": "fdb8f2d01a6ba1344f9cc7336055d049e2338ea3"
+      },
+      {
+        "path": ".github/workflows/_build-and-test.yml",
+        "bytes": 1959,
+        "sha256": "7e2929416e13222cacc85a0a7086a488058b9a4d0d09e5c0c0b32a20cc6aa09e",
+        "gitBlobOid": "4c6b66925b9e93d10ae6f3cd28f5df913295b085"
+      },
+      {
+        "path": ".github/workflows/ci-develop.yml",
+        "bytes": 247,
+        "sha256": "55438892e1be3a3f5ff3e3e96aa69d74fc50884f1f465ce0ef1bc7e733ff825f",
+        "gitBlobOid": "c1bf874ecf39eab2864889fb4f2d8b38d1017bb0"
+      },
+      {
+        "path": ".github/workflows/ci-main.yml",
+        "bytes": 241,
+        "sha256": "4a5aeebe5da345b1fd15ff1a81197914a8bcd2fdb4c478bf04166ceeca273892",
+        "gitBlobOid": "56aa263726fd6b3f767e4044c9037b0c7b54d7d5"
+      },
+      {
+        "path": ".github/workflows/ci-staging.yml",
+        "bytes": 246,
+        "sha256": "5436292ba9523f34ca9f3801fdd674ed6e7d18b4e4d6e0b72bdb9c2d2fa1c1cd",
+        "gitBlobOid": "a069e91ab4fbd614302a6a1f73e1182a181ebb2c"
+      },
+      {
+        "path": ".github/workflows/commerce-source-intake.yml",
+        "bytes": 2917,
+        "sha256": "33026363339262a6e9ba10ebc50acb3e917110479d3f3a8dcd0ecffb68593c19",
+        "gitBlobOid": "363ac447c63f50144d61bddd18f436258305ff1e"
+      },
+      {
+        "path": ".github/workflows/pr-validation.yml",
+        "bytes": 293,
+        "sha256": "8645e3bae51218b468c15c026360f8b2befd29813236e10d30def30bcee68cff",
+        "gitBlobOid": "49b784875dd9275866012396c3ff51a0b1f9dee2"
+      },
+      {
+        "path": ".github/workflows/procurement-auth-program-validation.yml",
+        "bytes": 3584,
+        "sha256": "74f97673e7047820be822529ec716acbe4ace4523b923b822113bc7295e15446",
+        "gitBlobOid": "153776891b3e02f8e9be294b9af791b01df9188a"
+      },
+      {
+        "path": ".github/workflows/procurement-defaults-owner-deadline.yml",
+        "bytes": 2267,
+        "sha256": "4c0fc718a99917387ec1927fd34fbccdc1d8a0afebc69012e50bacf06890f150",
+        "gitBlobOid": "97b90b9de13b0cc3b245126cf8f7ab339cf29900"
+      },
+      {
+        "path": ".github/workflows/procurement-lifecycle-focused-validation.yml",
+        "bytes": 2794,
+        "sha256": "5986d2f3916fab172b8e6a53ecf3bf8111e0f89ed3b8a6189973a0fefe255d12",
+        "gitBlobOid": "153707260f853298ed009420b3564029051b9898"
+      },
+      {
+        "path": ".github/workflows/procurement-literal-boundaries.yml",
+        "bytes": 2336,
+        "sha256": "a6c75295b792115c5ef0397d79abe34f6789316f968a57324345438e34ee9d15",
+        "gitBlobOid": "3698fa3eaf4bdf97aa85f1cd15c42343d16c6fd2"
+      },
+      {
+        "path": ".github/workflows/procurement-master-query-validation.yml",
+        "bytes": 2486,
+        "sha256": "ab266fd6a526f7db33370319bbb30b4bedeeebe7606fa1c697dcc415a0acdcd3",
+        "gitBlobOid": "707f71dd4ea6614b6226e8e8ef46f71e3f994cdc"
+      },
+      {
+        "path": ".github/workflows/procurement-nullable-sort-source.yml",
+        "bytes": 2261,
+        "sha256": "3bc3d8b6f15c6343ec06f445c9ea016a88b927872dbe168cb35996bed0ebb72a",
+        "gitBlobOid": "c0899a2c4cdfacec9d91ca5cb64bea2b7255880b"
+      },
+      {
+        "path": ".github/workflows/procurement-pagination-source-qualification.yml",
+        "bytes": 5896,
+        "sha256": "f95a486f574a66782aaedeaca160bffe81045aa0f5f1e0f811f4143d5eb24ecf",
+        "gitBlobOid": "64c7f7c55ee94be183868c01f99dbcc43465b4dd"
+      },
+      {
+        "path": ".github/workflows/procurement-string-boundaries.yml",
+        "bytes": 2337,
+        "sha256": "5786662b17c9023f5b3926458b0ddb46c64dce2ce2e5c4a10d86c74c71d2c51b",
+        "gitBlobOid": "3dac721561c659d3f101a5038a22b4f36b25e5eb"
+      },
+      {
+        "path": ".github/workflows/publish-image.yml",
+        "bytes": 1279,
+        "sha256": "1f8789e555794dd7f0785cc1086f1db71609a43a6fe47f60d14ee5267bc08482",
+        "gitBlobOid": "226d1c7964c798b2d5d2018bb6ec521212eb3090"
+      },
+      {
+        "path": ".gitignore",
+        "bytes": 124,
+        "sha256": "119830ec1543e7d524a8c24f1414cceb81c4db869b3e3fcf095f1dd29a48c61c",
+        "gitBlobOid": "1669114d7fb2bda83281049aa9e624dc24627c4f"
+      },
+      {
+        "path": "AGENTS.md",
+        "bytes": 1975,
+        "sha256": "075322946439684a0d368d1fbcff2694f160fa7cd19ecbb0f38be35a8f32ca75",
+        "gitBlobOid": "e2ffb807c7309a0499b91dd28db71dfb0e6774d0"
+      },
+      {
+        "path": "Directory.Build.props",
+        "bytes": 515,
+        "sha256": "b03b93e505f9bd0f5d396c5041d9b35d6cfccb454384ba8151e55e05edf45083",
+        "gitBlobOid": "b47c8d23651f11ea8366bb63f4520fb8de6c6df3"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/Authorization/ProcurementIamComposition.cs",
+        "bytes": 4660,
+        "sha256": "730e0cfde2314b27403f3ed15e653d4436b06e268070b134e93e198ca9ba3d34",
+        "gitBlobOid": "1bad18d6797295124d84083ba7f5e93276124c1e"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/Authorization/ProcurementPermissions.cs",
+        "bytes": 3010,
+        "sha256": "4af69a3b4f4c5ab015ac861370ab0d2064503e26432dd19f5011b9a802a59abb",
+        "gitBlobOid": "58a5a184edc50559048dd4b0329b80b5a6a57b5f"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/Authorization/ProcurementWorkloadExchangeGuard.cs",
+        "bytes": 5240,
+        "sha256": "dd7a1fe2ff08469f877ccde6f6d9f41594b248ddb23b48ca17586d8cd454e264",
+        "gitBlobOid": "2cbafd5644b7653a1eb323788be8f95bd98337ad"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/Controllers/FilesController.cs",
+        "bytes": 4123,
+        "sha256": "f360ae7ce914530f9d7ea1f28c7c78cfb5c8798a23262e443c85b99301dc029b",
+        "gitBlobOid": "03c411035df3b6268972792e0df835534aec1fc1"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/Controllers/OrderItemsController.cs",
+        "bytes": 3250,
+        "sha256": "c1f7ff542d96b62f96902036c7f183cf260d50502a3437b3db64c237ec5ae86e",
+        "gitBlobOid": "2bb65612ab3c143e0a93384c63baabf107dd082f"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/Controllers/PurchaseOrderAddressesController.cs",
+        "bytes": 3125,
+        "sha256": "1118c55fb0c6f26dc710af1c6ff823ffe2aa9698963f4ab6bd0321f21d90c750",
+        "gitBlobOid": "91b6bf11646f89f5c6736e7f54af964e044ae6ed"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/Controllers/PurchaseOrdersController.cs",
+        "bytes": 4158,
+        "sha256": "a2c176ba75037413518e1a6583ca12ff1e9b13ecf14887f7d2dceaff7e6ab848",
+        "gitBlobOid": "19530897851dcd97dbf52ee71d297f0b4cd0517c"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/Controllers/SupplierAddressesController.cs",
+        "bytes": 3883,
+        "sha256": "2bf922539e9f6a9799ec0bea34cf413b26fd09b9bf57a1b09f221647ce93608a",
+        "gitBlobOid": "63dfa7c375090e0a1d3dd191f7430b1519c8bdea"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs",
+        "bytes": 3964,
+        "sha256": "6cee88563e170e8a292664da66a2246ffd843b88aad1539b9fa1ccc702c04b6b",
+        "gitBlobOid": "f7549641da035088c553d07e42202c73ea881512"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/Dockerfile",
+        "bytes": 1330,
+        "sha256": "34bb4f012e49dc09e03390cd383402aa56fbe72062ad57b86350ad7f14a68793",
+        "gitBlobOid": "b2c525d395006937f2faf1dbbe0ffa53b669e6d0"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/DurableCreateEndpoint.cs",
+        "bytes": 4363,
+        "sha256": "b6cd4b67dcf381753adbdb7e5cf9514084e5284dad7ddf3355511ac89ed0d222",
+        "gitBlobOid": "091ba3450e2c2d5c9d4c8443307d6e28f0945073"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/IdempotentCreates.cs",
+        "bytes": 795,
+        "sha256": "14c9a0608a7e3f9c55a4ef98ce29c949ebb298c0f81ead3ccea1c56b6e7f5f63",
+        "gitBlobOid": "c8a0e7f92a10b833cd5a5254b0253f7537b67074"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/Legacy.Maliev.ProcurementService.Api.csproj",
+        "bytes": 1411,
+        "sha256": "0f058a048b14bb8f6e4b7d4734825789b8765a054069c3102db0017be00c0ae0",
+        "gitBlobOid": "0fefb94217cd594e097c2e7aaee24da28b7c8c56"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/Program.cs",
+        "bytes": 3484,
+        "sha256": "0d401630a02338d03042c4c6e80edb62bcbe6c3b9c5d2a635dc7648b082c328f",
+        "gitBlobOid": "a890fd92f49e3179df1083952b3e0b46d8bbefa8"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/Properties/launchSettings.json",
+        "bytes": 618,
+        "sha256": "3d5744d3d6ffce5b0a1a1b30d81543bda5ddc6146fd7ee9d1592c3b769210a40",
+        "gitBlobOid": "5b49ab6aa8f800b7ed4a376abb9ccf0942625251"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/appsettings.Development.json",
+        "bytes": 119,
+        "sha256": "817db0bf2ecca78364c41dbaf7949bf2504cf47a1c3d0d54f3be8178fefc030b",
+        "gitBlobOid": "0c208ae9181e5e5717e47ec1bd59368aebc6066e"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Api/appsettings.json",
+        "bytes": 398,
+        "sha256": "d23c8ea8e5ec65dc0425ed341a99eb2d4460bc922b42a45b8201ddb6a68d3442",
+        "gitBlobOid": "b057873ee272efdfc5311a0179a6214f4e1768b7"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Application/Interfaces/IDurableProcurementCreates.cs",
+        "bytes": 810,
+        "sha256": "13e8791df7ade5ddbbb2e143bf6f07aaa669cf531771792d76d48dd202bb6464",
+        "gitBlobOid": "b91e35948db367bb5279029e5838a0e87617041c"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs",
+        "bytes": 12035,
+        "sha256": "61146144fd438bc79f075e6875472f142f557db2a68deb58cf0b8853a6ae18a9",
+        "gitBlobOid": "90c2628be1aceef0178533add09fdea7efa4c42a"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Application/Legacy.Maliev.ProcurementService.Application.csproj",
+        "bytes": 482,
+        "sha256": "242674f76261bb05fc8e079c764a4e53c5c82c187a7f039b968b1d6e883a6ab8",
+        "gitBlobOid": "8f5ac62cbd3b2f8cf8370a899a575e25d4a07dab"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Application/Models/DurableCreateModels.cs",
+        "bytes": 1081,
+        "sha256": "9f4add70e6568d01f2639249be7e0cf0c37c558cca5d5af8aacb1e12baef2aa6",
+        "gitBlobOid": "d532cd12e4b14711e21c909144b3755e2e803796"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs",
+        "bytes": 5510,
+        "sha256": "932d10b51303ef4d2e98306c84a2e2a1d55dce33cff0ff90a7f182484e1b5713",
+        "gitBlobOid": "615ca9428c7d72cf1e4f9dbfc6dde8b58578cddf"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Application/Models/ProcurementTransactionUncertainException.cs",
+        "bytes": 423,
+        "sha256": "5939e09abe4ddfdf0f48e77299cd3193f1401a62146958e5c8eda16016bebbf9",
+        "gitBlobOid": "6486a812e5e78ae8e8be9bcf54ee8683989e0615"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs",
+        "bytes": 8313,
+        "sha256": "3304110f70ef974fecdb74b7edd30b25c36f000f86b0b39116c8c4a185ea91e1",
+        "gitBlobOid": "9b17fd46fce25162e30854210a1f945a1f9d6f48"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/CreateReceiptRecord.cs",
+        "bytes": 2215,
+        "sha256": "bf5efa39a007eb20be00d2bdcfa08768ea8f8ca1553c916ba534f4d6937e7c91",
+        "gitBlobOid": "7df3a2a661854d928fb4ac6363596546419ffeb3"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/DistributedProcurementCache.cs",
+        "bytes": 2947,
+        "sha256": "177ceb574312365499b77fa3f417b1b574ad6cea4aae5773d8708d0cce011d21",
+        "gitBlobOid": "cd88f078148dadf470850b383874f2453c3ab146"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/DurableProcurementCreates.cs",
+        "bytes": 7916,
+        "sha256": "059bf4f8a99c2c6bdeb40219b4101a27789baa71c8cf12b935da6898c1261b1b",
+        "gitBlobOid": "d8e7d7f4182fc613a399990acf9109f0ca7a9e3a"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Legacy.Maliev.ProcurementService.Data.csproj",
+        "bytes": 1182,
+        "sha256": "d30612eef15d7e780e32dde8d14f4e7ad1ba821cc553f72a7e16930322185161",
+        "gitBlobOid": "c152c047af1ddb1bcedccf08b25d6a03320d34f3"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/LegacyUtf16StringStorage.cs",
+        "bytes": 1381,
+        "sha256": "bb8d7dc5fe86ef1aa33f960c7063ad50e4659e93608add55dcd54305524c92a7",
+        "gitBlobOid": "2e68e9f383160dfe6082f7a23b859bfbf5b2d325"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20260715045323_InitialPurchaseOrderPostgresCompatibility.Designer.cs",
+        "bytes": 13207,
+        "sha256": "f3c9a57094fe51c54eb58b53471778776521ae79e15c4b21d385cd062d7b32de",
+        "gitBlobOid": "ff647d92152d6acaa1b5d54c2381711263a6e38a"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20260715045323_InitialPurchaseOrderPostgresCompatibility.cs",
+        "bytes": 9438,
+        "sha256": "03301e6f3b2c70983f2e87c94eb5a146edcff5d0f4f608e61942e992ea5afe4f",
+        "gitBlobOid": "f27917f143b0cbdf2809881b96c2ccce3b4dccb8"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20260721031258_FixTimestampColumnType.Designer.cs",
+        "bytes": 13345,
+        "sha256": "df5ab1ddad179047b7152518eb21aaffee4706438f46fe6a7354739142285273",
+        "gitBlobOid": "2e9588ac6e0a9da4feaa4fb59a683f785560c713"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20260721031258_FixTimestampColumnType.cs",
+        "bytes": 1906,
+        "sha256": "ffb91646968102e48858dab840bb7c05365e201ac211493255cb7f423097eaeb",
+        "gitBlobOid": "86049cb052f1390dad51c9800f301d2af411a87f"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261001013651_AddDurablePurchaseOrderCreateReceipts.Designer.cs",
+        "bytes": 15803,
+        "sha256": "3f2b9ff40c627b0e7972efc173e9fbe1eabfd7ec59435b4d792841132a276d27",
+        "gitBlobOid": "9ab941b4fbbc26b1bf4277328792cc594936e7ca"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261001013651_AddDurablePurchaseOrderCreateReceipts.cs",
+        "bytes": 2701,
+        "sha256": "ce40e219e5a195a5a5f4f78df44d82e97b7e5e100fe2e9b771e897364d5bb2e9",
+        "gitBlobOid": "8b1f910f078b8a4d13f15c6903a9825e0198bbbf"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261006210000_PreservePurchaseOrderSourceStringBoundaries.Designer.cs",
+        "bytes": 20076,
+        "sha256": "02b39a5cd8a0d7bede249eedac89633d77f232fb3babed2ea2c63f12088c52f5",
+        "gitBlobOid": "143e1ae02a1fd1100eb2d75dce9b8124188e4cd4"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261006210000_PreservePurchaseOrderSourceStringBoundaries.cs",
+        "bytes": 7985,
+        "sha256": "67e8bca2aecc8c13dfaf15bcd28feeb73cad3ba0b2d99ebb050883ee0c6f2a01",
+        "gitBlobOid": "1663bacce0bf61de8db5688a82e48354c24ba658"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/PurchaseOrderDbContextModelSnapshot.cs",
+        "bytes": 19925,
+        "sha256": "e7dac6ec502f8be5d10424e900a476e8c1495aff34cad3aec475115914570928",
+        "gitBlobOid": "e583ebd59e3b43b03ae68bbe91cf8abdfd763da8"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20260715045317_InitialSupplierPostgresCompatibility.Designer.cs",
+        "bytes": 6225,
+        "sha256": "d5bfa2472a2078c0bdcf1c351463f1df8405d60ea154f22cd3241c7efc92cd3b",
+        "gitBlobOid": "84c0f1841ecd125e52dbdd8fff6d560cf26baab7"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20260715045317_InitialSupplierPostgresCompatibility.cs",
+        "bytes": 4432,
+        "sha256": "4a71fe849edb3af05e0b651b62aed2f6c5420b94557ec21708b5511b1e914608",
+        "gitBlobOid": "2d36ff6600a6c973baf717fe07c61e72a3cad80e"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20260721031252_FixTimestampColumnType.Designer.cs",
+        "bytes": 6285,
+        "sha256": "c5b64ab25e0551684838fafbd266c124ffc29bdc4442e77e7943872a15007e5e",
+        "gitBlobOid": "7edb0df2fe539c86629d0296e95ae428506d2a90"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20260721031252_FixTimestampColumnType.cs",
+        "bytes": 1721,
+        "sha256": "f3061887f77e600e49bb779af6e004059c703bdfde7c4b08ec4c90a998cef9ea",
+        "gitBlobOid": "f6c70ffcb468140850659ff2dee07290d5b891b4"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20261001013648_AddDurableSupplierCreateReceipts.Designer.cs",
+        "bytes": 8703,
+        "sha256": "2b192c95822c18916d93e40e5342d21c81cb390dda15c6c44311671971935190",
+        "gitBlobOid": "022a0c30e60b669e22b310ba6f589244f4d004fa"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20261001013648_AddDurableSupplierCreateReceipts.cs",
+        "bytes": 2661,
+        "sha256": "21e9659b30e9907d0deb78593294eabe79a1558504b10633f97085786f109ee1",
+        "gitBlobOid": "653202333c192a7c96844f639858f9e362524d77"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20261006210000_PreserveSupplierSourceStringBoundaries.Designer.cs",
+        "bytes": 11405,
+        "sha256": "f215f333d633b30156f84f151d8453eb87f11a32e9be3eb10e672e3a3ae770ac",
+        "gitBlobOid": "a36060169d6812f83f1fe764faddc0c0eeee2fea"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20261006210000_PreserveSupplierSourceStringBoundaries.cs",
+        "bytes": 6084,
+        "sha256": "1dd0bf5955b23f627b7c4820723a03fcf5607c265b98120f7f4b10b695df5cd3",
+        "gitBlobOid": "8c82219082c3a6f2bb629a65d72d8a459b07b5d4"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/SupplierDbContextModelSnapshot.cs",
+        "bytes": 11259,
+        "sha256": "f902c87617ea1da7a1c376e34ea747c63362912cfca3199d4214a6d9abc2d4fd",
+        "gitBlobOid": "e77cced2826569ba96cb46d659e0fb90be8ceb0e"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/ProcurementDbContextFactories.cs",
+        "bytes": 1307,
+        "sha256": "a7dd48f0b8ed1e3eb89690e0678eb3d16711767bf803a9e11706061dd17b2463",
+        "gitBlobOid": "0eadcec30749cdccde9c4a8eae39e5f9c9a0ec80"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/ProcurementDbContexts.cs",
+        "bytes": 9823,
+        "sha256": "8f9a4df11191d8fb1d47ae5b7f36a7ebc9991e56576c1c7207d5db8cb1f96ec9",
+        "gitBlobOid": "b025a7b1939af8e27474f7b978a49a076143638c"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs",
+        "bytes": 24540,
+        "sha256": "7e9b8bd1aab607111c8c9fccfdc521695b8743bb79113c303e36bec32620ee08",
+        "gitBlobOid": "34aead52a4555030d73da312dde868a3b58170c9"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Data/ReceiptReadiness.cs",
+        "bytes": 4931,
+        "sha256": "fd18f524bd30f2b00b282801a9e330987bbd3579829ffe45419db705938837ec",
+        "gitBlobOid": "7e252a2a88928f12d421b10fe7cf831146268b9d"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Domain/Legacy.Maliev.ProcurementService.Domain.csproj",
+        "bytes": 327,
+        "sha256": "0aec8d23fc31d062753209091db0c1b51aef9b67e0ed3626bf0dee66e38dc118",
+        "gitBlobOid": "51addf44ecf979d69d9d77527d402f14c06a4fa5"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Domain/ProcurementEntities.cs",
+        "bytes": 7931,
+        "sha256": "ed853669f5ea4c72b80aa2cc8d994f2a3cf795c86c63a7f924e8717d2932fbd1",
+        "gitBlobOid": "141a05708c3374afe8ad9471698a892addbf2531"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Application/ProcurementApplicationServiceTests.cs",
+        "bytes": 4552,
+        "sha256": "86deffd10afc3db72d2a27c94dd0248e3cdf8a97d3c45ebfe5f5061b0c648def",
+        "gitBlobOid": "903380e4866eae014aeff5770a12355b948f1d84"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Caching/DistributedProcurementCacheTests.cs",
+        "bytes": 4416,
+        "sha256": "14e5e616659a54b834f3b75d3fc286a2182a82bcb01a73f79331e7326777972e",
+        "gitBlobOid": "958df218aae0a34e0ce451008c31efc3181a28a6"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Controllers/ProcurementControllerContractTests.cs",
+        "bytes": 5005,
+        "sha256": "8f8d8b32d34262a20f97cd5f4627d14d544e216c0c052897c49b47977c9e3286",
+        "gitBlobOid": "5cf23fcc448277d5a4fe86ac4fc5749502604de9"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Controllers/ProcurementOpenApiHttpContractTests.cs",
+        "bytes": 8255,
+        "sha256": "349dd65362c20f7b36253afb36a7692e40b1bae1321bd51273aba5986d8cdc0f",
+        "gitBlobOid": "73933ffa40816460f8770b2cf72183fd499d648d"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementModelCompatibilityTests.cs",
+        "bytes": 2823,
+        "sha256": "05b27d74d9dcec6f69f5dd5781e6fb908267d307955fa11f1a9972660618c18f",
+        "gitBlobOid": "e0c5f86b10f9f8b0208fe3c4ab3117c0bb4b78e1"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementPostgresMigrationTests.cs",
+        "bytes": 6519,
+        "sha256": "efa20f7f2a15ce5df7c7df4441dd459b22f22455f64250f48a491a1a2460ddeb",
+        "gitBlobOid": "d6b48740f74ff82739356b9f2e53cf4e7c2ae62e"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementSourceStringMigrationTests.cs",
+        "bytes": 7071,
+        "sha256": "ea2dfa671b3415eaab0404e057241c4e1dcfd3cbc00b6deef559c70c8aceaa70",
+        "gitBlobOid": "9b860a0b8b85006c8998a85eff38dc64bc8b00df"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Data/TimestampMigrationContractTests.cs",
+        "bytes": 2434,
+        "sha256": "f6a3d4446ccb85bac559ee56ce5d1e2ea5870fd8fd1775fbbf5c030bfd117e66",
+        "gitBlobOid": "aa609d2b04d574a7869bee7fa102e232de05450c"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Integration/HistoricalNullableSupplierModelCustomizer.cs",
+        "bytes": 790,
+        "sha256": "f65f8096ce4c71beab2247f9a37607debd157ba489bc4807c42617559af4e2ce",
+        "gitBlobOid": "57bfd8f09b3a0dd115e827b94d9dc466aa02d79e"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementAddressAndFileCreateLiteralSourceTests.cs",
+        "bytes": 6014,
+        "sha256": "fafbd6c9d093ce6346bad827cfab7e565b8df6f8e355054b4e9d58b4eddc853f",
+        "gitBlobOid": "887aac7c745dd09b7617aa656683c66f0e1f2720"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementAddressLifecycleTests.cs",
+        "bytes": 23785,
+        "sha256": "b374f905c5973e66c7d7bfbfdbceee136e95c13c6f7fc36f344b1c9509225f63",
+        "gitBlobOid": "5b672d53ada565182ef4656acbeb82cb40b8211f"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementAuthenticatedIamTests.cs",
+        "bytes": 19871,
+        "sha256": "7ceee7178d81351bc2d96eb31a0720eb908c2721b5c63d377cd62efbdbfa47f9",
+        "gitBlobOid": "5120d29dab2cc55c2b808ad25346b92c4a3ee7bc"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementChildLifecycleTests.cs",
+        "bytes": 13526,
+        "sha256": "2516124df5029a659fdb9a7e04d508a40ad9e835ff1f3eb0188d7e96da63be6e",
+        "gitBlobOid": "f9b4e2b337d1e2dce1f94a9c68c18f22ab444456"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDefaultsOwnerDeadlineTests.cs",
+        "bytes": 16187,
+        "sha256": "29e438a64eeb7c166e3b69bc42e80578861479ac8d3151ca84a4590ae7b7a0de",
+        "gitBlobOid": "ab0a6f8420e95c6cfb824b465db3f174237ee8c7"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementDurableCreateTests.cs",
+        "bytes": 57230,
+        "sha256": "a4c878aac67e08aaf4ec002d3b413c43858941e88efdf39342901c6502227b21",
+        "gitBlobOid": "64d2a21c0d805efac2255f3f7ee5e66b69c00c30"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMasterQuerySourceTests.cs",
+        "bytes": 10518,
+        "sha256": "4d9f85ec958370c23f61213ce3e7f95dd2dc959b0332a555cf15266ad6faf23e",
+        "gitBlobOid": "9e8d323b5734e65ca1831004c3cb50355eae4b58"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementNullableSortSourceTests.cs",
+        "bytes": 8784,
+        "sha256": "9cd7177aa34a589d483e81752c00d2ceb464e71dfb06d209f80462294c136f12",
+        "gitBlobOid": "10448e793f4d4092471f584f02e4220d8181b12c"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRequiredAndLiteralSourceTests.cs",
+        "bytes": 6346,
+        "sha256": "48accd9f3af6ccf204f7e49eb5f6aadb8f52665c94cccc48b86b9671aff443ab",
+        "gitBlobOid": "8c909915ae7e2130bc7fc4c9148732c703e631ce"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs",
+        "bytes": 25326,
+        "sha256": "7a5823479455c30cac411b51cfed4ebbe247f2648e7d087167392e62be8efb20",
+        "gitBlobOid": "13bef56d1b51a1df43fffe2e48967bd4e6f16ba2"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierTransactionBoundaryTests.cs",
+        "bytes": 20008,
+        "sha256": "677df3256789b43e5d54c690c5a3baf2205f5e4228b8d8356349895e54dab166",
+        "gitBlobOid": "a5ecdb83358ec34bc0230feaf008446405f4daca"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj",
+        "bytes": 1637,
+        "sha256": "dc69046de6d60c10bed322db876687c6766b783678be52c392e24ad927d5dc9f",
+        "gitBlobOid": "1d196cdd5f9421fbf99623a59ca3c2db549706b8"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/ProcurementFailureBoundaryTests.cs",
+        "bytes": 5867,
+        "sha256": "db592667135263897d6e603997dc73794b1a5d52479aecd2e488c6155bee5887",
+        "gitBlobOid": "174d7b6b539171ff0504930dcee5a90cb2277ea9"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/ProcurementJwtExternalizationTests.cs",
+        "bytes": 6374,
+        "sha256": "d0f775869138188fa1a6f165981a5bac6291b37fdf232f32fa550785ac76fe4d",
+        "gitBlobOid": "405bff44625c1e045cf5e4ae0bbd90640cf91495"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/PublishWorkflowPermissionContractTests.cs",
+        "bytes": 6315,
+        "sha256": "b835d916d0808f566e71a63184be5fe8c608cae4a8e95d8669f14a036c12d7df",
+        "gitBlobOid": "1909a03f285ceaaae0df1c4bccaa1e54f81f600a"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Startup/DockerContextPrivacyTests.cs",
+        "bytes": 3855,
+        "sha256": "92082bea8cc22d5d6db07fc7e3f537164a6de4fcf8329a19766d8675640e3a2f",
+        "gitBlobOid": "d2eb962e388f53013ad8c403e7a139b8bf4c882d"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Startup/ProcurementStartupLoggingTests.cs",
+        "bytes": 19700,
+        "sha256": "78e3a8e3457de2f0fd122651ecc88cdddf0b1da734f504dc0a6b0aec7d6522db",
+        "gitBlobOid": "0cae38a4a360010015fbd49dfb5fb5665a934adf"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs",
+        "bytes": 24106,
+        "sha256": "7d4ded49ea31bcb6e2903392cef0f4fef64e82652928feb1b4b9d3666f069baa",
+        "gitBlobOid": "e1b797b4f4a0ebb566f8739b20390bb3d0c5adaf"
+      },
+      {
+        "path": "Legacy.Maliev.ProcurementService.slnx",
+        "bytes": 561,
+        "sha256": "ad38ce158871c47fc592723d0e2f144c05d2f9502d7cc90e54e8b3cc7e758074",
+        "gitBlobOid": "48c1f4ac9b6141df5596bcdc99eb0b22b4a1213e"
+      },
+      {
+        "path": "README.md",
+        "bytes": 3520,
+        "sha256": "f06a47ee84adb4806a9cdb1a42dfed25eb7b28963fc9b97ffe76875d1e84e77b",
+        "gitBlobOid": "ca97e85e5b8e30bf8c1354695ec2aa0e5bc69f3e"
+      },
+      {
+        "path": "ci-source/procurement-pagination/OwnedProcurementTestContainers.cs",
+        "bytes": 3524,
+        "sha256": "9e1a52d0942f08fab1d3170325948b40698f5a79cfbc61bc2460b59e8446b925",
+        "gitBlobOid": "c75654fa5ba27a3e06014487a29de21babcee2fb"
+      },
+      {
+        "path": "ci-source/procurement-pagination/ProcurementResourceAssembly.cs",
+        "bytes": 80,
+        "sha256": "3f7edd72eac91614fcf49f709dd4e560c74ebef8da68a53a02947e5611cd1869",
+        "gitBlobOid": "217120083bfa1b5b5a6400bb585b33f3651510f9"
+      },
+      {
+        "path": "ci-source/procurement-pagination/README.md",
+        "bytes": 1132,
+        "sha256": "0c52c49bd8417d9f497b9ba08728d712e85e2cbf0c74793cdb988ee462c8e89c",
+        "gitBlobOid": "5d088f6bc156eccdafa2fab1d71f0b7c64e97058"
+      },
+      {
+        "path": "ci-source/procurement-pagination/p1-controls.py",
+        "bytes": 7455,
+        "sha256": "5bfddbec2eaaa07975775380fd6e9c64e362a470bb5eefb5829152dd03613283",
+        "gitBlobOid": "1cb39055c49cc81f0eca2c9b31c6baaf4c6e3db1"
+      },
+      {
+        "path": "ci-source/procurement-pagination/primary-source-references.json",
+        "bytes": 365,
+        "sha256": "42f4f25b29e0d13c46335c35422fffeb4127a1fafeb432d9e7379bbcb2d58e51",
+        "gitBlobOid": "71ef9512831a3a4ca5117b1ab5788d85af020751"
+      },
+      {
+        "path": "ci-source/procurement-pagination/procurement_pagination_hosted_driver.py",
+        "bytes": 27382,
+        "sha256": "1b461a85dc666adb89c48691cdebd0ea8be4d6072d1ba5c56625ba945edc65ed",
+        "gitBlobOid": "809223d09394c9c058eb7d2b6ea58a6321a451e5"
+      },
+      {
+        "path": "ci-source/procurement-pagination/procurement_pagination_hosted_guards.py",
+        "bytes": 14039,
+        "sha256": "4154be6b59090ade9385b3f3548e8b81dd374cfee5067b9bda470ba8b384129b",
+        "gitBlobOid": "dfb2c363bc55af71602ec11dc035538c06bc4f51"
+      },
+      {
+        "path": "ci-source/procurement-pagination/source-packet.zip",
+        "bytes": 34614,
+        "sha256": "852f7e85cf730bb3448fb8ecb4e3caa84d476b985444256609d1e41689791801",
+        "gitBlobOid": "28e336224db84f48a64f31b0d60ebf452da5a08d"
+      },
+      {
+        "path": "deploy/disabled/README.md",
+        "bytes": 1415,
+        "sha256": "46c02f6ad7a694517ff040d1e15c98238f3b3369d4935df984add58cf7b1b12f",
+        "gitBlobOid": "de212702aa794d005e6d31310694c8b0cb2ad494"
+      },
+      {
+        "path": "deploy/disabled/procurement-deployment.template.yaml",
+        "bytes": 2265,
+        "sha256": "2ceec7ac2b3e365901f9cfe4e6c40d4408d9f344d5295bcc5fa78c4461c1d8f5",
+        "gitBlobOid": "7dbe1ee1932c2a0457aafae0eb3d0d184fd0efbb"
+      },
+      {
+        "path": "deploy/disabled/source-obligations.json",
+        "bytes": 3716,
+        "sha256": "05b7a902850b31c448d35927b3839edcefd41270c4dbc7f5d8b65ffe2c25e61e",
+        "gitBlobOid": "a03b6ce18073a9cdd23d4fb7c67761005f5cbfb0"
+      },
+      {
+        "path": "docs/Invoke-StartupArtifactProof.ps1",
+        "bytes": 6590,
+        "sha256": "7ed231b53905cf7cd3b4f6a83721c89dd7c5a28e98ff2089be3638b89e9fbbc4",
+        "gitBlobOid": "95d182aa50fedc6ee5f0b8c204b9899d7df744f3"
+      },
+      {
+        "path": "docs/design-artifacts/issue27-procurement-runtime-parity-red.cs.txt",
+        "bytes": 24006,
+        "sha256": "ade96c73725baee64d838a4f35a0f511d1fa1e7db9972485902840caf5cbd91b",
+        "gitBlobOid": "1b6408bf653d4b116fe2d06bff8d45f0c23d3975"
+      },
+      {
+        "path": "docs/procurement-actual-auth-program-join-20261005.md",
+        "bytes": 3350,
+        "sha256": "7ea0fb6cb7a550e4a055c123c2edc58c393d710bc6a738de5db4d82c24157b52",
+        "gitBlobOid": "7884299252f687c333ec3d14b7884c1d97e4a999"
+      },
+      {
+        "path": "docs/procurement-address-acceptance-20261003.md",
+        "bytes": 5362,
+        "sha256": "07fa4870b5f68f93a5ebd7ad338b24e2cb34b3618a005786859befdc2a225fd8",
+        "gitBlobOid": "5cadca4ef777c4986adf6df6c3e974c6f893ac6c"
+      },
+      {
+        "path": "docs/procurement-authenticated-iam-20261005.md",
+        "bytes": 3049,
+        "sha256": "8ff238ac159260d8129c52aac410e23efbabada203d8ace450bdfb5ddf406ec9",
+        "gitBlobOid": "0fc0457ebe539d962653be7aa4de0ae43a628a63"
+      },
+      {
+        "path": "docs/procurement-durable-create-design-20261001.md",
+        "bytes": 27423,
+        "sha256": "79de2779a248d54e3e6dc6b26c8d9171db458f6d5e528e2692e10387aaa38fb6",
+        "gitBlobOid": "0bb7f0a5486cd8dfef474807df944af8a7ff56af"
+      },
+      {
+        "path": "docs/procurement-focused-lifecycle-contract.json",
+        "bytes": 3674,
+        "sha256": "ce64e22696dad11ad706dba71b5da38ecfa8ebf6459e418f39d7a3f606574e78",
+        "gitBlobOid": "efd1eee081b4b917330e4b8e8d176bf11156f23c"
+      },
+      {
+        "path": "docs/procurement-master-query-contract.json",
+        "bytes": 895,
+        "sha256": "815a45e12fc03172a2999f9742d292128ccb9e8bb22099469f8e9ba7485484de",
+        "gitBlobOid": "d66a1e2ba750e5df1e747d447132917cf03a40b0"
+      },
+      {
+        "path": "docs/procurement-master-query-source-20261005.md",
+        "bytes": 2158,
+        "sha256": "a7e0214c634fbbfcf57bb5eaa8e1d1f8cc7c4fcf880845da0e0176197314e043",
+        "gitBlobOid": "04d6454d9dd4681da0677b0d38d5c02078495458"
+      },
+      {
+        "path": "docs/procurement-object-name-source.md",
+        "bytes": 2048,
+        "sha256": "2cf9acda683fd526c2198770f1f9666c580bdcc823fc6a22ec6b42d50f26e90b",
+        "gitBlobOid": "55ee559c907b217ed364e52649d645be85a2c224"
+      },
+      {
+        "path": "docs/procurement-publisher-validation-20261001.md",
+        "bytes": 6272,
+        "sha256": "f88f1e029d46144191cf95641a7416394ac48191d60a721edf3a4eedf3aa4c4a",
+        "gitBlobOid": "c505c1a4b8844875ea059278ffbe08b526034d09"
+      },
+      {
+        "path": "docs/procurement-runtime-parity-design-20261001.md",
+        "bytes": 35230,
+        "sha256": "384ae5842c363606794420ef8cd787691f4deb3a318bd8cac4e9811c0d5e309d",
+        "gitBlobOid": "26c881a524a67e43c9b7a879b8442b931ff6b2fb"
+      },
+      {
+        "path": "docs/startup-context-source-parity.md",
+        "bytes": 6470,
+        "sha256": "0e8f8300a16cd15536e5f3bb082a7c807d25162ec0aec58b8b70a03e42e76382",
+        "gitBlobOid": "f99576f73b695b98a5c43c4e4fd5f998347a3d36"
+      },
+      {
+        "path": "eng/commerce-source-intake/README.md",
+        "bytes": 2227,
+        "sha256": "30f998197a08ea1e03132275bb286075ecec3c30e9794bc744ec857ab1d41bc8",
+        "gitBlobOid": "a04580ca9cb02b6e70b85d9be695d70b65702263"
+      },
+      {
+        "path": "eng/commerce-source-intake/capsule.zip",
+        "bytes": 423218,
+        "sha256": "7d824256f061dae0e5890b475419862c18d328dfe70fe92a64fbfad7cd150c9e",
+        "gitBlobOid": "a4354aceccc65c09f5f1f09313fe2dcdf0d56e94"
+      },
+      {
+        "path": "eng/commerce-source-intake/commerce_lane_policy.py",
+        "bytes": 236,
+        "sha256": "a4e25570c10eb5abd3d2a361c023a76870a5638c12a6331795c63db7008cfd6a",
+        "gitBlobOid": "b5d43db8b7f25b491358b5073a2cca58d46cb7ae"
+      },
+      {
+        "path": "eng/commerce-source-intake/commerce_source_adapter_v1.py",
+        "bytes": 7476,
+        "sha256": "9ddd09bd120d1f79bd4b4581cd3e4bbcc52e0216fe8a632619e25e7bf6e81e15",
+        "gitBlobOid": "dbbfcc998a9773e2b0487019d43394e75496a528"
+      },
+      {
+        "path": "eng/commerce-source-intake/policy.json",
+        "bytes": 135346,
+        "sha256": "b85e966fa74cfa5aa022fc502f56038d9105d3dece17612196dbdd6a89d8258c",
+        "gitBlobOid": "9c5db39977ad82d8345651145f85f8b93babf6de"
+      },
+      {
+        "path": "eng/commerce-source-intake/provenance.json",
+        "bytes": 1063,
+        "sha256": "a28b3db07c7b6c2058a9be58c4b1a8d26252db616e0ab7e95429e7222eb84749",
+        "gitBlobOid": "ad7a0a839c0a23ae453cb3a861d1478221f18144"
+      },
+      {
+        "path": "eng/commerce-source-intake/run_commerce_source_intake_v1.py",
+        "bytes": 5397,
+        "sha256": "e58c74b9f092b10a30ffa4b30b998041ea5e68e677bfc973f79530812171e349",
+        "gitBlobOid": "5628fef5f29bf4040a81cab091e174eb2c6263ff"
+      },
+      {
+        "path": "eng/commerce-source-intake/sealed_source_capsule.py",
+        "bytes": 12296,
+        "sha256": "44a8a5accac9da11422d606be02fe28487642215df511b5f1c4284296a453ee2",
+        "gitBlobOid": "cab6997ff2af48bdd4ac7e9240cd12d01e5b3190"
+      },
+      {
+        "path": "eng/commerce-source-intake/test_commerce_source_adapter_v1.py",
+        "bytes": 7679,
+        "sha256": "a797fa07e8e84fc8299fee584da8792f1f0edde2490a240557b66cd2a0c11b6e",
+        "gitBlobOid": "5401b7b6ba7c262aa7640cc872ac7264037b6068"
+      },
+      {
+        "path": "eng/commerce-source-intake/test_commerce_transport_entrypoint_v1.py",
+        "bytes": 9946,
+        "sha256": "8cea286be6b07c28c9a7d71198a4e23d463ab1fc8111a4f4ae7a30c4b2870fda",
+        "gitBlobOid": "d17469897f09ad7e64aa06aa0fc1e1fd6cbc7a00"
+      },
+      {
+        "path": "nuget.config",
+        "bytes": 197,
+        "sha256": "aec93b5637ab6d62470979a008990a4a336a287ab83a3f2541849ae735674055",
+        "gitBlobOid": "765346e5343d46ac83654843869dc06b65b2bdc4"
+      },
+      {
+        "path": "scripts/Render-DormantLegacyProcurementDeployment.ps1",
+        "bytes": 1822,
+        "sha256": "931ee5a45af77628797cb1687ea75dc753f56dbe1219acc97f8b1d60a991566b",
+        "gitBlobOid": "6dab02dceb64cfa552502ba0236a8c21e4992690"
+      },
+      {
+        "path": "scripts/test_procurement_auth_program_inputs.py",
+        "bytes": 4036,
+        "sha256": "72ed1d956938056bc77ddcafd2396ad8818fc95b3563b3ab91032b6e2ed62d39",
+        "gitBlobOid": "de5d4e57ca1aa59fcbcfb631ecf30a82b7b4d093"
+      },
+      {
+        "path": "scripts/test_query_fixture_encoding.py",
+        "bytes": 1128,
+        "sha256": "b934418cab8122a52165d0f3eca4d13f0028de687ea2c7472b57c6fa28e79931",
+        "gitBlobOid": "c431b368af34dd2f1c7c3b966825b2e68c0808ab"
+      },
+      {
+        "path": "scripts/tests/test_dormant_deployment.py",
+        "bytes": 6982,
+        "sha256": "59c90d3361dfcb67a7e0f591092ef605aab94492e73c10ca0bc80f3e38f6ca44",
+        "gitBlobOid": "899e3d3a833acfd0aef475a57f23fcf1938e3f2e"
+      },
+      {
+        "path": "scripts/verify-focused-lifecycle-results.py",
+        "bytes": 2009,
+        "sha256": "f07e76f274e205c7626b78573bae0252e4d33966c33cc1d2080c2f9da0ce47dd",
+        "gitBlobOid": "566101c201cd67931f76ef77eb94d86430473c88"
+      },
+      {
+        "path": "scripts/verify-master-query-results.py",
+        "bytes": 1982,
+        "sha256": "0692ff2e35d45b8215c908fafb2fb8dc3867f084ac0ea3f2bab8ffdaf074c7fe",
+        "gitBlobOid": "30d09e32ecabf41e0b6b57755a716af63b908867"
+      },
+      {
+        "path": "scripts/verify-procurement-auth-program.py",
+        "bytes": 6043,
+        "sha256": "f17119b7a91116fc529fb23c1c23210f90969d3ae06681fd6011f40e444fef5a",
+        "gitBlobOid": "cc8f5c03f24b5f1b76da53d1dc17dcb913f33225"
+      },
+      {
+        "path": "scripts/verify-procurement-defaults-deadline.py",
+        "bytes": 2649,
+        "sha256": "9805f3e1ccddbcce2f941b2ac1bc8a8f5b69820d87ac374fc180344d56a2b3db",
+        "gitBlobOid": "6d1c14c390db0fab67b7774834270d41fa5a8722"
+      },
+      {
+        "path": "scripts/verify-procurement-literal-boundaries.py",
+        "bytes": 7876,
+        "sha256": "c0ec211934f613dc5a5d9f23ff1672650281c80028e5a118f946438e916ac396",
+        "gitBlobOid": "46717e5dccd07829ab719a599f256053a5bccc48"
+      },
+      {
+        "path": "scripts/verify-procurement-nullable-sorts.py",
+        "bytes": 2837,
+        "sha256": "4d8adabefd898d6c9eb88dbec0e08ee75da855a713e63c6f3ce3779e38e9aeff",
+        "gitBlobOid": "5ad589f506aa2b010b35367431b95ef437d67c77"
+      },
+      {
+        "path": "scripts/verify-procurement-string-boundaries.py",
+        "bytes": 8261,
+        "sha256": "daa4c336af1484bc8285803373b23f2c27354e002d79cca15fddedaccc6bcfb5",
+        "gitBlobOid": "dd315422cce8c4907e2cce78435fc4bb8a6b5c87"
+      },
+      {
+        "path": "scripts/verify-query-fixture-encoding.py",
+        "bytes": 1070,
+        "sha256": "40a6ab32450c32c2bddcab1a178ebd668cc91319117934c13f52970206a6abb5",
+        "gitBlobOid": "5cca199ed405aeb9c777fabf8aba6374abc4b7a6"
+      },
+      {
+        "path": "scripts/verify-runner-coverage.py",
+        "bytes": 2085,
+        "sha256": "ad67dd8f9cb3654e388dd07c3cba8b2644ac0c3f8ceac2c2fcfd172d5b0cec93",
+        "gitBlobOid": "17a518e5ab57caa59b4a5f54349f8c0e6b179e58"
+      },
+      {
+        "path": "tools/ProcurementAuthProgram.Tests/AuthProgramProcurementJoinTests.cs",
+        "bytes": 22800,
+        "sha256": "cb30837c832247aaf1be11518a2e4c435c42cdbb276ec1a14af060f32d8a955f",
+        "gitBlobOid": "b3af05f512e481e0807bc5c841d3432b0ba87c08"
+      },
+      {
+        "path": "tools/ProcurementAuthProgram.Tests/OwnedCleanup.cs",
+        "bytes": 1966,
+        "sha256": "5c1a9419c88c9274ba30835353d2400e0d6830464793d12698c8cdd48645a133",
+        "gitBlobOid": "faeb6bc3057ea29a1f9df408ee0eef06d19e86fa"
+      },
+      {
+        "path": "tools/ProcurementAuthProgram.Tests/Procurement.AuthProgram.Tests.csproj",
+        "bytes": 1274,
+        "sha256": "e6f812938471665dee5d238c59dac30a1005a5a64b43f01b6b4deb8701bf9327",
+        "gitBlobOid": "94a238353a17cbc811af5cf8afdadbea26587ab6"
+      },
+      {
+        "path": "tools/ProcurementAuthProgram.Tests/public-graph-accepted-9c801.json",
+        "bytes": 1940,
+        "sha256": "6ea6cb5c92569c2134aa348e6756ffdd55612f1e9fea162886d7232bf585031a",
+        "gitBlobOid": "a7682b53f717748c36898f252ada11a74f5331b3"
+      },
+      {
+        "path": "tools/ProcurementAuthProgram.Tests/public-graph.json",
+        "bytes": 11630,
+        "sha256": "43135cfc2a3032adcb30cecaed7456ea1d439ade50298676c4d78cd277e7d7e9",
+        "gitBlobOid": "d29381ea5446a37ffbf007307af8a4cdf7b20e66"
+      }
+    ]
+  },
+  {
+    "repository": "Legacy.Maliev.ServiceDefaults",
+    "commit": "ecb05cbbd68717e415f69df2ac488c1d323b1da3",
+    "tree": "ede619598ba8cda9202723c347ea963e8789a22f",
+    "archive": "Legacy.Maliev.ServiceDefaults.zip",
+    "archiveSha256": "f4a92c76cf354db0b3af146b21f43f0f93b8dde521969a19c564e364ae0b8369",
+    "files": [
+      {
+        "path": ".editorconfig",
+        "bytes": 62,
+        "sha256": "c8208a2f140351680b233171c060ea28bd8b1be2816445764b33f4194f457576",
+        "gitBlobOid": "0b3779e53d03e4e3ef029ca132067f1eba7138d2"
+      },
+      {
+        "path": ".gitattributes",
+        "bytes": 39,
+        "sha256": "91c171a7f4e295966f6e40aba83b0a11a56b4c99b59b9c55fcf54f15df207bc0",
+        "gitBlobOid": "eb143e5370a2461f96f4610df1f6e30828c5639f"
+      },
+      {
+        "path": ".github/dependabot.yml",
+        "bytes": 703,
+        "sha256": "335aa96947b0b5b12bdca3f41b4f025cd1d5a758058e01d9793b23fb65bb8a67",
+        "gitBlobOid": "060fce209c14d2cb8fff8ff582515d97745c9008"
+      },
+      {
+        "path": ".github/workflows/_build-and-test.yml",
+        "bytes": 6801,
+        "sha256": "255c33ccd7b5bc7a3b31a49731497822e11e55af41c5a451ea3661c835fdb21e",
+        "gitBlobOid": "226c27f263fd852c7596c34496487bafc8d0b480"
+      },
+      {
+        "path": ".github/workflows/ci-develop.yml",
+        "bytes": 247,
+        "sha256": "55438892e1be3a3f5ff3e3e96aa69d74fc50884f1f465ce0ef1bc7e733ff825f",
+        "gitBlobOid": "c1bf874ecf39eab2864889fb4f2d8b38d1017bb0"
+      },
+      {
+        "path": ".github/workflows/ci-main.yml",
+        "bytes": 241,
+        "sha256": "4a5aeebe5da345b1fd15ff1a81197914a8bcd2fdb4c478bf04166ceeca273892",
+        "gitBlobOid": "56aa263726fd6b3f767e4044c9037b0c7b54d7d5"
+      },
+      {
+        "path": ".github/workflows/ci-staging.yml",
+        "bytes": 245,
+        "sha256": "f48c53159877c426a873bbcf725cbaff784985ca2852bdd44bcb96ea83b01b19",
+        "gitBlobOid": "789a908f0061215271607ac8b53ed859f7370c88"
+      },
+      {
+        "path": ".github/workflows/pr-validation.yml",
+        "bytes": 275,
+        "sha256": "11b3efa5dfab28b675891a89f33567e052efee01fb4bf4a1bf2b2be3713d9397",
+        "gitBlobOid": "4037ff6fe79757854087b87c7d64b1e3ecd50cb9"
+      },
+      {
+        "path": ".gitignore",
+        "bytes": 97,
+        "sha256": "8504135686608a5ef0f407045f398cd5ce78f38fd71e11376343b3e0792d7458",
+        "gitBlobOid": "6889266cfda2c102e411da829a3c518689cb8b0b"
+      },
+      {
+        "path": "AGENTS.md",
+        "bytes": 1651,
+        "sha256": "8fd5aeb63f773ded6a032cf2cba1db04f10a8083bae8c5e6941e4dd58bf970c0",
+        "gitBlobOid": "40255899262b734d9432a9981515fa04761ee502"
+      },
+      {
+        "path": "Directory.Build.props",
+        "bytes": 598,
+        "sha256": "56228ebe62fe27ad7377a27dcbd954968cd05aaf8ae5a3fa113f3e1da773a8de",
+        "gitBlobOid": "b02c403ec61e48967e53191ad422c616acc76e5c"
+      },
+      {
+        "path": "Legacy.Maliev.ServiceDefaults.slnx",
+        "bytes": 221,
+        "sha256": "27306562c9b1ca3e025a6616c2bdbcd0d201944d9fea5350772ddc9773557fb1",
+        "gitBlobOid": "5ea79c6f7b89e5a55f097440ef19fae572b570e4"
+      },
+      {
+        "path": "README.md",
+        "bytes": 5531,
+        "sha256": "7e876aa93d272c56b2345785218d6c8e4b467c7e2b248cbe11a1a0f598c06c28",
+        "gitBlobOid": "bbb1da460502b0b492afd00ec93d00599e1df996"
+      },
+      {
+        "path": "docs/legacy-token-owner-deadline.md",
+        "bytes": 2014,
+        "sha256": "51d30e1c0a50d3121f6ddaf9764883b4966b38f1fa153d7479d1e6d5202d9711",
+        "gitBlobOid": "ef802b710ba9d3b69577b6d4caacfbfe8ecbcf5a"
+      },
+      {
+        "path": "docs/localization-source-compatibility.md",
+        "bytes": 5657,
+        "sha256": "d3080c62f114b9b83c6041ead4ddd6f747302f93a1df0df0c98e99e9635ec58d",
+        "gitBlobOid": "11371a26aa2f92bb3e74841a2aa698add38c2f9c"
+      },
+      {
+        "path": "docs/native-logging-wire-proof.md",
+        "bytes": 3714,
+        "sha256": "d0c7e16437403b4f841c13f3db8c6b779bbcd4ee9dcccabef612525a156d0732",
+        "gitBlobOid": "6f084f90e5367fda4714c9b364efe41680279a61"
+      },
+      {
+        "path": "docs/private-failure-producer-design-20261002.md",
+        "bytes": 14184,
+        "sha256": "311cff2de17216791ff67109a1712232b2d83cf347e392cc6d1dc376a25387d8",
+        "gitBlobOid": "10123bbe54aef24b082d07817219dccc163a7f8f"
+      },
+      {
+        "path": "docs/private-failure-source-compatibility.md",
+        "bytes": 3999,
+        "sha256": "138e20c4b7b8033e71591378fea3bff49311424c02ed5365f9e2f8b169cdffd6",
+        "gitBlobOid": "9e73021c42811057ea31693a2664f8e5a7a99c58"
+      },
+      {
+        "path": "docs/private-http-transport-acceptance-design-20261002.md",
+        "bytes": 8201,
+        "sha256": "fbdc67bf9b5ec2725a855c1333b6a37dea286fa3c4a3f60c7179537e9d1aa44c",
+        "gitBlobOid": "f9c596c2966de6bfbb7a3cbfc6855d707bdc3779"
+      },
+      {
+        "path": "docs/private-request-observation-design-20261003.md",
+        "bytes": 16792,
+        "sha256": "54e329fd1c4d03beda2ed2db104d462bcd3d5aae347ff727b458d7e7cbd1807e",
+        "gitBlobOid": "6de74e676f2291ffe2188998237adedc6e2fcfe4"
+      },
+      {
+        "path": "docs/private-startup-boundary-design-20261002.md",
+        "bytes": 10545,
+        "sha256": "dbc18ecda5733a4cfecf5c02a72fb8fb29d3d5ca89c4e03d838aec05f59e5688",
+        "gitBlobOid": "813f184a7165e54ccc4c2f4f3ad2c2373168ca0c"
+      },
+      {
+        "path": "docs/private-terminal-http-observer-design-20261002.md",
+        "bytes": 12200,
+        "sha256": "cbdf43716f900a2159b95db8c9c46501b2e5e93598f208344fd091bf4f5261ad",
+        "gitBlobOid": "a074587f4af67731a76797f2b65cf39c0c11f496"
+      },
+      {
+        "path": "eng/Assert-OwnedCoverageEvidence.ps1",
+        "bytes": 3460,
+        "sha256": "3f052c88cf7a77233a6d6a84a475b31ef9b59027d3e472840656d550d7b7169b",
+        "gitBlobOid": "16c4f46eb84ad85c5de89c031a5f365df3f07647"
+      },
+      {
+        "path": "eng/Export-CoverageEvidence.ps1",
+        "bytes": 5871,
+        "sha256": "fd00b6a2fc6e14beb768626c513a66d3539844595c026e15b035b97d9037d943",
+        "gitBlobOid": "292e8a1d074d4aac50cbffa2ade07c588a4c0136"
+      },
+      {
+        "path": "eng/Get-OwnedCoverageReport.ps1",
+        "bytes": 685,
+        "sha256": "439c475c938880a36410502c28cc0131e91634082a8d6cdabdfd97e88f2273c0",
+        "gitBlobOid": "10b63bf7466e189ad0674f13e815821af65882df"
+      },
+      {
+        "path": "eng/Test-CoverageEvidence.ps1",
+        "bytes": 9298,
+        "sha256": "26ffc9952f89a136633b6013cce2561f6a9ca7ad989c91ffdeaf6989c80578ff",
+        "gitBlobOid": "f0c69212bf1db26c508bcb75b36f57072de65184"
+      },
+      {
+        "path": "eng/Test-TypedResponsePackageConsumer.ps1",
+        "bytes": 9059,
+        "sha256": "daec79b71c799325a2b7edbadd2ccc398b27737953956ab0e8990df062e15e87",
+        "gitBlobOid": "a976592891470914a1d82c69fc794a8f6e110c60"
+      },
+      {
+        "path": "eng/coverage.runsettings",
+        "bytes": 841,
+        "sha256": "37d47adfd377973470f267697e07045bc4f32a55bc007855a867455dce776907",
+        "gitBlobOid": "ad6b0365c6be406cf585c5e1fe04a21c7aef7116"
+      },
+      {
+        "path": "global.json",
+        "bytes": 81,
+        "sha256": "b48d6da8fa62c0da7cc8a2da4ea036ac55836660a448ba533135abb5b8451b73",
+        "gitBlobOid": "512142d2bea1add9d1cf54884a7fde22666bad51"
+      },
+      {
+        "path": "nuget.config",
+        "bytes": 197,
+        "sha256": "aec93b5637ab6d62470979a008990a4a336a287ab83a3f2541849ae735674055",
+        "gitBlobOid": "765346e5343d46ac83654843869dc06b65b2bdc4"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/AssemblyInfo.cs",
+        "bytes": 102,
+        "sha256": "50b9c15ab1f0fe2def488072d2434f67f609c9bdc6c2b19358f28ed64f40f719",
+        "gitBlobOid": "535ffc0ae4a11efdd2d42da5bb89b17539db17e1"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Authorization/IAuthMetrics.cs",
+        "bytes": 677,
+        "sha256": "c8f92faba768eb2defaf0b17407750a6c0c6f25a9b3d2de6c4acdb0b950805ea",
+        "gitBlobOid": "7c66808cf91c3bf0b12785da2cef86bbd7c305b8"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Authorization/PermissionAuthorizationHandler.cs",
+        "bytes": 17197,
+        "sha256": "687d32dc8d21fc6a150a3cfd40ba332b921bac7f32ada23ec7490177a7d86d17",
+        "gitBlobOid": "52e586b7782cbd7e826538315212d4dec72951a2"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Authorization/PermissionAuthorizationPolicyProvider.cs",
+        "bytes": 4626,
+        "sha256": "d28a44a4add52e11cbb54d9cb8beb273d969b52c030d7241afb12dc387a8986d",
+        "gitBlobOid": "86036007876b0331801ad24e085e96e061dc4a12"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Authorization/PermissionRequirement.cs",
+        "bytes": 2631,
+        "sha256": "aa8df5dbc098b67741f5564cf390b1a77cf2b0ca303105edd1eb2e4ffa5bcbff",
+        "gitBlobOid": "dd7974936b6c3ae1ee9ac61d31bf1024203badca"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Authorization/RequirePermissionAttribute.cs",
+        "bytes": 4470,
+        "sha256": "4fa797ffcc231f5b92f916b90a0650d4f391eac5cd552c6cac9d924d82008f64",
+        "gitBlobOid": "a8921e316f5f9f3e66bac127833ac32f1dd4e579"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Caching/CacheLogValue.cs",
+        "bytes": 718,
+        "sha256": "821ae5218cd3f3ef0bd54968145837660b092f8a8a976f6e0e5ed763b11344f9",
+        "gitBlobOid": "b68efd0326a4bab72db2a19c4ab9da5e23966ff3"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Caching/ICacheService.cs",
+        "bytes": 2576,
+        "sha256": "ca0cb9b86d92ac7b37a5cab67ad0e3e6cae35ff9695774948e795e8cc6c16123",
+        "gitBlobOid": "55110905397874782803a8e546cfcd0c496dadf0"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Caching/InMemoryCacheService.cs",
+        "bytes": 8966,
+        "sha256": "01dc21381386d0a278a17e83f968f895a783f22d76141fb6881ffba0ee7af5d8",
+        "gitBlobOid": "a4815903cf964266a11778d4435b8cba52d58074"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Caching/RedisAvailabilityHealthCheck.cs",
+        "bytes": 997,
+        "sha256": "bf34d883d56208e67962c3064780ced956824e6ab37c9cfa8ecb4f78f7411dc4",
+        "gitBlobOid": "b57c17ebcaab345567eac8e2084b6392f3de9599"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Caching/RedisCacheService.cs",
+        "bytes": 9856,
+        "sha256": "5c9f4e8321a31a650ff08c16ea1adbc2338d50688a57a15524e8ff7134964022",
+        "gitBlobOid": "533609db1100963dc00ccc1e90431b473600deed"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Database/SnakeCaseNamingHelper.cs",
+        "bytes": 3724,
+        "sha256": "96930338889040a674f2f4f7dcca54ae98b68dfe87c461cb28b994a1c03711f8",
+        "gitBlobOid": "1a9ba8b1f55870dce8ceb4e425102cb01e8ef070"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Diagnostics/PrivateDependencyFailureHandler.cs",
+        "bytes": 3034,
+        "sha256": "c9e1f1d7accf1d001ef8e014ddb85657092719fe311f74bf418c6725995c956b",
+        "gitBlobOid": "2d390cb849c5ba8810d872ad72dcd91c9a254d22"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Diagnostics/PrivateDependencyHttpClientExtensions.cs",
+        "bytes": 2814,
+        "sha256": "79574378c2dc6f6af47b184818c93a69bf8758de06b4d3847df1cf9f950a8df1",
+        "gitBlobOid": "2e5ce6007b798dee3c57134614bdbffdbc34e420"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Diagnostics/PrivateDependencyObservationContext.cs",
+        "bytes": 2040,
+        "sha256": "3bde3ff850e6117dc6e3a601b2d5821c115dfc9ceb5b461e22f4bd659b9d1372",
+        "gitBlobOid": "8d7ea9d082836d957ece075bece99cc98513f085"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Diagnostics/PrivateDependencyOperationMapper.cs",
+        "bytes": 2364,
+        "sha256": "2ccdc55d1e8bd94beccd9365e52dc28fed94c4a29fde8849393a31113c388fcf",
+        "gitBlobOid": "257f7a60c594cbc0bd540ff2f92b6b81e4f90b9f"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Diagnostics/PrivateRequestObservationPipeline.cs",
+        "bytes": 4646,
+        "sha256": "58e7e9f76852799a9b54ad58f4529dcf5cec9e3c6b2bcbdad621c7e8093b230e",
+        "gitBlobOid": "0c88a74575165b4a144b06657be47754ad7fa40f"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Diagnostics/PrivateRequestObservationState.cs",
+        "bytes": 3532,
+        "sha256": "4f3eb72f030928e1018f046e39ee0f4718ed45f76137850984c92f9aaf837811",
+        "gitBlobOid": "74461dd793eade25bb1db302b8abe9704064d032"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Diagnostics/PrivateStartupBoundary.cs",
+        "bytes": 3486,
+        "sha256": "72487ace3b4f797f78c100afaec66018e8829e2e50853c5dbc05d07ebe90edaf",
+        "gitBlobOid": "f1c46e90c119dd536011b60279765670c74e1a6a"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Diagnostics/ProductionObservabilityDiagnosticException.cs",
+        "bytes": 391,
+        "sha256": "1e3dfe27eced669d6e2d14a91112057c093621402c51c0f7c091e1fa133c1181",
+        "gitBlobOid": "4aa713024554ac775415902c2fa72b304c33626c"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.ApiDocumentation.cs",
+        "bytes": 5424,
+        "sha256": "e2e69acc3f6e7558074841cf06c5aafb05f2f45a41408ccc7f8c5f395022e3c6",
+        "gitBlobOid": "098c534f87180c6619bc8fa2b4b3363fa3eb86b2"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.ApiVersioning.cs",
+        "bytes": 1262,
+        "sha256": "d73355cae6bca988ea3cd75efeaaebf4eb4a0fbb8217198d53da0f9422c80e05",
+        "gitBlobOid": "d7971d773f71ac768bc16ac90c107cbf3d025d34"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.AuthServiceTokenExchange.cs",
+        "bytes": 9437,
+        "sha256": "b480464172e42a932637d7b87947880b1a6f8b9dc33aa7bd94d7c808beff9210",
+        "gitBlobOid": "675501592bdb28cfa0e54b5f1a7751f99eb486f8"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.Authentication.Cookie.cs",
+        "bytes": 4623,
+        "sha256": "5572fdcf51a85738f8b8dc3c6c822189ded39efed0377fdcf5251ee0c9b6816e",
+        "gitBlobOid": "9939a5b3be359fda7c800bc7b006bacfe9e84e34"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.Authentication.cs",
+        "bytes": 10677,
+        "sha256": "a39e5dde44a8fd406ce7aad6ea2f63b083cf7e8a2a1297af93d4e5854ebeea56",
+        "gitBlobOid": "2f8c9051746f546618f94be189416a4464c2b46b"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.BackgroundServiceResilience.cs",
+        "bytes": 1737,
+        "sha256": "7a4155057807c363cca9ac21ada9c1416c2edf549f37076591ef5aceb444c238",
+        "gitBlobOid": "afa228526200e56d416aabfcc1410c78d1b340ad"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.Caching.cs",
+        "bytes": 7467,
+        "sha256": "94fa3177963e877451eb2c03967163e3e38ee5e62f5e22b1a1ae872cdae372ce",
+        "gitBlobOid": "e32537076557bcebed49a2d9a51c16aaba6f6b92"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.Cors.cs",
+        "bytes": 5579,
+        "sha256": "217cede0788cf8611a94052ccb3f3c26966b8b3ae6bf81cc7ba7b7b7b1dc2666",
+        "gitBlobOid": "8bac157158a7bfa23c689551862b617cf3a1ee79"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.Database.cs",
+        "bytes": 8784,
+        "sha256": "6e01fa4212904233e62e6a258a257b84feca7f6c8ae422765a06aa22f98e9638",
+        "gitBlobOid": "c7bdfa314a483d117b4928e30d2ee7042cd98cff"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.HttpClients.cs",
+        "bytes": 11977,
+        "sha256": "192c6573bfe3c0f8e026c7fc9a162ee96a4cb9c1b401c47ffc16dd21b1a7627d",
+        "gitBlobOid": "23cdbaf1419058acec3c4dbcc6d8a02fcf26c1a5"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.IAM.cs",
+        "bytes": 3742,
+        "sha256": "c0f97b7347a1bf400a9aedc7527a7020720bd4047cf8c12d200781f55a91e46f",
+        "gitBlobOid": "2bd6323ecfb2a4679e887b2cf8fb8ab8f254b34c"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.IAMRegistration.cs",
+        "bytes": 2024,
+        "sha256": "afd5d6831cc7f32091c1c2c5fb075bbbd563f6537e0629fda3b1d6e94931f8c1",
+        "gitBlobOid": "aa920c16e8ec762fdddd5edd8c085af34a35fc53"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.LegacyServiceAuthentication.cs",
+        "bytes": 2804,
+        "sha256": "4d2cd12e93adf8436de735b37fb97413ec05eb64be5f2d5098981caa97bb60f8",
+        "gitBlobOid": "650c82cc316b285f7fa72b312c46d52a617a69e1"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.MassTransit.cs",
+        "bytes": 9521,
+        "sha256": "d178f512edb603e1da8f97575cf46f9bbf11d0c258aff244a1b2cbf8bf232797",
+        "gitBlobOid": "4c4984d84b2a8f7a844516982032846c0fb10c69"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.Middleware.cs",
+        "bytes": 4847,
+        "sha256": "edb736abdd90c4dac4334781127a1a020a7c57c5b0ac8a2cb31686ca7686edef",
+        "gitBlobOid": "2a68068e174229781210bb0883ce75890078a14e"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.PrivateFailureObservation.cs",
+        "bytes": 4480,
+        "sha256": "68292542311db44a48854d188f8b0b104971c52510dd18b1168ae9845ca927db",
+        "gitBlobOid": "01ddb6f1eb789f3060a7b9fa149361a4fdd85442"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.PrivateRequestObservation.cs",
+        "bytes": 2056,
+        "sha256": "5e96a053530f7646404e9ffdcd0d2f7de620b0f3cb8dad12128e7b352f00aab0",
+        "gitBlobOid": "2a266b35abd0948cbf52e3b4d1faf896fc9ec03a"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.RateLimiting.cs",
+        "bytes": 8935,
+        "sha256": "a15a09e2c4a1f2b203e56f739c21a4d7967897ecbc325d9a21107d54e84773b3",
+        "gitBlobOid": "a6411062376972a0b2cc1967e3b0e913ba10cfa1"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.Redis.cs",
+        "bytes": 7120,
+        "sha256": "ad478557399007cf4aa3850f22a42e987753223054a25855c6f0903744c37267",
+        "gitBlobOid": "399ecba643a5cd5ec3242d37af44542626d9384b"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.Secrets.cs",
+        "bytes": 993,
+        "sha256": "fcd6f3f4e7d14c394b22cdc5c4c052c690982b45b5e79f2ae6f9dd07db728061",
+        "gitBlobOid": "91de2e315b5c1a47a6eeecf5f4faf8de51164301"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.ServiceRegistration.cs",
+        "bytes": 4914,
+        "sha256": "9ea5602e48bc033c555980f2b25892e8a49f095fd02a15e369e3a63627af36cc",
+        "gitBlobOid": "acfca6b6eb2c3224fed118fd2c1b6e963d8e5126"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.cs",
+        "bytes": 13500,
+        "sha256": "73643c87d572e292a8bb5a9c29fe8476fd8ee817d74f80e1639cf3b5b707446e",
+        "gitBlobOid": "e9831912d7ba851e4b20eba999af8c9b37fd4e88"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/IAM/AuthServiceTokenExchangeHandler.cs",
+        "bytes": 868,
+        "sha256": "510ebf95f32ab2cb64fa3918c75e9fd1486c7a469acaf70bdb5289ad467ddebe",
+        "gitBlobOid": "c85c3f328f069ad106920f36484a0e20f9950f33"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/IAM/AuthServiceTokenProvider.cs",
+        "bytes": 20765,
+        "sha256": "9d51ada5721927261fc276df241bc38e6685ba263f9f8dba751c91259a429702",
+        "gitBlobOid": "8a99ea76462270530e83d249d531ca2d3f48ffde"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/IAM/BackgroundIAMRegistrationService.cs",
+        "bytes": 11366,
+        "sha256": "7c9b120870ae9b41e0223716ac7dbdfdf08fe7b7fa85ff907c444cd33bb9fe4e",
+        "gitBlobOid": "5a7a3407d0a290b1f53e3df973c5283997802b12"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/IAM/IAMRegistrationHealthCheck.cs",
+        "bytes": 2861,
+        "sha256": "fd3a1735cbf7ca7f17f106a46edd368bd4bff2fe1803d70248e72e56bae443a8",
+        "gitBlobOid": "0a84c2c9a7fe075e37f2ff98050c48cdb901627c"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/IAM/IAMRegistrationService.cs",
+        "bytes": 4082,
+        "sha256": "5ba4464c409aa6b3622f4bab33316454f9cacb4b1fcb965a3bc15e2e5a1c8220",
+        "gitBlobOid": "1f7d467aa5887bdb7c729060bd55425eae43ad11"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/IAM/IIamServiceClient.cs",
+        "bytes": 4524,
+        "sha256": "62eb9950c7a8ff816f0084fdf1226f7925b727e7cf8e4a6abc0e03aafa9649fa",
+        "gitBlobOid": "cc192df886c62163612c405d64c4c9c70a4f0b7b"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/IAM/IServicePermissions.cs",
+        "bytes": 300,
+        "sha256": "2381ba0c905141c5ec7447d4d1b165b9da2fb8bc254b87a08e5bbab27b0eb064",
+        "gitBlobOid": "2a9e78f749887d5377ecbcb99c9f38f1590ab0f3"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/IAM/IamClientRegistrationGuard.cs",
+        "bytes": 3261,
+        "sha256": "dbdb345c8a834bc6bbb813061fd8ffe6f50e349f6cb6e316d6edbb8e4789d7f7",
+        "gitBlobOid": "d2155f7b901f62f725c8bc45961a835331bf401f"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/IAM/IamServiceClient.cs",
+        "bytes": 15927,
+        "sha256": "7c5c00dc5104d5a0805e716b9e50e8782f6bc7ab060a375b75d55f7ea10b83c8",
+        "gitBlobOid": "02f2b2284db6890348c0714812b73ad9c82301e5"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/IAM/MalievIamRoles.cs",
+        "bytes": 7016,
+        "sha256": "29a5350fc2d9ffb011a36a063215320fd57d5af75e97770621f5cb58b65ce8c9",
+        "gitBlobOid": "69c1dd1eac6f4c8416164d83139d7c6425ae25cb"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/IAM/PermissionMatcher.cs",
+        "bytes": 4749,
+        "sha256": "eccb03922b191fcd5b1f3655127357d53c9dbab818010d5cb57ba5835d89e364",
+        "gitBlobOid": "d97c74537530feeea58626184808ec1ce68aa518"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/IAM/README.md",
+        "bytes": 2818,
+        "sha256": "1f31fef74a895890746397553ffcc6ee7eb30641fe94bc914906a8edabbaf007",
+        "gitBlobOid": "ebebe176aa042f80b2a75b9c20b14a0ce5268397"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/IAM/ServiceAccountAuthenticationHandler.cs",
+        "bytes": 5129,
+        "sha256": "d5000934d801a3d1a2ddd3a37c7675f135751c1df24a115828de43040b7e1a92",
+        "gitBlobOid": "528926ab9966e948b1bf2458bf659f46ea4fa0cc"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/IAM/ServiceAccountTokenProvider.cs",
+        "bytes": 8226,
+        "sha256": "285e9278b43f9936063f462ba4a4eef3c159fd597877d11da9e6dca6db8adf36",
+        "gitBlobOid": "7d06f0cdcbe5a14f6b9a4bfb3a389b0ca03a3a0b"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Legacy.Maliev.ServiceDefaults.csproj",
+        "bytes": 3416,
+        "sha256": "e0b355268560f876589b40fd0b935bb690197a1d12d6f13198bb2a83679eca5a",
+        "gitBlobOid": "266d6463cc88d7c58177de3df280e3c4f91fa09e"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/LegacyAuth/LegacyServiceAccessTokenProvider.cs",
+        "bytes": 10041,
+        "sha256": "4d70ef7d43f374ab06cee4135a6ed17b0f4bf4e11481b63e766c074dbfda029b",
+        "gitBlobOid": "97389ea139097d5a5ad6a1588781afa168ccb419"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/LegacyAuth/LegacyServiceAuthenticationHandler.cs",
+        "bytes": 1232,
+        "sha256": "af65b00aeafdd6323e9446da851e10f18a2cee9494fe3715a88e2f0c40136714",
+        "gitBlobOid": "aac06bf54bdeae951ecc5ff8f069b16d6ecc9c3c"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Localization/RedirectUnsupportedCulturesMiddleware.cs",
+        "bytes": 2712,
+        "sha256": "5226a71e210cfb4c2f240fd6c172e18429b1a0fa95cb7841cd348aaa90cfe296",
+        "gitBlobOid": "3dfd02345e5958eacf3228d9d54b2a5b913e5823"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Localization/RequestLocalizationCookiesMiddleware.cs",
+        "bytes": 2179,
+        "sha256": "9487d01e8b8846f975a333269adb1ea7286b52c7bfae0bcc976fe136bdf6ca2e",
+        "gitBlobOid": "811656b7ebc3b743311c92bfee723f9546aa8f53"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Logging/MalievCloudJsonConsoleFormatter.cs",
+        "bytes": 4448,
+        "sha256": "3000ff8e529b6a2b1f58b1ec12b816531db2f566e4657fb7a567493836c758ff",
+        "gitBlobOid": "cde80d482eeca7dd604702d66e7310ff4b3b5ed9"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Logging/PrivateFailureConsoleFormatter.cs",
+        "bytes": 6560,
+        "sha256": "4c851ca92380fa8365a1bcc32ab01f9d6a68c4f747802b922b28de01f06ac20e",
+        "gitBlobOid": "6a56c6fd079e52ea8f36a76778a22ee37a6aec76"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Middleware/CorrelationIdMiddleware.cs",
+        "bytes": 2598,
+        "sha256": "a0348054276f43e5b087720ad4f3d4ae81d7b5483b18ade27fb614b6d54443ee",
+        "gitBlobOid": "f5175e6737dfa525f1ba90d9995907a9e26958da"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Middleware/ExceptionHandlingMiddleware.cs",
+        "bytes": 8930,
+        "sha256": "874a496bd238028c25c6e449d35d1b52ea241a44b5c7bda722cc2112cb851df7",
+        "gitBlobOid": "7af8790b4ea490670465758e0898ae309289ffcb"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Middleware/RequestLoggingMiddleware.cs",
+        "bytes": 2371,
+        "sha256": "764874e385000ec946dceddc7d8f1a806b5305e53e4f76100ada1f6fa20f57b6",
+        "gitBlobOid": "5cedf1b0d21f96e5a4b9866f957557734b47109d"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Middleware/RouteLogPath.cs",
+        "bytes": 542,
+        "sha256": "9fc508e9d06bd0f637ac90677c52ea41bef78257cd44192ac519a954c52dd2d3",
+        "gitBlobOid": "ccbd6f8fff7e7751cab6c863153f03cb57d22968"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Middleware/SecurityHeadersMiddleware.cs",
+        "bytes": 2212,
+        "sha256": "9f6cde8cdac3ad4987b55eff6c58d4b2c3c8c24c4ddaf8801591e5e13e3cc29d",
+        "gitBlobOid": "b4f4d3cf3930e30716bda3dffe878803f12614f9"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/RateLimitPolicies.cs",
+        "bytes": 1342,
+        "sha256": "f20f6a30b15ad588a1f13cb78219c91263030ff81d63cb969cc20f4a788ea50f",
+        "gitBlobOid": "cda90700b584d23114d801bde30a2de3a1d94cf9"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Resilience/LegacyHttpResilienceExtensions.cs",
+        "bytes": 1953,
+        "sha256": "934a9270a68ae2c9af4fd28a6f7929d104a392e81987c4f7cb41a8ad2dea1c88",
+        "gitBlobOid": "0515ab088343cc601583178d87d509ea15498d0d"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Telemetry/SafeRequestLogContextProcessor.cs",
+        "bytes": 1180,
+        "sha256": "cb76fb0692f43350c091d45a2379effbed4115ede1b9465e137cea43253744fd",
+        "gitBlobOid": "c0be50902fe0098339b9592e87fcc036d14b5053"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Telemetry/UrlQueryRedactionProcessor.cs",
+        "bytes": 3063,
+        "sha256": "245a698880d040a8dacc58475c8555bda4cb3fa398876f3e0f6ab935c46c39d8",
+        "gitBlobOid": "e94ab50ef8f02e877460a643b9691a541a735c74"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/Testing/IAMTestHelpers.cs",
+        "bytes": 2582,
+        "sha256": "2f652999489bdcfb5cf33dca91467a79b589560e9ae27f59ad078b3c1ee70d8a",
+        "gitBlobOid": "f7d1e937595a63eae5bbb215a3b776c19f602b69"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/WebApi/Model/ApiResponse.cs",
+        "bytes": 561,
+        "sha256": "5ed55bd800672b1fbc3c9d7b17de11f598a1f04407a66ba581ad1e160fd6042d",
+        "gitBlobOid": "c6f0b6649c612bb52836bcbf8596f41f4ac64d42"
+      },
+      {
+        "path": "src/Legacy.Maliev.ServiceDefaults/WebApi/WebApiResponseReader.cs",
+        "bytes": 1539,
+        "sha256": "753faaae1cbbcc53f99d31e3e05c48b0a36e2424d8bafc1d8413a4dd4bbf2d7b",
+        "gitBlobOid": "779f815fe3415ccb1ee115f80457a54b2640c404"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/ApiDocumentationCompatibilityTests.cs",
+        "bytes": 1303,
+        "sha256": "919ab223e5d59be0ab109c4ff7f0c321a2541a0e4fe4c38ee726838993436c95",
+        "gitBlobOid": "6fc134228af1de97c974b6ee8b2ea71dd70cf777"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/AuthServiceTokenExchangeTests.cs",
+        "bytes": 45735,
+        "sha256": "00daed9fcaa4b4f15837e9401568a058b7e024fba5e8ce308c33ccf758c2e6b3",
+        "gitBlobOid": "3ae743b984b450c7d4050746048b36294cf55a15"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/AuthenticatedServiceClientBehaviorTests.cs",
+        "bytes": 11645,
+        "sha256": "b943ba6ef119ba0cf21621a0699601114d8830d9502c18e4ad0aebf04a616cae",
+        "gitBlobOid": "e1277f8de262655bf0f63ec25ab54edd60dbe70b"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/BackgroundIAMRegistrationServiceTests.cs",
+        "bytes": 7682,
+        "sha256": "bdc05038e170b3f589cf9bca91f3733b7b89df8413ca7c2164475e70118b49ac",
+        "gitBlobOid": "e52c39d8e27872f843c7032622d0724993e4ab81"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/BackgroundIamPublishedContractTests.cs",
+        "bytes": 14086,
+        "sha256": "e7911d6ae82387267d0bb661a4b49d6140845612d2ebb1540c96f7d2b8b41850",
+        "gitBlobOid": "4072ccbf6766ccb806e4aa87bc0ee55c898f846d"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/CachePrivateDiagnosticBoundaryTests.cs",
+        "bytes": 4274,
+        "sha256": "ad0132bc41f2b7f181e1fcebe29703b516945dbb531879bed3cadd1f202ef070",
+        "gitBlobOid": "0de3b4f664ec7af16f5e7959c985be2787a4171a"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/Caching/CacheCancellationTests.cs",
+        "bytes": 3277,
+        "sha256": "59d03389b2106a3caefe83008c1f97a4e9db2974c26c474bb517bf6a88c42b59",
+        "gitBlobOid": "e136902134253f7d862086bac1bd3d6ee2c5e597"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/Caching/CacheLoggingContractTests.cs",
+        "bytes": 1049,
+        "sha256": "e281cf7cb38c1356254bd71a3ad6ebeb81e55abc9889b902f167460dcefac7f7",
+        "gitBlobOid": "25fd58aadb7366f5d1ba676ac78c83809c73d238"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/Caching/InMemoryCacheServiceTests.cs",
+        "bytes": 4326,
+        "sha256": "e9b1440e39c2081c32f5e378e752b88ba378cf1b5e881df94224041d21bafa33",
+        "gitBlobOid": "773cea4768df8b3d729bc8d3df02386eeaa1a9ff"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/Caching/StandardCacheTests.cs",
+        "bytes": 3070,
+        "sha256": "7d25fc7b75105a29f820c6baa731e542bc64348839256c951cbd0cb1c87f963b",
+        "gitBlobOid": "8a3628d391e9165aaa2ff5ea5433de01b16f259b"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/ClientAndRedisRegistrationBehaviorTests.cs",
+        "bytes": 5960,
+        "sha256": "85c08ddc4b19560d1d5a7140bf76c7d2188667537583fe7bd956a51dcb1e9371",
+        "gitBlobOid": "324553469b40f5360ab0c951a824edc9a88d8ccd"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/CompatibilityBaselineTests.cs",
+        "bytes": 1570,
+        "sha256": "75bad788c699bada2b654913c0e53ad30fbd454411da044151a6f0f761b17a15",
+        "gitBlobOid": "2f974f000b85eb7a915efecc1716f57f15a79498"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/CompatibilityDependencyTests.cs",
+        "bytes": 6185,
+        "sha256": "90f022e6c29030a36bb19e04ae4866ff4f5b58ddad876df1027b0fe3d3c35afc",
+        "gitBlobOid": "1900703fe9302b0b7d76dad1d8240939da2dbe1a"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/DatabaseMigrationBoundaryTests.cs",
+        "bytes": 1804,
+        "sha256": "697b7eb5b0c79f1938d9c84870a01705fdaa049b03b8d982f5e037ee80efa33f",
+        "gitBlobOid": "d9f9ac081d4c9db58674989e8d099623baef221d"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/DatabaseRegistrationBehaviorTests.cs",
+        "bytes": 4701,
+        "sha256": "da79360be62eb74425ab89574a8356adc98702ac08332e772c991e660a0f0cf9",
+        "gitBlobOid": "1b236c3f1e8d38f96e7e5c12c075139c47583f7a"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/DefaultEndpointsBehaviorTests.cs",
+        "bytes": 2842,
+        "sha256": "335797b19108de040c0cd9dc631f7b7a6fe8cc62acd96191ee8da23c6f629845",
+        "gitBlobOid": "55f55c20d86c47ea00750b89ec4bf075ea3eb095"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/HttpInfrastructureBehaviorTests.cs",
+        "bytes": 6386,
+        "sha256": "4d9fa77d413d2e4263574192ed4d6378dc24f6181357ce6cf46b600f66bcb3ec",
+        "gitBlobOid": "ddf3d15582ed642ad1cdc71ff17632e62720645d"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/IAMRegistrationHealthCheckTests.cs",
+        "bytes": 3342,
+        "sha256": "96e21af497786db25631efb99dbfd5b4add83531ba9444c7ab1f2b42815f6cec",
+        "gitBlobOid": "03550c8683957732c6921ba423a80e994ed59220"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/IamPermissionCacheIsolationTests.cs",
+        "bytes": 10455,
+        "sha256": "3ac385153d71e28a7bfaf85ca0cc7e6a3f07da331101912043950cd2a5b963df",
+        "gitBlobOid": "5f6cc69da2d27090ae038c87f22febfe7089a982"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/IamPrivateDiagnosticBoundaryTests.cs",
+        "bytes": 22694,
+        "sha256": "d47327a13161b72e1683b59c1f56004ffedf768203e308a4200350258dc84719",
+        "gitBlobOid": "6b2928cae25125ed8f9daeda686f879f469a1128"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/IamRoleAuthorizationContractTests.cs",
+        "bytes": 6399,
+        "sha256": "9930a4596956dbe93480eb20af6520d12cd2e606e34ba5a2b95cac03cb3ec979",
+        "gitBlobOid": "1f94e51cb14ce5c8656c66b27bcbeeceb9b73a3f"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/IamServiceClientTests.cs",
+        "bytes": 12835,
+        "sha256": "a87ef3d4d5868b03c7e66932af5035bb5f32647cd92872266e08b614ec603692",
+        "gitBlobOid": "fb427f9464fa664acddc237fb11074e2d625593d"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/JwtAuthenticationSecurityTests.cs",
+        "bytes": 16855,
+        "sha256": "fd921a7e828cbfd4d19947548252d8512bab40fd6f20f02cf8fe09edb5cf5556",
+        "gitBlobOid": "6cc9ebeca9d501896c19f51d579c6d908efceecf"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj",
+        "bytes": 1341,
+        "sha256": "31637e4ae54040500a8968b188ec74223c0487a5c41d6ebca8c38f1f77888cb4",
+        "gitBlobOid": "fbcf89757d18a756dd33cc8a94f09d39996a9b95"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/LegacyServiceAuthenticationTests.cs",
+        "bytes": 6621,
+        "sha256": "231b5e462c310ad64344994efc6869fe696bb96c4d6f33adaf547b66b2a23957",
+        "gitBlobOid": "4ebf44b4f3bfc904a92c7c521e368a5f88bb5848"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/LegacyTokenExchangeDeadlineTests.cs",
+        "bytes": 13255,
+        "sha256": "baca5067adbb3221f7256d84e99871ea2916784a131edc8292d987e9f659d713",
+        "gitBlobOid": "04ecbfefad2c86889449037f49ac21525137048d"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/LocalizationCookieCompatibilityTests.cs",
+        "bytes": 8417,
+        "sha256": "0217cad8925a8b83f32581073d76047ac1aa1be5247ec3078dbb7728ca30be21",
+        "gitBlobOid": "b49a7697260aad844435b4b5877b05cea673f043"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/LocalizationRouteCompatibilityTests.cs",
+        "bytes": 5557,
+        "sha256": "d473a8fb2c7dd3a71a719e84d7e88db6545eeeb9ece8e50e7020d725e280e1cc",
+        "gitBlobOid": "7f95ab599ae618af3a48ddf933bd606362dc2e7d"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/MessagingRegistrationBehaviorTests.cs",
+        "bytes": 4061,
+        "sha256": "12dbfb041cdda018773308686ed0f277e8f1b1b2cd5757083d2742b87f0f3916",
+        "gitBlobOid": "7621441b9757d1e5d8095dcbed9199328830334b"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/Middleware/ExceptionEventLoggingTests.cs",
+        "bytes": 9055,
+        "sha256": "7198331c91d4aac220248ca9b5e2e1dcaa168b4a233fcc1243ad503e7c590e99",
+        "gitBlobOid": "7420cc3253069b92bf6941377ed6ac5fc0b70b18"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/Middleware/ExceptionHandlingMiddlewareTests.cs",
+        "bytes": 3318,
+        "sha256": "7813cfe9baaa97cb3ba43390ea74580c36e8af5bb266689460056be5819b483f",
+        "gitBlobOid": "60502090a3747a68fa2c9758a2d7f2ca7567dbbb"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/Middleware/ExceptionHttpContractTests.cs",
+        "bytes": 5766,
+        "sha256": "7b2e3a380b932fb20fcaa144511b3624a6c50bd19c43f9fd831abff228931236",
+        "gitBlobOid": "2fbe89d2ecaf1941a3a9af7fd480000e5140ccd7"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/Middleware/ForwardedHeadersSecurityTests.cs",
+        "bytes": 2365,
+        "sha256": "30756da88772d73e1b3d97b597d53ad0a1edade70bc0dd18c6438f51dc283342",
+        "gitBlobOid": "8b475ad796dcebca6c2f94102573ee07b66f0894"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/Middleware/RequestLoggingPathTests.cs",
+        "bytes": 3250,
+        "sha256": "7fff297580023e455ba7227bd20da0973c9a308718e633da826803bcfda1ed63",
+        "gitBlobOid": "3f5b57bd593d4e4cfbc67dda77008eda8b44d9a3"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/NativeJsonLoggingTests.cs",
+        "bytes": 2953,
+        "sha256": "834730c7151bb8ee5f1cc04a6d4302325d92de2defdce975ca209dca1bac3426",
+        "gitBlobOid": "92f953ef0e9ba9cba8216d744b693265091d3ed0"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/NativeLoggingWireTests.cs",
+        "bytes": 17326,
+        "sha256": "5e0a5146d6912f8318af3d7ec8986f117a0856b5e9ac270517ed30675098a6fe",
+        "gitBlobOid": "89c0e7906faaacd2e36e9ef092e4aa1c6673805e"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/OpenApiEndpointBehaviorTests.cs",
+        "bytes": 6685,
+        "sha256": "edf6216049a5fef6a1c59a9eef4e9f106ab1a1c5dbc54e4c4b732e8480e651f4",
+        "gitBlobOid": "29b4986b21a6aa450e6202668e53d31f6a9f234e"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PermissionAuthorizationPolicyTests.cs",
+        "bytes": 35640,
+        "sha256": "bb2c94f46134d81305adb7684ff498b2f0c77e2465ebf2824d26cb9ad4199be7",
+        "gitBlobOid": "b1c53d347926b1a8fd800f9f3ff8068ec21476a5"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PermissionAuthorizationSemaphoreTests.cs",
+        "bytes": 2650,
+        "sha256": "fa1e770224758a146ad5b266920a2a60c28e48ba3055f45b96e2c425931383ed",
+        "gitBlobOid": "013e1cb52980a2aa241323ab926e9617342e3e70"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PrivateDependencyNativeDeadlineTests.cs",
+        "bytes": 18222,
+        "sha256": "de011df212ef8d1a135b02385b9c431e102166863515a1e02f70b541e374bed6",
+        "gitBlobOid": "680948a6f373abebd0e2fcea01f89790d28a0314"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PrivateDependencyOperationNameTests.cs",
+        "bytes": 14602,
+        "sha256": "aabb08ebf6fa840bfa3387ad07eec3a3db7d31266f81382fe83f637e82704ce0",
+        "gitBlobOid": "692388614b639d5c7d79463ed7e3408a385f12bc"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PrivateFailureProducerContractTests.cs",
+        "bytes": 10312,
+        "sha256": "b3f738e3cbee48d6855c5d2e600cf63595421a307a9e21f8915138f0722edf48",
+        "gitBlobOid": "29b55e6c104f9a30851949f1306765ab1b0bd0e4"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PrivateFailureProvenanceTests.cs",
+        "bytes": 14909,
+        "sha256": "18725af42b4f30af664730b86fd7952ed8ea299d428004c246e9c81e1bab67f6",
+        "gitBlobOid": "20d06621afeae02bd263d161125f7ce5a3ad30ec"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PrivateHttpTransportAcceptanceTests.cs",
+        "bytes": 14603,
+        "sha256": "595162b8e3d7612dcb4ec209da2016cede1a5afb77a389b42ae5fde9d0b31307",
+        "gitBlobOid": "008d5b815c7c9bb770ad3795b7b2683bacede48f"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PrivateOperationPipelineCompatibilityTests.cs",
+        "bytes": 22088,
+        "sha256": "5c78f39ba43759b8a06bfa256b5d1d82dca734f4e2a870f2af01c1087f637813",
+        "gitBlobOid": "193578b60b14cd9f7bba15eaa13d01025166a1cd"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PrivateRequestObservationContractTests.cs",
+        "bytes": 30519,
+        "sha256": "7a233be112e11a183f057e01e979739ff133b7c8bea8d2d1da113a62f28ea41f",
+        "gitBlobOid": "8d3f4bbcdb69513667503942a92ac5f90e0717c8"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PrivateRequestObservationHttpFixture.cs",
+        "bytes": 15447,
+        "sha256": "593330af144766c4b254127a28a2e98955893fd6758e5421120f154cc024f97a",
+        "gitBlobOid": "509e7ab7f9787d22116c4eb02591e7a5278d99a3"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PrivateRequestObservationLateRoutingTests.cs",
+        "bytes": 6824,
+        "sha256": "03e99e4e8e31984d4bc02631c80c1a862e16339dc7b4fb8d0202290a1c50d38d",
+        "gitBlobOid": "08a384e2c7f6ce9a500de437f84041b1c639ad24"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PrivateStartupBoundaryContractTests.cs",
+        "bytes": 7259,
+        "sha256": "f2dda79ddee6205152b8e0f6a8fa370ebff266e0c5893de0e87b3ae84a904fb6",
+        "gitBlobOid": "73f0735ec36a238f8ff562fd203faa2a4f97829a"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PrivateTerminalHttpObserverContractTests.cs",
+        "bytes": 18140,
+        "sha256": "e2d2d4468043abeffa43dbacb890401aeaf34ee5947373498257bcce7b7c9ac4",
+        "gitBlobOid": "b552c59a309e9478e50be3ff7f8dc975c5d3d89b"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/RedisCacheRuntimeBoundaryTests.cs",
+        "bytes": 12715,
+        "sha256": "c7ff970f930c05a36519cab339dc13dc074d3ffa64fcaebee0ad8621030e927a",
+        "gitBlobOid": "04f7e3bc075fe71e197d0cad1d2b702c55b3d833"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/RedisRegisteredHostBehaviorTests.cs",
+        "bytes": 12087,
+        "sha256": "3f0e09351702578998d3081478983c2f9f776e314964574bd19914aad573e8cc",
+        "gitBlobOid": "d6a9e1231e7e45506f26afde0dc7bf7f9a49c8a1"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/Resilience/LegacyHttpResilienceTests.cs",
+        "bytes": 5760,
+        "sha256": "7cfbce003aef17d33c8d8d49ac194e59c63e37379d5ee2bc3642c79aee3e1cfa",
+        "gitBlobOid": "9f238f322d6bb1bf883d710421478a365266de35"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/RetainedTypedHttpResponseTests.cs",
+        "bytes": 10195,
+        "sha256": "f654ebf4ebccad0758502c2afa2456c4834630c5be5da0a234ed6a03923f93ff",
+        "gitBlobOid": "76492ddd9b2e05b9cd8ecd0f4683d221c9362c42"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/ServiceAccountAuthenticationHandlerTests.cs",
+        "bytes": 4047,
+        "sha256": "fae196beef808ea58e79916a396d844ea7c4a2b1c9a58eec94aa9ce4b4f10acb",
+        "gitBlobOid": "fd207abcc89331267176a79eb8f78b538c9cee9b"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/ServiceAccountTokenRuntimeBoundaryTests.cs",
+        "bytes": 5687,
+        "sha256": "23968a5a554491d5e4b9cedbfa5b276f529e4361029ecdb6cee7e2f3a4a326a0",
+        "gitBlobOid": "c7efbe2cf685762bd0b00066f84363c4bfdb472b"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/SharedRegistrationBehaviorTests.cs",
+        "bytes": 9146,
+        "sha256": "db3773b8a3c55586c7e3864f56ad18398edc2923c482e10afb0eeafac49f994c",
+        "gitBlobOid": "a4f9dea1ac9fc66e0cebe504601c8f6b339776ea"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/Source5acLoggingRemovalContractTests.cs",
+        "bytes": 2153,
+        "sha256": "7d6a7d528ebb1eb13cda2871d0248f481fd6a48925b72be8b9fe41da0084d501",
+        "gitBlobOid": "33ac0129d35f734fe80e600d53c4e095bb6fbf21"
+      },
+      {
+        "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/UrlQueryRedactionProcessorTests.cs",
+        "bytes": 3818,
+        "sha256": "cf391568ee5e54eae7135da034dfd155385a49866f8bd6a96fd99053e4157cf7",
+        "gitBlobOid": "ab42caefefd468503fd9861b7fd820688d6ef433"
+      }
+    ]
+  },
+  {
+    "repository": "Legacy.Maliev.CompatibilityContracts",
+    "commit": "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7",
+    "tree": "b8172e57562f2e276554e47d4fa0964736c8cbe8",
+    "archive": "Legacy.Maliev.CompatibilityContracts.zip",
+    "archiveSha256": "4b131cba8014786015928b61eb0ba53c5f7025e7bad171874cb16fa6ebd942ef",
+    "files": [
+      {
+        "path": ".gitattributes",
+        "bytes": 39,
+        "sha256": "91c171a7f4e295966f6e40aba83b0a11a56b4c99b59b9c55fcf54f15df207bc0",
+        "gitBlobOid": "eb143e5370a2461f96f4610df1f6e30828c5639f"
+      },
+      {
+        "path": ".github/dependabot.yml",
+        "bytes": 423,
+        "sha256": "e81f3e1eeecb10098563cb9138649958782e712eb5dcbd56179ee9ecf93982be",
+        "gitBlobOid": "fc760e58b8ab9b1db2aa27b9dea2287bf77b4d81"
+      },
+      {
+        "path": ".github/workflows/_build-and-test.yml",
+        "bytes": 792,
+        "sha256": "52fa7e1c93387cb4036ee3ccf7e87e036d8b1552c568f6835d4d024600afe7df",
+        "gitBlobOid": "5b843a09ba7f35a9a6e6ac57b1ecec446475c6df"
+      },
+      {
+        "path": ".github/workflows/ci-develop.yml",
+        "bytes": 247,
+        "sha256": "55438892e1be3a3f5ff3e3e96aa69d74fc50884f1f465ce0ef1bc7e733ff825f",
+        "gitBlobOid": "c1bf874ecf39eab2864889fb4f2d8b38d1017bb0"
+      },
+      {
+        "path": ".github/workflows/ci-main.yml",
+        "bytes": 241,
+        "sha256": "4a5aeebe5da345b1fd15ff1a81197914a8bcd2fdb4c478bf04166ceeca273892",
+        "gitBlobOid": "56aa263726fd6b3f767e4044c9037b0c7b54d7d5"
+      },
+      {
+        "path": ".github/workflows/ci-staging.yml",
+        "bytes": 247,
+        "sha256": "626bc3b27313d26d916ca2cce22b6a40447aad7fe0f2d9b0e8d565bafb61a43c",
+        "gitBlobOid": "2fc2d10217914f61f19ca94087cb6a21e82d55fa"
+      },
+      {
+        "path": ".github/workflows/pr-validation.yml",
+        "bytes": 275,
+        "sha256": "11b3efa5dfab28b675891a89f33567e052efee01fb4bf4a1bf2b2be3713d9397",
+        "gitBlobOid": "4037ff6fe79757854087b87c7d64b1e3ecd50cb9"
+      },
+      {
+        "path": ".gitignore",
+        "bytes": 82,
+        "sha256": "51e17ee2b0482a62c369fdc28bd5f63a975531afd9f84fa5efbfb63526b31a6a",
+        "gitBlobOid": "39602f1592a3106e53ec8e59a5c42baf80da7cd0"
+      },
+      {
+        "path": "AGENTS.md",
+        "bytes": 1493,
+        "sha256": "e23ce9504f05a156b935c25259a1c1c366eb545ef18e87b52a41bce04f9f0f29",
+        "gitBlobOid": "58cfec5d5e7f4bf9cbb13d5f4bfda872ccbdf51b"
+      },
+      {
+        "path": "Directory.Build.props",
+        "bytes": 377,
+        "sha256": "1ed87f1b0cf8d42c77558b99547a1eb0c444f222527b6932e5586cbd3e42c2bc",
+        "gitBlobOid": "ccb95ff4b0392990dc721ea44637daa581eaf679"
+      },
+      {
+        "path": "Legacy.Maliev.CompatibilityContracts.slnx",
+        "bytes": 249,
+        "sha256": "f8412ccb32dbf0b0399d11fd28383028c6a1979946a87e7f71c3b874f8b55f6d",
+        "gitBlobOid": "49b33ee3e04d8b55047d228fd0f946ea63e3cc6a"
+      },
+      {
+        "path": "README.md",
+        "bytes": 1443,
+        "sha256": "73a6602df83deb65bc66cfe3332686c93eef0230c3c1ccf9144afea76040a110",
+        "gitBlobOid": "d00fba9bcb1e0b1087b8a01115e4984a59302b10"
+      },
+      {
+        "path": "global.json",
+        "bytes": 81,
+        "sha256": "b48d6da8fa62c0da7cc8a2da4ea036ac55836660a448ba533135abb5b8451b73",
+        "gitBlobOid": "512142d2bea1add9d1cf54884a7fde22666bad51"
+      },
+      {
+        "path": "nuget.config",
+        "bytes": 197,
+        "sha256": "aec93b5637ab6d62470979a008990a4a336a287ab83a3f2541849ae735674055",
+        "gitBlobOid": "765346e5343d46ac83654843869dc06b65b2bdc4"
+      },
+      {
+        "path": "src/Legacy.Maliev.CompatibilityContracts/Iam/PermissionRegistrationRequest.cs",
+        "bytes": 2507,
+        "sha256": "037f981561153af4dd0d1969f98c599e4f8f013c0465732a0c45d242d6cc5bf7",
+        "gitBlobOid": "1c6696237a848e9e3d306c7ab1c596f9467206ed"
+      },
+      {
+        "path": "src/Legacy.Maliev.CompatibilityContracts/Legacy.Maliev.CompatibilityContracts.csproj",
+        "bytes": 871,
+        "sha256": "11bdd1d8f71bafe7c49f1cb9957b6368e8a8c0af9c44e8bf5ae50af747ead005",
+        "gitBlobOid": "cc87157a704baea9ce9b7f946c13a69d31e9707c"
+      },
+      {
+        "path": "src/Legacy.Maliev.CompatibilityContracts/Shared/MessageEnvelope.cs",
+        "bytes": 1591,
+        "sha256": "81120a5065869e23a39a8b0bd3ae5e8130eab245a106252bcf9897b54b2d75ee",
+        "gitBlobOid": "e3aa078d62d042f55f2b5ce755f47b6502b1d9e1"
+      },
+      {
+        "path": "tests/Legacy.Maliev.CompatibilityContracts.Tests/IamRegistrationContractTests.cs",
+        "bytes": 4347,
+        "sha256": "4cbe6bd7a2acdae2502965b2c76f396361128a55f27269686948b54926a1b432",
+        "gitBlobOid": "d222ec4a3f846298baa9dc9f4077f8690e93d54b"
+      },
+      {
+        "path": "tests/Legacy.Maliev.CompatibilityContracts.Tests/Legacy.Maliev.CompatibilityContracts.Tests.csproj",
+        "bytes": 810,
+        "sha256": "4765b1b02168e926034495b9e4c3fba49bb2c3bec6c47b6546186ea0c01f25c5",
+        "gitBlobOid": "eda24a38e39e8c0458b4afd0b3290c71393dd442"
+      }
+    ]
+  },
+  {
+    "repository": "Legacy.Maliev.Workflows",
+    "commit": "e5732037fe94b7ed6e5be2cd4c23dbf6ef5e2617",
+    "tree": "d1f18e622636e2a4518f9bbb36aa340fff904a23",
+    "archive": "Legacy.Maliev.Workflows.zip",
+    "archiveSha256": "4efb972115497f3d241cdacf7b4ea3fdede9df7dff6fe0f7f0dae88ba181aea7",
+    "files": [
+      {
+        "path": ".github/dependabot.yml",
+        "bytes": 479,
+        "sha256": "61393aeb2652a97194566e9b7fe0a22282efd7bc89a5d71ab10b216fa9f78196",
+        "gitBlobOid": "1e7db7cc61d4be2441e62e003b0c364a9bab9920"
+      },
+      {
+        "path": ".github/workflows/dotnet-validate.yml",
+        "bytes": 6362,
+        "sha256": "39841faa9769b6ed2fbc409fa3657c51e0ababfac3e98746befffdd61d5ef4d7",
+        "gitBlobOid": "2d72d5f9698590a25ea4382d172636cab145b5df"
+      },
+      {
+        "path": ".github/workflows/publish-image.yml",
+        "bytes": 27235,
+        "sha256": "f7dcdfddef4184fa7038f50c667ead6d8e0fb063f094410df7ff942b86e76597",
+        "gitBlobOid": "8bfb535fdede094dc9efa09d053f0acfea79f48e"
+      },
+      {
+        "path": ".github/workflows/sealed-static.yml",
+        "bytes": 6641,
+        "sha256": "bf0ee66b4819fb5e957f702e3dd65a8ad79c495ac7f39fcd2c316a454c977652",
+        "gitBlobOid": "a04468101d42d66c89095e0293556e7ec41e9e77"
+      },
+      {
+        "path": ".github/workflows/validate.yml",
+        "bytes": 6071,
+        "sha256": "8d511fd0260eb40c34b811635324d1e84c2bf1da9b9c30150157d69a346d8f13",
+        "gitBlobOid": "fa1bb98335bff001a9982711c7f613cb37520397"
+      },
+      {
+        "path": ".gitignore",
+        "bytes": 97,
+        "sha256": "1b134c24e0054d2fda698033cefca05153f3aa4a7fd6561ae9d8aadece6bc7bb",
+        "gitBlobOid": "82527d40b59b699353662436330e507c2e4d3c49"
+      },
+      {
+        "path": "AGENTS.md",
+        "bytes": 733,
+        "sha256": "d4a5ee81db241d922427060cfeaf7a023dee5cbc6234eeaf87586b54a61cebc9",
+        "gitBlobOid": "ac7611cee31750cbcff75291b60b9bbbd6128be1"
+      },
+      {
+        "path": "Legacy.Maliev.Workflows.slnx",
+        "bytes": 272,
+        "sha256": "3c8ac5f677d7fd2dd498060b18d09e35f013653e3b85906309a895bc38ce95b7",
+        "gitBlobOid": "4fb95a10f0e028565c524716f609243396d0f617"
+      },
+      {
+        "path": "README.md",
+        "bytes": 9996,
+        "sha256": "8aa956a949382a965069a6c37b7fae3208ecc492e4b1261e7802612409dc69b2",
+        "gitBlobOid": "d6fd04fb6b5d66e712f1f29bfd390acd66f5fde9"
+      },
+      {
+        "path": "SECURITY.md",
+        "bytes": 1324,
+        "sha256": "75728d980794ff8d308cbd4c22cd707dbf7ca1db7734d6f173a98dee240dda9b",
+        "gitBlobOid": "1aee36039cc853e502545bd9d5e6ad911db93a0b"
+      },
+      {
+        "path": "actions/dotnet-validate/action.yml",
+        "bytes": 4453,
+        "sha256": "f21d20bf3b4140fda21daabad98315d1c3cb73184252b5b4a76228fd14a5301a",
+        "gitBlobOid": "990481b9dfa4faab0b5e88cc08ccbcb765118b7a"
+      },
+      {
+        "path": "actions/gitops-handoff/action.yml",
+        "bytes": 6431,
+        "sha256": "0e45fb824260b630a639232d070fcd879318222a6a6769400e123ec60eb203dd",
+        "gitBlobOid": "66ba2ff894f63506562dbf85b8e3b2bb17aa882c"
+      },
+      {
+        "path": "actions/preserve-validation-evidence/README.md",
+        "bytes": 2585,
+        "sha256": "3d4e7117e44c63a18e86b841650579d82351494da0d64de172927bfb5f090bc9",
+        "gitBlobOid": "f8de6b985e7968e7bbedb491e77379dacad56dd4"
+      },
+      {
+        "path": "actions/preserve-validation-evidence/action.yml",
+        "bytes": 1288,
+        "sha256": "3537663a26c33240e73b5d7c040ffca6ee48129f41911247014a437666e228e2",
+        "gitBlobOid": "67c6aef6f26327c1b5c558ee99339bbf3acf1975"
+      },
+      {
+        "path": "docs/production-observability.md",
+        "bytes": 17553,
+        "sha256": "1330daac1f0490f37f818721d7424322a101edb672a48810e72a7ad38e8be57c",
+        "gitBlobOid": "a5b16bc10dea48f82c6724a6a8cdab0046fbda65"
+      },
+      {
+        "path": "docs/provider-credential-deployment-gates.md",
+        "bytes": 5045,
+        "sha256": "85ec9a20e06f4eddca88dbbae35b57ae216eb827c90a1d717028ad3a907103d4",
+        "gitBlobOid": "3bbbdebcf55e590f3c67f8cef0af38368919165a"
+      },
+      {
+        "path": "scripts/Assert-OfflineReleaseSource.ps1",
+        "bytes": 4700,
+        "sha256": "06e0d8710b4de9b9e2b59ba1cf1dc013547d15848827674d5d5b30688297e85c",
+        "gitBlobOid": "8cd167cd691754a0a467a7d5858d950e14a79978"
+      },
+      {
+        "path": "scripts/Invoke-CurrentTreeCredentialScan.ps1",
+        "bytes": 847,
+        "sha256": "a35d30bc0f20042e48bf29659ac52b573e21b8d546885decb3ac79fb7a0c583d",
+        "gitBlobOid": "65c31b73d2d1bf198e6f039a0fa7a6665d5faa7f"
+      },
+      {
+        "path": "scripts/Invoke-JwtSigningResourceScan.ps1",
+        "bytes": 1855,
+        "sha256": "db3dba1274510a103c4eb8d16e119d7da856f7bee536d834ca1b09b18e4d7c7d",
+        "gitBlobOid": "81f8c805a5a96166faa7e8668cea6ec6515cb802"
+      },
+      {
+        "path": "scripts/JwtSigningResourceScanner.ps1",
+        "bytes": 4568,
+        "sha256": "ede6eb1157f557f98f4c634dcb83bc94f94b2487d34d043a812650e95136cf05",
+        "gitBlobOid": "2574befb3da295bf30b792e5af106d2d9a1a7dde"
+      },
+      {
+        "path": "scripts/New-OfflineImageOnlyDeploymentPlan.ps1",
+        "bytes": 6447,
+        "sha256": "4f09e547e58569847479fc5d94925cd3b32cde6693c7cc05c0ad21557a8a1d4e",
+        "gitBlobOid": "d1bb446d6ed25bbefc226e3856020804d6650099"
+      },
+      {
+        "path": "scripts/Publish-LegacyRepository.ps1",
+        "bytes": 14738,
+        "sha256": "a3686cf408f265fd4716e7f5a8be40a1421dd7ee569e8f3f7e6334e3b03589d7",
+        "gitBlobOid": "691f25618001cd538aa5d7b67abcd65a2e5c4b40"
+      },
+      {
+        "path": "scripts/Set-GitOpsImageDigest.ps1",
+        "bytes": 8262,
+        "sha256": "fd3e060fcad09da11b9c77f5b7853b4d3690c81baeffd47ed21e59a08a28cd2f",
+        "gitBlobOid": "281c59119a997389c3d91dcc7450b8b5fab12044"
+      },
+      {
+        "path": "scripts/Test-LegacyPublication.ps1",
+        "bytes": 15054,
+        "sha256": "dc51873a846b44c93ca19c7c7c9e53cc6165ef02bdc00a3e98a5d1dbb05cada4",
+        "gitBlobOid": "82c562f8026cbedc3e71f65fdccc780f1d4bacda"
+      },
+      {
+        "path": "scripts/accounting-context-validator.md",
+        "bytes": 2799,
+        "sha256": "bdaa1bcb89f249b10530bda8cd158fe46e9d7abdab464302357ea1bfa1f09647",
+        "gitBlobOid": "e835f94123e60357e5d53007449784bd0a12cdfd"
+      },
+      {
+        "path": "scripts/application-handoff-policy.md",
+        "bytes": 7773,
+        "sha256": "37dfed156b74f741066d183daf1dafeeabf47d7e8ecbc85e969d99c7713a5a14",
+        "gitBlobOid": "af46f642dd56301948cb0906ae17c3da5e2bcad3"
+      },
+      {
+        "path": "scripts/application_handoff_policy.py",
+        "bytes": 18979,
+        "sha256": "f692b8b500ae5551b30550eef9509f612b46b6fbdf2911b20a2c2dee3909bec5",
+        "gitBlobOid": "845c279ff49a716a474f82190a2e54b33ecaf3b2"
+      },
+      {
+        "path": "scripts/green-metadata.md",
+        "bytes": 4914,
+        "sha256": "caf33d837e39883e8e5654205e1784c4b9237c614f8e7664f2417bd21f418e1b",
+        "gitBlobOid": "c68fdc1861feaceace9a82337920fdee2f20b3ac"
+      },
+      {
+        "path": "scripts/green_metadata.py",
+        "bytes": 9295,
+        "sha256": "1ae33725b19d90e743e8ab13fdf90f861d71166e7c6f79d254d8d24c7b104857",
+        "gitBlobOid": "2e64e40eae06b1bca2e69b743fa86057543b5e96"
+      },
+      {
+        "path": "scripts/hosted-sdk-bootstrap.py",
+        "bytes": 6249,
+        "sha256": "2399672f7cd4b312fe20993084dd588bab56496c94c3d6c1785b31520aa00373",
+        "gitBlobOid": "8416c11c50c8e47597605277365e6806315d5e30"
+      },
+      {
+        "path": "scripts/hosted-static-policy.json",
+        "bytes": 34048,
+        "sha256": "8cb9ecffc0c1d9dfd0a9283ad6410a08fcfb3b7dcb39c0d4b75d0567d0e32e6a",
+        "gitBlobOid": "93e271584a0c1c7b549bbb17d3a2ab4d84dfd436"
+      },
+      {
+        "path": "scripts/offline-image-only-plan.md",
+        "bytes": 4010,
+        "sha256": "bfff201bdd91d7d5de722fdc4885dcbcdadd04745a8dfe4810798218f7c70fd7",
+        "gitBlobOid": "db3f65ccc9f22ed401886c77bfb9c7d7ad56e28b"
+      },
+      {
+        "path": "scripts/offline-release-source.md",
+        "bytes": 4348,
+        "sha256": "26e133b2c62f8d17b3065ffe360e164dfdfa9684916365d47ddbe1bd99e5b714",
+        "gitBlobOid": "3bdc1c4f588d60f2a4c403dde21e0218a8bc0661"
+      },
+      {
+        "path": "scripts/offline_release_source.py",
+        "bytes": 7531,
+        "sha256": "b91f780dd2d18d91962d500f1090e82772358559346fb13977b04cdd4509a82f",
+        "gitBlobOid": "2c745d83c5c5be15f68b8cd63f78aa1e253ac9a8"
+      },
+      {
+        "path": "scripts/preserve_validation_evidence.py",
+        "bytes": 10240,
+        "sha256": "00cf274a46ebf94d09ad65741bab28e8602b159492c7315413367cf986d8d699",
+        "gitBlobOid": "764494a0e42cef5800a5bcd6c22a87123e7c8848"
+      },
+      {
+        "path": "scripts/run-hosted-static.py",
+        "bytes": 16935,
+        "sha256": "4691d0736f6867aba536560eb6a3c553663626865b563687ad2843bb95ba5c93",
+        "gitBlobOid": "1ca64587361c6aaa2b745698de07852b972d8c90"
+      },
+      {
+        "path": "scripts/service-manifest-wrapper.md",
+        "bytes": 5138,
+        "sha256": "32c60c57ecf232119be1a208f5227da0ebad4daed50dff6e8aacfb9825653737",
+        "gitBlobOid": "ea633b6b07e13b51b065e74b5ec531f513ea9a90"
+      },
+      {
+        "path": "scripts/service_manifest_wrapper.py",
+        "bytes": 7616,
+        "sha256": "c3f8664426661f96720d8af08a265bd184c801c3fab47ca292cb3cb920735854",
+        "gitBlobOid": "4fcf9657562f34e177f2419458b6a319ee07001e"
+      },
+      {
+        "path": "scripts/startup-protection.md",
+        "bytes": 3726,
+        "sha256": "672775033518f18c052e27f1508465f5853826a03876e61db1f7b18bcb988985",
+        "gitBlobOid": "76e330fbfb55d776aa42caa17a01e96e40f38284"
+      },
+      {
+        "path": "scripts/startup_protection.py",
+        "bytes": 4470,
+        "sha256": "09cdbc178d4afe9e6eb3ad24a433563c328f10b60b1734f614aa77dfe99aec1e",
+        "gitBlobOid": "730cb9f5d80c77b1b2cfda60637faa0028f72f08"
+      },
+      {
+        "path": "scripts/test-hosted-static.py",
+        "bytes": 240800,
+        "sha256": "945aa85a3c11424db53d737c5848cf1b7184755babb1242b34bf0a3617523efa",
+        "gitBlobOid": "90ab6ec6e5111093406741a272b2cd4cb76b7e25"
+      },
+      {
+        "path": "scripts/validate-host-dependency-context.py",
+        "bytes": 10775,
+        "sha256": "45c32e356a5db1247131de63b842e01f5d12ef92902b5fc8f744081428ed074e",
+        "gitBlobOid": "afeaf99dbb85791cb33755d15b3c02e0d0bd868d"
+      },
+      {
+        "path": "scripts/validate-production-observability.py",
+        "bytes": 11526,
+        "sha256": "a37217bd103fbbba5a3f17b1566270810d98e08f0fa7abdff0fb470c61e814dd",
+        "gitBlobOid": "cc7eb2a0a0a854c25aa4f0e217d21eea9d8cb2ae"
+      },
+      {
+        "path": "tests/Invoke-OfflineSourceGuardFixture.ps1",
+        "bytes": 793,
+        "sha256": "ff8722faace8a3c74f4090715eebd6d1c05ace5283b229b85cc893cdd7c7f65f",
+        "gitBlobOid": "87bb0da2dbe39138eefba3b87b7b3d8d04cbeb75"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/AccountingContextExportContractTests.cs",
+        "bytes": 14431,
+        "sha256": "22bff5b12c931c78da9a6b48e47ca0154847ff0a3fe2fc9eb52e57fe002996b6",
+        "gitBlobOid": "30f5af4954c77f8e47c7bbf9f6cc957c92a5cf92"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/AdditiveBenchmarkTests.cs",
+        "bytes": 25767,
+        "sha256": "16fec42171f4087920fff59d892c65dd5c4ed59b80122a51cea26514135475bc",
+        "gitBlobOid": "fe143f71d39a789a6f1bd932a732f72c4fae12fe"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/AnalyticsWireWorkflowContractTests.cs",
+        "bytes": 5288,
+        "sha256": "832963c8d4ea39b353d7f088b9b7e7bf0f9a1e9be38298256fec83c9742e48fc",
+        "gitBlobOid": "6b897c0a531f0728942ef4fef1e1c8c0efdf6757"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/ApplicationHandoffPolicyTests.cs",
+        "bytes": 1830,
+        "sha256": "fbc68c230ed3f71b3c33cd303154c5bcb02b46f7da7799a418f0db7ea107f670",
+        "gitBlobOid": "82e309d3832868f6b4a9f932e1bde9b8a8e5fd62"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/BambuStudioEvidenceTests.cs",
+        "bytes": 13709,
+        "sha256": "1128acb1385358cf7f5dd5377ba052a5e1498fc47a8debc8a8788934cdbef68e",
+        "gitBlobOid": "f3a98eb8d5f912aa4e46c3fe61935c6651dba8eb"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/BambuStudioProfileResolverTests.cs",
+        "bytes": 19355,
+        "sha256": "717a42ab5a0108849b0c2eb0da18cc51bff937c188e0837f644bd894b90d7922",
+        "gitBlobOid": "9436471c3a9d3f7614e4dde6874349b807ed48b0"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/CurrentTreeCredentialScannerTests.cs",
+        "bytes": 17762,
+        "sha256": "f33858f25eba137bbe568f19bb51ab3bd63a3440ba6b6a6c54052a56b5b18902",
+        "gitBlobOid": "6b34a3444fd09b222a69786ae08e1f78de48181f"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/DockerContextCorpusTests.cs",
+        "bytes": 12656,
+        "sha256": "bd37cc99bada447786874903460232346ef2d354d2aabae98b97af5dbc78c24f",
+        "gitBlobOid": "d6e0808ae0940625f696ae649bb4dafc76f6d827"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/FilamentProfileCatalogTests.cs",
+        "bytes": 8478,
+        "sha256": "07b3083819abd932119d10a009f3bc5a1c517f5ec599ecce44d90bbcc77c7627",
+        "gitBlobOid": "6af7d2f50d6e499873a8879a1631ca2cf52e8cd8"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/GreenMetadataContractTests.cs",
+        "bytes": 3230,
+        "sha256": "8accfac4ead638cc4a2db22e5bb023bf86c2da49fcd136f0ffe1b01586cf1328",
+        "gitBlobOid": "59a73037bb50a5c91ea64eadc158756798c201dd"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/JwtScannerCallerScopeTests.cs",
+        "bytes": 10596,
+        "sha256": "f054e51074c8714d14e66eb393a2202ba027040ff4e5222245f22f8b2ac7ed9f",
+        "gitBlobOid": "850e84979b56e5b2336c994c9d6b8a7ea6d369a1"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/Legacy.Maliev.Workflows.Tests.csproj",
+        "bytes": 944,
+        "sha256": "818184ba23f95671d51597fd7d4697c841aacd9171195354a623954215da3a91",
+        "gitBlobOid": "0b2af04e26e6a115f70570b72535061978801cf0"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/OfflineImageOnlyPlanTests.cs",
+        "bytes": 2304,
+        "sha256": "30d3662e387b5e8460e3f12129234c50144cb400f32e1c52e69c81b1fe36c711",
+        "gitBlobOid": "2e91c56329a98ad0de0762beefc21ecab6637b8c"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/OfflineReleaseSourceTests.cs",
+        "bytes": 1918,
+        "sha256": "93d2c6129244f18cc9e325cf68aef3af698bf1b819488f3e9b7c8811c97a1de0",
+        "gitBlobOid": "064aeb610f8517f9f7d5d8ff16bebc1fde0c1d91"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/PackagedIntranetAssetGateTests.cs",
+        "bytes": 10489,
+        "sha256": "ad6b3c68903f5b2eb36a2cb90c1352f5c1ff33b4432f119637ffb7f6c9e33d17",
+        "gitBlobOid": "433e4b3c962fe62845998b7d493e6c17b2709154"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/PackagedWebImageTests.cs",
+        "bytes": 1877,
+        "sha256": "1879b447cc7f3f3c232e5bb0e4c91ee56551ab4cc879b91643aea1264bb8800d",
+        "gitBlobOid": "d20c9889274d9a928a25aa714afe27d02d5853fa"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/PrivateCorpusInventoryTests.cs",
+        "bytes": 16211,
+        "sha256": "ecf4f9d400dd9a7251660db0cee85d5e9e17c77d10766f145e61bbfcd1a1f8a1",
+        "gitBlobOid": "8e1b894776f84bc0b448370efb4cf574617e7988"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/ProductionObservabilityRunbookContractTests.cs",
+        "bytes": 24902,
+        "sha256": "8e5c3c433432f03516962bbc86787454014deb5d2fba98b5f20dd471e21b4392",
+        "gitBlobOid": "5fbb187bf6ee32d7124879134364e67fb0eb8609"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/PublicationValidationGateTests.cs",
+        "bytes": 11839,
+        "sha256": "6ad616d8fb5ef45094ab77b43d62d223c80d1bff63b9ea9e38ee8b7cb29bb467",
+        "gitBlobOid": "71d03d89304c3ac97433013c0933a9a3572fb3c2"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/RepositoryContractTests.cs",
+        "bytes": 63298,
+        "sha256": "d8f9c1a9241c624d8118572c4ad78e4468db8c242696266ba689a4fe910e9561",
+        "gitBlobOid": "e5e90aae90a264e301e38a50fdfc8ca6a582e158"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/RepositoryScopeContractTests.cs",
+        "bytes": 864,
+        "sha256": "e2be3a96eb7da9078e90897a78a46b40642682256a60ccf76503c6a456b0ade3",
+        "gitBlobOid": "46c8ea396595a9db2c1dbfefd3b1ab9e3a60aed7"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/StartupProtectionContractTests.cs",
+        "bytes": 3237,
+        "sha256": "63b96fbc6ffaa98cace84ad63200a0501b6fdba800ff2bf7f2341a77bc510517",
+        "gitBlobOid": "709d3c7a133e6b47628956b6303f3bcfbf301277"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/ValidationEvidenceRetentionTests.cs",
+        "bytes": 4219,
+        "sha256": "50d93829b8125e188abc8ee3b8e4ac4e63065eb7c5483cfdb14f86ade14dd927",
+        "gitBlobOid": "12e82c4629e426be971742a03b4fe0fbfc05d819"
+      },
+      {
+        "path": "tests/Legacy.Maliev.Workflows.Tests/ValidationStepOrderTests.cs",
+        "bytes": 1918,
+        "sha256": "a758d702ec0622aa6db10132206d1847902cef515e11fd552755ed18e1864afd",
+        "gitBlobOid": "fc39dd4941ccbb57ca52edcbd323fa7b50ba1d1d"
+      },
+      {
+        "path": "tests/OfflineImageMetadataScenarios.ps1",
+        "bytes": 7360,
+        "sha256": "b945be405386e2240ab743261d3bcb07a71bb4ca372157e84a011a61f952c273",
+        "gitBlobOid": "d9cd502aa784d9af8fdf21e82732a55acf132104"
+      },
+      {
+        "path": "tests/OfflineImageOnlyPlanScenarios.ps1",
+        "bytes": 4567,
+        "sha256": "120f6ea199af952ea7a3134ef099e88483fd78650eaca945615823ceb68d15be",
+        "gitBlobOid": "2bf8e8a69684cd83f4c85793cc61c21b9b371854"
+      },
+      {
+        "path": "tests/fixtures/accounting-context/.gitattributes",
+        "bytes": 135,
+        "sha256": "2b5aff9e437d65b9bc0e0ac504e899dff0151cd70e5d997819df8789dfacb12e",
+        "gitBlobOid": "23b27846e3cc0428f1a6971490bc996bcd47490d"
+      },
+      {
+        "path": "tests/fixtures/accounting-context/Accounting.Api.Dockerfile",
+        "bytes": 1313,
+        "sha256": "2150a1d560902ed683a3e0c9aa39c8572a66c3dd48fb1e8b404451feab860fcc",
+        "gitBlobOid": "88eed4c2ba3f676fc1b1d06e765f1d7d677c9652"
+      },
+      {
+        "path": "tests/fixtures/accounting-context/accounting.dockerignore",
+        "bytes": 85,
+        "sha256": "5984866d3f136fd22a64d3147c942eac8423638bf2f5703232c2d11cc1ed0db5",
+        "gitBlobOid": "a57a86c6e090914913b753d06e6eb86d1d48d7bd"
+      },
+      {
+        "path": "tests/fixtures/canonical-service-gate/dormant-projection.json",
+        "bytes": 7523,
+        "sha256": "88ea1f29eb4dfd3546ef49f456b961e413eccf91a025da2ff0c1d92363aab37d",
+        "gitBlobOid": "8b061461d96202423fdbae0183bd57603bb8a89f"
+      },
+      {
+        "path": "tests/fixtures/docker-context/.gitattributes",
+        "bytes": 111,
+        "sha256": "a28b4fb2fb8994655d454577226a65049b46f0c40d56fb95dd7680f0c8eda7b1",
+        "gitBlobOid": "3320e50b47701b9a1ea6ef38d435a5af10d5d610"
+      },
+      {
+        "path": "tests/fixtures/docker-context/15077df15879488b2010808bf38f94a2e91f3bf5.dockerignore",
+        "bytes": 824,
+        "sha256": "086bc334c86323d6d5d690939521cc07b4ac8e9a1be2edfbe39b20ca35c63200",
+        "gitBlobOid": "ece2d7285720dd494e87940ab47fc7e0a2600151"
+      },
+      {
+        "path": "tests/fixtures/docker-context/6268fb47c8a3ebdb9e9fe3935d16b47f93e9bb32.dockerignore",
+        "bytes": 806,
+        "sha256": "a5f5031411855d206f65b31e1403d3bc33352c13ba29d2764f7eb412e5217d47",
+        "gitBlobOid": "de7c1e0e04f80efbab602ca8ae4c48d89ef4dbf1"
+      },
+      {
+        "path": "tests/fixtures/docker-context/provenance.json",
+        "bytes": 938,
+        "sha256": "84176abc3113c5a64bd5b22f82e70dfc71692a0d49093a40207f0d4e424b4d7b",
+        "gitBlobOid": "01c52491feadd826bbf7c98e8c2524488e20d53f"
+      },
+      {
+        "path": "tests/fixtures/service-wrapper/DocumentService.json",
+        "bytes": 1036,
+        "sha256": "c015e0557c6306715e0fc995247fc7ff960184231e1dd7d5ec23a723f798b186",
+        "gitBlobOid": "7baa2f4a11d902d41dc86041918866681274b0b3"
+      },
+      {
+        "path": "tests/fixtures/service-wrapper/FileService.json",
+        "bytes": 1047,
+        "sha256": "c3d71a27cd88fded102e814dbdac910794ee60347a83281e8d94920a34ce8f70",
+        "gitBlobOid": "cb0fef56e37f2f222f1cb22c7200900d14094f9d"
+      },
+      {
+        "path": "tests/fixtures/service-wrapper/NotificationService.json",
+        "bytes": 1050,
+        "sha256": "dd7571895e7cc51c9c77bf45ce5e79db9a2e657d8734237adf113e484220153f",
+        "gitBlobOid": "4a96eadc57904d0cfd1f02b72e2af68373c7f1f1"
+      },
+      {
+        "path": "tests/publication/Test-LegacyPublication.Tests.ps1",
+        "bytes": 48901,
+        "sha256": "ab9a6b98fc6017e80ebbe0f7fbbddb2fa895b7642f1078e9440cf9f73e4c76d3",
+        "gitBlobOid": "9a14362d5fe6066eb50e3dbaa580374107c0c926"
+      },
+      {
+        "path": "tests/test_accounting_context.py",
+        "bytes": 7975,
+        "sha256": "5c2a6fce2dafef011ec1e5b5a67aed1b0baaec5b03ebe918d9d71e63fec8e889",
+        "gitBlobOid": "e823d08a60a41ac1090fdf34d8611966d62916f0"
+      },
+      {
+        "path": "tests/test_application_handoff_policy.py",
+        "bytes": 20644,
+        "sha256": "5c742fcbc6b609cde51e27a86d32abc7d1864f40fa6a5d945de7bd3c8f97cd36",
+        "gitBlobOid": "bb4cc53fa4aa2204de5fa08ef771bb02d6a032ae"
+      },
+      {
+        "path": "tests/test_green_handoff.py",
+        "bytes": 16795,
+        "sha256": "0aed471725c9c35d5f8377b3381be5cf22bce03bed06683838df729d6dc6e113",
+        "gitBlobOid": "5576390ee158d6f168cb7352d0e2e0c4addf18ec"
+      },
+      {
+        "path": "tests/test_green_metadata.py",
+        "bytes": 9678,
+        "sha256": "3771b12de0662088318ba25271b20668da20e83fad06167af36972c6aec7be40",
+        "gitBlobOid": "e4343b40127ce3637c1422449b22bae5f3496dc3"
+      },
+      {
+        "path": "tests/test_offline_release_source.py",
+        "bytes": 16665,
+        "sha256": "f4851d5156e447371694d5b7aeaf5b99f45df1ee59454137e3c0e1c9aacbbb42",
+        "gitBlobOid": "2995ebe0a403dd5c594248d074cea50e295a1d25"
+      },
+      {
+        "path": "tests/test_packaged_web_image.py",
+        "bytes": 8877,
+        "sha256": "cf8d00086759bf14e3c819ea3afc47527e399355690bde21201bde871ea23089",
+        "gitBlobOid": "bfedaacab99d9cfceedb57efbee8e661de155661"
+      },
+      {
+        "path": "tests/test_preserve_validation_evidence.py",
+        "bytes": 12251,
+        "sha256": "3249b163a4dfcf630c08cbc1044e65b46627d0f5eb0ec9c497449aea3203b7bc",
+        "gitBlobOid": "03507b45c260aac0098fcfe36c911fdd7633611b"
+      },
+      {
+        "path": "tests/test_service_manifest_wrapper.py",
+        "bytes": 17633,
+        "sha256": "8d0fa7430147c597994527ff942ff95894ae94941cad38319882d270670ff817",
+        "gitBlobOid": "7e6bb7f361ac64f6faf15bc181982c017bedb47c"
+      },
+      {
+        "path": "tests/test_startup_handoff.py",
+        "bytes": 9562,
+        "sha256": "9770ac146bcfb4cb500f2320262f20009b3caa50a4409ed3ba1dac93ab94c6d1",
+        "gitBlobOid": "675a3c646328e00cbb39a276297312085d1e15f7"
+      },
+      {
+        "path": "tests/test_startup_protection.py",
+        "bytes": 6295,
+        "sha256": "03d6d7c15c8127ca81dfc88505e6336a32d8696c12a2cf2d5a8275153c3b91e3",
+        "gitBlobOid": "b6c17b9ae8b8d0527ebf181c3d53dbbd22f55da6"
+      },
+      {
+        "path": "tests/test_validation_step_order.py",
+        "bytes": 5727,
+        "sha256": "f93b91086c1f87596eb39350a2af539dadb58fa06b68c58e78e7ba86011834d1",
+        "gitBlobOid": "b74740b8eace2f8cba29203f9e152d1a277ccb22"
+      },
+      {
+        "path": "tools/additive-benchmark/AdditiveBenchmarkCli.cs",
+        "bytes": 5431,
+        "sha256": "a831cd264e5b4eb63f9abc994716a2fda32261bea577a9412bbc562a2ebfe088",
+        "gitBlobOid": "a3bbd29d0aa48be25920483b1a3ff510b2f48a7e"
+      },
+      {
+        "path": "tools/additive-benchmark/AdditiveBenchmarkRunner.cs",
+        "bytes": 49982,
+        "sha256": "06f5d70a2e1ea5cfa532b00f9b604d45c6dd4c8beef0f5ee8797d2323dba0797",
+        "gitBlobOid": "908cfe8559c142614214c4e1a1bd4498f060d6ca"
+      },
+      {
+        "path": "tools/additive-benchmark/BambuStudioCli.cs",
+        "bytes": 4935,
+        "sha256": "81651e3055e07bf77b071ad64d9468e0bb11993b70888dd7afbd10807e5a0bcc",
+        "gitBlobOid": "c762d3c2b1658540cb95023be757f63388b69272"
+      },
+      {
+        "path": "tools/additive-benchmark/BambuStudioProfileResolver.cs",
+        "bytes": 12621,
+        "sha256": "0514877511e03faf0c57f7c0a305a30ca8635041d32429dab881f97479d9d68c",
+        "gitBlobOid": "c5465cbc60782c41cb8c28b0e361270beccbc5c6"
+      },
+      {
+        "path": "tools/additive-benchmark/BambuStudioResultParser.cs",
+        "bytes": 15178,
+        "sha256": "de41a80d7ae7c006980e5f355e9e28a2db68500ca08e4f8e2533ce2776ea5d76",
+        "gitBlobOid": "4184680ae061f2fb329ed96c9dbfb7e0f1ba7a4d"
+      },
+      {
+        "path": "tools/additive-benchmark/BenchmarkReferenceValidator.cs",
+        "bytes": 2149,
+        "sha256": "481a53bb7da5c71b0bcf5a96cb7a6f8e4ef14c1aad2cc19ee9f1051219e3962a",
+        "gitBlobOid": "5ff3be3fb2f4ddeaf19f4b3e814d2e80c8143107"
+      },
+      {
+        "path": "tools/additive-benchmark/BoundedJson.cs",
+        "bytes": 1972,
+        "sha256": "c907eae28aa98d62e10edd99a536e600007e780eeab55d5b9f0983bf804ab8f1",
+        "gitBlobOid": "80c64ca84ef04e7b8182f98a6db40155cb93eb22"
+      },
+      {
+        "path": "tools/additive-benchmark/CORPUS-INVENTORY.md",
+        "bytes": 2416,
+        "sha256": "d3dda8478bab06e410d3ed0326e2213fd9cb307c628da10d4afe9070c672e295",
+        "gitBlobOid": "d63315962d6dd63b74f31df3b5a283d2e0c5ea5f"
+      },
+      {
+        "path": "tools/additive-benchmark/FilamentProfileCatalogValidator.cs",
+        "bytes": 9307,
+        "sha256": "c261736b05951e26aebc4fa9db10a369a896cee79021e8c499bc1ccb0029aa9c",
+        "gitBlobOid": "6f10bc3a131e34be0a339c1988fe57853432f433"
+      },
+      {
+        "path": "tools/additive-benchmark/Legacy.Maliev.AdditiveBenchmark.csproj",
+        "bytes": 294,
+        "sha256": "cbda77be076f6ff67d1a510c950892ab127591d8dec1e78eb4f9a23d48b41661",
+        "gitBlobOid": "dab6122f1e5f0201236fb25fb99aadc51c3f9606"
+      },
+      {
+        "path": "tools/additive-benchmark/PrivateCorpusInventory.cs",
+        "bytes": 9944,
+        "sha256": "930af86f17dff8c4ef3fa5fd3cb8765163183e26f0520f16e039c0707100d1df",
+        "gitBlobOid": "00a61678ce100d7f044615e42c0399d562ee42b7"
+      },
+      {
+        "path": "tools/additive-benchmark/Program.cs",
+        "bytes": 79,
+        "sha256": "57d06e99b79f884cfce6bda8ba8818c2474673c1bc5800668c168d2ff98f6e60",
+        "gitBlobOid": "88f5f70ec24ee42950f9a8561f28d6981d7cd7b4"
+      },
+      {
+        "path": "tools/additive-benchmark/README.md",
+        "bytes": 9997,
+        "sha256": "224cf41278ec6a63401fbeb71716d9464efb5e02cec823addda495293d54cf67",
+        "gitBlobOid": "7e8184dd89fc009735be3680d0dc79b2057e9cef"
+      },
+      {
+        "path": "tools/additive-benchmark/schemas/manifest.v1.schema.json",
+        "bytes": 8685,
+        "sha256": "0b02e43db8295247d4a05f9bf54948704528a25f52d4d42d42cc1ab294e007ee",
+        "gitBlobOid": "9e9aa99cd825308f7a4cc86dbdd13cbdc347459e"
+      },
+      {
+        "path": "tools/additive-benchmark/schemas/manifest.v2.schema.json",
+        "bytes": 3127,
+        "sha256": "be1028046af8ff9c0a6e823d3321f0f992f3af047982679e88143f4e5f0a5ec7",
+        "gitBlobOid": "5334d02295bf58e82b62cf67e1ffdc1f2c922fc6"
+      },
+      {
+        "path": "tools/additive-benchmark/schemas/report.v1.schema.json",
+        "bytes": 3270,
+        "sha256": "e6a62a32d8ca73879c1edb78a9e157569368868434396d8d0cda32b9e581b4ba",
+        "gitBlobOid": "80538eeeb28246d7d14f37dd2ea952219c0fcf32"
+      },
+      {
+        "path": "tools/additive-benchmark/schemas/report.v2.schema.json",
+        "bytes": 3323,
+        "sha256": "3c3921392a2feda3703c78b137c13d65d3f2a0860be57934823d0947f4895d72",
+        "gitBlobOid": "21bf0b3a02c3e95d507e984028fa4a6b80a272a7"
+      },
+      {
+        "path": "tools/analytics/README.md",
+        "bytes": 6989,
+        "sha256": "168f0e66a988652b437b19f04f766c2a158c65b3ccdbfc0ac8b49200937e822e",
+        "gitBlobOid": "8df1fa9184631dfe8b48256ee35a04c0ca493537"
+      },
+      {
+        "path": "tools/analytics/WireFixtures/Program.cs",
+        "bytes": 5011,
+        "sha256": "31f3307a88ddff4617ef063df3471f26c5818cdd7a000e2d8e571382cc8c6523",
+        "gitBlobOid": "8de319e4ba8306471f3535b28ac787c845f8c997"
+      },
+      {
+        "path": "tools/analytics/WireFixtures/WireFixtures.csproj",
+        "bytes": 294,
+        "sha256": "cbda77be076f6ff67d1a510c950892ab127591d8dec1e78eb4f9a23d48b41661",
+        "gitBlobOid": "dab6122f1e5f0201236fb25fb99aadc51c3f9606"
+      },
+      {
+        "path": "tools/analytics/fixtures/.gitattributes",
+        "bytes": 19,
+        "sha256": "5c0ccd4346d40a9a257042b8a485544d843749688aee93ed1bcf52679a9a2441",
+        "gitBlobOid": "4ee01478dc02fb11454c5a3045376047ff65c756"
+      },
+      {
+        "path": "tools/analytics/fixtures/invoice-empty.json",
+        "bytes": 76,
+        "sha256": "08f17653606979a26c39a8e1b97c8f70f294f65ec018e699070d8cf9699d25db",
+        "gitBlobOid": "974fd2f527fedfb17c941779a95d5484fefd7c25"
+      },
+      {
+        "path": "tools/analytics/fixtures/invoice-mixed.json",
+        "bytes": 366,
+        "sha256": "f06f66a1a562893cbf982a61e77a111cc61176f293e7ab70ecad8538b34b08cd",
+        "gitBlobOid": "2bda34be4edb168f5536cc0daf7d7ed600e87474"
+      },
+      {
+        "path": "tools/analytics/fixtures/invoice-null-currency.json",
+        "bytes": 279,
+        "sha256": "7f452ea0838a276a80b0ae1e55b51febb0823851f3f68a808a71e575211b9ca7",
+        "gitBlobOid": "8dcced56b86f36d8c95bcc60bb236ae01d8cf9c2"
+      },
+      {
+        "path": "tools/analytics/fixtures/invoice-zero.json",
+        "bytes": 234,
+        "sha256": "6e7e392d9c89f86f09726ab1508a6a4c95986f274655c2b4e71213e82e11cfbb",
+        "gitBlobOid": "4d018c710074b7a5e4c70b3d0de6793903705f2c"
+      },
+      {
+        "path": "tools/analytics/fixtures/qualification-empty.json",
+        "bytes": 80,
+        "sha256": "795ce6387f9b7e652168128e0116c2d0333853d669f9571af954e7188ccec082",
+        "gitBlobOid": "39affd3755d5ea96bd3d25ee8c7bfef1fc74e5ad"
+      },
+      {
+        "path": "tools/analytics/fixtures/qualification-mixed.json",
+        "bytes": 536,
+        "sha256": "56b8c1095d35cc4064121d0fb9bde4ae45224558437c7f6ae2f07257af0f8fcc",
+        "gitBlobOid": "83e32e4b0dcbedbabda9130ce66c0baa45c69ea1"
+      },
+      {
+        "path": "tools/analytics/fixtures/quotation-empty.json",
+        "bytes": 206,
+        "sha256": "063d1c9071dfc1464bf720bc4923c7d5d2ecf4478b6602404c95d6be67944a16",
+        "gitBlobOid": "becba18f15a033d6f6b1df75874f4b45b1644bb0"
+      },
+      {
+        "path": "tools/analytics/fixtures/quotation-mixed.json",
+        "bytes": 642,
+        "sha256": "66c570115098e0b77076fc9f80080328cbba0cd213eaab9500d824019c06775c",
+        "gitBlobOid": "b080442a9865b21a3427fd1c15b96408424bd879"
+      },
+      {
+        "path": "tools/analytics/fixtures/quotation-zero.json",
+        "bytes": 496,
+        "sha256": "00a42ee4a91f0328a5b622e7c6e5b25fc86908e447aa2602ac66b0a58d83f70b",
+        "gitBlobOid": "3629f74074297807b8b26137494b60de201657a4"
+      },
+      {
+        "path": "tools/analytics/outcome_receipts.py",
+        "bytes": 12414,
+        "sha256": "30050ba8740b8541d4f959b057ec93e68f14acd5d7bad3b8aa86b571d2e53e29",
+        "gitBlobOid": "57ad6ad963685abf73c3eabed05d582fbdf6148b"
+      },
+      {
+        "path": "tools/analytics/producer-wire-proof.md",
+        "bytes": 5111,
+        "sha256": "ba25623ee1aca86ee836366b92953dadcf670ddf073cf8cc7f14cfec55f3c81c",
+        "gitBlobOid": "3dcd874dd2b1c35afc5b8b88cd68f28ef9d47006"
+      },
+      {
+        "path": "tools/analytics/tests/test_outcome_receipts.py",
+        "bytes": 12672,
+        "sha256": "64e52ece6946f9639f8fe574271b24f69c1cba2b3a0e189fd783ddb76ac09c48",
+        "gitBlobOid": "6d20e70c45f1cc840113e44c6a95554173ccc0fd"
+      },
+      {
+        "path": "tools/analytics/tests/test_producer_wire.py",
+        "bytes": 16469,
+        "sha256": "5e481f7524e13278d7d4bfa8bbc90b0bfe0f22bce4a204e5aa376a24a9898752",
+        "gitBlobOid": "59691046dc9758ae193087f23d81a9452c291a9b"
+      },
+      {
+        "path": "tools/analytics/verify_producer_wire.py",
+        "bytes": 8457,
+        "sha256": "5161579779516c04e7094db88f5fba6b9d4df4596e1733e532dfb591e0fa4c63",
+        "gitBlobOid": "623cf97e895d8217107202bb7fa9c4b58a7d3658"
+      },
+      {
+        "path": "tools/security/current_tree_secrets.py",
+        "bytes": 9024,
+        "sha256": "efa81cd5c882451677193047210630700ce69e8f5deea6078a71ba5ed04edf05",
+        "gitBlobOid": "da5e594708690e42e6af783b5060b5126d7e87d8"
+      },
+      {
+        "path": "tools/security/tests/test_current_tree_secrets.py",
+        "bytes": 15620,
+        "sha256": "ed82ccf4e6a12220be20723b35be0f1084b88215a536266ed423827bddb96b5e",
+        "gitBlobOid": "3ffb540464f9dff38e6330b4751f876712a6df86"
+      }
+    ]
+  }
+]

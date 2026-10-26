@@ -67,10 +67,10 @@ public sealed class ProcurementApplicationServiceTests
     }
 
     [Fact]
-    public async Task ListBoundaries_NormalizePageAndClampSizeWithoutChangingWireContract()
+    public async Task ListBoundaries_NormalizePageAndPreserveSupplierSizeWithoutChangingWireContract()
     {
         var suppliers = new Mock<ISupplierRepository>();
-        suppliers.Setup(value => value.GetSuppliersAsync(null, "needle", 1, 250, It.IsAny<CancellationToken>()))
+        suppliers.Setup(value => value.GetSuppliersAsync(null, "needle", 1, 10_000, It.IsAny<CancellationToken>()))
             .ReturnsAsync((PaginatedResponse<SupplierResponse>?)null);
         var service = CreateService(suppliers.Object, Mock.Of<IPurchaseOrderRepository>(), Mock.Of<IProcurementCache>());
 

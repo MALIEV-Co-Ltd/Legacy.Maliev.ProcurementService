@@ -28,7 +28,7 @@ public sealed class SupplierRepository(SupplierDbContext dbContext, TimeProvider
         Project(dbContext.Suppliers.AsNoTracking().Where(value => value.Id == id)).SingleOrDefaultAsync(cancellationToken);
 
     /// <inheritdoc />
-    public async Task<PaginatedResponse<SupplierResponse>?> GetSuppliersAsync(SupplierSortType? sort, string? search, int pageIndex, int pageSize, CancellationToken cancellationToken)
+    public async Task<PaginatedResponse<SupplierResponse>?> GetSuppliersAsync(SupplierSortType? sort, string? search, int pageIndex, int? pageSize, CancellationToken cancellationToken)
     {
         IQueryable<Supplier> query = dbContext.Suppliers.AsNoTracking();
         if (!string.IsNullOrEmpty(search))
@@ -60,9 +60,10 @@ public sealed class SupplierRepository(SupplierDbContext dbContext, TimeProvider
         };
         var total = await query.CountAsync(cancellationToken);
         if (total == 0) return null;
-        var items = await Project(query).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+        var effectivePageSize = pageSize ?? total;
+        var items = await Project(query).Skip((pageIndex - 1) * effectivePageSize).Take(effectivePageSize).ToListAsync(cancellationToken);
         if (items.Count == 0) return null;
-        return new(items, pageIndex, (int)Math.Ceiling(total / (double)pageSize), total);
+        return new(items, pageIndex, (int)Math.Ceiling(total / (double)effectivePageSize), total);
     }
 
     /// <inheritdoc />
@@ -88,7 +89,6 @@ public sealed class SupplierRepository(SupplierDbContext dbContext, TimeProvider
             context.Addresses.Add(address);
             await context.SaveChangesAsync(cancellationToken);
             supplier.AddressId = address.Id;
-            supplier.ModifiedDate = now;
             await context.SaveChangesAsync(cancellationToken);
             return ToResponse(address);
         }, cancellationToken);
@@ -102,7 +102,6 @@ public sealed class SupplierRepository(SupplierDbContext dbContext, TimeProvider
             var supplier = await LockSupplierAsync(context, supplierId, cancellationToken);
             if (supplier is null || supplier.AddressId != addressId) return false;
             supplier.AddressId = null;
-            supplier.ModifiedDate = Now();
             await context.SaveChangesAsync(cancellationToken);
             var deleted = await context.Addresses.Where(value => value.Id == addressId).ExecuteDeleteAsync(cancellationToken) == 1;
             return deleted;
@@ -182,6 +181,8 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
     public async Task<PurchaseOrderResponse> CreatePurchaseOrderAsync(UpsertPurchaseOrderRequest request, CancellationToken cancellationToken)
     {
         var entity = Map(new PurchaseOrder(), request); var now = Now(); entity.CreatedDate = now; entity.ModifiedDate = now;
+        // Original POST copies shipping contact; PUT retains the independent supplier contact.
+        entity.SupplierContactPerson = request.ShippingContactPerson;
         dbContext.PurchaseOrders.Add(entity); await dbContext.SaveChangesAsync(cancellationToken); return ToResponse(entity);
     }
     /// <inheritdoc />
@@ -265,6 +266,7 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
     public async Task<PurchaseOrderFileResponse?> CreateFileAsync(int purchaseOrderId, string bucket, string objectName, CancellationToken cancellationToken)
     {
         if (!await dbContext.PurchaseOrders.AnyAsync(value => value.Id == purchaseOrderId, cancellationToken)) return null;
+        PurchaseOrderFileSourceConstraints.ValidateBucket(bucket);
         var now = Now(); var entity = new PurchaseOrderFile { PurchaseOrderId = purchaseOrderId, Bucket = bucket, ObjectName = objectName, CreatedDate = now, ModifiedDate = now };
         dbContext.Files.Add(entity); await dbContext.SaveChangesAsync(cancellationToken); return ToResponse(entity);
     }
@@ -278,6 +280,7 @@ public sealed class PurchaseOrderRepository(PurchaseOrderDbContext dbContext, Ti
     public async Task<bool> UpdateFileAsync(int id, UpsertPurchaseOrderFileRequest request, CancellationToken cancellationToken)
     {
         var entity = await dbContext.Files.FindAsync([id], cancellationToken); if (entity is null) return false;
+        PurchaseOrderFileSourceConstraints.ValidateBucket(request.Bucket);
         entity.PurchaseOrderId = request.PurchaseOrderId ?? entity.PurchaseOrderId; entity.Bucket = request.Bucket; entity.ObjectName = request.ObjectName; entity.ModifiedDate = Now(); await dbContext.SaveChangesAsync(cancellationToken); return true;
     }
 

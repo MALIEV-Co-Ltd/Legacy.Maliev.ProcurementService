@@ -46,7 +46,9 @@ public sealed class ProcurementPostgresMigrationTests : IAsyncLifetime
         var file = await orders.CreateFileAsync(purchaseOrder.Id, "maliev-legacy", "purchase-orders/1.pdf", CancellationToken.None);
 
         Assert.Equal("1 Legacy Road", supplierAddress?.Address1);
-        Assert.Equal("Original supplier contact", purchaseOrder.SupplierContactPerson);
+        // Original POST copies the omitted shipping contact rather than the supplied supplier contact.
+        Assert.Null(purchaseOrder.SupplierContactPerson);
+        Assert.Null(purchaseOrder.ShippingContactPerson);
         Assert.Equal("2 Purchase Road", orderAddress.AddressLine1);
         Assert.Equal(376.50m, orderItem.Subtotal);
         Assert.Equal("purchase-orders/1.pdf", file?.ObjectName);

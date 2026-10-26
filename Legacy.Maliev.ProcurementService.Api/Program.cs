@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Legacy.Maliev.ProcurementService.Api.Authorization;
+using Legacy.Maliev.ProcurementService.Api.Serialization;
 using Legacy.Maliev.ProcurementService.Application.Interfaces;
 using Legacy.Maliev.ProcurementService.Application.Services;
 using Legacy.Maliev.ProcurementService.Data;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.AddPrivateRequestObservation("procurement");
 builder.AddDefaultApiVersioning();
 // These EF diagnostics embed exception text/stacks before the formatter can redact them.
 // Standard middleware retains the actionable correlated, type-only critical failure event.
@@ -28,10 +30,14 @@ builder.AddStandardOpenApi(
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
+    options.JsonSerializerOptions.Converters.Add(new PurchaseOrderHeaderRequestJsonConverter());
+    options.JsonSerializerOptions.Converters.Add(new SupplierIgnoredIdJsonConverter());
     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     options.JsonSerializerOptions.PropertyNamingPolicy = null;
     options.JsonSerializerOptions.DictionaryKeyPolicy = null;
 });
+builder.Services.AddSingleton<Microsoft.Extensions.Options.IConfigureOptions<Microsoft.AspNetCore.Mvc.JsonOptions>, ProcurementIgnoredBodyIdJsonOptions>();
+builder.Services.AddSingleton<Microsoft.Extensions.Options.IConfigureOptions<Microsoft.AspNetCore.Mvc.MvcOptions>, ProcurementSourceBodyInputFormatterSetup>();
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
@@ -49,6 +55,8 @@ builder.Services.AddScoped<IProcurementCache>(provider => provider.GetRequiredSe
 builder.Services.AddScoped<IIdempotencyStore>(provider => provider.GetRequiredService<DistributedProcurementCache>());
 builder.Services.AddScoped<IProcurementService, ProcurementApplicationService>();
 builder.Services.AddScoped<IDurableProcurementCreates, DurableProcurementCreates>();
+builder.Services.AddScoped<IDurableProcurementChildCreates, DurableProcurementChildCreates>();
+builder.Services.AddScoped<Legacy.Maliev.ProcurementService.Api.DurableChildCreateEndpoint>();
 builder.Services.AddScoped<Legacy.Maliev.ProcurementService.Api.DurableCreateEndpoint>();
 
 var app = builder.Build();

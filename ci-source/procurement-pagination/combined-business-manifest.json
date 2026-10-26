@@ -1,0 +1,201 @@
+{
+  "baseSha": "1249989e04040bd1326842ebf2e1f438369cf8c9",
+  "changes": [
+    {
+      "path": "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs",
+      "preimageSha256": "61146144fd438bc79f075e6875472f142f557db2a68deb58cf0b8853a6ae18a9",
+      "postimageSha256": "3fcfa165bd38ae9c0211021595f721eaff680097c21c0275be855bc93d233d7d",
+      "bytes": 12037
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs",
+      "preimageSha256": "3304110f70ef974fecdb74b7edd30b25c36f000f86b0b39116c8c4a185ea91e1",
+      "postimageSha256": "39ddc480d098c47c85432528c93a31afc957ec92618073f6ddc609d3b4028073",
+      "bytes": 8343
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs",
+      "preimageSha256": "7e9b8bd1aab607111c8c9fccfdc521695b8743bb79113c303e36bec32620ee08",
+      "postimageSha256": "5f0ba48922441644cba8c9912106ca1a532fbd9798b5561c36f7a77b5c95f530",
+      "bytes": 24758
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Tests/Application/ProcurementApplicationServiceTests.cs",
+      "preimageSha256": "86deffd10afc3db72d2a27c94dd0248e3cdf8a97d3c45ebfe5f5061b0c648def",
+      "postimageSha256": "a0da5aa6cf44925ed6b50051b2890b5c4e0f532183271a579be493bdbda99269",
+      "bytes": 5945
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPaginationSourceTests.cs",
+      "preimageSha256": null,
+      "postimageSha256": "7fe53130cf8dafb68fc722c9aed293b300a0ee227ba0a5e166bb410576bff65d",
+      "bytes": 6017
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementPaginationWireContractTests.cs",
+      "preimageSha256": null,
+      "postimageSha256": "19713b07d20c58e1306f3cbf0a8ac7ff4be6885a9205246e2d1b6e49a8dce295",
+      "bytes": 5614
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementIndependentContactTests.cs",
+      "preimageSha256": null,
+      "postimageSha256": "e2f215676cc12d5742fc223f3d1bef3e384b6bda4c7f6a8988f26e72aef92f6c",
+      "bytes": 3401
+    }
+  ],
+  "sourceJoins": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "075322946439684a0d368d1fbcff2694f160fa7cd19ecbb0f38be35a8f32ca75",
+      "bytes": 1975,
+      "commit": "1249989e04040bd1326842ebf2e1f438369cf8c9",
+      "matchesV1": true,
+      "remoteBlob": "e2ffb807c7309a0499b91dd28db71dfb0e6774d0",
+      "remoteTreeSha": "d1a4593400afdedfa1710fd0995e3afeb8fdc56d"
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Application/Services/ProcurementApplicationServices.cs",
+      "sha256": "3304110f70ef974fecdb74b7edd30b25c36f000f86b0b39116c8c4a185ea91e1",
+      "bytes": 8313,
+      "commit": "1249989e04040bd1326842ebf2e1f438369cf8c9",
+      "matchesV1": true,
+      "remoteBlob": "9b17fd46fce25162e30854210a1f945a1f9d6f48",
+      "remoteTreeSha": "d1a4593400afdedfa1710fd0995e3afeb8fdc56d"
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Application/Interfaces/IProcurementBoundaries.cs",
+      "sha256": "61146144fd438bc79f075e6875472f142f557db2a68deb58cf0b8853a6ae18a9",
+      "bytes": 12035,
+      "commit": "1249989e04040bd1326842ebf2e1f438369cf8c9",
+      "matchesV1": true,
+      "remoteBlob": "90c2628be1aceef0178533add09fdea7efa4c42a",
+      "remoteTreeSha": "d1a4593400afdedfa1710fd0995e3afeb8fdc56d"
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs",
+      "sha256": "7e9b8bd1aab607111c8c9fccfdc521695b8743bb79113c303e36bec32620ee08",
+      "bytes": 24540,
+      "commit": "1249989e04040bd1326842ebf2e1f438369cf8c9",
+      "matchesV1": true,
+      "remoteBlob": "34aead52a4555030d73da312dde868a3b58170c9",
+      "remoteTreeSha": "d1a4593400afdedfa1710fd0995e3afeb8fdc56d"
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Tests/Application/ProcurementApplicationServiceTests.cs",
+      "sha256": "86deffd10afc3db72d2a27c94dd0248e3cdf8a97d3c45ebfe5f5061b0c648def",
+      "bytes": 4552,
+      "commit": "1249989e04040bd1326842ebf2e1f438369cf8c9",
+      "matchesV1": true,
+      "remoteBlob": "903380e4866eae014aeff5770a12355b948f1d84",
+      "remoteTreeSha": "d1a4593400afdedfa1710fd0995e3afeb8fdc56d"
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs",
+      "sha256": "7a5823479455c30cac411b51cfed4ebbe247f2648e7d087167392e62be8efb20",
+      "bytes": 25326,
+      "commit": "1249989e04040bd1326842ebf2e1f438369cf8c9",
+      "matchesV1": true,
+      "remoteBlob": "13bef56d1b51a1df43fffe2e48967bd4e6f16ba2",
+      "remoteTreeSha": "d1a4593400afdedfa1710fd0995e3afeb8fdc56d"
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Api/Controllers/SuppliersController.cs",
+      "sha256": "6cee88563e170e8a292664da66a2246ffd843b88aad1539b9fa1ccc702c04b6b",
+      "bytes": 3964,
+      "commit": "1249989e04040bd1326842ebf2e1f438369cf8c9",
+      "matchesV1": true,
+      "remoteBlob": "f7549641da035088c553d07e42202c73ea881512",
+      "remoteTreeSha": "d1a4593400afdedfa1710fd0995e3afeb8fdc56d"
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Api/Controllers/PurchaseOrdersController.cs",
+      "sha256": "a2c176ba75037413518e1a6583ca12ff1e9b13ecf14887f7d2dceaff7e6ab848",
+      "bytes": 4158,
+      "commit": "1249989e04040bd1326842ebf2e1f438369cf8c9",
+      "matchesV1": true,
+      "remoteBlob": "19530897851dcd97dbf52ee71d297f0b4cd0517c",
+      "remoteTreeSha": "d1a4593400afdedfa1710fd0995e3afeb8fdc56d"
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Api/Program.cs",
+      "sha256": "0d401630a02338d03042c4c6e80edb62bcbe6c3b9c5d2a635dc7648b082c328f",
+      "bytes": 3484
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs",
+      "sha256": "932d10b51303ef4d2e98306c84a2e2a1d55dce33cff0ff90a7f182484e1b5713",
+      "bytes": 5510
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Domain/ProcurementEntities.cs",
+      "sha256": "ed853669f5ea4c72b80aa2cc8d994f2a3cf795c86c63a7f924e8717d2932fbd1",
+      "bytes": 7931
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Data/ProcurementDbContexts.cs",
+      "sha256": "8f9a4df11191d8fb1d47ae5b7f36a7ebc9991e56576c1c7207d5db8cb1f96ec9",
+      "bytes": 9823
+    },
+    {
+      "path": "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj",
+      "sha256": "dc69046de6d60c10bed322db876687c6766b783678be52c392e24ad927d5dc9f",
+      "bytes": 1637
+    }
+  ],
+  "patchBytes": 15676,
+  "patchSha256": "2a9ad79c14476a28c91c452d13e6946752dda1ea8fa6195e27fd56091585b676",
+  "forecastHttpCases": 92,
+  "forecastNewNullForwardingCases": 2,
+  "existingPositiveForwardingCaseChanged": 1,
+  "actualNativeCases": null,
+  "canonicalModified": false,
+  "committed": false,
+  "staticChecks": "Five-file delta, all 8 baseline pins, regression source assertions and live clean HEAD passed; no C# compilation.",
+  "pendingObligations": [
+    "Build Release zero warnings/errors first; focused 68 HTTP +2 null forwarding +1 existing positive forwarding; full affected suite; format/package audit/security; PG18 both isolated schemas and exact cleanup.",
+    "Observe genuine baseline failure under admission; source assertions do not establish RED.",
+    "Nonpositive sizes retain current normalization only; original SQLServer/EF zero and negative behavior remains unqualified.",
+    "Long offset/out-of-range early return avoids overflow but is proposed behavior; original unchecked overflow provider parity remains unqualified.",
+    "See consumer-joins.json for 5 canonical Intranet HEAD b374 joins and 2 exact original controller joins. Newest remote-main consumer/helper whole-source parity remains unqualified; no whole 5fac closure."
+  ],
+  "parentManifestSha256": "ecd4c9424fad1b3c635f98a6fd8369bc5d897c9578e65777c3407658631830cd",
+  "freshness": "All 8 full source/instruction joins equal immutable V1; all 4 business preimages unchanged; new regression path absent.",
+  "requiredCI": {
+    "enforcement_level": "everyone",
+    "contexts": [
+      "validate / validate"
+    ],
+    "checks": [
+      {
+        "context": "validate / validate",
+        "app_id": 15368
+      }
+    ]
+  },
+  "nativeExecuted": false,
+  "candidateForecastFocusedNewCases": 70,
+  "validationTransportActivated": false,
+  "forecastContactCases": 4,
+  "forecastNewCombinedCases": 94,
+  "forecastFullCases": 410,
+  "parentAssociations": [
+    {
+      "path": "procurement-pagination-reconciled-source-v2-currentmain-20261009",
+      "manifestSha256": "1e35cd8295964ad26a9b924d7f6ca6c402c85455db6388f9b30f910ebb0fbbda",
+      "sealSha256": "9d7fb0408d6419bcc60bfaebff87c7636adc87135ac4fd7c2a19cf2dd35c626f"
+    },
+    {
+      "path": "procurement-pagination-http-wire-source-v1-20261009",
+      "manifestSha256": "a3d02864e68cc41a66a0b5943205e23605d00aa24dc58d6c101dd906f76941e8",
+      "sealSha256": "7adc9d99d236a6c83f5a6a03136854b005a4dd3e1fb13f6e2f1e3e2d3dbf6eeb"
+    },
+    {
+      "path": "procurement-contact-currentmain-source-map-v5-20261009",
+      "manifestSha256": "618fce8768b12d8a46ef6a2af4117ee5fd41e4e55745661b5fdf531dcd419ce2",
+      "sealSha256": "46fd72ef81b9fb5c10540d28f52fab19bf079ddec5f8cbde62002dcdd203a7bb"
+    }
+  ],
+  "frozenPagination70ZipSha256": "bed0aeae59d36ac6f6eb757599c5e5b37875ff40fe73e8c9eb2a9b9f1976a17d",
+  "qualificationActivated": false
+}

@@ -30,7 +30,7 @@ public sealed class DurableCreateEndpoint(IConfiguration configuration, IDurable
         return Map(controller, result, "GetPurchaseOrder", "purchaseOrderId");
     }
 
-    private bool TryBinding<T>(ControllerBase controller, T request, short operation, out CreateReceiptBinding? binding)
+    internal bool TryBinding<T>(ControllerBase controller, T request, short operation, out CreateReceiptBinding? binding)
     {
         binding = null;
         var headers = controller.Request.Headers["Idempotency-Key"];

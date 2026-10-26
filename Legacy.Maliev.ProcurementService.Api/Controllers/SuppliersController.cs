@@ -21,6 +21,7 @@ public sealed class SuppliersController(IProcurementService service, IIdempotenc
     [RequirePermission(ProcurementPermissions.SuppliersCreate)]
     public async Task<IActionResult> CreateSupplierAsync(UpsertSupplierRequest item, [FromHeader(Name = "Idempotency-Key")] string? idempotencyKey, CancellationToken cancellationToken)
     {
+        if (item is null) return BadRequest();
         if (durable?.Enabled == true && Request.Headers.ContainsKey("Idempotency-Key")) return await durable.SupplierAsync(this, item, cancellationToken);
         var supplier = await IdempotentCreates.GetOrCreateAsync(idempotency, "supplier", idempotencyKey, () => service.CreateSupplierAsync(item, cancellationToken), cancellationToken);
         return CreatedAtRoute("GetSupplier", new { supplierId = supplier.Id }, supplier);
@@ -39,7 +40,7 @@ public sealed class SuppliersController(IProcurementService service, IIdempotenc
         [FromQuery] SupplierSortType? sort, [FromQuery] string? search, [FromQuery] int? index, [FromQuery] int? size, CancellationToken cancellationToken)
     {
         var suppliers = await service.GetSuppliersAsync(sort, search, index, size, cancellationToken);
-        return suppliers is null ? NotFound() : suppliers;
+        return suppliers is null || size == 0 ? NotFound() : suppliers;
     }
 
     /// <summary>Gets one supplier.</summary>
@@ -60,6 +61,9 @@ public sealed class SuppliersController(IProcurementService service, IIdempotenc
     /// <summary>Updates a supplier.</summary>
     [HttpPut("{supplierId:int}")]
     [RequirePermission(ProcurementPermissions.SuppliersUpdate, ResourcePathTemplate = "/suppliers/{supplierId}")]
-    public async Task<ActionResult> UpdateSupplierAsync(int supplierId, UpsertSupplierRequest item, CancellationToken cancellationToken) =>
-        await service.UpdateSupplierAsync(supplierId, item, cancellationToken) ? NoContent() : NotFound();
+    public async Task<ActionResult> UpdateSupplierAsync(int supplierId, UpsertSupplierRequest item, CancellationToken cancellationToken)
+    {
+        if (item is null) return BadRequest();
+        return await service.UpdateSupplierAsync(supplierId, item, cancellationToken) ? NoContent() : NotFound();
+    }
 }

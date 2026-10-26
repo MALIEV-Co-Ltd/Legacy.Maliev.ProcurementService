@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Legacy.Maliev.ProcurementService.Application.Models;
 
 /// <summary>Legacy supplier response.</summary>
@@ -5,9 +7,17 @@ public sealed record SupplierResponse(int Id, string? Name, string? Website, str
 /// <summary>Legacy Supplier-database address response.</summary>
 public sealed record SupplierAddressResponse(int Id, string? Building, string? Address1, string? Address2, string? City, string? State, string? PostalCode, int CountryId, DateTime? ModifiedDate, DateTime? CreatedDate);
 /// <summary>Supplier create/update request.</summary>
-public sealed record UpsertSupplierRequest(string? Name, string? Website, string? TaxNumber, string? Email, string? Note, string? Telephone, string? Mobile, string? Fax);
+public sealed record UpsertSupplierRequest(
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Name,
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Website,
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? TaxNumber,
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Email,
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Note,
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Telephone,
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Mobile,
+    [property: JsonConverter(typeof(SupplierScalarStringJsonConverter))] string? Fax);
 /// <summary>Supplier address create/update request.</summary>
-public sealed record UpsertSupplierAddressRequest(string? Building, string? Address1, string? Address2, string? City, string? State, string? PostalCode, int CountryId);
+public sealed record UpsertSupplierAddressRequest([property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? Building, [property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? Address1, [property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? Address2, [property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? City, [property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? State, [property: JsonConverter(typeof(SupplierAddressScalarStringJsonConverter))] string? PostalCode, int CountryId);
 
 /// <summary>Legacy purchase-order response.</summary>
 public sealed record PurchaseOrderResponse(
@@ -27,7 +37,14 @@ public sealed record UpsertPurchaseOrderRequest(
 /// <summary>Legacy PurchaseOrder-database address response.</summary>
 public sealed record PurchaseOrderAddressResponse(int Id, string? Building, string AddressLine1, string? AddressLine2, string? City, string? State, string? PostalCode, int CountryId, DateTime? CreatedDate, DateTime? ModifiedDate);
 /// <summary>PurchaseOrder address create/update request.</summary>
-public sealed record UpsertPurchaseOrderAddressRequest(string? Building, string AddressLine1, string? AddressLine2, string? City, string? State, string? PostalCode, int CountryId);
+public sealed record UpsertPurchaseOrderAddressRequest(
+    [property: JsonConverter(typeof(PurchaseOrderAddressScalarStringJsonConverter))] string? Building,
+    [property: JsonConverter(typeof(PurchaseOrderAddressScalarStringJsonConverter))] string AddressLine1,
+    [property: JsonConverter(typeof(PurchaseOrderAddressScalarStringJsonConverter))] string? AddressLine2,
+    [property: JsonConverter(typeof(PurchaseOrderAddressScalarStringJsonConverter))] string? City,
+    [property: JsonConverter(typeof(PurchaseOrderAddressScalarStringJsonConverter))] string? State,
+    [property: JsonConverter(typeof(PurchaseOrderAddressScalarStringJsonConverter))] string? PostalCode,
+    int CountryId);
 /// <summary>Legacy order-item response.</summary>
 public sealed record OrderItemResponse(int Id, int? PurchaseOrderId, string? PartNumber, string? Description, int? Quantity, decimal? UnitPrice, decimal? Subtotal, DateTime? CreatedDate, DateTime? ModifiedDate);
 /// <summary>Order-item create/update request.</summary>

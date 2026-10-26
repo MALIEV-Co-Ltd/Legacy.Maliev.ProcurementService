@@ -1,0 +1,22 @@
+[
+  {
+    "name": "ProcurementFiniteFailureInjectionTests.cs",
+    "preimageSha256": null,
+    "postimageSha256": "2f86f296b3529aa5a1e28f8e0f2cf107396f3544384acdfbd9163818e9c94d8d"
+  },
+  {
+    "name": "ProcurementFixtureReceipt.cs",
+    "preimageSha256": "f8f057f56173a9e37c509c279310f2ad9a4260e3979d4caf3375d38eddafd50e",
+    "postimageSha256": "27dd15021cca2752448ea3d86ab3c2ebab104bf3182158eaeb56eed0b3d4dd86"
+  },
+  {
+    "name": "ProcurementQualificationFaults.cs",
+    "preimageSha256": null,
+    "postimageSha256": "6a1ebfed054de480eba17f7f8e1f8486624293636e60c8e6c401b5aab77a6f34"
+  },
+  {
+    "name": "ProcurementRuntimeParityTests.cs",
+    "preimageSha256": "f0d78411bdd64bb6ac75cc651b2b76470e0bc1c8ebaf6a33853bb7121eea0be0",
+    "postimageSha256": "bd36908d4389ba302731e080c56b7b27fbe8d9e9e8ff05d7371b7fb3013fe32e"
+  }
+]

@@ -38,6 +38,21 @@ public sealed class ProcurementOpenApiHttpContractTests(ProcurementRuntimeFixtur
         return schema;
     }
 
+    private static void AssertPrimitiveSchema(JsonObject document, JsonObject schema, string[] expectedTypes, bool nullable, string? format = null)
+    {
+        schema = Resolve(document, schema);
+        Assert.Null(schema["allOf"]);
+        Assert.Null(schema["anyOf"]);
+        Assert.Null(schema["oneOf"]);
+        var types = schema["type"] is JsonArray array
+            ? array.Select(value => value!.GetValue<string>()).ToHashSet(StringComparer.Ordinal)
+            : new HashSet<string>(StringComparer.Ordinal) { schema["type"]!.GetValue<string>() };
+        var acceptsNull = types.Remove("null") || schema["nullable"]?.GetValue<bool>() == true;
+        Assert.Equal(expectedTypes.Order(StringComparer.Ordinal), types.Order(StringComparer.Ordinal));
+        Assert.Equal(nullable, acceptsNull);
+        Assert.Equal(format, schema["format"]?.GetValue<string>());
+    }
+
     [Fact]
     public async Task Production_DocumentationIsUnavailableAndSupplierReadRequiresAuthentication()
     {
@@ -123,8 +138,66 @@ public sealed class ProcurementOpenApiHttpContractTests(ProcurementRuntimeFixtur
         Assert.Contains("integer", order["EmployeeId"]!.ToJsonString(), StringComparison.Ordinal);
         Assert.False(order.ContainsKey("Supplier"));
         Assert.False(order.ContainsKey("Employee"));
+        var headerFields = new[] { "BillingAddressId", "BillingContactPerson", "BillingFax", "BillingMobile", "BillingTelephone", "EmployeeId", "Fob", "Notes", "ShippingAddressId", "ShippingContactPerson", "ShippingFax", "ShippingMethod", "ShippingMobile", "ShippingTelephone", "SupplierContactPerson", "SupplierId", "Terms" };
+        foreach (var (path, method) in new[] { ("/PurchaseOrders", "post"), ("/PurchaseOrders/{purchaseOrderId}", "put") })
+        {
+            var request = Resolve(document, Path(document, path)[method]!["requestBody"]!["content"]!["application/json"]!["schema"]!.AsObject());
+            Assert.Equal("object", request["type"]!.GetValue<string>());
+            Assert.Null(request["allOf"]);
+            Assert.Null(request["anyOf"]);
+            Assert.Null(request["oneOf"]);
+            Assert.Equal(headerFields, request["properties"]!.AsObject().Select(property => property.Key).Order(StringComparer.Ordinal));
+        }
         var item = Resolve(document, Path(document, "/purchaseorders/orderitems/{orderItemId}")["put"]!["requestBody"]!["content"]!["application/json"]!["schema"]!.AsObject())["properties"]!.AsObject();
         Assert.False(item.ContainsKey("Subtotal"));
         Assert.True(item.ContainsKey("UnitPrice"));
+
+        var fileOperation = Path(document, "/purchaseorders/files/{id}")["put"]!.AsObject();
+        var fileId = Assert.Single(fileOperation["parameters"]!.AsArray())!.AsObject();
+        Assert.Equal("id", fileId["name"]!.GetValue<string>());
+        Assert.Equal("path", fileId["in"]!.GetValue<string>());
+        Assert.True(fileId["required"]!.GetValue<bool>());
+        AssertPrimitiveSchema(document, fileId["schema"]!.AsObject(), new[] { "integer" }, nullable: false, format: "int32");
+        var fileRequest = Resolve(document, fileOperation["requestBody"]!["content"]!["application/json"]!["schema"]!.AsObject());
+        Assert.Equal("object", fileRequest["type"]!.GetValue<string>());
+        var fileProperties = fileRequest["properties"]!.AsObject();
+        Assert.Equal(new[] { "Bucket", "ObjectName", "PurchaseOrderId" },
+            fileProperties.Select(property => property.Key).Order(StringComparer.Ordinal));
+        var fileOwner = fileProperties["PurchaseOrderId"]!.AsObject();
+        AssertPrimitiveSchema(document, fileOwner, new[] { "integer", "string" }, nullable: true, format: "int32");
+        Assert.Equal(@"^-?(?:0|[1-9]\d*)$", fileOwner["pattern"]!.GetValue<string>());
+        AssertPrimitiveSchema(document, fileProperties["Bucket"]!.AsObject(), new[] { "string" }, nullable: false);
+        AssertPrimitiveSchema(document, fileProperties["ObjectName"]!.AsObject(), new[] { "string" }, nullable: false);
+
+        var supplierRequestFields = new[] { "Email", "Fax", "Mobile", "Name", "Note", "TaxNumber", "Telephone", "Website" };
+        var supplierCreate = Resolve(document, Path(document, "/Suppliers")["post"]!["requestBody"]!["content"]!["application/json"]!["schema"]!.AsObject());
+        var supplierUpdate = Resolve(document, Path(document, "/Suppliers/{supplierId}")["put"]!["requestBody"]!["content"]!["application/json"]!["schema"]!.AsObject());
+        foreach (var profile in new[] { supplierCreate, supplierUpdate })
+        {
+            Assert.Equal("object", profile["type"]!.GetValue<string>());
+            Assert.Null(profile["allOf"]);
+            Assert.Null(profile["anyOf"]);
+            Assert.Null(profile["oneOf"]);
+            Assert.Equal(supplierRequestFields, profile["properties"]!.AsObject().Select(property => property.Key).Order(StringComparer.Ordinal));
+        }
+        Assert.True(JsonNode.DeepEquals(supplierCreate, supplierUpdate));
+
+        var supplierAddressFields = new[] { "Address1", "Address2", "Building", "City", "CountryId", "PostalCode", "State" };
+        var purchaseAddressFields = new[] { "AddressLine1", "AddressLine2", "Building", "City", "CountryId", "PostalCode", "State" };
+        foreach (var (path, method, fields) in new[]
+        {
+            ("/suppliers/{supplierId}/addresses", "post", supplierAddressFields),
+            ("/suppliers/addresses/{addressId}", "put", supplierAddressFields),
+            ("/purchaseorders/addresses", "post", purchaseAddressFields),
+            ("/purchaseorders/addresses/{addressId}", "put", purchaseAddressFields),
+        })
+        {
+            var request = Resolve(document, Path(document, path)[method]!["requestBody"]!["content"]!["application/json"]!["schema"]!.AsObject());
+            Assert.Equal("object", request["type"]!.GetValue<string>());
+            Assert.Null(request["allOf"]);
+            Assert.Null(request["anyOf"]);
+            Assert.Null(request["oneOf"]);
+            Assert.Equal(fields, request["properties"]!.AsObject().Select(property => property.Key).Order(StringComparer.Ordinal));
+        }
     }
 }

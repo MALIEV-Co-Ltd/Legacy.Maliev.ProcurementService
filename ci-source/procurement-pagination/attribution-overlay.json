@@ -1,0 +1,27 @@
+[
+  {
+    "name": "ProcurementFixtureReceipt.cs",
+    "preimageSha256": null,
+    "postimageSha256": "f8f057f56173a9e37c509c279310f2ad9a4260e3979d4caf3375d38eddafd50e"
+  },
+  {
+    "name": "ProcurementIndependentContactTests.cs",
+    "preimageSha256": "e2f215676cc12d5742fc223f3d1bef3e384b6bda4c7f6a8988f26e72aef92f6c",
+    "postimageSha256": "8e162be843a7914cb5c78dca203f8c933a138543867980c61e2d00568aaa6b50"
+  },
+  {
+    "name": "ProcurementPaginationSourceTests.cs",
+    "preimageSha256": "7fe53130cf8dafb68fc722c9aed293b300a0ee227ba0a5e166bb410576bff65d",
+    "postimageSha256": "9d0773ce4b017582879d916d88315ce16631c34df309822f4751adba876ab83d"
+  },
+  {
+    "name": "ProcurementPaginationWireContractTests.cs",
+    "preimageSha256": "19713b07d20c58e1306f3cbf0a8ac7ff4be6885a9205246e2d1b6e49a8dce295",
+    "postimageSha256": "1330810c804569f2e4d4794814f954a8eb487cca03578fb58834fa485b054473"
+  },
+  {
+    "name": "ProcurementRuntimeParityTests.cs",
+    "preimageSha256": "c3962bea7a4d1ecb26d1b262a000882d782f503f30123bb34991ef0b139bffe6",
+    "postimageSha256": "f0d78411bdd64bb6ac75cc651b2b76470e0bc1c8ebaf6a33853bb7121eea0be0"
+  }
+]

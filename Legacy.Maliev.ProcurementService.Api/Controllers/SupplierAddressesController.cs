@@ -19,11 +19,11 @@ public sealed class SupplierAddressesController(IProcurementService service) : C
     [RequirePermission(ProcurementPermissions.SupplierAddressesWrite, ResourcePathTemplate = "/suppliers/{supplierId}")]
     public async Task<ActionResult> CreateSupplierAddressAsync(int supplierId, UpsertSupplierAddressRequest item, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(item.Address1) || item.CountryId == 0) return BadRequest();
+        if (item is null || string.IsNullOrEmpty(item.Address1) || item.CountryId == 0) return BadRequest();
         try
         {
             var address = await service.CreateSupplierAddressAsync(supplierId, item, cancellationToken);
-            return address is null ? NotFound() : CreatedAtRoute("GetSupplierAddressRecord", new { addressId = address.Id }, address);
+            return address is null ? NotFound("Supplier does not exist") : CreatedAtRoute("GetSupplierAddressRecord", new { addressId = address.Id }, address);
         }
         catch (ProcurementTransactionUncertainException) { return StatusCode(StatusCodes.Status503ServiceUnavailable); }
     }
@@ -60,6 +60,7 @@ public sealed class SupplierAddressesController(IProcurementService service) : C
     [RequirePermission(ProcurementPermissions.SupplierAddressesWrite)]
     public async Task<ActionResult> UpdateSupplierAddressAsync(int addressId, UpsertSupplierAddressRequest item, CancellationToken cancellationToken)
     {
+        if (item is null) return BadRequest();
         // Source JSON update copies literal Address1 and CountryId; requiredness is enforced by the owned schema.
         return await service.UpdateSupplierAddressAsync(addressId, item, cancellationToken) ? NoContent() : NotFound();
     }

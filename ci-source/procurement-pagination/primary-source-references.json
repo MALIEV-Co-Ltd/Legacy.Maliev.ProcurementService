@@ -1,0 +1,5 @@
+{
+  "discoveryDisplayNames": "https://github.com/microsoft/vstest/blob/main/src/vstest.console/Processors/ListTestsArgumentProcessor.cs",
+  "trxTerminalOutcome": "https://github.com/microsoft/vstest/blob/main/src/Microsoft.TestPlatform.Extensions.TrxLogger/TrxLogger.cs",
+  "dotnetTestCli": "https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test-vstest"
+}

@@ -1,0 +1,20 @@
+{
+  "sourceOnly": true,
+  "nativeAccepted": false,
+  "sharedProducerSha256": "44a8a5accac9da11422d606be02fe28487642215df511b5f1c4284296a453ee2",
+  "sharedSourceReview": "Root independently reviewed final shared File main bytes",
+  "sourceManifestSha256": "02af3f7e602a42c143a3e66cfafad2a50b755f147a324eda583e0154659c5804",
+  "policySha256": "b85e966fa74cfa5aa022fc502f56038d9105d3dece17612196dbdd6a89d8258c",
+  "capsuleGitBlob": "a4354aceccc65c09f5f1f09313fe2dcdf0d56e94",
+  "repository": "MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService",
+  "acceptedBase": "8e34d0208be9312ab0b94dc8db7800d7c12d86a2",
+  "dependencyPins": {
+    "Legacy.Maliev.ServiceDefaults": "ecb05cbbd68717e415f69df2ac488c1d323b1da3",
+    "Legacy.Maliev.CompatibilityContracts": "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7"
+  },
+  "sharedRepository": "MALIEV-Co-Ltd/Legacy.Maliev.FileService",
+  "sharedCommit": "53899c56ea3165e53ebbbcd60bff69a090037d9b",
+  "sharedPath": "scripts/sealed_source_capsule.py",
+  "sharedGitBlob": "cab6997ff2af48bdd4ac7e9240cd12d01e5b3190",
+  "sharedBytes": 12296
+}

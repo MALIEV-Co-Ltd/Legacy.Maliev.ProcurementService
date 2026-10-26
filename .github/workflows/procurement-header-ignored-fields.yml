@@ -1,0 +1,122 @@
+name: Header ignored fields baseline and candidate199
+
+on:
+  pull_request:
+    branches: [main, develop, staging]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: procurement-header-ignored-fields-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  header-ignored-fields:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      LEGACY_DEPLOY_ENABLED: 'false'
+      TreatWarningsAsErrors: 'true'
+      BuildInParallel: 'false'
+      DOTNET_PROCESSOR_COUNT: '1'
+      DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER: '1'
+      MSBUILDDISABLENODEREUSE: '1'
+      UseSharedCompilation: 'false'
+      MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
+      VSTestCollect: XPlat Code Coverage
+      VSTestLogger: trx
+    steps:
+      - name: Check out candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require initial unchanged resource admission
+        timeout-minutes: 1
+        run: python3 -B scripts/require-metadata-identity-admission.py header-ignored-fields-results initial
+      - name: Check out immutable pre-change baseline
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.ProcurementService
+          ref: 44c79ed24c142883563e037bbb5be724ea87322a
+          path: .header-ignored-fields-baseline
+          persist-credentials: false
+      - name: Check out accepted Defaults
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults
+          ref: ecb05cbbd68717e415f69df2ac488c1d323b1da3
+          path: .dependencies/Legacy.Maliev.ServiceDefaults
+          persist-credentials: false
+      - name: Check out CompatibilityContracts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts
+          ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
+          path: .dependencies/Legacy.Maliev.CompatibilityContracts
+          persist-credentials: false
+      - name: Set up accepted SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.x
+      - name: Bind identical199 harness and exact source inputs
+        timeout-minutes: 2
+        run: python3 -B scripts/prepare-header-ignored-fields-baseline.py .header-ignored-fields-baseline docs/procurement-header-ignored-fields-contract.json
+      - name: Require source and evidence controls in normal and optimized Python
+        timeout-minutes: 3
+        run: |
+          python3 -B -m unittest discover -s scripts -p test_header_ignored_fields_results.py
+          python3 -O -B -m unittest discover -s scripts -p test_header_ignored_fields_results.py
+      - name: Require baseline build resource admission
+        timeout-minutes: 1
+        run: python3 -B scripts/require-metadata-identity-admission.py header-ignored-fields-results baseline-build
+      - name: Build immutable baseline before execution
+        timeout-minutes: 5
+        working-directory: .header-ignored-fields-baseline
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true
+          dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore --disable-build-servers -warnaserror -p:UseLocalMalievDependencies=true
+      - name: Require baseline test resource admission
+        timeout-minutes: 1
+        run: python3 -B scripts/require-metadata-identity-admission.py header-ignored-fields-results baseline-test
+      - name: Execute baseline199 with owned resource observation
+        timeout-minutes: 6
+        run: python3 -B scripts/observe-header-ignored-fields-providers.py .header-ignored-fields-baseline header-ignored-fields-results/baseline-header baseline header
+      - name: Require exact source-forecast baseline identities and causal failures
+        timeout-minutes: 2
+        run: python3 -B scripts/verify-header-ignored-fields-results.py header-ignored-fields-results/baseline-header baseline header "$(cat header-ignored-fields-results/baseline-header/test-exit-code.txt)"
+      - name: Require candidate build resource admission
+        timeout-minutes: 1
+        run: python3 -B scripts/require-metadata-identity-admission.py header-ignored-fields-results candidate-build
+      - name: Build reviewed candidate before execution
+        timeout-minutes: 5
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true
+          dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore --disable-build-servers -warnaserror -p:UseLocalMalievDependencies=true
+      - name: Require candidate test resource admission
+        timeout-minutes: 1
+        run: python3 -B scripts/require-metadata-identity-admission.py header-ignored-fields-results candidate-test
+      - name: Execute candidate199 with owned resource observation
+        timeout-minutes: 6
+        run: python3 -B scripts/observe-header-ignored-fields-providers.py . header-ignored-fields-results/candidate-header candidate header
+      - name: Require exact199 passes and shared actual baseline identities
+        timeout-minutes: 2
+        run: python3 -B scripts/verify-header-ignored-fields-results.py header-ignored-fields-results/candidate-header candidate header "$(cat header-ignored-fields-results/candidate-header/test-exit-code.txt)" header-ignored-fields-results/baseline-header
+      - name: Require unchanged source admission and normal disposal proof
+        if: always()
+        timeout-minutes: 2
+        run: python3 -B scripts/prepare-header-ignored-fields-baseline.py .header-ignored-fields-baseline docs/procurement-header-ignored-fields-contract.json --verify-only
+      - name: Preserve isolated header baseline and candidate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: procurement-header-ignored-fields-${{ github.sha }}
+          path: header-ignored-fields-results
+          if-no-files-found: error
+          retention-days: 7

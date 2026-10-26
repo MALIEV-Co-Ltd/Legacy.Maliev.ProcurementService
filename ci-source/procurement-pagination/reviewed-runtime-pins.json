@@ -1,0 +1,122 @@
+[
+  {
+    "bytes": 1166,
+    "sha256": "2be9aa4fc4b4bd2acf62d734fdac8bbe068ab2befede174d65865d8fa049e243",
+    "path": "attribution-overlay.json"
+  },
+  {
+    "bytes": 9614,
+    "sha256": "af76f4d18ecabe559d9e0a47077febbfaf209daa4f72a772733f5a22412726a7",
+    "path": "combined-business-manifest.json"
+  },
+  {
+    "bytes": 158908,
+    "sha256": "c84df15498aeb11a53cae5b49c43ef50b232890276dd0851eb79bae00d67408b",
+    "path": "compiled-roster-source-contract.json"
+  },
+  {
+    "bytes": 130683,
+    "sha256": "8685ac5b697fc7586e877b5a87494d2aafc57634fa6ae950701aab55907cba21",
+    "path": "consumer-source-pins.json"
+  },
+  {
+    "bytes": 12822,
+    "sha256": "bed0aeae59d36ac6f6eb757599c5e5b37875ff40fe73e8c9eb2a9b9f1976a17d",
+    "path": "frozen-pagination70-source-packet.zip"
+  },
+  {
+    "bytes": 855,
+    "sha256": "98df7b85bf8975799d94efb1b9caa6e88670c02c1eec7abb72d8ffe0dc1fffef",
+    "path": "injection-overlay.json"
+  },
+  {
+    "bytes": 3592,
+    "sha256": "bd510692924e83ec52505565af975054335b868ee039fcd59c64e3f5e30f9e99",
+    "path": "OwnedProcurementTestContainers.cs"
+  },
+  {
+    "bytes": 2864,
+    "sha256": "42bf25ee9ea443787a45f2c4e5678cbe92d5bda53ca68400849ab2069049b6e9",
+    "path": "procurement_consumer_association.py"
+  },
+  {
+    "bytes": 7852,
+    "sha256": "b676e9dc3143089b73bde43b8aea98c3ff818e63434d41e57711f0c17065ce92",
+    "path": "procurement_fixture_attribution.py"
+  },
+  {
+    "bytes": 4233,
+    "sha256": "04c266893ad5faf33906ee964e804a9e15eb127d6209250005b1622c9fa29b8c",
+    "path": "procurement_hosted_binding.py"
+  },
+  {
+    "bytes": 11214,
+    "sha256": "13df63423398950f751a06a2467ea3044468be2d76bb41a76cfaee749507f75f",
+    "path": "procurement_native_injections.py"
+  },
+  {
+    "bytes": 39917,
+    "sha256": "b9514fe362e9c3a6e44b9824587179d36298b926677fd547122778514d13a3b0",
+    "path": "procurement_pagination_hosted_driver.py"
+  },
+  {
+    "bytes": 19286,
+    "sha256": "86ef6c8c7d1fcb8b020310fd5b47ecdd40629421d82b49ae4ecab8412ad16457",
+    "path": "procurement_pagination_hosted_guards.py"
+  },
+  {
+    "bytes": 83,
+    "sha256": "ca86647f4081372cb5fedd3ee3739c12bccd5e5e7b4f097949967d04d335e61c",
+    "path": "ProcurementResourceAssembly.cs"
+  },
+  {
+    "bytes": 17064,
+    "sha256": "d8748cf62c5ee7bd88b6cadbd949cb6056d4662d83e9153493328d0a95f06658",
+    "path": "source-packet.zip"
+  },
+  {
+    "bytes": 3720,
+    "sha256": "f8f057f56173a9e37c509c279310f2ad9a4260e3979d4caf3375d38eddafd50e",
+    "path": "attribution-postimages/ProcurementFixtureReceipt.cs"
+  },
+  {
+    "bytes": 3531,
+    "sha256": "8e162be843a7914cb5c78dca203f8c933a138543867980c61e2d00568aaa6b50",
+    "path": "attribution-postimages/ProcurementIndependentContactTests.cs"
+  },
+  {
+    "bytes": 6191,
+    "sha256": "9d0773ce4b017582879d916d88315ce16631c34df309822f4751adba876ab83d",
+    "path": "attribution-postimages/ProcurementPaginationSourceTests.cs"
+  },
+  {
+    "bytes": 5792,
+    "sha256": "1330810c804569f2e4d4794814f954a8eb487cca03578fb58834fa485b054473",
+    "path": "attribution-postimages/ProcurementPaginationWireContractTests.cs"
+  },
+  {
+    "bytes": 28597,
+    "sha256": "f0d78411bdd64bb6ac75cc651b2b76470e0bc1c8ebaf6a33853bb7121eea0be0",
+    "path": "attribution-postimages/ProcurementRuntimeParityTests.cs"
+  },
+  {
+    "bytes": 5114,
+    "sha256": "2f86f296b3529aa5a1e28f8e0f2cf107396f3544384acdfbd9163818e9c94d8d",
+    "path": "injection-postimages/ProcurementFiniteFailureInjectionTests.cs"
+  },
+  {
+    "bytes": 3931,
+    "sha256": "27dd15021cca2752448ea3d86ab3c2ebab104bf3182158eaeb56eed0b3d4dd86",
+    "path": "injection-postimages/ProcurementFixtureReceipt.cs"
+  },
+  {
+    "bytes": 5951,
+    "sha256": "6a1ebfed054de480eba17f7f8e1f8486624293636e60c8e6c401b5aab77a6f34",
+    "path": "injection-postimages/ProcurementQualificationFaults.cs"
+  },
+  {
+    "bytes": 29178,
+    "sha256": "bd36908d4389ba302731e080c56b7b27fbe8d9e9e8ff05d7371b7fb3013fe32e",
+    "path": "injection-postimages/ProcurementRuntimeParityTests.cs"
+  }
+]

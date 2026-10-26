@@ -1,0 +1,100 @@
+{
+  "sourceSnapshot": "135e526d0dab85c415b3afdcefd7b70fe2c82e2f",
+  "bindings": [
+    {
+      "sourceCommit": "a7d0a4517ef1cfef638763cb1092088a5932fa2f",
+      "path": "Maliev.PurchaseOrderService.Api/deployment.yaml",
+      "before": {
+        "commit": "a7d0a4517ef1cfef638763cb1092088a5932fa2f^",
+        "blob": "0660aafda003a7aaee8b505a7b837443be8f323d",
+        "sha256": "231fa5d767a9d1d6394fefd9cd0959f8086d3f7f2f8f82c20e2ec75be083d212",
+        "replicas": 1,
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": 1,
+            "maxUnavailable": 1
+          },
+          "type": "RollingUpdate"
+        }
+      },
+      "after": {
+        "commit": "a7d0a4517ef1cfef638763cb1092088a5932fa2f",
+        "blob": "5f5ab697622e783f0de3ac625db6de209b43e37b",
+        "sha256": "91c75a9d91cf7df74a957d2ae3829258fcf32526cfa8e76bd50ce68173b1a975",
+        "replicas": 1,
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": 1,
+            "maxUnavailable": 0
+          },
+          "type": "RollingUpdate"
+        }
+      },
+      "finalSnapshot": {
+        "commit": "135e526d0dab85c415b3afdcefd7b70fe2c82e2f",
+        "blob": "dae8ec012b5d931856af7274179b2ede52518363",
+        "sha256": "6f64efea9ffdce32b707c9559b5fc5db09d7dbbbdb17e7d0779d74b4d41b86b3",
+        "replicas": 1,
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": 1,
+            "maxUnavailable": 0
+          },
+          "type": "RollingUpdate"
+        }
+      },
+      "modernOwner": "Legacy.Maliev.ProcurementService",
+      "adaptation": "Consolidated API; dormant replicas0 preserves explicit source activation target1 without activation; surge1/unavailable0 preserved"
+    },
+    {
+      "sourceCommit": "a7d0a4517ef1cfef638763cb1092088a5932fa2f",
+      "path": "Maliev.SupplierService.Api/deployment.yaml",
+      "before": {
+        "commit": "a7d0a4517ef1cfef638763cb1092088a5932fa2f^",
+        "blob": "26667ffd6f5d78cd460598f166feec2c5da29e80",
+        "sha256": "ecd87d44ff0172c9757b14beb92ebc6d205858d5f5314cd355c758bd02143155",
+        "replicas": 1,
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": 1,
+            "maxUnavailable": 1
+          },
+          "type": "RollingUpdate"
+        }
+      },
+      "after": {
+        "commit": "a7d0a4517ef1cfef638763cb1092088a5932fa2f",
+        "blob": "a5c9cb46351a5aae684c2833926ceafefea104a1",
+        "sha256": "377f19ef1cc949ad349b3f4a997b76b90737181c073869beaa1a09baed912370",
+        "replicas": 1,
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": 1,
+            "maxUnavailable": 0
+          },
+          "type": "RollingUpdate"
+        }
+      },
+      "finalSnapshot": {
+        "commit": "135e526d0dab85c415b3afdcefd7b70fe2c82e2f",
+        "blob": "4468580084ae1d4b04a786fbefb94188584d973c",
+        "sha256": "91b8b6933eb7baf085c92d0e6b4b59060b60f85f708476e0affe62e6300aa4d1",
+        "replicas": 1,
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": 1,
+            "maxUnavailable": 0
+          },
+          "type": "RollingUpdate"
+        }
+      },
+      "modernOwner": "Legacy.Maliev.ProcurementService",
+      "adaptation": "Consolidated API; dormant replicas0 preserves explicit source activation target1 without activation; surge1/unavailable0 preserved"
+    }
+  ],
+  "deploymentAllowed": false,
+  "clusterAcceptance": false,
+  "wholeSourceClosure": false,
+  "identityReferences": "Explicit caller-supplied references only; existence/ownership/authentication not verified",
+  "excluded": "Other paths in either mixed commit, Prediction retirement, native logging, readiness duration/drain/capacity/provider/runtime acceptance"
+}

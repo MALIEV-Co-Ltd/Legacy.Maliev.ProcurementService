@@ -1,0 +1,297 @@
+{
+  "graphId": "procurement-default-off-child-replay-public-20261011",
+  "references": [
+    {
+      "repository": "Legacy.Maliev.AuthService",
+      "commit": "b27fbef06a3aa58c1f4fc0e75d7c70b32be76266"
+    },
+    {
+      "repository": "Legacy.Maliev.ServiceDefaults",
+      "commit": "ecb05cbbd68717e415f69df2ac488c1d323b1da3"
+    },
+    {
+      "repository": "Legacy.Maliev.CompatibilityContracts",
+      "commit": "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7"
+    },
+    {
+      "repository": "Legacy.Maliev.ProcurementService",
+      "commit": "99049bab2c100ffdf6606bf11a2f50980c0cf3cf"
+    }
+  ],
+  "defaultsAdoption": {
+    "previousDefaults": "7edcd961024868513fd5f373cab3dcb261197f77",
+    "reviewedDefaults": "ecb05cbbd68717e415f69df2ac488c1d323b1da3",
+    "acceptedConsumerMain": "9c80113e76c0b209b3be113c400e3c24a460d5e6",
+    "scope": "Shared token-owner deadline and additive typed-response helpers only; all52 Procurement production/build/public fixture inputs and Auth/Contracts pins unchanged",
+    "localGuards": "Existing workload admission/body guard, late response owner, named client10s and normal IAM composition unchanged",
+    "priorGraph": "public-graph-accepted-9c801.json",
+    "nativeAcceptance": "Pending fresh Procurement full/focused and actual Auth Program join; prior accepted consumer evidence is historical"
+  },
+  "expectedCases": 15,
+  "expectedMethods": {
+    "Procurement.AuthProgram.Tests.AuthProgramProcurementJoinTests.RealEmployeeAndWorkloadEndpoints_LiveCreateThenFreshDeny": 1,
+    "Procurement.AuthProgram.Tests.AuthProgramProcurementJoinTests.RealWorkloadBearer_SupplierDeleteUsesEmployeeAndExactResource": 2,
+    "Procurement.AuthProgram.Tests.AuthProgramProcurementJoinTests.ActualProducerRefusalOrConsumerTrustFailure_CannotPersist": 8,
+    "Procurement.AuthProgram.Tests.OwnedCleanupTests.FailureAtAnyPosition_StillAttemptsEveryOwnedResource": 3,
+    "Procurement.AuthProgram.Tests.OwnedCleanupTests.MultipleFailures_PreserveFirstExceptionAndAttemptRemainingResources": 1
+  },
+  "fixtureEnrollment": "explicit synthetic client with iam.auth.check-permission in test configuration only",
+  "productionEnrollmentProven": false,
+  "productionIamBridgeProven": false,
+  "wholeInitialSourceParityClosed": false,
+  "previousMasterQuerySourceChange": {
+    "baseCommit": "26da4a1804c0a5833890e975680ee569c3aa4094",
+    "path": "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs",
+    "baseBlob": "7c9342bf642f71cbf5087371377ebd46c960ee61",
+    "candidateBlob": "87602ce7789dc1b5c27ca19ed1c6e8d12d292e00",
+    "unchangedInputCount": 51,
+    "unchangedInputSha256": "657ee76ed5af1272c2b21217ebe0145296f6d9aed774e5780422cb4ca5e5142c"
+  },
+  "nullableSortProducerAdvance": {
+    "previousProcurement": "8f2c5fc0678734e3240ce368b30e26db858e63d4",
+    "reviewedProcurement": "da6af357254f1e42d95ce592bc716b2ae0abb4cf",
+    "acceptedConsumerMain": "3be3bb1567edc1135cafd84de80b3ea69b281276",
+    "inputCount": 52,
+    "changedInput": "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs",
+    "previousBlob": "87602ce7789dc1b5c27ca19ed1c6e8d12d292e00",
+    "reviewedBlob": "79f6cbb8e70980e7ae48e0825a4a717f410ae09b",
+    "unchangedInputCount": 51,
+    "unchangedInputSha256": "657ee76ed5af1272c2b21217ebe0145296f6d9aed774e5780422cb4ca5e5142c",
+    "scope": "Eight nullable supplier name/date and purchase-order CreatedDate branches preserve SQLServer NULL-first ASC/NULL-last DESC; ID tie order deliberately stabilizes paging",
+    "stablePagingDecision": "Source only specifies the selected field; ascending ID tie order is a deliberate deterministic paging choice, not a claim of original SQLServer tie order",
+    "excluded": "Search, page50/cap250, enums, Defaults76, authority composition and immutable public runtime fixture unchanged; global collation parity is separate",
+    "independentReview": "Coordinator read complete one-input patch and24 normal authenticated HTTP/owned PostgreSQL cases with explicit postinsert storedNULL assertions on 2026-10-06",
+    "nativeAcceptance": "Pending fresh full293, nullable24, lifecycle48, query19, deadline6, actualAuth15 plus9 guard controls; no RED baseline executed"
+  },
+  "literalObjectNameProducerAdvance": {
+    "previousProcurement": "da6af357254f1e42d95ce592bc716b2ae0abb4cf",
+    "reviewedProcurement": "30333914eaaa7cd508a3874169f29003e627d055",
+    "acceptedConsumerMain": "30a46c2eb7f1a8ef630440d2aaec4aa72e6bf7dc",
+    "inputCount": 52,
+    "changedInput": "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs",
+    "previousBlob": "79f6cbb8e70980e7ae48e0825a4a717f410ae09b",
+    "reviewedBlob": "bd3729e337f5b9b0a8507875734bf3da2273a594",
+    "unchangedInputCount": 51,
+    "unchangedInputSha256": "657ee76ed5af1272c2b21217ebe0145296f6d9aed774e5780422cb4ca5e5142c",
+    "scope": "Create and update preserve literal ObjectName; blank validation, Bucket trimming, ownership, timestamps and provider behavior unchanged",
+    "sourceCommit": "135e526d0dab85c415b3afdcefd7b70fe2c82e2f",
+    "sourcePath": "Maliev.PurchaseOrderService.Api/Controllers/FilesController.cs",
+    "sourceBlob": "158240d27dd9119b88599c6e7f5294c77d948cfe",
+    "independentReview": "Coordinator FULL and notification_join_review approved complete three-file literal-value patch on 2026-10-06; graph advance awaiting separate FULL review",
+    "nativeAcceptance": "Pending corrected-head full293, nullable24, lifecycle48, query19, deadline6, actualAuth15 plus9 unchanged guard controls; initial3033391 auth join stopped at stale graph preflight before native tests",
+    "productionEnrollmentProven": false,
+    "productionIamBridgeProven": false,
+    "wholeInitialSourceParityClosed": false
+  },
+  "previousIntentionalSourceChange": {
+    "baseCommit": "26da4a1804c0a5833890e975680ee569c3aa4094",
+    "path": "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs",
+    "baseBlob": "7c9342bf642f71cbf5087371377ebd46c960ee61",
+    "candidateBlob": "bd3729e337f5b9b0a8507875734bf3da2273a594",
+    "unchangedInputCount": 51,
+    "unchangedInputSha256": "657ee76ed5af1272c2b21217ebe0145296f6d9aed774e5780422cb4ca5e5142c"
+  },
+  "intentionalSourceChanges": {
+    "previousProcurement": "c40fd246c17b738879c9345c6bcca44d96faf025",
+    "acceptedBase": "900d222fe6bdfb55ab39c83b50da21d9cd992b49",
+    "reviewedProcurement": "99049bab2c100ffdf6606bf11a2f50980c0cf3cf",
+    "inputCount": 64,
+    "changedInputs": {
+      "Legacy.Maliev.ProcurementService.Api/Controllers/FilesController.cs": {
+        "previousMetadata": "100644 blob 03c411035df3b6268972792e0df835534aec1fc1",
+        "reviewedMetadata": "100644 blob 5382d06a862ff843bbb01539ddd8822070e86757"
+      },
+      "Legacy.Maliev.ProcurementService.Api/Controllers/OrderItemsController.cs": {
+        "previousMetadata": "100644 blob 2bb65612ab3c143e0a93384c63baabf107dd082f",
+        "reviewedMetadata": "100644 blob d5e94258bed07bff6c4c915ab4cb1e34fa368902"
+      },
+      "Legacy.Maliev.ProcurementService.Api/DurableChildCreateEndpoint.cs": {
+        "previousMetadata": null,
+        "reviewedMetadata": "100644 blob 84b6da4468a7a22ae10d81aed8b29f6dab15dfaf"
+      },
+      "Legacy.Maliev.ProcurementService.Api/DurableCreateEndpoint.cs": {
+        "previousMetadata": "100644 blob 091ba3450e2c2d5c9d4c8443307d6e28f0945073",
+        "reviewedMetadata": "100644 blob 4a723a638129fbdb99a17758a06a8cd5c3f026ac"
+      },
+      "Legacy.Maliev.ProcurementService.Api/Program.cs": {
+        "previousMetadata": "100644 blob a890fd92f49e3179df1083952b3e0b46d8bbefa8",
+        "reviewedMetadata": "100644 blob 19d17888cd77004b42f290a3c0daad454dfd4b5e"
+      },
+      "Legacy.Maliev.ProcurementService.Application/Interfaces/IDurableProcurementChildCreates.cs": {
+        "previousMetadata": null,
+        "reviewedMetadata": "100644 blob b3cda03315eb9e70d9264a5a50fbdbfeef6c3705"
+      },
+      "Legacy.Maliev.ProcurementService.Application/Models/DurableCreateModels.cs": {
+        "previousMetadata": "100644 blob d532cd12e4b14711e21c909144b3755e2e803796",
+        "reviewedMetadata": "100644 blob 6fce05a93ea834e1fc661e0938456e92b908a003"
+      },
+      "Legacy.Maliev.ProcurementService.Data/ChildReceiptRecords.cs": {
+        "previousMetadata": null,
+        "reviewedMetadata": "100644 blob 8974e76d5c72762828a0d32624a09faaafe8dda4"
+      },
+      "Legacy.Maliev.ProcurementService.Data/DurableProcurementChildCreates.cs": {
+        "previousMetadata": null,
+        "reviewedMetadata": "100644 blob 0fe45073973624adcf21d6abcef8a23ced035f97"
+      },
+      "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261011073000_AddDurablePurchaseOrderChildReceipts.Designer.cs": {
+        "previousMetadata": null,
+        "reviewedMetadata": "100644 blob 71271d8755686ea6609b0d794484ec8ae29e41eb"
+      },
+      "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261011073000_AddDurablePurchaseOrderChildReceipts.cs": {
+        "previousMetadata": null,
+        "reviewedMetadata": "100644 blob 2ba84b62673cd157fd53807eeb21bb9c59375422"
+      },
+      "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/PurchaseOrderDbContextModelSnapshot.cs": {
+        "previousMetadata": "100644 blob e583ebd59e3b43b03ae68bbe91cf8abdfd763da8",
+        "reviewedMetadata": "100644 blob b3477b7823f63b37bed92959f7100e3cd287baf9"
+      },
+      "Legacy.Maliev.ProcurementService.Data/ProcurementDbContexts.cs": {
+        "previousMetadata": "100644 blob b025a7b1939af8e27474f7b978a49a076143638c",
+        "reviewedMetadata": "100644 blob 1a8487f24a647a186258d487b84e1cc08fa7d83b"
+      }
+    },
+    "unchangedInputCount": 51,
+    "unchangedInputSha256": "fa8f1070a4c9eff9debe32b7b5a7ae5bea47a250eb4b35da5738fa136540f543",
+    "sourceReviewReceiptSha256": "c603bfce2a064f6f4e68e8fb708798e9b8d0df9ec911aa463b6da26a6a1f7b2c",
+    "scope": "Reviewed separately default-off atomic child receipts;13 changed or added runtime inputs;51 unchanged; root receipt operation2/executor and public runtime fixture unchanged",
+    "nativeAcceptance": "Local normal Release0W0E/model2/targetformat passed on runtimefix with held Authproposal before finalcurrentpinrefresh; full444 forecast and actual Auth15 still required on exact successor head. No runtime acceptance inferred from source custody.",
+    "productionEnrollmentProven": false,
+    "productionIamBridgeProven": false,
+    "wholeInitialSourceParityClosed": false,
+    "initialChildReplaySourceReviewReceiptSha256": "956f9b47e2f168e4be12c76010dd6431c280f61b25c5e5cfa28da6bae5ef6b9e",
+    "compilerSourceReviewReceiptSha256": "af9398b239d451c7bd43ae24829ee7a7b73da7e9d1b87133e799fcd768b28953"
+  },
+  "previousStringIntentionalSourceChanges": {
+    "previousProcurement": "30333914eaaa7cd508a3874169f29003e627d055",
+    "reviewedProcurement": "d4b08faf07c684c3d4f8c75280486379d72532e2",
+    "inputCount": 57,
+    "changedInputs": {
+      "Legacy.Maliev.ProcurementService.Api/Controllers/FilesController.cs": {
+        "previousMetadata": "100644 blob af10f45f034ce61e5563db4efaec3321dfe19bb6",
+        "reviewedMetadata": "100644 blob 03c411035df3b6268972792e0df835534aec1fc1"
+      },
+      "Legacy.Maliev.ProcurementService.Api/Controllers/SupplierAddressesController.cs": {
+        "previousMetadata": "100644 blob 24abc1218fc64d54516cd673eb050d8fef08a85d",
+        "reviewedMetadata": "100644 blob 63dfa7c375090e0a1d3dd191f7430b1519c8bdea"
+      },
+      "Legacy.Maliev.ProcurementService.Data/LegacyUtf16StringStorage.cs": {
+        "previousMetadata": null,
+        "reviewedMetadata": "100644 blob 2e68e9f383160dfe6082f7a23b859bfbf5b2d325"
+      },
+      "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261006210000_PreservePurchaseOrderSourceStringBoundaries.Designer.cs": {
+        "previousMetadata": null,
+        "reviewedMetadata": "100644 blob 143e1ae02a1fd1100eb2d75dce9b8124188e4cd4"
+      },
+      "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/20261006210000_PreservePurchaseOrderSourceStringBoundaries.cs": {
+        "previousMetadata": null,
+        "reviewedMetadata": "100644 blob 1663bacce0bf61de8db5688a82e48354c24ba658"
+      },
+      "Legacy.Maliev.ProcurementService.Data/Migrations/PurchaseOrder/PurchaseOrderDbContextModelSnapshot.cs": {
+        "previousMetadata": "100644 blob 96e49d663dced4fe3c20ed48bd720de7ed881569",
+        "reviewedMetadata": "100644 blob e583ebd59e3b43b03ae68bbe91cf8abdfd763da8"
+      },
+      "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20261006210000_PreserveSupplierSourceStringBoundaries.Designer.cs": {
+        "previousMetadata": null,
+        "reviewedMetadata": "100644 blob a36060169d6812f83f1fe764faddc0c0eeee2fea"
+      },
+      "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/20261006210000_PreserveSupplierSourceStringBoundaries.cs": {
+        "previousMetadata": null,
+        "reviewedMetadata": "100644 blob 8c82219082c3a6f2bb629a65d72d8a459b07b5d4"
+      },
+      "Legacy.Maliev.ProcurementService.Data/Migrations/Supplier/SupplierDbContextModelSnapshot.cs": {
+        "previousMetadata": "100644 blob c4a01d77144bdac6530d570481a55130dc86474d",
+        "reviewedMetadata": "100644 blob e77cced2826569ba96cb46d659e0fb90be8ceb0e"
+      },
+      "Legacy.Maliev.ProcurementService.Data/ProcurementDbContexts.cs": {
+        "previousMetadata": "100644 blob dbf7a31e550aceedf44c91f1b61117cbd4392f75",
+        "reviewedMetadata": "100644 blob b025a7b1939af8e27474f7b978a49a076143638c"
+      },
+      "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": {
+        "previousMetadata": "100644 blob bd3729e337f5b9b0a8507875734bf3da2273a594",
+        "reviewedMetadata": "100644 blob 62276afe71d6a0513747be48d88760ee087d0cc4"
+      }
+    },
+    "unchangedInputCount": 46,
+    "unchangedInputSha256": "103ee14726c927353d9279e55613baad56767b195e2bc105e96b1c63729c948b",
+    "sourceReviewReceiptSha256": "cc5b1cc25d124609b47b81b09875ad8fdf6a60d9ef43acac26eb9d135575d3c5",
+    "scope": "FULL18 reviewed owned string requiredness/UTF16/File JSON PUT source only; six changed and five added runtime inputs; peer pins and public fixture unchanged",
+    "nativeAcceptance": "Pending corrected candidate actualAuth15/full309/focus16/legacy5 plus guard controls",
+    "productionEnrollmentProven": false,
+    "productionIamBridgeProven": false,
+    "wholeInitialSourceParityClosed": false
+  },
+  "previousLiteralIntentionalSourceChanges": {
+    "previousProcurement": "d4b08faf07c684c3d4f8c75280486379d72532e2",
+    "reviewedProcurement": "cf114bcac6e4aa041ca51ec1e60739e868c8da06",
+    "inputCount": 57,
+    "changedInputs": {
+      "Legacy.Maliev.ProcurementService.Api/Controllers/PurchaseOrderAddressesController.cs": {
+        "previousMetadata": "100644 blob e70c82d5841b83c3fb841bd7a3e45693c76d1275",
+        "reviewedMetadata": "100644 blob 91b6bf11646f89f5c6736e7f54af964e044ae6ed"
+      },
+      "Legacy.Maliev.ProcurementService.Data/ProcurementRepositories.cs": {
+        "previousMetadata": "100644 blob 62276afe71d6a0513747be48d88760ee087d0cc4",
+        "reviewedMetadata": "100644 blob 34aead52a4555030d73da312dde868a3b58170c9"
+      },
+      "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntimeParityTests.cs": {
+        "previousMetadata": "100644 blob c879519e879d91f4556962e0668db9a5b40e1c48",
+        "reviewedMetadata": "100644 blob 13bef56d1b51a1df43fffe2e48967bd4e6f16ba2"
+      }
+    },
+    "unchangedInputCount": 54,
+    "unchangedInputSha256": "865371657e11db227ea83813eb85b5d72a471fd1a02b4ccccae128f5a9f08c71",
+    "sourceReviewReceiptSha256": "646a525c02b72d91ee12285d08b611cc25a2cb2f57d2790b39aa825a19d40236",
+    "runtimeNativeAdmissionSha256": "045225728e27a8a46ac1b01f5f5b3abcf480fb176d57dff8abe9f4919414ef54",
+    "scope": "Reviewed literal controller/repository copies and public runtime literal expectation only; three changed inputs and54 unchanged. Peer pins unchanged.",
+    "nativeAcceptance": "Owned seven literal cases passed; final full316/Auth15/all8 native candidate acceptance pending",
+    "productionEnrollmentProven": false,
+    "productionIamBridgeProven": false,
+    "wholeInitialSourceParityClosed": false
+  },
+  "historicalGraph": {
+    "path": "tools/ProcurementAuthProgram.Tests/public-graph.json",
+    "sha256": "205063c79697948343ba659b13757b68ef4814d1b62861484a1dd90c0b8e7d41",
+    "role": "Immutable historical supplier primitive/string source witness; not current child-replay runtime admission",
+    "procurement": "c40fd246c17b738879c9345c6bcca44d96faf025"
+  },
+  "previousSupplierPrimitiveIntentionalSourceChanges": {
+    "previousProcurement": "cf114bcac6e4aa041ca51ec1e60739e868c8da06",
+    "acceptedBase": "209227c7f6f580946853c395f0fafccec59b65a7",
+    "reviewedProcurement": "c40fd246c17b738879c9345c6bcca44d96faf025",
+    "inputCount": 58,
+    "changedInputs": {
+      "Legacy.Maliev.ProcurementService.Application/Models/ProcurementModels.cs": {
+        "previousMetadata": "100644 blob 615ca9428c7d72cf1e4f9dbfc6dde8b58578cddf",
+        "reviewedMetadata": "100644 blob f93920a8e93454b7f5538c60a18134c0dee892a1"
+      },
+      "Legacy.Maliev.ProcurementService.Application/Models/SupplierScalarStringJsonConverter.cs": {
+        "previousMetadata": null,
+        "reviewedMetadata": "100644 blob 25834e7c9705786777a707734b914fbf99987cfc"
+      }
+    },
+    "unchangedInputCount": 56,
+    "unchangedInputSha256": "9c8143319715c5030eac466add24466f5a6cbb2235ea244e5d14f3018470d914",
+    "sourceReviewReceiptSha256": "372c81df7dbbb0b1f351bc060e7d40abfd1b0b41eba0b3de7a90ad3c0f01bce0",
+    "scope": "Only reviewed Supplier request model and added local converter; all other runtime/build/public fixture inputs and external Auth/Defaults/Contracts pins unchanged",
+    "nativeAcceptance": "NOT RUN on successor; exact hosted full365 and actual Auth15 required",
+    "productionEnrollmentProven": false,
+    "productionIamBridgeProven": false,
+    "wholeInitialSourceParityClosed": false
+  },
+  "credentialCorrection": {
+    "reviewedProcurement": "f22c67f94f7641856fa27a1d94c7fa55081f6bf7",
+    "sourceReceiptSha256": "f7d3959deba32735b77b75c3633a26be93165b5da76363b7a4b3ef039ff52453",
+    "scope": "One non-runtime-inventory integration test fixture line;64 runtime/build/publicfixture inputs unchanged from reviewed production2ff"
+  },
+  "compilerCorrection": {
+    "reviewedProcurement": "37664f6466babad471f7b007bb8c2f5c9e3a2032",
+    "sourceReceiptSha256": "af9398b239d451c7bd43ae24829ee7a7b73da7e9d1b87133e799fcd768b28953",
+    "scope": "One migration designer XMLcomment runtimeblob and3 constantSQLtestcalls;64inputs/13changed/51unchanged retained; local corrected buildNOTRUN afterfreshmemoryguardfailure"
+  },
+  "runtimeCorrection": {
+    "reviewedProcurement": "99049bab2c100ffdf6606bf11a2f50980c0cf3cf",
+    "sourceReceiptSha256": "c603bfce2a064f6f4e68e8fb708798e9b8d0df9ec911aa463b6da26a6a1f7b2c",
+    "localValidationSealSha256": "a1b0805e62586b6faa12ac8d330e27d014d0383fda83f93e07c24ea83cab8569",
+    "scope": "Fresh read-only snapshot execution strategy; actual closed-port refusal host; original string migration witness. All58 cases retained; current64inputs/13changed51unchanged. Hosted990 full443 pending."
+  }
+}

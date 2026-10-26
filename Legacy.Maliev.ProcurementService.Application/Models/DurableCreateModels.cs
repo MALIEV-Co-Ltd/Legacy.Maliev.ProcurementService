@@ -12,7 +12,9 @@ public enum DurableCreateStatus
     /// <summary>The same actor/key was bound to another effective request.</summary>
     Conflict,
     /// <summary>Readiness or transaction outcome cannot be proven safely.</summary>
-    Unavailable
+    Unavailable,
+    /// <summary>A file create has no owning purchase order.</summary>
+    NotFound
 }
 /// <summary>Transactional receipt result without browser owner fields.</summary>
 public sealed record DurableCreateResult(DurableCreateStatus Status, DurableCreateResponse? Response = null);

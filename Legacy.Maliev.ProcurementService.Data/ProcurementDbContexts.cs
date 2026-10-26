@@ -74,6 +74,8 @@ public sealed class PurchaseOrderDbContext(DbContextOptions<PurchaseOrderDbConte
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         CreateReceiptSchema.Configure(modelBuilder, "PurchaseOrderCreateReceipt", 2);
+        ChildReceiptSchema.Configure<OrderItemChildReceiptRecord>(modelBuilder, "OrderItemCreateReceipt", 3);
+        ChildReceiptSchema.Configure<FileChildReceiptRecord>(modelBuilder, "PurchaseOrderFileCreateReceipt", 4);
         var address = modelBuilder.Entity<PurchaseOrderAddress>();
         address.ToTable("Address");
         address.HasKey(value => value.Id);

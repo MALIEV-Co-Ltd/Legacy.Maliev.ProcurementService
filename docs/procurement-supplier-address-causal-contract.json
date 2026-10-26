@@ -1,0 +1,239 @@
+{
+  "expectedCases": 33,
+  "baselinePassed": 20,
+  "baselineFailed": 13,
+  "candidatePassed": 33,
+  "cases": [
+    {
+      "testId": "c1bfd716-0964-fb4c-4cb9-b55d8d10cc39",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry",
+      "method": "Converter_IsAddressRequestLocal_AndWritesStringsWithoutChangingCountry",
+      "baselineOutcome": "Failed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "f1d8ed62-0b39-ec61-0cee-c202a0470327",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.CurrentCreateNullRequiredLineGuard_IsUnchanged",
+      "method": "CurrentCreateNullRequiredLineGuard_IsUnchanged",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "64c0c4ec-685a-3a32-d97a-fc4dbba674c8",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.EveryTextProperty_RejectsNestedObjectAndArray_OnBothRoutes(field: \"Address1\")",
+      "method": "EveryTextProperty_RejectsNestedObjectAndArray_OnBothRoutes",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "80859f77-f938-0aa2-2674-13237a6f43f0",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.EveryTextProperty_RejectsNestedObjectAndArray_OnBothRoutes(field: \"Address2\")",
+      "method": "EveryTextProperty_RejectsNestedObjectAndArray_OnBothRoutes",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "5af2560b-3d3c-1899-d930-e1d87d354c15",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.EveryTextProperty_RejectsNestedObjectAndArray_OnBothRoutes(field: \"Building\")",
+      "method": "EveryTextProperty_RejectsNestedObjectAndArray_OnBothRoutes",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "493643b4-1bb4-2704-f933-9cdd3a36fbbd",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.EveryTextProperty_RejectsNestedObjectAndArray_OnBothRoutes(field: \"City\")",
+      "method": "EveryTextProperty_RejectsNestedObjectAndArray_OnBothRoutes",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "ab814bba-8ce0-c584-6dff-047c17b170a1",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.EveryTextProperty_RejectsNestedObjectAndArray_OnBothRoutes(field: \"PostalCode\")",
+      "method": "EveryTextProperty_RejectsNestedObjectAndArray_OnBothRoutes",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "a96070d3-2a8e-8b43-1c30-8d5b8d33b3e3",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.EveryTextProperty_RejectsNestedObjectAndArray_OnBothRoutes(field: \"State\")",
+      "method": "EveryTextProperty_RejectsNestedObjectAndArray_OnBothRoutes",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "3ab65b8c-24d2-cc9a-82be-a4c7af2805f8",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.ExistingLiteralUpdate_EmptyTextAndZeroCountry_RemainUnchanged",
+      "method": "ExistingLiteralUpdate_EmptyTextAndZeroCountry_RemainUnchanged",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "9fe707e1-5569-97e2-e757-04baecdf1323",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.MissingOwnerOrAddress_WithSourceScalarText_ReachesNotFoundWithoutWrites(update: False)",
+      "method": "MissingOwnerOrAddress_WithSourceScalarText_ReachesNotFoundWithoutWrites",
+      "baselineOutcome": "Failed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "ada63ee4-aaf8-aa68-d21c-93741529c11a",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.MissingOwnerOrAddress_WithSourceScalarText_ReachesNotFoundWithoutWrites(update: True)",
+      "method": "MissingOwnerOrAddress_WithSourceScalarText_ReachesNotFoundWithoutWrites",
+      "baselineOutcome": "Failed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "ab49eb74-5f66-4862-7155-c2399b589379",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.OptionalAddressFields_NullOrOmitted_RemainNullable(update: False, omitted: False)",
+      "method": "OptionalAddressFields_NullOrOmitted_RemainNullable",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "cb0c84fe-43ec-57ae-4e2e-25b2c7c84596",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.OptionalAddressFields_NullOrOmitted_RemainNullable(update: False, omitted: True)",
+      "method": "OptionalAddressFields_NullOrOmitted_RemainNullable",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "42fcee43-72a4-45f3-ebd8-ddc5efdfce18",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.OptionalAddressFields_NullOrOmitted_RemainNullable(update: True, omitted: False)",
+      "method": "OptionalAddressFields_NullOrOmitted_RemainNullable",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "039d4a7a-6a9b-760b-2919-aad72e883a0c",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.OptionalAddressFields_NullOrOmitted_RemainNullable(update: True, omitted: True)",
+      "method": "OptionalAddressFields_NullOrOmitted_RemainNullable",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "9b09af84-82f7-8bed-991e-5fed3e1aa2c3",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment(update: False, token: \"-0\", expected: \"-0\")",
+      "method": "PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment",
+      "baselineOutcome": "Failed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "b4f1eff5-f279-ecbe-6ffa-9bc0c45dfdf2",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment(update: False, token: \"1.2300E+03\", expected: \"1.2300E+03\")",
+      "method": "PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment",
+      "baselineOutcome": "Failed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "a64e78d0-9bd3-62b0-d91c-520958c98963",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment(update: False, token: \"123\", expected: \"123\")",
+      "method": "PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment",
+      "baselineOutcome": "Failed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "37b39dcc-dc9b-3d97-667e-25fc00a29cf1",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment(update: False, token: \"\\\"  \u0e44\u0e17\u0e22  \\\"\", expected: \"  \u0e44\u0e17\u0e22  \")",
+      "method": "PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "bb9b06b9-39e0-f360-b9c8-e186791fcce0",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment(update: False, token: \"\\\"Literal.CASE\\\"\", expected: \"Literal.CASE\")",
+      "method": "PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "806df69d-7cad-0f40-8c9a-7817eda4aad1",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment(update: False, token: \"false\", expected: \"false\")",
+      "method": "PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment",
+      "baselineOutcome": "Failed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "d0e4f379-5790-20af-dcc6-3bc3352135c8",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment(update: False, token: \"true\", expected: \"true\")",
+      "method": "PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment",
+      "baselineOutcome": "Failed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "32f874e5-3dae-be13-a552-72430615c4f0",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment(update: True, token: \"-0\", expected: \"-0\")",
+      "method": "PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment",
+      "baselineOutcome": "Failed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "6a66b5e2-449a-c530-f50a-993d46f701ff",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment(update: True, token: \"1.2300E+03\", expected: \"1.2300E+03\")",
+      "method": "PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment",
+      "baselineOutcome": "Failed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "4ebb96c1-f0e1-781c-1f60-f3dd25d0bf58",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment(update: True, token: \"123\", expected: \"123\")",
+      "method": "PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment",
+      "baselineOutcome": "Failed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "37edae2d-603e-88bd-de70-b225bf9fada9",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment(update: True, token: \"\\\"  \u0e44\u0e17\u0e22  \\\"\", expected: \"  \u0e44\u0e17\u0e22  \")",
+      "method": "PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "1f612ec1-9afa-b910-ee81-d6df148dc7d4",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment(update: True, token: \"\\\"Literal.CASE\\\"\", expected: \"Literal.CASE\")",
+      "method": "PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "1388cb7f-61fb-2005-58b5-45a2deff00fb",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment(update: True, token: \"false\", expected: \"false\")",
+      "method": "PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment",
+      "baselineOutcome": "Failed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "33f6c2fd-1690-74ef-ef2f-f8c525a0b992",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment(update: True, token: \"true\", expected: \"true\")",
+      "method": "PostAndPut_SourcePrimitiveAddressFields_PreserveStringsAndAttachment",
+      "baselineOutcome": "Failed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "4d7a052f-bbcd-79d3-3fac-8b114827790f",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.ScalarAddressWrite_AnonymousOrReadGrant_CannotMutateGraph(update: False, anonymous: False)",
+      "method": "ScalarAddressWrite_AnonymousOrReadGrant_CannotMutateGraph",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "d488dc66-b5fb-b186-7e31-67face7bcd4c",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.ScalarAddressWrite_AnonymousOrReadGrant_CannotMutateGraph(update: False, anonymous: True)",
+      "method": "ScalarAddressWrite_AnonymousOrReadGrant_CannotMutateGraph",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "33beab2e-5a52-407c-e153-a7a07e0489f4",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.ScalarAddressWrite_AnonymousOrReadGrant_CannotMutateGraph(update: True, anonymous: False)",
+      "method": "ScalarAddressWrite_AnonymousOrReadGrant_CannotMutateGraph",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    },
+    {
+      "testId": "7c9a3b16-0ae3-768c-b68d-c9f5ee4d2221",
+      "name": "Legacy.Maliev.ProcurementService.Tests.Integration.ProcurementSupplierAddressScalarStringTests.ScalarAddressWrite_AnonymousOrReadGrant_CannotMutateGraph(update: True, anonymous: True)",
+      "method": "ScalarAddressWrite_AnonymousOrReadGrant_CannotMutateGraph",
+      "baselineOutcome": "Passed",
+      "candidateOutcome": "Passed"
+    }
+  ]
+}

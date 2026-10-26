@@ -75,6 +75,112 @@ namespace Legacy.Maliev.ProcurementService.Data.Migrations.PurchaseOrder
                         });
                 });
 
+            modelBuilder.Entity("Legacy.Maliev.ProcurementService.Data.OrderItemChildReceiptRecord", b =>
+                {
+                    b.Property<byte[]>("IssuerDigest")
+                        .HasColumnType("bytea");
+
+                    b.Property<byte[]>("SubjectDigest")
+                        .HasColumnType("bytea");
+
+                    b.Property<short>("Operation")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte[]>("KeyDigest")
+                        .HasColumnType("bytea");
+
+                    b.Property<short>("CanonicalVersion")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("integer");
+
+                    b.Property<byte[]>("PayloadDigest")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<byte[]>("ResponseBody")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<byte[]>("ResponseDigest")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<short>("ResponseVersion")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("IssuerDigest", "SubjectDigest", "Operation", "KeyDigest")
+                        .HasName("PK_OrderItemCreateReceipt");
+
+                    b.ToTable("OrderItemCreateReceipt", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_OrderItemCreateReceipt_Complete", "\"EntityId\" > 0 AND octet_length(\"ResponseBody\") > 0");
+
+                            t.HasCheckConstraint("CK_OrderItemCreateReceipt_Digests", "octet_length(\"IssuerDigest\") = 32 AND octet_length(\"SubjectDigest\") = 32 AND octet_length(\"KeyDigest\") = 32 AND octet_length(\"PayloadDigest\") = 32 AND octet_length(\"ResponseDigest\") = 32");
+
+                            t.HasCheckConstraint("CK_OrderItemCreateReceipt_Operation", "\"Operation\" = 3");
+
+                            t.HasCheckConstraint("CK_OrderItemCreateReceipt_Versions", "\"CanonicalVersion\" = 1 AND \"ResponseVersion\" = 1");
+                        });
+                });
+
+            modelBuilder.Entity("Legacy.Maliev.ProcurementService.Data.FileChildReceiptRecord", b =>
+                {
+                    b.Property<byte[]>("IssuerDigest")
+                        .HasColumnType("bytea");
+
+                    b.Property<byte[]>("SubjectDigest")
+                        .HasColumnType("bytea");
+
+                    b.Property<short>("Operation")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte[]>("KeyDigest")
+                        .HasColumnType("bytea");
+
+                    b.Property<short>("CanonicalVersion")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("integer");
+
+                    b.Property<byte[]>("PayloadDigest")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<byte[]>("ResponseBody")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<byte[]>("ResponseDigest")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<short>("ResponseVersion")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("IssuerDigest", "SubjectDigest", "Operation", "KeyDigest")
+                        .HasName("PK_PurchaseOrderFileCreateReceipt");
+
+                    b.ToTable("PurchaseOrderFileCreateReceipt", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_PurchaseOrderFileCreateReceipt_Complete", "\"EntityId\" > 0 AND octet_length(\"ResponseBody\") > 0");
+
+                            t.HasCheckConstraint("CK_PurchaseOrderFileCreateReceipt_Digests", "octet_length(\"IssuerDigest\") = 32 AND octet_length(\"SubjectDigest\") = 32 AND octet_length(\"KeyDigest\") = 32 AND octet_length(\"PayloadDigest\") = 32 AND octet_length(\"ResponseDigest\") = 32");
+
+                            t.HasCheckConstraint("CK_PurchaseOrderFileCreateReceipt_Operation", "\"Operation\" = 4");
+
+                            t.HasCheckConstraint("CK_PurchaseOrderFileCreateReceipt_Versions", "\"CanonicalVersion\" = 1 AND \"ResponseVersion\" = 1");
+                        });
+                });
+
             modelBuilder.Entity("Legacy.Maliev.ProcurementService.Domain.OrderItem", b =>
                 {
                     b.Property<int>("Id")
