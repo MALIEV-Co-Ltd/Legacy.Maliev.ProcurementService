@@ -377,8 +377,11 @@ public sealed class WorkflowContractTests
         }
         var results = steps.Single(step => step.Children.TryGetValue(new YamlScalarNode("run"), out var run)
             && ((YamlScalarNode)run).Value == "python3 -B scripts/verify-procurement-auth-program.py results auth-program-results");
+        var artifactReference = historicalFixture
+            ? "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+            : "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9";
         var artifact = steps.Single(step => step.Children.TryGetValue(new YamlScalarNode("uses"), out var uses)
-            && ((YamlScalarNode)uses).Value == "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+            && ((YamlScalarNode)uses).Value == artifactReference
             && step.Children.TryGetValue(new YamlScalarNode("with"), out var settings)
             && settings is YamlMappingNode inputs
             && inputs.Children.TryGetValue(new YamlScalarNode("path"), out var path)
@@ -531,7 +534,9 @@ internal static partial class WorkflowContractValidator
 
         RequireScalarValue(evidence, "name", "Preserve validation evidence");
         RequireScalarValue(evidence, "if", "always()");
-        RequireScalarValue(evidence, "uses", "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9");
+        RequireScalarValue(evidence, "uses", historicalFixture
+            ? "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+            : "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9");
         var evidenceInputs = RequireMapping(evidence, "with");
         if (evidenceInputs.Children.Count != 4)
         {
