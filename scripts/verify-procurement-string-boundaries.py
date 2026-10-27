@@ -17,7 +17,27 @@ EXPECTED = {
     "ProcurementSourceStringMigrationTests.InvalidRetainedRowsRejectMigrationWithoutChangingRowsSchemaOrHistory": 4,
     "ProcurementSourceStringMigrationTests.ValidRetainedLiteralsSurviveUpgradeRepeatAndRollback": 2,
     "ProcurementSourceStringMigrationTests.PostgreSqlUnicodeExpressionCountsSupplementaryScalarsAsTwoUtf16Units": 1,
+    "ProcurementSourceStringMigrationTests.RetainedBucketOverflow_RefusesUpgradeWithoutChangingRowsSchemaOrHistory": 2,
+    "ProcurementSourceStringMigrationTests.BucketStorageBoundary_PreservesLiteralsAndRejectsDirectSqlBypasses": 6,
+    "ProcurementSourceStringMigrationTests.BucketBoundaryLockRefusal_PreservesRowsSchemaAndHistory": 2,
 }
+BUCKET_CASES = {
+    "ProcurementSourceStringMigrationTests.BucketStorageBoundary_PreservesLiteralsAndRejectsDirectSqlBypasses": frozenset([
+        "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.BucketStorageBoundary_PreservesLiteralsAndRejectsDirectSqlBypasses(kind: \"padding\")",
+        "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.BucketStorageBoundary_PreservesLiteralsAndRejectsDirectSqlBypasses(kind: \"empty\")",
+        "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.BucketStorageBoundary_PreservesLiteralsAndRejectsDirectSqlBypasses(kind: \"bmp50\")",
+        "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.BucketStorageBoundary_PreservesLiteralsAndRejectsDirectSqlBypasses(kind: \"mixed50\")",
+        "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.BucketStorageBoundary_PreservesLiteralsAndRejectsDirectSqlBypasses(kind: \"supplementary50\")",
+        "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.BucketStorageBoundary_PreservesLiteralsAndRejectsDirectSqlBypasses(kind: \"padded\")",
+    ]),
+    "ProcurementSourceStringMigrationTests.RetainedBucketOverflow_RefusesUpgradeWithoutChangingRowsSchemaOrHistory": frozenset([
+        "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.RetainedBucketOverflow_RefusesUpgradeWithoutChangingRowsSchemaOrHistory(supplementaryCount: 26, suffix: \"\")",
+        "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.RetainedBucketOverflow_RefusesUpgradeWithoutChangingRowsSchemaOrHistory(supplementaryCount: 25, suffix: \"ก\")",
+    ]),
+    "ProcurementSourceStringMigrationTests.BucketBoundaryLockRefusal_PreservesRowsSchemaAndHistory": frozenset([
+        "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.BucketBoundaryLockRefusal_PreservesRowsSchemaAndHistory(downgrade: False)",
+        "Legacy.Maliev.ProcurementService.Tests.Data.ProcurementSourceStringMigrationTests.BucketBoundaryLockRefusal_PreservesRowsSchemaAndHistory(downgrade: True)",
+    ]),}
 NS = {"t": "http://microsoft.com/schemas/VisualStudio/TeamTest/2010"}
 
 def xml(path):
@@ -75,6 +95,8 @@ def verify_trx(document):
         matches = [name for name in EXPECTED if method.endswith("." + name)]
         if len(matches) != 1 or matches[0] not in result.get("testName", ""):
             raise ValueError("Unknown or mismatched native case")
+        if matches[0] in BUCKET_CASES and result.get("testName") not in BUCKET_CASES[matches[0]]:
+            raise ValueError("Unknown bucket theory case")
         referenced.add(test_id)
         display_names.add(result.get("testName"))
         methods[matches[0]] += 1
@@ -90,7 +112,7 @@ def verify_trx(document):
     if set(counters.attrib) != {"total", "executed", "passed", "failed", "error", "timeout", "aborted", "inconclusive", "passedButRunAborted", "notRunnable", "notExecuted", "disconnected", "warning", "completed", "inProgress", "pending"}:
         raise ValueError("Missing or unexpected counters")
     for name, value in counters.attrib.items():
-        expected = 16 if name in {"total", "executed", "passed"} else 0
+        expected = 26 if name in {"total", "executed", "passed"} else 0
         if int(value) != expected:
             raise ValueError("Failed, skipped, incomplete, or incorrect counters")
     return dict(methods)
@@ -125,13 +147,14 @@ def main():
     paths = subprocess.check_output(["git", "ls-files"], timeout=30).decode("utf-8").splitlines()
     sources = [path for path in paths if path.endswith((".cs", ".csproj", ".props", ".targets", ".slnx")) or path in
                {"global.json", "NuGet.Config", "nuget.config", ".editorconfig",
-                "scripts/verify-procurement-string-boundaries.py", ".github/workflows/procurement-string-boundaries.yml"}]
+                "scripts/verify-procurement-string-boundaries.py", "scripts/test_procurement_string_boundaries.py",
+                ".github/workflows/procurement-string-boundaries.yml"}]
     bindings = {}
     for path in sources:
         committed = subprocess.check_output(["git", "show", head + ":" + path], timeout=30)
         bindings[path] = bind_source(Path(path), committed)
     proof = {"testedCommit": head, "runId": os.environ["GITHUB_RUN_ID"], "runAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
-             "passed": 16, "failed": 0, "skipped": 0, "methods": methods, "trxSha256": trx_hash,
+             "passed": 26, "failed": 0, "skipped": 0, "methods": methods, "trxSha256": trx_hash,
              "rawSha256": next(iter(hashes)), "exclusions": [], "sourceBindings": bindings,
              "fullServiceCoverageAcceptance": False, "actualAuthProducerAcceptance": False,
              "originalSqlServerExecuted": False, "persistentSchemaApplied": False}

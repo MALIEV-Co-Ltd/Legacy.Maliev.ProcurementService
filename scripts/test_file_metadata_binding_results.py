@@ -1,3 +1,5 @@
+from test_supplier_parent_audit_harness_consumer import SupplierParentAuditHarnessConsumerTests
+from test_supplier_parent_audit_consumer import SupplierParentAuditConsumerTests
 """Synthetic acceptance controls; fixtures are not actual hosted test evidence."""
 import copy
 import io
@@ -14,18 +16,22 @@ from unittest import mock
 import uuid
 import xml.etree.ElementTree as ET
 
-SPEC = importlib.util.spec_from_file_location("metadata", pathlib.Path(__file__).with_name("verify-file-metadata-binding-results.py"))
+from procurement_dependency_consumer import historical_scripts
+from test_procurement_dependency_consumer import DependencyConsumerControls
+HISTORICAL_SCRIPTS = historical_scripts(__file__)
+
+SPEC = importlib.util.spec_from_file_location("metadata", (HISTORICAL_SCRIPTS / "verify-file-metadata-binding-results.py"))
 guard = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(guard)
 CONTRACT = guard.read_json(pathlib.Path(__file__).parents[1] / "docs" / "procurement-file-metadata-binding-contract.json")
 NS = guard.NS
 OBSERVER_READ_HELPERS = "MAX_LOG_BYTES = 4 * 1024 * 1024\nMAX_TRX_BYTES = 16 * 1024 * 1024\nMAX_PHASE_READ_BYTES = 20 * 1024 * 1024\n\n\ndef read_phase_file(path, maximum, budget):\n    limit = min(maximum, budget[0])\n    require(limit >= 0, 'Negative phase evidence budget')\n    with path.open('rb') as stream:\n        raw = stream.read(limit + 1)\n    require(0 < len(raw) <= limit, 'Phase evidence exceeds the bounded reader')\n    budget[0] -= len(raw)\n    return raw\n\n\ndef phase_reports(output):\n    reports = []\n    for path in output.rglob('*.trx'):\n        require(not reports, 'Require exactly one actual filtered TRX')\n        reports.append(path)\n    return reports\n\n\ndef phase_document(raw):\n    text = raw.decode('utf-8-sig', errors='strict')\n    require(not re.search(r'<!\\s*(DOCTYPE|ENTITY)\\b', text, re.IGNORECASE), 'DTD/entity declarations forbidden')\n    return ET.fromstring(text)\n\n\ndef read_phase_payload(output):\n    budget = [MAX_PHASE_READ_BYTES]\n    log_raw = read_phase_file(output/'test-console.log', MAX_LOG_BYTES, budget)\n    reports = phase_reports(output)\n    require(len(reports) == 1, 'Require actual filtered TRX for container ownership')\n    trx_raw = read_phase_file(reports[0], MAX_TRX_BYTES, budget)\n    return log_raw.decode('utf-8-sig', errors='strict'), phase_document(trx_raw), trx_raw\n\n\n"
 
-PREP_SPEC = importlib.util.spec_from_file_location("metadata_source", pathlib.Path(__file__).with_name("prepare-file-metadata-baseline.py"))
+PREP_SPEC = importlib.util.spec_from_file_location("metadata_source", (HISTORICAL_SCRIPTS / "prepare-file-metadata-baseline.py"))
 prep = importlib.util.module_from_spec(PREP_SPEC)
 PREP_SPEC.loader.exec_module(prep)
 
-OBS_SPEC = importlib.util.spec_from_file_location("metadata_observer", pathlib.Path(__file__).with_name("observe-file-metadata-providers.py"))
+OBS_SPEC = importlib.util.spec_from_file_location("metadata_observer", (HISTORICAL_SCRIPTS / "observe-file-metadata-providers.py"))
 observer = importlib.util.module_from_spec(OBS_SPEC)
 OBS_SPEC.loader.exec_module(observer)
 
@@ -597,7 +603,8 @@ class TypedMetadataProvenanceControls(unittest.TestCase):
 
 
     def test_every_validly_shaped_but_wrong_git_object_is_refused(self):
-        actual = {path: record["gitBlob"] for path, record in CONTRACT["implementationRuntime"].items()}
+        actual = {path: prep.supplier_parent_audit_runtime_blob(path, prep.supplier_mutation_runtime_blob(path, record["gitBlob"]))
+                  for path, record in CONTRACT["implementationRuntime"].items()}
         with mock.patch.object(prep, "blob", side_effect=lambda root, path: actual[path]):
             prep.require_runtime_postimages(pathlib.Path("."), CONTRACT)
             for path in actual:
@@ -605,6 +612,10 @@ class TypedMetadataProvenanceControls(unittest.TestCase):
                 changed["implementationRuntime"][path] = {"gitBlob": "0" * 40}
                 with self.subTest(path=path), self.assertRaises(ValueError):
                     prep.require_runtime_postimages(pathlib.Path("."), changed)
+
+
+# Include current-consumer rejection controls in this workflow-selected module.
+from test_procurement_address_null_consumer import SupplierMutationConsumerControls
 
 
 if __name__ == "__main__":

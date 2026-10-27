@@ -1,6 +1,15 @@
+from procurement_dependency_consumer import (dependency_runtime_blob, dependency_consumer_inputs,
+    require_dependency_runtime, current_dependency_script_binding, authenticate_dependency)
 """Bind only the new test harness to the immutable file-metadata baseline."""
+from procurement_address_null_consumer import (health_alias_previous_inputs,
+    require_health_alias_runtime, require_health_alias_tests)
 import hashlib
-from procurement_address_null_consumer import address_consumer_inputs, require_address_runtime, require_address_test
+from procurement_address_null_consumer import (address_consumer_inputs, require_address_runtime, require_address_test,
+    supplier_mutation_consumer_inputs, supplier_mutation_runtime_blob, require_supplier_mutation_runtime,
+    require_supplier_mutation_tests, supplier_parent_audit_consumer_inputs,
+    supplier_parent_audit_runtime_blob, require_supplier_parent_audit_runtime,
+    require_supplier_parent_audit_tests, supplier_parent_audit_harness_blob,
+    supplier_parent_audit_original_harness, require_supplier_parent_audit_harnesses)
 import json
 import os
 import pathlib
@@ -107,7 +116,7 @@ def require_runtime_postimages(candidate, manifest):
         require(git_blob_record(manifest["implementationRuntime"][path]) == expected,
                 "Exact Supplier omitted-size runtime successor differs: " + path)
     for path, expected in runtime_bindings(manifest).items():
-        require(blob(candidate, path) == expected, "Candidate runtime postimage differs: " + path)
+        require(blob(candidate, path) == dependency_runtime_blob(path, supplier_parent_audit_runtime_blob(path, supplier_mutation_runtime_blob(path, expected))), "Candidate runtime postimage differs: " + path)
 
 
 def require_phase_evidence(output, phase, budget=None):
@@ -150,6 +159,7 @@ def require_phase_evidence(output, phase, budget=None):
 
 def prepare(baseline, manifest_path, verify_only=False):
     candidate = pathlib.Path(__file__).resolve().parents[1]
+    authenticate_dependency(candidate, git)
     budget = [MAX_PREPARE_BYTES]
     manifest_raw = read_bounded(manifest_path, MAX_JSON_BYTES, budget)
     manifest = decode_json(manifest_raw)
@@ -174,18 +184,22 @@ def prepare(baseline, manifest_path, verify_only=False):
     changed = set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--",
                       "Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Application",
                       "Legacy.Maliev.ProcurementService.Data", "Legacy.Maliev.ProcurementService.Domain").decode().splitlines())
-    require(changed == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME) | require_address_runtime(candidate, blob), "Unexpected production source changes")
+    require(changed == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME) | require_supplier_mutation_runtime(candidate, blob) | require_supplier_parent_audit_runtime(candidate, blob) | require_health_alias_runtime(candidate, blob, git) | require_dependency_runtime(candidate, blob, git), "Unexpected production source changes")
     require_runtime_postimages(candidate, manifest)
+    require_supplier_mutation_tests(candidate, baseline, blob, git, BASE)
+    require_supplier_parent_audit_tests(candidate, baseline, blob, git, BASE)
+    require_health_alias_tests(candidate, baseline, blob, git, BASE)
+    require_supplier_parent_audit_harnesses(candidate, blob, git)
     for path in ("scripts/observe-supplier-address-providers.py", "scripts/supplier_address_owned_processes.py"):
         require(blob(candidate, path) == git(baseline, "rev-parse", BASE + ":" + path).decode().strip(),
                 "Reviewed process/provider ownership implementation changed")
-    require(blob(candidate, TEST) == manifest["harness"]["gitBlob"], "Reviewed harness postimage changed")
-    harness = read_bounded(candidate / TEST, MAX_SOURCE_BYTES, budget)
+    require(blob(candidate, TEST) == supplier_parent_audit_harness_blob(TEST, manifest["harness"]["gitBlob"]), "Reviewed harness postimage changed")
+    harness = supplier_parent_audit_original_harness(TEST, read_bounded(candidate / TEST, MAX_SOURCE_BYTES, budget))
     target = baseline / TEST
     if not verify_only:
         require(not target.exists(), "Baseline harness already exists before overlay")
         target.write_bytes(harness)
-    require(read_bounded(target, MAX_SOURCE_BYTES, budget) == harness, "Baseline/candidate harness differs")
+    require(read_bounded(target, MAX_SOURCE_BYTES, budget) == harness, "Frozen baseline harness differs from reviewed original bytes")
     require(set(git(baseline, "ls-files", "--others", "--exclude-standard").decode().splitlines()) == {TEST},
             "Unexpected baseline overlay")
     proof = {"schemaVersion": 1, "base": BASE,

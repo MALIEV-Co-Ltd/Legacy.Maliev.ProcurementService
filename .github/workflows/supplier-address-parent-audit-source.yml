@@ -1,0 +1,59 @@
+name: Supplier address parent audit source
+
+on:
+  pull_request:
+    branches: [main, develop, staging]
+    paths:
+      - "Legacy.Maliev.ProcurementService.Application/**"
+      - "Legacy.Maliev.ProcurementService.Data/**"
+      - "Legacy.Maliev.ProcurementService.Tests/**"
+      - ".github/workflows/**"
+      - "Legacy.Maliev.ProcurementService.Api/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
+      VSTestCollect: XPlat Code Coverage
+      VSTestLogger: trx
+      VSTestResultsDirectory: ${{ github.workspace }}/focused-results
+      VSTestTestCaseFilter: FullyQualifiedName~SupplierAddressParentAuditSourceHttpTests|FullyQualifiedName~ProcurementSupplierTransactionBoundaryTests
+    steps:
+      - name: Check out ProcurementService
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Check out Legacy.Maliev.ServiceDefaults
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults
+          ref: ecb05cbbd68717e415f69df2ac488c1d323b1da3
+          path: .dependencies/Legacy.Maliev.ServiceDefaults
+          persist-credentials: false
+      - name: Check out Legacy.Maliev.CompatibilityContracts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts
+          ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
+          path: .dependencies/Legacy.Maliev.CompatibilityContracts
+          persist-credentials: false
+      - name: Validate .NET solution
+        uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@e3a6093324a24968876782153286f52db8b29fd8
+        with:
+          solution: Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj
+          use-local-maliev-dependencies: 'true'
+      - name: Preserve validation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: supplier-address-parent-audit-${{ github.sha }}
+          path: focused-results
+          if-no-files-found: warn
+          retention-days: 7

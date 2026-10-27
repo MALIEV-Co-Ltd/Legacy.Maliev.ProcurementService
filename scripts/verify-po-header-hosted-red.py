@@ -1,3 +1,4 @@
+from procurement_dependency_consumer import authenticate_dependency, dependency_restoration_digests
 """Hosted-only PO header RED control; no source host/original runtime or coverage claim."""
 import argparse
 import hashlib
@@ -252,8 +253,9 @@ def candidate_digests(contract):
 
 
 def candidate_sources(root, contract):
+    authenticate_dependency(root, git)
     sources = {}
-    for relative, expected in candidate_digests(contract).items():
+    for relative, expected in dependency_restoration_digests(root, candidate_digests(contract), git).items():
         data = git(root, "show", "HEAD:" + relative)
         require(digest(data) == expected, "Reviewed candidate HEAD source changed: " + relative)
         sources[relative] = data
@@ -263,7 +265,7 @@ def candidate_sources(root, contract):
 def restore(root, contract, sources, evidence, head):
     settle_command_groups(evidence)
     require(git(root, "rev-parse", "HEAD").decode().strip() == head, "HEAD changed during RED control")
-    reviewed_digests = candidate_digests(contract)
+    reviewed_digests = dependency_restoration_digests(root, candidate_digests(contract), git)
     for relative in (contract["baseline"]["programPath"], contract["baseline"]["absentPath"]):
         safe_path(root, relative).write_bytes(sources[relative])
     restored = {}

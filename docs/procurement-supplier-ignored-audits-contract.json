@@ -1411,7 +1411,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-supplier-ignored-audits-baseline.py": {
-      "gitBlob": "ebc64a8a749fd569a4340d654b67985f5fc14faf"
+      "gitBlob": "f5413a775d9fba84812d60533391e2d74bf599b7"
     },
     "scripts/verify-supplier-ignored-audits-results.py": {
       "gitBlob": "2b718a0b66baeab9ee321f23482df27addabd9f3"
@@ -1420,7 +1420,7 @@
       "gitBlob": "d35a08ddc313367c2a549ec770bb42127f209698"
     },
     "scripts/test_supplier_ignored_audits_results.py": {
-      "gitBlob": "158536eb1a8f2eb7b56dc855ca7479ab60463ed5"
+      "gitBlob": "bc864396d9da3c8d074618b7280f347ea6755932"
     },
     ".github/workflows/procurement-supplier-ignored-audits.yml": {
       "gitBlob": "2a274d3e9c0272a76cdf5516e034a5b314ff2223"
@@ -1429,10 +1429,22 @@
       "gitBlob": "0c91e5b94fa2ddaeb5e602ebfa68e242efd81a7a"
     },
     "scripts/procurement_address_null_consumer.py": {
-      "gitBlob": "023f5f78a38f827002bfdfa994c142d58e4042d9"
+      "gitBlob": "170bc6d1d77be35fdbe86845b7c5686279df32cf"
     },
     "scripts/test_procurement_address_null_consumer.py": {
-      "gitBlob": "3734cf9ef5eec73ee88abec53393df7a091d73f8"
+      "gitBlob": "6069d40cedf4b4f46d2bc29adcc3bad0c867b120"
+    },
+    "scripts/test_supplier_parent_audit_consumer.py": {
+      "gitBlob": "adab41322af29c140e82923e335d0a6399abbb1c"
+    },
+    "scripts/test_supplier_parent_audit_harness_consumer.py": {
+      "gitBlob": "40db8787cd5f6d24b726814aef5967a8c047cd1b"
+    },
+    "scripts/procurement_artifact_transport_consumer.py": {
+      "gitBlob": "7b0152fa302b565e3c1dee6f6e9a72f30ef109c5"
+    },
+    "scripts/test_procurement_artifact_transport_consumer.py": {
+      "gitBlob": "f31d246ebe95b6ef82035c3b479068a0188ba0bb"
     }
   },
   "baseInputs": {

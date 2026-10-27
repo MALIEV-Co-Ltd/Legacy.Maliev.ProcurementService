@@ -388,7 +388,7 @@ public sealed class ProcurementMetadataIgnoredBodyIdTests(ProcurementRuntimeFixt
             var ownerAfter = await suppliers.Suppliers.AsNoTracking().SingleAsync(value => value.Id == 7002);
             Assert.Equal(ownerBefore.Name, ownerAfter.Name);
             Assert.Equal(ownerBefore.CreatedDate, ownerAfter.CreatedDate);
-            Assert.Equal(update ? ownerBefore.ModifiedDate : Now(), ownerAfter.ModifiedDate);
+            Assert.Equal(ownerBefore.ModifiedDate, ownerAfter.ModifiedDate);
             Assert.Equal(update ? ownerBefore.AddressId : target, ownerAfter.AddressId);
             ownerAfter.AddressId = ownerBefore.AddressId;
             ownerAfter.ModifiedDate = ownerBefore.ModifiedDate;

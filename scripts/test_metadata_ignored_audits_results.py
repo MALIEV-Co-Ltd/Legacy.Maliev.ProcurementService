@@ -1,3 +1,6 @@
+from test_procurement_artifact_transport_consumer import ArtifactTransportConsumerControls
+from test_supplier_parent_audit_harness_consumer import SupplierParentAuditHarnessConsumerTests
+from test_supplier_parent_audit_consumer import SupplierParentAuditConsumerTests
 """Synthetic controls only; fabricated UUIDs are never hosted test evidence."""
 import copy
 import hashlib
@@ -13,7 +16,9 @@ from unittest import mock
 import uuid
 import xml.etree.ElementTree as ET
 
-HERE = pathlib.Path(__file__).resolve().parent
+from procurement_dependency_consumer import historical_scripts
+from test_procurement_dependency_consumer import DependencyConsumerControls
+HERE = historical_scripts(__file__)
 OLD_FILTER = "('FullyQualifiedName=Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader'\n                if phase == 'baseline' else 'FullyQualifiedName~PurchaseOrderFileMetadataBindingTests')"
 NEW_FILTER = "'FullyQualifiedName~Legacy.Maliev.ProcurementService.Tests.Integration.' + profiles[family]"
 
@@ -439,7 +444,9 @@ class SourceAndOwnershipControls(unittest.TestCase):
         profile = CONTRACT["profiles"]["audits"]
         self.assertEqual((332, 169, 163), (profile["expectedCases"], profile["baselinePassed"], profile["baselineFailed"]))
         raw = (HERE.parent / profile["testPath"]).read_bytes()
-        self.assertEqual(profile["testBlob"], hashlib.sha1(("blob " + str(len(raw)) + "\0").encode() + raw).hexdigest())
+        self.assertEqual(prep.supplier_parent_audit_harness_blob(profile["testPath"], profile["testBlob"]), hashlib.sha1(("blob " + str(len(raw)) + "\0").encode() + raw).hexdigest())
+        original = prep.supplier_parent_audit_original_harness(profile["testPath"], raw)
+        self.assertEqual(profile["testBlob"], hashlib.sha1(("blob " + str(len(original)) + "\0").encode() + original).hexdigest())
         self.assertEqual(72, len(CONTRACT["baseInputs"]))
         self.assertEqual("69b4ebf74c1a85d0949321360e81105db0f671a6",
                          CONTRACT["baseInputs"][prep.TEST_PROJECT].split()[-1])
@@ -668,3 +675,61 @@ class MetadataAuditSourceControls(unittest.TestCase):
                 prep.require_observation_harness(root)
 
 
+
+class BucketMigrationConsumerControls(unittest.TestCase):
+    def test_exact_reviewed_candidate_and_frozen_baseline_are_admitted(self):
+        candidate, baseline = pathlib.Path("candidate"), pathlib.Path("baseline")
+        values = {candidate: "76a43cbe0d3d8fbb06a5067d8c8c7d3f1292e2e3",
+                  baseline: "c7817e2409b49f32423230199bda79a5e79609cd"}
+        path = "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementSourceStringMigrationTests.cs"
+        with mock.patch.object(prep, "blob", side_effect=lambda root, _: values[root]), \
+                mock.patch.object(prep, "git", side_effect=lambda root, *args: (values[root] + "\n").encode()):
+            self.assertEqual(path, prep.require_bucket_test(candidate, baseline))
+
+    def test_every_old_wrong_or_uncommitted_candidate_is_rejected(self):
+        candidate, baseline = pathlib.Path("candidate"), pathlib.Path("baseline")
+        correct = "76a43cbe0d3d8fbb06a5067d8c8c7d3f1292e2e3"
+        frozen = "c7817e2409b49f32423230199bda79a5e79609cd"
+        for wrong in ("0" * 40, frozen, "c463d2568f6c22e116a3578398dea4a370163b10", ""):
+            for observed_file in (False, True):
+                def blob(root, _):
+                    return (wrong if observed_file else correct) if root == candidate else frozen
+                def git(root, *args):
+                    return (((correct if observed_file else wrong) if root == candidate else frozen) + "\n").encode()
+                with self.subTest(wrong=wrong, observed_file=observed_file), \
+                        mock.patch.object(prep, "blob", side_effect=blob), mock.patch.object(prep, "git", side_effect=git):
+                    with self.assertRaises(ValueError):
+                        prep.require_bucket_test(candidate, baseline)
+
+    def test_changed_or_replaced_historical_baseline_is_rejected(self):
+        candidate, baseline = pathlib.Path("candidate"), pathlib.Path("baseline")
+        correct = "76a43cbe0d3d8fbb06a5067d8c8c7d3f1292e2e3"
+        frozen = "c7817e2409b49f32423230199bda79a5e79609cd"
+        for wrong in ("0" * 40, correct, ""):
+            for observed_file in (False, True):
+                def blob(root, _):
+                    return correct if root == candidate else (wrong if observed_file else frozen)
+                def git(root, *args):
+                    return ((correct if root == candidate else (frozen if observed_file else wrong)) + "\n").encode()
+                with self.subTest(wrong=wrong, observed_file=observed_file), \
+                        mock.patch.object(prep, "blob", side_effect=blob), mock.patch.object(prep, "git", side_effect=git):
+                    with self.assertRaises(ValueError):
+                        prep.require_bucket_test(candidate, baseline)
+
+    def test_missing_candidate_or_baseline_source_is_not_ignored(self):
+        candidate, baseline = pathlib.Path("candidate"), pathlib.Path("baseline")
+        values = {candidate: "76a43cbe0d3d8fbb06a5067d8c8c7d3f1292e2e3",
+                  baseline: "c7817e2409b49f32423230199bda79a5e79609cd"}
+        for missing in (candidate, baseline):
+            def blob(root, _):
+                if root == missing:
+                    raise FileNotFoundError("Synthetic missing compiled source")
+                return values[root]
+            with self.subTest(missing=missing), mock.patch.object(prep, "blob", side_effect=blob), \
+                    mock.patch.object(prep, "git", side_effect=lambda root, *args: (values[root] + "\n").encode()):
+                with self.assertRaises(FileNotFoundError):
+                    prep.require_bucket_test(candidate, baseline)
+
+
+# Include current-consumer rejection controls in this workflow-selected module.
+from test_procurement_address_null_consumer import SupplierMutationConsumerControls

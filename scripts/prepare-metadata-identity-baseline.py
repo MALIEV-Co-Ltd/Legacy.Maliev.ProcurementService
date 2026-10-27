@@ -1,7 +1,17 @@
+from procurement_dependency_consumer import (dependency_runtime_blob, dependency_consumer_inputs,
+    require_dependency_runtime, current_dependency_script_binding, authenticate_dependency)
+from procurement_artifact_transport_consumer import current_workflow_binding
 """Bind only the new171 harness to accepted9005; require exact source and normal hosted disposal."""
 import datetime
+from procurement_address_null_consumer import (health_alias_previous_inputs,
+    require_health_alias_runtime, require_health_alias_tests)
 import hashlib
-from procurement_address_null_consumer import address_consumer_inputs, require_address_runtime, require_address_test
+from procurement_address_null_consumer import (address_consumer_inputs, require_address_runtime, require_address_test,
+    supplier_mutation_consumer_inputs, supplier_mutation_runtime_blob, require_supplier_mutation_runtime,
+    require_supplier_mutation_tests, supplier_parent_audit_consumer_inputs,
+    supplier_parent_audit_runtime_blob, require_supplier_parent_audit_runtime,
+    require_supplier_parent_audit_tests, supplier_parent_audit_harness_blob,
+    supplier_parent_audit_original_harness, require_supplier_parent_audit_harnesses)
 import importlib.util
 import json
 import os
@@ -24,6 +34,10 @@ FIXTURE = "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementRuntime
 TEST_PROJECT = "Legacy.Maliev.ProcurementService.Tests/Legacy.Maliev.ProcurementService.Tests.csproj"
 TESTS = {"metadata": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementMetadataIgnoredBodyIdTests.cs"}
 SCRIPT_PATHS = {
+    "scripts/procurement_artifact_transport_consumer.py",
+    "scripts/test_procurement_artifact_transport_consumer.py",
+    "scripts/test_supplier_parent_audit_harness_consumer.py",
+    "scripts/test_supplier_parent_audit_consumer.py",
     "scripts/procurement_address_null_consumer.py",
     "scripts/test_procurement_address_null_consumer.py",
     "scripts/prepare-metadata-identity-baseline.py",
@@ -120,7 +134,7 @@ def require_runtime_postimages(candidate, manifest):
         require(git_blob_record(manifest["runtimePostimages"][path]) == expected,
                 "Exact Supplier omitted-size runtime successor differs: " + path)
     for path, expected in runtime_bindings(manifest).items():
-        require(blob(candidate, path) == expected, "Wrong reviewed runtime postimage: " + path)
+        require(blob(candidate, path) == dependency_runtime_blob(path, supplier_parent_audit_runtime_blob(path, supplier_mutation_runtime_blob(path, expected))), "Wrong reviewed runtime postimage: " + path)
 
 
 def phase_reports(directory):
@@ -171,9 +185,10 @@ def require_phase(output, phase, family, budget):
 
 
 def require_script_bindings(candidate, manifest):
+    authenticate_dependency(candidate, git)
     require(set(manifest["scriptBindings"]) == SCRIPT_PATHS, "Wrong exact hosted source/control roster")
     for path, record in manifest["scriptBindings"].items():
-        require(blob(candidate, path) == git_blob_record(record)
+        require(blob(candidate, path) == current_dependency_script_binding(candidate, path, git_blob_record(record), blob, git)
                 == git(candidate, "rev-parse", "HEAD:" + path).decode().strip(),
                 "Hosted source/control differs from reviewed HEAD: " + path)
 
@@ -218,7 +233,7 @@ def require_header_harness_bindings(candidate, manifest):
     }
     require(isinstance(bindings, dict) and set(bindings) == expected, "Wrong reviewed header harness roster")
     for path, record in bindings.items():
-        require(blob(candidate, path) == git_blob_record(record), "Reviewed header harness source differs")
+        require(blob(candidate, path) == supplier_parent_audit_harness_blob(path, git_blob_record(record)), "Reviewed header harness source differs")
     return expected
 
 
@@ -229,8 +244,19 @@ def require_observation_harness(candidate):
     return path
 
 
+
+def require_bucket_test(candidate, baseline):
+    path = "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementSourceStringMigrationTests.cs"
+    require(blob(candidate, path) == git(candidate, "rev-parse", "HEAD:" + path).decode().strip()
+            == "76a43cbe0d3d8fbb06a5067d8c8c7d3f1292e2e3", "Exact reviewed bucket migration test successor differs")
+    require(blob(baseline, path) == git(baseline, "rev-parse", BASE + ":" + path).decode().strip()
+            == "c7817e2409b49f32423230199bda79a5e79609cd", "Frozen bucket migration test baseline differs")
+    return path
+
+
 def prepare(baseline, manifest_path, verify_only=False):
     candidate = pathlib.Path(__file__).resolve().parents[1]
+    authenticate_dependency(candidate, git)
     budget = [MAX_OPERATION_BYTES]
     raw_manifest = read_bounded(manifest_path, MAX_JSON_BYTES, budget)
     require(raw_manifest == git(candidate, "show", "HEAD:docs/procurement-metadata-identity-contract.json"), "Manifest differs from candidate HEAD")
@@ -248,7 +274,7 @@ def prepare(baseline, manifest_path, verify_only=False):
         candidate_binding = (manifest["candidateJoinTestProject"] if path == TEST_PROJECT
                              else manifest["candidateBuildProject"] if path == API_PROJECT else binding)
         require(binding["path"] == candidate_binding["path"] == path
-                and blob(candidate, path) == candidate_binding["gitBlob"], "Frozen candidate fixture/build input differs")
+                and blob(candidate, path) == dependency_runtime_blob(path, candidate_binding["gitBlob"]), "Frozen candidate fixture/build input differs")
         baseline_raw = read_bounded(baseline / path, MAX_SOURCE_BYTES, budget)
         require(baseline_raw == git(baseline, "show", BASE + ":" + path)
                 and blob(baseline, path) == binding["gitBlob"], "Immutable baseline fixture/build input differs")
@@ -263,7 +289,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     runtime = manifest["runtimePostimages"]
     allowed = {PROGRAM, API_PROJECT, CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SUPPLIER, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME)
     require(set(runtime) == allowed, "Wrong exact runtime input roster")
-    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *directories).decode().splitlines()) == allowed | require_address_runtime(candidate, blob),
+    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *directories).decode().splitlines()) == allowed | require_supplier_mutation_runtime(candidate, blob) | require_supplier_parent_audit_runtime(candidate, blob) | require_health_alias_runtime(candidate, blob, git) | require_dependency_runtime(candidate, blob, git),
             "Unexpected production source/build drift")
     require_runtime_postimages(candidate, manifest)
     for path in ("scripts/observe-supplier-address-providers.py", "scripts/supplier_address_owned_processes.py",
@@ -297,7 +323,7 @@ def prepare(baseline, manifest_path, verify_only=False):
             "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs"},
             "Wrong source-body compiled harness roster")
     for path, record in source_harnesses.items():
-        require(blob(candidate, path) == git_blob_record(record), "Source-body compiled harness differs")
+        require(blob(candidate, path) == supplier_parent_audit_harness_blob(path, git_blob_record(record)), "Source-body compiled harness differs")
     retained_scalar = manifest["previousSourceBodySupplierScalarHarness"]
     require(retained_scalar == {"path": "Legacy.Maliev.ProcurementService.Tests/Integration/ProcurementSupplierScalarStringTests.cs", "gitBlob": "1d9b4bb47360e4ba9b8f2864a03f63a2533b29a5"}
             and blob(baseline, retained_scalar["path"]) == retained_scalar["gitBlob"],
@@ -308,7 +334,8 @@ def prepare(baseline, manifest_path, verify_only=False):
     if auth is not None:
         require(isinstance(auth, dict) and set(auth) == {"path", "gitBlob"}
                 and auth["path"] == "Legacy.Maliev.ProcurementService.Tests/Workflows/WorkflowContractTests.cs"
-                and blob(candidate, auth["path"]) == git_blob_record({"gitBlob": auth["gitBlob"]}),
+                and blob(candidate, auth["path"]) == current_workflow_binding(candidate, auth["path"],
+                    git_blob_record({"gitBlob": auth["gitBlob"]}), blob, git),
                 "Wrong separately reviewed Auth workflow-test successor")
         allowed_tests.add(auth["path"])
     require(manifest["supplierOmittedSizeHarness"] == {"path": SUPPLIER_QUERY_TEST, "gitBlob": SUPPLIER_QUERY_TEST_BLOB}
@@ -324,6 +351,11 @@ def prepare(baseline, manifest_path, verify_only=False):
     allowed_tests.add(SUPPLIER_LIST_POLICY_TEST)
     allowed_tests.add(require_observation_harness(candidate))
     allowed_tests.add(require_address_test(candidate, blob))
+    allowed_tests.add(require_bucket_test(candidate, baseline))
+    allowed_tests.update(require_supplier_mutation_tests(candidate, baseline, blob, git, BASE))
+    allowed_tests.update(require_supplier_parent_audit_tests(candidate, baseline, blob, git, BASE))
+    allowed_tests.update(require_health_alias_tests(candidate, baseline, blob, git, BASE))
+    allowed_tests.update(require_supplier_parent_audit_harnesses(candidate, blob, git))
     require(compiled_tests == allowed_tests, "Unexpected compiled test drift")
     require(blob(baseline, old_harness["path"])
             == git(baseline, "rev-parse", BASE + ":" + old_harness["path"]).decode().strip(),
@@ -332,13 +364,13 @@ def prepare(baseline, manifest_path, verify_only=False):
     harnesses = {}
     for family, path in TESTS.items():
         profile = manifest["profiles"][family]
-        require(profile["testPath"] == path and blob(candidate, path) == profile["testBlob"], "Original focused harness drift")
-        raw = read_bounded(candidate / path, MAX_SOURCE_BYTES, budget)
+        require(profile["testPath"] == path and blob(candidate, path) == supplier_parent_audit_harness_blob(path, profile["testBlob"]), "Original focused harness drift")
+        raw = supplier_parent_audit_original_harness(path, read_bounded(candidate / path, MAX_SOURCE_BYTES, budget))
         target = baseline / path
         if not verify_only:
             require(not target.exists(), "Baseline harness already exists before overlay")
             target.write_bytes(raw)
-        require(read_bounded(target, MAX_SOURCE_BYTES, budget) == raw, "Baseline/candidate harness differs")
+        require(read_bounded(target, MAX_SOURCE_BYTES, budget) == raw, "Frozen baseline harness differs from reviewed original bytes")
         harnesses[path] = {"gitBlob": profile["testBlob"], "sha256": hashlib.sha256(raw).hexdigest()}
     require(set(git(baseline, "ls-files", "--others", "--exclude-standard").decode().splitlines()) == set(TESTS.values()),
             "Unexpected baseline overlay")

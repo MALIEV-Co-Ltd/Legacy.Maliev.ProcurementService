@@ -1,8 +1,11 @@
+from procurement_dependency_consumer import (dependency_runtime_blob, dependency_consumer_inputs,
+    require_dependency_runtime, current_dependency_script_binding, authenticate_dependency)
 """Require exact producers, unchanged runtime/fixture inputs, and individual joined passes."""
+from procurement_address_null_consumer import health_alias_previous_inputs
 import collections
 import fnmatch
 import hashlib
-from procurement_address_null_consumer import address_consumer_inputs
+from procurement_address_null_consumer import address_consumer_inputs, supplier_mutation_consumer_inputs, supplier_parent_audit_consumer_inputs
 import json
 import pathlib
 import subprocess
@@ -88,7 +91,7 @@ def require_consumer_inputs(current, producer, manifest):
     digest = hashlib.sha256(json.dumps(unchanged, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     if len(producer) != binding["inputCount"] or len(unchanged) != binding["unchangedInputCount"] or digest != binding["unchangedInputSha256"]:
         raise ValueError("Supplier explicit-size retained inventory differs")
-    require_equal(current, address_consumer_inputs(observation_consumer_inputs(expected)))
+    require_equal(health_alias_previous_inputs(current), dependency_consumer_inputs(supplier_parent_audit_consumer_inputs(supplier_mutation_consumer_inputs(address_consumer_inputs(observation_consumer_inputs(expected))))))
 
 
 def require_harness_custody(local, producer, manifest):
@@ -108,6 +111,7 @@ def require_harness_custody(local, producer, manifest):
 
 
 def inputs(root, manifest):
+    authenticate_dependency(ROOT)
     require_historical_graph(manifest)
     for entry in manifest["references"]:
         repository, expected = entry["repository"], entry["commit"]

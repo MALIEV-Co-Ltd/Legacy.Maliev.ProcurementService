@@ -6,7 +6,8 @@ import unittest
 
 import procurement_address_null_consumer as address
 
-HERE = pathlib.Path(__file__).resolve().parent
+from procurement_dependency_consumer import historical_scripts
+HERE = historical_scripts(__file__)
 PREPARERS = (
     "prepare-file-metadata-baseline.py",
     "prepare-supplier-identity-baseline.py",
@@ -95,15 +96,249 @@ class AddressNullConsumerControls(unittest.TestCase):
         for filename in PREPARERS:
             prep = load_guard(filename)
             with self.subTest(filename=filename):
-                self.assertIs(address.require_address_runtime, prep.require_address_runtime)
+                self.assertIs(address.require_supplier_mutation_runtime, prep.require_supplier_mutation_runtime)
+                self.assertIs(address.require_supplier_mutation_tests, prep.require_supplier_mutation_tests)
                 self.assertIs(address.require_address_test, prep.require_address_test)
+                self.assertIs(address.require_supplier_parent_audit_runtime, prep.require_supplier_parent_audit_runtime)
+                self.assertIs(address.require_supplier_parent_audit_tests, prep.require_supplier_parent_audit_tests)
                 source = (HERE / filename).read_text(encoding="utf-8")
-                self.assertIn("| require_address_runtime(candidate, blob)", source)
+                self.assertIn("| require_supplier_mutation_runtime(candidate, blob)", source)
+                self.assertIn("require_supplier_mutation_tests(candidate, baseline, blob, git, BASE)", source)
+                self.assertIn("| require_supplier_parent_audit_runtime(candidate, blob)", source)
+                self.assertIn("require_supplier_parent_audit_tests(candidate, baseline, blob, git, BASE)", source)
                 if filename in PREPARERS[2:]:
                     self.assertIn(".add(require_address_test(candidate, blob))", source)
                 if filename in PREPARERS[3:]:
-                    self.assertIn('tracked_inputs(candidate, 74) == address_consumer_inputs(manifest["reviewedInputs"])', source)
-                    self.assertIn('current_inputs = address_consumer_inputs(manifest["reviewedInputs"])', source)
+                    self.assertIn('tracked_inputs(candidate, 74) == supplier_parent_audit_consumer_inputs(supplier_mutation_consumer_inputs(address_consumer_inputs(manifest["reviewedInputs"])))', source)
+                    self.assertIn('current_inputs = supplier_parent_audit_consumer_inputs(supplier_mutation_consumer_inputs(address_consumer_inputs(manifest["reviewedInputs"])))', source)
+
+
+
+class SupplierMutationConsumerControls(unittest.TestCase):
+    def test_exact_two_successors_preserve_other_inputs_and_previous_inventory(self):
+        previous = {path: "100644 blob " + before
+                    for path, (before, _) in address.SUPPLIER_MUTATION_BINDINGS.items()}
+        previous["unrelated"] = "100644 blob " + "a" * 40
+        snapshot = dict(previous)
+        current = address.supplier_mutation_consumer_inputs(previous)
+        self.assertEqual(snapshot, previous)
+        self.assertEqual(set(previous), set(current))
+        self.assertEqual(previous["unrelated"], current["unrelated"])
+        self.assertEqual(2, len(address.SUPPLIER_MUTATION_BINDINGS))
+        for path, (_, after) in address.SUPPLIER_MUTATION_BINDINGS.items():
+            self.assertEqual("100644 blob " + after, current[path])
+
+    def test_missing_unknown_and_already_advanced_preimages_are_rejected(self):
+        previous = {path: "100644 blob " + before
+                    for path, (before, _) in address.SUPPLIER_MUTATION_BINDINGS.items()}
+        for path, (_, after) in address.SUPPLIER_MUTATION_BINDINGS.items():
+            for metadata in (None, "100644 blob " + "0" * 40, "100644 blob " + after):
+                changed = dict(previous)
+                if metadata is None:
+                    del changed[path]
+                else:
+                    changed[path] = metadata
+                with self.subTest(path=path, metadata=metadata), self.assertRaises(ValueError):
+                    address.supplier_mutation_consumer_inputs(changed)
+            self.assertEqual(after, address.supplier_mutation_runtime_blob(path,
+                address.SUPPLIER_MUTATION_BINDINGS[path][0]))
+            for wrong in (None, "0" * 40, after):
+                with self.subTest(path=path, runtime_preimage=wrong), self.assertRaises(ValueError):
+                    address.supplier_mutation_runtime_blob(path, wrong)
+
+    def test_current_runtime_requires_both_successors_and_retained_address_bindings(self):
+        values = {path: after for path, (_, after) in address.ADDRESS_BINDINGS.items()}
+        values.update({path: after for path, (_, after) in address.SUPPLIER_MUTATION_BINDINGS.items()})
+        values[address.ADDRESS_TEST] = address.ADDRESS_TEST_BLOB
+        def blob(_, path):
+            return values.get(path)
+        self.assertEqual(set(address.ADDRESS_BINDINGS) | set(address.SUPPLIER_MUTATION_BINDINGS),
+                         address.require_supplier_mutation_runtime(None, blob))
+        for path, expected in tuple(values.items()):
+            old = (address.SUPPLIER_MUTATION_BINDINGS[path][0]
+                   if path in address.SUPPLIER_MUTATION_BINDINGS else "f" * 40)
+            for wrong in (None, "0" * 40, old):
+                values[path] = wrong
+                with self.subTest(path=path, value=wrong), self.assertRaises(ValueError):
+                    address.require_supplier_mutation_runtime(None, blob)
+            values[path] = expected
+
+    def test_actual_auth_join_rejects_both_old_missing_unknown_and_extra_runtime_inputs(self):
+        guard = load_guard("verify-procurement-auth-program.py")
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        producer = manifest["intentionalSourceChanges"]["reviewedInputs"]
+        current = guard.tracked_inputs(guard.ROOT)
+        guard.require_consumer_inputs(current, producer, manifest)
+        for path, (before, _) in address.SUPPLIER_MUTATION_BINDINGS.items():
+            for metadata in (None, "100644 blob " + before, "100644 blob " + "0" * 40):
+                changed = dict(current)
+                if metadata is None:
+                    del changed[path]
+                else:
+                    changed[path] = metadata
+                with self.subTest(path=path, metadata=metadata), self.assertRaises(ValueError):
+                    guard.require_consumer_inputs(changed, producer, manifest)
+        changed = dict(current)
+        changed["Legacy.Maliev.ProcurementService.Api/unreviewed.cs"] = "100644 blob " + "0" * 40
+        with self.assertRaises(ValueError):
+            guard.require_consumer_inputs(changed, producer, manifest)
+
+    def test_new_test_bindings_require_working_head_and_absent_frozen_baseline(self):
+        from unittest import mock
+        candidate, baseline = pathlib.Path("candidate"), pathlib.Path("baseline")
+        working = dict(address.SUPPLIER_MUTATION_TESTS)
+        heads = dict(working)
+        baseline_tree = b""
+        def blob(root, path):
+            self.assertEqual(candidate, root)
+            return working.get(path)
+        def git(root, *args):
+            if root == candidate and args[0] == "rev-parse":
+                return (heads.get(args[1][5:]) or "").encode()
+            self.assertEqual(baseline, root)
+            self.assertEqual(("ls-tree", "-r", "--name-only", "frozen", "--",
+                              *address.SUPPLIER_MUTATION_TESTS), args)
+            return baseline_tree
+        with mock.patch.object(pathlib.Path, "exists", return_value=False):
+            self.assertEqual(set(working), address.require_supplier_mutation_tests(
+                candidate, baseline, blob, git, "frozen"))
+            for mapping in (working, heads):
+                for path, expected in tuple(mapping.items()):
+                    for wrong in (None, "0" * 40, "f" * 40):
+                        mapping[path] = wrong
+                        with self.subTest(path=path, value=wrong), self.assertRaises(ValueError):
+                            address.require_supplier_mutation_tests(candidate, baseline, blob, git, "frozen")
+                    mapping[path] = expected
+            baseline_tree = next(iter(working)).encode()
+            with self.assertRaises(ValueError):
+                address.require_supplier_mutation_tests(candidate, baseline, blob, git, "frozen")
+            baseline_tree = b""
+        with mock.patch.object(pathlib.Path, "exists", return_value=True), self.assertRaises(ValueError):
+            address.require_supplier_mutation_tests(candidate, baseline, blob, git, "frozen")
+
+    def test_every_consumer_preserves_historical_inventory_and_enrolls_exact_successors(self):
+        for filename in PREPARERS:
+            prep = load_guard(filename)
+            source = (HERE / filename).read_text(encoding="utf-8")
+            with self.subTest(filename=filename):
+                self.assertIs(address.require_supplier_mutation_runtime, prep.require_supplier_mutation_runtime)
+                self.assertIs(address.require_supplier_mutation_tests, prep.require_supplier_mutation_tests)
+                self.assertEqual("aa83c9ddc65ccac0bfc90974f64a817ad8cbbc68",
+                    prep.SUPPLIER_QUERY_RUNTIME[next(iter(address.SUPPLIER_MUTATION_BINDINGS))])
+                self.assertIn("| require_supplier_mutation_runtime(candidate, blob)", source)
+                if filename in PREPARERS[2:]:
+                    target = "allowed_tests" if filename == PREPARERS[2] else "expected_changes"
+                    self.assertIn(target + ".update(require_supplier_mutation_tests(candidate, baseline, blob, git, BASE))", source)
+                else:
+                    self.assertIn("require_supplier_mutation_tests(candidate, baseline, blob, git, BASE)", source)
+
+
+    def test_health_alias_projection_requires_exact_addition_and_preserves_all_old_inputs(self):
+        path = address.HEALTH_ALIAS_RUNTIME
+        current = {path: "100644 blob " + address.HEALTH_ALIAS_BINDINGS[path],
+                   "unrelated": "100644 blob " + "a" * 40}
+        snapshot = dict(current)
+        self.assertEqual({"unrelated": current["unrelated"]}, address.health_alias_previous_inputs(current))
+        self.assertEqual(snapshot, current)
+        for metadata in (None, "100644 blob " + "0" * 40,
+                         "100755 blob " + address.HEALTH_ALIAS_BINDINGS[path]):
+            changed = dict(current)
+            if metadata is None:
+                del changed[path]
+            else:
+                changed[path] = metadata
+            with self.subTest(metadata=metadata), self.assertRaises(ValueError):
+                address.health_alias_previous_inputs(changed)
+        changed = {**current, "foreign": "100644 blob " + "b" * 40}
+        self.assertIn("foreign", address.health_alias_previous_inputs(changed))
+
+    def test_health_alias_sources_require_working_head_and_absent_frozen_baselines(self):
+        from unittest import mock
+        candidate, baseline = pathlib.Path("candidate"), pathlib.Path("baseline")
+        working = dict(address.HEALTH_ALIAS_BINDINGS)
+        heads = dict(working)
+        head_modes = {path: "100644" for path in working}
+        working_modes = {path: 0o100644 for path in working}
+        frozen = b""
+        def blob(root, path):
+            self.assertEqual(candidate, root)
+            return working.get(path)
+        def git(root, *args):
+            if root == candidate:
+                self.assertEqual(("ls-tree", "HEAD", "--"), args[:3])
+                path = args[3]
+                return (head_modes[path] + " blob " + (heads.get(path) or "") + "\t" + path + "\n").encode()
+            self.assertEqual(baseline, root)
+            self.assertEqual(("ls-tree", "-r", "--name-only", "frozen", "--",
+                              *address.HEALTH_ALIAS_BINDINGS), args)
+            return frozen
+        with mock.patch.object(pathlib.Path, "exists", return_value=False), \
+                mock.patch.object(pathlib.Path, "lstat", autospec=True,
+                    side_effect=lambda path: mock.Mock(st_mode=working_modes[path.relative_to(candidate).as_posix()])):
+            self.assertEqual({address.HEALTH_ALIAS_RUNTIME},
+                             address.require_health_alias_runtime(candidate, blob, git))
+            self.assertEqual({address.HEALTH_ALIAS_TEST},
+                             address.require_health_alias_tests(candidate, baseline, blob, git, "frozen"))
+            for mapping in (working, heads):
+                for path, expected in tuple(mapping.items()):
+                    for wrong in (None, "0" * 40):
+                        mapping[path] = wrong
+                        with self.subTest(path=path, wrong=wrong), self.assertRaises(ValueError):
+                            address.require_health_alias_tests(candidate, baseline, blob, git, "frozen")
+                    mapping[path] = expected
+            for path in working:
+                head_modes[path] = "100755"
+                with self.subTest(head_mode=path), self.assertRaises(ValueError):
+                    address.require_health_alias_tests(candidate, baseline, blob, git, "frozen")
+                head_modes[path] = "100644"
+                for mode in (0o120777, 0o040755, 0o100755):
+                    working_modes[path] = mode
+                    with self.subTest(working_mode=mode, path=path), self.assertRaises(ValueError):
+                        address.require_health_alias_tests(candidate, baseline, blob, git, "frozen")
+                working_modes[path] = 0o100644
+            frozen = address.HEALTH_ALIAS_RUNTIME.encode()
+            with self.assertRaises(ValueError):
+                address.require_health_alias_tests(candidate, baseline, blob, git, "frozen")
+        for present_path in address.HEALTH_ALIAS_BINDINGS:
+            with mock.patch.object(pathlib.Path, "exists", autospec=True,
+                                   side_effect=lambda path: path == baseline / present_path), \
+                    mock.patch.object(pathlib.Path, "lstat", return_value=mock.Mock(st_mode=0o100644)):
+                with self.subTest(present=present_path), self.assertRaises(ValueError):
+                    address.require_health_alias_tests(candidate, baseline, blob, git, "frozen")
+
+    def test_health_alias_actual_auth_join_rejects_missing_drift_and_unrelated_additions(self):
+        guard = load_guard("verify-procurement-auth-program.py")
+        manifest = json.loads(guard.MANIFEST.read_text(encoding="utf-8"))
+        producer = manifest["intentionalSourceChanges"]["reviewedInputs"]
+        current = guard.tracked_inputs(guard.ROOT)
+        guard.require_consumer_inputs(current, producer, manifest)
+        path = address.HEALTH_ALIAS_RUNTIME
+        for metadata in (None, "100644 blob " + "0" * 40,
+                         "100755 blob " + address.HEALTH_ALIAS_BINDINGS[path]):
+            changed = dict(current)
+            if metadata is None:
+                del changed[path]
+            else:
+                changed[path] = metadata
+            with self.subTest(metadata=metadata), self.assertRaises(ValueError):
+                guard.require_consumer_inputs(changed, producer, manifest)
+        changed = {**current, "Legacy.Maliev.ProcurementService.Api/foreign.cs": "100644 blob " + "0" * 40}
+        with self.assertRaises(ValueError):
+            guard.require_consumer_inputs(changed, producer, manifest)
+
+    def test_health_alias_every_causal_preparer_enrolls_only_exact_new_sources(self):
+        for index, filename in enumerate(PREPARERS):
+            prep = load_guard(filename)
+            source = (HERE / filename).read_text(encoding="utf-8")
+            with self.subTest(filename=filename):
+                self.assertIs(address.require_health_alias_runtime, prep.require_health_alias_runtime)
+                self.assertIs(address.require_health_alias_tests, prep.require_health_alias_tests)
+                self.assertIn("| require_health_alias_runtime(candidate, blob, git)", source)
+                target = "allowed_tests" if index == 2 else "expected_changes" if index >= 3 else None
+                expected = "require_health_alias_tests(candidate, baseline, blob, git, BASE)"
+                self.assertIn(target + ".update(" + expected + ")" if target else expected, source)
+                if index >= 3:
+                    self.assertIn("if expected_count == 74:\n        selected = health_alias_previous_inputs(selected)", source)
 
 
 if __name__ == "__main__":

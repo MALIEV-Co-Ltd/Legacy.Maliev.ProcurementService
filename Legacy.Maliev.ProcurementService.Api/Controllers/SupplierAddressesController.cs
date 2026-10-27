@@ -23,7 +23,7 @@ public sealed class SupplierAddressesController(IProcurementService service) : C
         try
         {
             var address = await service.CreateSupplierAddressAsync(supplierId, item, cancellationToken);
-            return address is null ? NotFound() : CreatedAtRoute("GetSupplierAddressRecord", new { addressId = address.Id }, address);
+            return address is null ? NotFound("Supplier does not exist") : CreatedAtRoute("GetSupplierAddressRecord", new { addressId = address.Id }, address);
         }
         catch (ProcurementTransactionUncertainException) { return StatusCode(StatusCodes.Status503ServiceUnavailable); }
     }

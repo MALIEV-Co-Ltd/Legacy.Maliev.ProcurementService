@@ -1,10 +1,16 @@
+from test_supplier_parent_audit_harness_consumer import SupplierParentAuditHarnessConsumerTests
+from test_supplier_parent_audit_consumer import SupplierParentAuditConsumerTests
 """Mutation controls for immutable runtime/public-fixture admission."""
 import importlib.util
 import pathlib
 import unittest
 from test_procurement_address_null_consumer import AddressNullConsumerControls
 
-spec = importlib.util.spec_from_file_location("join_guard", pathlib.Path(__file__).with_name("verify-procurement-auth-program.py"))
+from procurement_dependency_consumer import historical_scripts
+from test_procurement_dependency_consumer import DependencyConsumerControls
+HISTORICAL_SCRIPTS = historical_scripts(__file__)
+
+spec = importlib.util.spec_from_file_location("join_guard", (HISTORICAL_SCRIPTS / "verify-procurement-auth-program.py"))
 guard = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(guard)
 
@@ -473,6 +479,10 @@ class RuntimeInputs(unittest.TestCase):
             with self.subTest(preimage=metadata), self.assertRaises(ValueError):
                 guard.observation_consumer_inputs(changed)
 
+
+
+# Include current-consumer rejection controls in this workflow-selected module.
+from test_procurement_address_null_consumer import SupplierMutationConsumerControls
 
 
 if __name__ == "__main__":

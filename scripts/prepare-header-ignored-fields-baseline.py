@@ -1,8 +1,18 @@
+from procurement_dependency_consumer import (dependency_runtime_blob, dependency_consumer_inputs,
+    require_dependency_runtime, current_dependency_script_binding, authenticate_dependency)
+from procurement_artifact_transport_consumer import current_workflow_binding
 """Bind exact header199 source/actual phase proofs; no original binary or deployment claim."""
 import datetime
 import fnmatch
+from procurement_address_null_consumer import (health_alias_previous_inputs,
+    require_health_alias_runtime, require_health_alias_tests)
 import hashlib
-from procurement_address_null_consumer import address_consumer_inputs, require_address_runtime, require_address_test
+from procurement_address_null_consumer import (address_consumer_inputs, require_address_runtime, require_address_test,
+    supplier_mutation_consumer_inputs, supplier_mutation_runtime_blob, require_supplier_mutation_runtime,
+    require_supplier_mutation_tests, supplier_parent_audit_consumer_inputs,
+    supplier_parent_audit_runtime_blob, require_supplier_parent_audit_runtime,
+    require_supplier_parent_audit_tests, supplier_parent_audit_harness_blob,
+    supplier_parent_audit_original_harness, require_supplier_parent_audit_harnesses)
 import importlib.util
 import json
 import os
@@ -67,6 +77,10 @@ SOURCE_POSTIMAGES = {
 PROJECTS = tuple("Legacy.Maliev.ProcurementService." + part for part in ("Api", "Application", "Data", "Domain"))
 PATTERNS = ("directory.build.*", "directory.packages.*", "global.json", "nuget.config", "*.slnx")
 SCRIPT_PATHS = {
+    "scripts/procurement_artifact_transport_consumer.py",
+    "scripts/test_procurement_artifact_transport_consumer.py",
+    "scripts/test_supplier_parent_audit_harness_consumer.py",
+    "scripts/test_supplier_parent_audit_consumer.py",
     "scripts/procurement_address_null_consumer.py",
     "scripts/test_procurement_address_null_consumer.py",
     "scripts/prepare-header-ignored-fields-baseline.py",
@@ -182,9 +196,10 @@ def require_phase(output, phase, family, budget):
 
 
 def require_script_bindings(candidate, manifest):
+    authenticate_dependency(candidate, git)
     require(set(manifest["scriptBindings"]) == SCRIPT_PATHS, "Wrong exact hosted source/control roster")
     for path, record in manifest["scriptBindings"].items():
-        require(blob(candidate, path) == git_blob_record(record)
+        require(blob(candidate, path) == current_dependency_script_binding(candidate, path, git_blob_record(record), blob, git)
                 == git(candidate, "rev-parse", "HEAD:" + path).decode().strip(),
                 "Hosted source/control differs from reviewed HEAD: " + path)
 
@@ -228,6 +243,8 @@ def tracked_inputs(root, expected_count=72):
             "/" not in path and any(fnmatch.fnmatchcase(path.lower(), pattern) for pattern in PATTERNS)
         ):
             selected[path] = metadata.decode("ascii", errors="strict")
+    if expected_count == 74:
+        selected = health_alias_previous_inputs(selected)
     require(expected_count in (72, 74) and len(selected) == expected_count,
             "Exact phase runtime/build/public fixture inputs required")
     return selected
@@ -240,8 +257,19 @@ def require_observation_harness(candidate):
     return path
 
 
+
+def require_bucket_test(candidate, baseline):
+    path = "Legacy.Maliev.ProcurementService.Tests/Data/ProcurementSourceStringMigrationTests.cs"
+    require(blob(candidate, path) == git(candidate, "rev-parse", "HEAD:" + path).decode().strip()
+            == "76a43cbe0d3d8fbb06a5067d8c8c7d3f1292e2e3", "Exact reviewed bucket migration test successor differs")
+    require(blob(baseline, path) == git(baseline, "rev-parse", BASE + ":" + path).decode().strip()
+            == "c7817e2409b49f32423230199bda79a5e79609cd", "Frozen bucket migration test baseline differs")
+    return path
+
+
 def prepare(baseline, manifest_path, verify_only=False):
     candidate = pathlib.Path(__file__).resolve().parents[1]
+    authenticate_dependency(candidate, git)
     budget = [MAX_OPERATION_BYTES]
     raw_manifest = read_bounded(manifest_path, MAX_JSON_BYTES, budget)
     require(raw_manifest == git(candidate, "show", "HEAD:docs/procurement-header-ignored-fields-contract.json"),
@@ -260,7 +288,7 @@ def prepare(baseline, manifest_path, verify_only=False):
             and set(manifest["runtimePostimages"]) == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME),
             "Only reviewed header, POST repository, and Supplier audit converter may change runtime")
     require(tracked_inputs(baseline) == manifest["baseInputs"]
-            and tracked_inputs(candidate, 74) == address_consumer_inputs(manifest["reviewedInputs"]), "Frozen72 baseline/reviewed74 input inventory differs")
+            and tracked_inputs(candidate, 74) == dependency_consumer_inputs(supplier_parent_audit_consumer_inputs(supplier_mutation_consumer_inputs(address_consumer_inputs(manifest["reviewedInputs"])))), "Frozen72 baseline/reviewed74 input inventory differs")
     differences = {path for path in set(manifest["baseInputs"]) | set(manifest["reviewedInputs"])
                    if manifest["baseInputs"].get(path) != manifest["reviewedInputs"].get(path)}
     require(differences == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME) | {TEST_PROJECT}
@@ -284,7 +312,7 @@ def prepare(baseline, manifest_path, verify_only=False):
             and manifest["baseInputs"][HEADER] == "100644 blob 8d6d8eb2c232a76bae57d6419a69da37b687b36d",
             "Header source postimage/preimage differs")
     repository_postimage = git_blob_record(manifest["runtimePostimages"][REPOSITORY])
-    require(blob(candidate, REPOSITORY) == repository_postimage
+    require(blob(candidate, REPOSITORY) == supplier_parent_audit_runtime_blob(REPOSITORY, repository_postimage)
             and manifest["reviewedInputs"][REPOSITORY] == "100644 blob " + repository_postimage
             and manifest["baseInputs"][REPOSITORY] == "100644 blob e3e6d902b10d7b985f12bb5d852982313cb13884",
             "POST repository source pre/postimage differs")
@@ -293,7 +321,7 @@ def prepare(baseline, manifest_path, verify_only=False):
             and manifest["reviewedInputs"][METADATA_SEAM] == "100644 blob " + metadata_postimage
             and manifest["baseInputs"][METADATA_SEAM] == "100644 blob be119d54a90a0772444b9f61f97be53a779610ba",
             "Metadata audit seam source postimage/preimage differs")
-    current_inputs = address_consumer_inputs(manifest["reviewedInputs"])
+    current_inputs = dependency_consumer_inputs(supplier_parent_audit_consumer_inputs(supplier_mutation_consumer_inputs(address_consumer_inputs(manifest["reviewedInputs"]))))
     for path in current_inputs:
         metadata = current_inputs[path]
         require(re.fullmatch(r"100644 blob [0-9a-f]{40}", metadata) is not None
@@ -320,7 +348,7 @@ def prepare(baseline, manifest_path, verify_only=False):
             and read_bounded(baseline / TEST_PROJECT, MAX_SOURCE_BYTES, budget)
             == git(baseline, "show", BASE + ":" + TEST_PROJECT),
             "Candidate-only project transition changed historical baseline project")
-    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME) | require_address_runtime(candidate, blob),
+    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *PROJECTS).decode().splitlines()) == {HEADER, REPOSITORY, SUPPLIER, METADATA_SEAM} | SOURCE_RUNTIME | set(SUPPLIER_QUERY_RUNTIME) | require_supplier_mutation_runtime(candidate, blob) | require_supplier_parent_audit_runtime(candidate, blob) | require_health_alias_runtime(candidate, blob, git) | require_dependency_runtime(candidate, blob, git),
             "Unexpected production source/build drift")
     require(not git(candidate, "ls-files", "--others", "--exclude-standard", "--", *PROJECTS,
                     "Legacy.Maliev.ProcurementService.Tests"), "Untracked compiled inputs forbidden")
@@ -334,13 +362,19 @@ def prepare(baseline, manifest_path, verify_only=False):
         require(git_blob_record(compiled[path]) == expected,
                 "Exact reviewed source-family compiled successor differs")
     for path, record in compiled.items():
-        require(blob(candidate, path) == git_blob_record(record), "Reviewed compiled test source differs")
+        require(blob(candidate, path) == current_workflow_binding(candidate, path,
+                supplier_parent_audit_harness_blob(path, git_blob_record(record)), blob, git), "Reviewed compiled test source differs")
     expected_changes = {TEST, TEST_PROJECT} | SOURCE_TESTS | {SUPPLIER_QUERY_TEST, SUPPLIER_LIST_POLICY_TEST}
     for path in (OLD135, OPENAPI, AUTH_TEST, MIGRATION_TEST, NEW_AUDIT, NEW_METADATA_AUDIT, FILE_HARNESS, COUNTRY_TEST):
         if path in (NEW_AUDIT, NEW_METADATA_AUDIT, COUNTRY_TEST) or git(baseline, "rev-parse", BASE + ":" + path).decode().strip() != git_blob_record(compiled[path]):
             expected_changes.add(path)
     expected_changes.add(require_observation_harness(candidate))
     expected_changes.add(require_address_test(candidate, blob))
+    expected_changes.add(require_bucket_test(candidate, baseline))
+    expected_changes.update(require_supplier_mutation_tests(candidate, baseline, blob, git, BASE))
+    expected_changes.update(require_supplier_parent_audit_tests(candidate, baseline, blob, git, BASE))
+    expected_changes.update(require_health_alias_tests(candidate, baseline, blob, git, BASE))
+    expected_changes.update(require_supplier_parent_audit_harnesses(candidate, blob, git))
     require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--",
                     "Legacy.Maliev.ProcurementService.Tests").decode().splitlines()) == expected_changes,
             "Unexpected compiled test drift")
@@ -358,12 +392,12 @@ def prepare(baseline, manifest_path, verify_only=False):
     profile = manifest["profiles"]["header"]
     require(profile["testPath"] == TEST and profile["testBlob"] == git_blob_record(compiled[TEST]),
             "Wrong original199 harness source")
-    raw = read_bounded(candidate / TEST, MAX_SOURCE_BYTES, budget)
+    raw = supplier_parent_audit_original_harness(TEST, read_bounded(candidate / TEST, MAX_SOURCE_BYTES, budget))
     target = baseline / TEST
     if not verify_only:
         require(not target.exists(), "Baseline harness exists before overlay")
         target.write_bytes(raw)
-    require(read_bounded(target, MAX_SOURCE_BYTES, budget) == raw, "Actual baseline/candidate harness differs")
+    require(read_bounded(target, MAX_SOURCE_BYTES, budget) == raw, "Frozen baseline harness differs from reviewed original bytes")
     require(set(git(baseline, "ls-files", "--others", "--exclude-standard").decode().splitlines()) == {TEST},
             "Only the new199 harness may overlay baseline")
     output = candidate / "header-ignored-fields-results"

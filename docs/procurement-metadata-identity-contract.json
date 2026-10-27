@@ -1733,7 +1733,7 @@
   },
   "scriptBindings": {
     "scripts/prepare-metadata-identity-baseline.py": {
-      "gitBlob": "0d4bee8bcd0f521e4f6e8dda0dfb6969d91f9a89"
+      "gitBlob": "a3b423eaeee22bb5ba8893ef90b96b4cf08573f1"
     },
     "scripts/verify-metadata-identity-results.py": {
       "gitBlob": "a1cb8d97044e6c4aa9da33549e967551074b616d"
@@ -1742,7 +1742,7 @@
       "gitBlob": "bdd2544a6ff844d6500512db9ac255192def30fb"
     },
     "scripts/test_metadata_identity_results.py": {
-      "gitBlob": "904ff691e752bef3944a232ae3c413cdddf50140"
+      "gitBlob": "6d12f0c79633411dfa815fd0feb5741042e752d6"
     },
     "scripts/require-metadata-identity-admission.py": {
       "gitBlob": "0c91e5b94fa2ddaeb5e602ebfa68e242efd81a7a"
@@ -1751,10 +1751,22 @@
       "gitBlob": "def71e595a946d1ff7a7fe74fcc0ba640916872f"
     },
     "scripts/procurement_address_null_consumer.py": {
-      "gitBlob": "023f5f78a38f827002bfdfa994c142d58e4042d9"
+      "gitBlob": "170bc6d1d77be35fdbe86845b7c5686279df32cf"
     },
     "scripts/test_procurement_address_null_consumer.py": {
-      "gitBlob": "3734cf9ef5eec73ee88abec53393df7a091d73f8"
+      "gitBlob": "6069d40cedf4b4f46d2bc29adcc3bad0c867b120"
+    },
+    "scripts/test_supplier_parent_audit_consumer.py": {
+      "gitBlob": "adab41322af29c140e82923e335d0a6399abbb1c"
+    },
+    "scripts/test_supplier_parent_audit_harness_consumer.py": {
+      "gitBlob": "40db8787cd5f6d24b726814aef5967a8c047cd1b"
+    },
+    "scripts/procurement_artifact_transport_consumer.py": {
+      "gitBlob": "7b0152fa302b565e3c1dee6f6e9a72f30ef109c5"
+    },
+    "scripts/test_procurement_artifact_transport_consumer.py": {
+      "gitBlob": "f31d246ebe95b6ef82035c3b479068a0188ba0bb"
     }
   },
   "authEnrollmentTestBinding": {
