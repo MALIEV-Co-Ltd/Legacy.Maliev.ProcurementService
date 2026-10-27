@@ -6,7 +6,8 @@ import unittest
 
 import procurement_address_null_consumer as address
 
-HERE = pathlib.Path(__file__).resolve().parent
+from procurement_dependency_consumer import historical_scripts
+HERE = historical_scripts(__file__)
 PREPARERS = (
     "prepare-file-metadata-baseline.py",
     "prepare-supplier-identity-baseline.py",

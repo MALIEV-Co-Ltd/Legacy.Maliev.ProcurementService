@@ -1,3 +1,5 @@
+from procurement_dependency_consumer import (dependency_runtime_blob, dependency_consumer_inputs,
+    require_dependency_runtime, current_dependency_script_binding, authenticate_dependency)
 """Bind only the new test harness to the immutable file-metadata baseline."""
 from procurement_address_null_consumer import (health_alias_previous_inputs,
     require_health_alias_runtime, require_health_alias_tests)
@@ -114,7 +116,7 @@ def require_runtime_postimages(candidate, manifest):
         require(git_blob_record(manifest["implementationRuntime"][path]) == expected,
                 "Exact Supplier omitted-size runtime successor differs: " + path)
     for path, expected in runtime_bindings(manifest).items():
-        require(blob(candidate, path) == supplier_parent_audit_runtime_blob(path, supplier_mutation_runtime_blob(path, expected)), "Candidate runtime postimage differs: " + path)
+        require(blob(candidate, path) == dependency_runtime_blob(path, supplier_parent_audit_runtime_blob(path, supplier_mutation_runtime_blob(path, expected))), "Candidate runtime postimage differs: " + path)
 
 
 def require_phase_evidence(output, phase, budget=None):
@@ -157,6 +159,7 @@ def require_phase_evidence(output, phase, budget=None):
 
 def prepare(baseline, manifest_path, verify_only=False):
     candidate = pathlib.Path(__file__).resolve().parents[1]
+    authenticate_dependency(candidate, git)
     budget = [MAX_PREPARE_BYTES]
     manifest_raw = read_bounded(manifest_path, MAX_JSON_BYTES, budget)
     manifest = decode_json(manifest_raw)
@@ -181,7 +184,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     changed = set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--",
                       "Legacy.Maliev.ProcurementService.Api", "Legacy.Maliev.ProcurementService.Application",
                       "Legacy.Maliev.ProcurementService.Data", "Legacy.Maliev.ProcurementService.Domain").decode().splitlines())
-    require(changed == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME) | require_supplier_mutation_runtime(candidate, blob) | require_supplier_parent_audit_runtime(candidate, blob) | require_health_alias_runtime(candidate, blob, git), "Unexpected production source changes")
+    require(changed == {PROGRAM, CONVERTER, API_PROJECT, SUPPLIER_CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME) | require_supplier_mutation_runtime(candidate, blob) | require_supplier_parent_audit_runtime(candidate, blob) | require_health_alias_runtime(candidate, blob, git) | require_dependency_runtime(candidate, blob, git), "Unexpected production source changes")
     require_runtime_postimages(candidate, manifest)
     require_supplier_mutation_tests(candidate, baseline, blob, git, BASE)
     require_supplier_parent_audit_tests(candidate, baseline, blob, git, BASE)

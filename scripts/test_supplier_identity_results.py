@@ -15,7 +15,9 @@ from unittest import mock
 import uuid
 import xml.etree.ElementTree as ET
 
-HERE = pathlib.Path(__file__).resolve().parent
+from procurement_dependency_consumer import historical_scripts
+from test_procurement_dependency_consumer import DependencyConsumerControls
+HERE = historical_scripts(__file__)
 OLD_FILTER = "('FullyQualifiedName=Legacy.Maliev.ProcurementService.Tests.Integration.PurchaseOrderFileMetadataBindingTests.PrimitiveMembers_UsePublicTypedStringReader'\n                if phase == 'baseline' else 'FullyQualifiedName~PurchaseOrderFileMetadataBindingTests')"
 NEW_FILTER = "'FullyQualifiedName~Legacy.Maliev.ProcurementService.Tests.Integration.' + profiles[family]"
 

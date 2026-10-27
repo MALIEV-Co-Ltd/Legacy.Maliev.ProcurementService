@@ -1,3 +1,5 @@
+from procurement_dependency_consumer import (dependency_runtime_blob, dependency_consumer_inputs,
+    require_dependency_runtime, current_dependency_script_binding, authenticate_dependency)
 from procurement_artifact_transport_consumer import current_workflow_binding
 """Bind only the new171 harness to accepted9005; require exact source and normal hosted disposal."""
 import datetime
@@ -132,7 +134,7 @@ def require_runtime_postimages(candidate, manifest):
         require(git_blob_record(manifest["runtimePostimages"][path]) == expected,
                 "Exact Supplier omitted-size runtime successor differs: " + path)
     for path, expected in runtime_bindings(manifest).items():
-        require(blob(candidate, path) == supplier_parent_audit_runtime_blob(path, supplier_mutation_runtime_blob(path, expected)), "Wrong reviewed runtime postimage: " + path)
+        require(blob(candidate, path) == dependency_runtime_blob(path, supplier_parent_audit_runtime_blob(path, supplier_mutation_runtime_blob(path, expected))), "Wrong reviewed runtime postimage: " + path)
 
 
 def phase_reports(directory):
@@ -183,9 +185,10 @@ def require_phase(output, phase, family, budget):
 
 
 def require_script_bindings(candidate, manifest):
+    authenticate_dependency(candidate, git)
     require(set(manifest["scriptBindings"]) == SCRIPT_PATHS, "Wrong exact hosted source/control roster")
     for path, record in manifest["scriptBindings"].items():
-        require(blob(candidate, path) == git_blob_record(record)
+        require(blob(candidate, path) == current_dependency_script_binding(candidate, path, git_blob_record(record), blob, git)
                 == git(candidate, "rev-parse", "HEAD:" + path).decode().strip(),
                 "Hosted source/control differs from reviewed HEAD: " + path)
 
@@ -253,6 +256,7 @@ def require_bucket_test(candidate, baseline):
 
 def prepare(baseline, manifest_path, verify_only=False):
     candidate = pathlib.Path(__file__).resolve().parents[1]
+    authenticate_dependency(candidate, git)
     budget = [MAX_OPERATION_BYTES]
     raw_manifest = read_bounded(manifest_path, MAX_JSON_BYTES, budget)
     require(raw_manifest == git(candidate, "show", "HEAD:docs/procurement-metadata-identity-contract.json"), "Manifest differs from candidate HEAD")
@@ -270,7 +274,7 @@ def prepare(baseline, manifest_path, verify_only=False):
         candidate_binding = (manifest["candidateJoinTestProject"] if path == TEST_PROJECT
                              else manifest["candidateBuildProject"] if path == API_PROJECT else binding)
         require(binding["path"] == candidate_binding["path"] == path
-                and blob(candidate, path) == candidate_binding["gitBlob"], "Frozen candidate fixture/build input differs")
+                and blob(candidate, path) == dependency_runtime_blob(path, candidate_binding["gitBlob"]), "Frozen candidate fixture/build input differs")
         baseline_raw = read_bounded(baseline / path, MAX_SOURCE_BYTES, budget)
         require(baseline_raw == git(baseline, "show", BASE + ":" + path)
                 and blob(baseline, path) == binding["gitBlob"], "Immutable baseline fixture/build input differs")
@@ -285,7 +289,7 @@ def prepare(baseline, manifest_path, verify_only=False):
     runtime = manifest["runtimePostimages"]
     allowed = {PROGRAM, API_PROJECT, CONVERTER, METADATA_IDENTITY, HEADER, REPOSITORY, SUPPLIER, SOURCE_FORMATTER, SOURCE_MODELS} | set(SUPPLIER_QUERY_RUNTIME)
     require(set(runtime) == allowed, "Wrong exact runtime input roster")
-    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *directories).decode().splitlines()) == allowed | require_supplier_mutation_runtime(candidate, blob) | require_supplier_parent_audit_runtime(candidate, blob) | require_health_alias_runtime(candidate, blob, git),
+    require(set(git(candidate, "diff", "--name-only", BASE, "HEAD", "--", *directories).decode().splitlines()) == allowed | require_supplier_mutation_runtime(candidate, blob) | require_supplier_parent_audit_runtime(candidate, blob) | require_health_alias_runtime(candidate, blob, git) | require_dependency_runtime(candidate, blob, git),
             "Unexpected production source/build drift")
     require_runtime_postimages(candidate, manifest)
     for path in ("scripts/observe-supplier-address-providers.py", "scripts/supplier_address_owned_processes.py",

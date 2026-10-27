@@ -10,7 +10,9 @@ from unittest import mock
 import uuid
 import xml.etree.ElementTree as ET
 
-MODULE_PATH = Path(__file__).with_name("verify-po-header-hosted-red.py")
+from procurement_dependency_consumer import historical_scripts
+from test_procurement_dependency_consumer import DependencyConsumerControls
+MODULE_PATH = historical_scripts(__file__) / "verify-po-header-hosted-red.py"
 SPEC = importlib.util.spec_from_file_location("po_header_red", MODULE_PATH)
 RED = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(RED)
