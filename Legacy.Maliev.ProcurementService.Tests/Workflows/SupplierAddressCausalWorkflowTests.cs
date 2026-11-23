@@ -20,6 +20,8 @@ public sealed class SupplierAddressCausalWorkflowTests
             ("timeout-minutes: 30", "timeout-minutes: 0"),
             ("ref: ecb05cbbd68717e415f69df2ac488c1d323b1da3", "ref: main"),
             ("contents: read", "contents: write"),
+            ("dotnet-version: 11.0.x", "dotnet-version: 10.0.x"),
+            ("dotnet --version | grep -Eq '^10\\.0\\.'", "true"),
             ("name: Execute actual baseline33 and observe providers", "name: Execute actual baseline33 and observe providers\n        if: false"),
             ("name: Build candidate before focused execution", "name: Build candidate before focused execution\n        continue-on-error: true"),
             ("python3 -B scripts/observe-supplier-address-providers.py .address-baseline address-causal-results/baseline baseline", "echo baseline"),
@@ -53,7 +55,7 @@ public sealed class SupplierAddressCausalWorkflowTests
             "Check out CompatibilityContracts", "Set up accepted SDK", "Verify causal verifier controls",
             "Bind identical harness and unchanged baseline", "Build baseline before expected assertion failures",
             "Execute actual baseline33 and observe providers", "Require genuine baseline13 assertion failures and20 passes",
-            "Build candidate before focused execution", "Execute actual candidate33 and observe providers",
+            "Set up candidate SDK", "Build candidate before focused execution", "Execute actual candidate33 and observe providers",
             "Require all candidate33 executions and same harness", "Preserve raw causal and provider evidence",
         };
         Require(steps.Length == names.Length);
@@ -61,7 +63,7 @@ public sealed class SupplierAddressCausalWorkflowTests
         {
             Require(Scalar(steps[index], "name") == names[index]);
             Require(!steps[index].Children.ContainsKey(new YamlScalarNode("continue-on-error")));
-            Require(index == 13 || !steps[index].Children.ContainsKey(new YamlScalarNode("if")));
+            Require(index == 14 || !steps[index].Children.ContainsKey(new YamlScalarNode("if")));
         }
         for (var index = 0; index < 4; index++)
         {
@@ -74,6 +76,10 @@ public sealed class SupplierAddressCausalWorkflowTests
         Require(Scalar(Map(steps[3], "with"), "ref") == "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7");
         Require(Scalar(steps[4], "uses") == "actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68");
         Require(Scalar(Map(steps[4], "with"), "dotnet-version") == "10.0.x");
+        Require(Scalar(Map(steps[4], "env"), "DOTNET_INSTALL_DIR") == "${{ runner.temp }}/procurement-address-sdk");
+        Require(Scalar(steps[10], "uses") == "actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68");
+        Require(Scalar(Map(steps[10], "with"), "dotnet-version") == "11.0.x");
+        Require(Scalar(Map(steps[10], "env"), "DOTNET_INSTALL_DIR") == "${{ runner.temp }}/procurement-address-sdk");
         Commands(steps[5], "python3 -B -m unittest discover -s scripts -p test_supplier_address_causal_results.py\n"
             + "python3 -O -B -m unittest discover -s scripts -p test_supplier_address_causal_results.py\n"
             + "python3 -B -m unittest discover -s scripts -p test_supplier_address_provider_observation.py\n"
@@ -81,19 +87,19 @@ public sealed class SupplierAddressCausalWorkflowTests
         Commands(steps[6], "python3 -B scripts/prepare-supplier-address-causal-baseline.py .address-baseline docs/procurement-supplier-address-causal-contract.json");
         const string build = "export GITHUB_ACTIONS=false\ndotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true\n"
             + "dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true";
-        Commands(steps[7], build);
+        Commands(steps[7], "dotnet --version | grep -Eq '^10\\.0\\.'\n" + build);
         Require(Scalar(steps[7], "working-directory") == ".address-baseline");
-        Commands(steps[10], build);
-        foreach (var index in new[] { 7, 10 }) Require(Scalar(steps[index], "timeout-minutes") == "5");
-        foreach (var index in new[] { 8, 11 }) Require(Scalar(steps[index], "timeout-minutes") == "6");
+        Commands(steps[11], "dotnet --version | grep -Eq '^11\\.0\\.'\n" + build);
+        foreach (var index in new[] { 7, 11 }) Require(Scalar(steps[index], "timeout-minutes") == "5");
+        foreach (var index in new[] { 8, 12 }) Require(Scalar(steps[index], "timeout-minutes") == "6");
         Commands(steps[8], "python3 -B scripts/observe-supplier-address-providers.py .address-baseline address-causal-results/baseline baseline");
         Commands(steps[9], "python3 -B scripts/verify-supplier-address-causal-results.py address-causal-results/baseline docs/procurement-supplier-address-causal-contract.json baseline \"$(cat address-causal-results/baseline/test-exit-code.txt)\"");
-        Commands(steps[11], "python3 -B scripts/observe-supplier-address-providers.py . address-causal-results/candidate candidate");
-        Commands(steps[12], "python3 -B scripts/verify-supplier-address-causal-results.py address-causal-results/candidate docs/procurement-supplier-address-causal-contract.json candidate \"$(cat address-causal-results/candidate/test-exit-code.txt)\"\n"
+        Commands(steps[12], "python3 -B scripts/observe-supplier-address-providers.py . address-causal-results/candidate candidate");
+        Commands(steps[13], "python3 -B scripts/verify-supplier-address-causal-results.py address-causal-results/candidate docs/procurement-supplier-address-causal-contract.json candidate \"$(cat address-causal-results/candidate/test-exit-code.txt)\"\n"
             + "python3 -B scripts/prepare-supplier-address-causal-baseline.py .address-baseline docs/procurement-supplier-address-causal-contract.json --verify-only");
-        Require(Scalar(steps[13], "if") == "always()");
-        Require(Scalar(steps[13], "uses") == "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
-        Require(Scalar(Map(steps[13], "with"), "path") == "address-causal-results");
+        Require(Scalar(steps[14], "if") == "always()");
+        Require(Scalar(steps[14], "uses") == "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02");
+        Require(Scalar(Map(steps[14], "with"), "path") == "address-causal-results");
     }
 
     private static void Commands(YamlMappingNode node, string expected)

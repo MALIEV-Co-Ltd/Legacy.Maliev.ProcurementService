@@ -26,7 +26,7 @@ builder.AddJwtAuthentication();
 builder.AddStandardMiddleware(options => options.EnableRequestLogging = true);
 builder.AddStandardOpenApi(
     title: "Legacy MALIEV Procurement Service API",
-    description: "Temporary .NET 10 compatibility service preserving Supplier and PurchaseOrder contracts across two isolated databases.");
+    description: "Temporary .NET 11 compatibility service preserving Supplier and PurchaseOrder contracts across two isolated databases.");
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {

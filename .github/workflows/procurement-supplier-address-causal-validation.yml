@@ -53,6 +53,8 @@ jobs:
           persist-credentials: false
       - name: Set up accepted SDK
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        env:
+          DOTNET_INSTALL_DIR: ${{ runner.temp }}/procurement-address-sdk
         with:
           dotnet-version: 10.0.x
       - name: Verify causal verifier controls
@@ -67,6 +69,7 @@ jobs:
         timeout-minutes: 5
         working-directory: .address-baseline
         run: |
+          dotnet --version | grep -Eq '^10\.0\.'
           export GITHUB_ACTIONS=false
           dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true
           dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true
@@ -76,9 +79,16 @@ jobs:
       - name: Require genuine baseline13 assertion failures and20 passes
         run: |
           python3 -B scripts/verify-supplier-address-causal-results.py address-causal-results/baseline docs/procurement-supplier-address-causal-contract.json baseline "$(cat address-causal-results/baseline/test-exit-code.txt)"
+      - name: Set up candidate SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        env:
+          DOTNET_INSTALL_DIR: ${{ runner.temp }}/procurement-address-sdk
+        with:
+          dotnet-version: 11.0.x
       - name: Build candidate before focused execution
         timeout-minutes: 5
         run: |
+          dotnet --version | grep -Eq '^11\.0\.'
           export GITHUB_ACTIONS=false
           dotnet restore Legacy.Maliev.ProcurementService.slnx -p:UseLocalMalievDependencies=true
           dotnet build Legacy.Maliev.ProcurementService.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true

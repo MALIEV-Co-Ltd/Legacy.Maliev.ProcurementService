@@ -74,7 +74,7 @@ public sealed class ProcurementPurchaseOrderHeaderBindingTests(ProcurementRuntim
     [InlineData("false", "false")]
     public void AllTextFields_MatchPinnedPublicTypedReader(string token, string? expected)
     {
-        // Public Newtonsoft 13.0.3 primitive contract, not the original deployed model/binary.
+        // Public Newtonsoft 13.0.4 primitive contract, not the original deployed model/binary.
         using var reader = PublicReader(token);
         Assert.Equal(expected, reader.ReadAsString());
         var value = Bind("{" + string.Join(",", TextFields.Select(field => $"\"{field}\":{token}")) + "}");

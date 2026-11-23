@@ -215,8 +215,8 @@ public sealed class WorkflowContractTests
     public void BuildAndTest_RejectsCommentedDependencySha()
     {
         AssertMutationRejected(
-            "ref: ecb05cbbd68717e415f69df2ac488c1d323b1da3",
-            "ref: main # ecb05cbbd68717e415f69df2ac488c1d323b1da3");
+            "ref: 173d63218d9142b34075bca87f5c6d933bcbdfb6",
+            "ref: main # 173d63218d9142b34075bca87f5c6d933bcbdfb6");
     }
 
     [Fact]
@@ -561,7 +561,7 @@ internal static partial class WorkflowContractValidator
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 ["repository"] = "MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults",
-                ["ref"] = "ecb05cbbd68717e415f69df2ac488c1d323b1da3",
+                ["ref"] = historicalFixture ? "ecb05cbbd68717e415f69df2ac488c1d323b1da3" : "173d63218d9142b34075bca87f5c6d933bcbdfb6",
                 ["path"] = ".dependencies/Legacy.Maliev.ServiceDefaults",
                 ["persist-credentials"] = "false",
             });
@@ -571,18 +571,17 @@ internal static partial class WorkflowContractValidator
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 ["repository"] = "MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts",
-                ["ref"] = "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7",
+                ["ref"] = historicalFixture ? "78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7" : "fe17b8cea8ace3eef5434f8b29c9038f5c975613",
                 ["path"] = ".dependencies/Legacy.Maliev.CompatibilityContracts",
                 ["persist-credentials"] = "false",
             });
-        ValidateStep(
-            steps.Children[3],
-            SharedValidationAction,
-            new Dictionary<string, string>(StringComparer.Ordinal)
-            {
-                ["solution"] = "Legacy.Maliev.ProcurementService.slnx",
-                ["use-local-maliev-dependencies"] = "true",
-            });
+        var validationInputs = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["solution"] = "Legacy.Maliev.ProcurementService.slnx",
+            ["use-local-maliev-dependencies"] = "true",
+        };
+        if (!historicalFixture) validationInputs["dotnet-version"] = "11.0.100";
+        ValidateStep(steps.Children[3], SharedValidationAction, validationInputs);
     }
 
 
@@ -755,7 +754,7 @@ internal static partial class WorkflowContractValidator
         if (steps.Children.Count != 11)
             throw new InvalidOperationException("Primary validation must retain the mandatory focused workflow group.");
         ValidateStep(steps.Children[3], "actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68",
-            new Dictionary<string, string>(StringComparer.Ordinal) { ["dotnet-version"] = "10.0.x" });
+            new Dictionary<string, string>(StringComparer.Ordinal) { ["dotnet-version"] = "11.0.100" });
         RequireScalarValue(RequireMapping(steps.Children[3], "focused SDK"), "name", "Set up SDK for mandatory focused workflow checks");
         var build = RequireMapping(steps.Children[4], "focused build");
         RequireStepKeys(build, "name", "timeout-minutes", "run");

@@ -143,7 +143,7 @@ public sealed class ProcurementHeaderIgnoredFieldsTests(ProcurementRuntimeFixtur
     [Fact]
     public void PublicTypedProjectionAndMvc_AgreeOnAcceptedAndRejectedPrimitiveShapes()
     {
-        // A public 13.0.3 compatibility control. The effective historical deployed binary is unknown.
+        // A public 13.0.4 compatibility control. The effective historical deployed binary is unknown.
         var legacyOptions = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, Culture = CultureInfo.InvariantCulture };
         foreach (var field in Fields)
         {

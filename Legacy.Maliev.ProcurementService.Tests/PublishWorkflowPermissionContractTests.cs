@@ -60,8 +60,8 @@ public sealed class PublishWorkflowPermissionContractTests
         Assert.Equal("legacy-production", Scalar(inputs, "environment"));
         Assert.Equal("${{ vars.LEGACY_WORKLOAD_IDENTITY_PROVIDER }}", Scalar(inputs, "workload-identity-provider"));
         Assert.Equal("${{ vars.LEGACY_PROCUREMENT_PUBLISHER_SERVICE_ACCOUNT }}", Scalar(inputs, "service-account"));
-        Assert.Equal("ecb05cbbd68717e415f69df2ac488c1d323b1da3", Scalar(inputs, "legacy-service-defaults-ref"));
-        Assert.Equal("78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7", Scalar(inputs, "compatibility-contracts-ref"));
+        Assert.Equal("173d63218d9142b34075bca87f5c6d933bcbdfb6", Scalar(inputs, "legacy-service-defaults-ref"));
+        Assert.Equal("fe17b8cea8ace3eef5434f8b29c9038f5c975613", Scalar(inputs, "compatibility-contracts-ref"));
     }
 
     private static string Source() => File.ReadAllText(Path.Combine(FindRoot(), ".github", "workflows", "publish-image.yml"));
